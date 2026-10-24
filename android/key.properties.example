@@ -1,0 +1,7 @@
+# Copia questo file in android/key.properties (che resta fuori da git) e
+# compila i valori della tua chiave di firma. Senza key.properties la versione
+# di rilascio viene firmata con la chiave di debug.
+storePassword=
+keyPassword=
+keyAlias=upload
+storeFile=

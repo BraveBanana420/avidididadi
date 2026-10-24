@@ -1,0 +1,119 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+import 'storage.dart';
+
+const _base =
+    'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
+
+/// Download già avviati, per non scaricare due volte la stessa immagine.
+final _inCorso = <String, Future<File?>>{};
+
+/// Restituisce l'immagine dalla cartella dell'app, scaricandola la prima volta.
+/// Null se non c'è e non si riesce a scaricarla (per esempio senza rete).
+Future<File?> immagineEsercizio(String percorso) =>
+    _inCorso.putIfAbsent(percorso, () async {
+      final client = HttpClient()
+        ..connectionTimeout = const Duration(seconds: 10);
+      try {
+        final dir = Directory('${await Storage.cartella()}/esercizi_img');
+        final f = File('${dir.path}/${percorso.replaceAll('/', '_')}');
+        if (await f.exists() && await f.length() > 0) return f;
+        final res = await (await client.getUrl(Uri.parse(_base + percorso)))
+            .close();
+        if (res.statusCode != 200) return null;
+        final dati = await consolidateHttpClientResponseBytes(res);
+        await dir.create(recursive: true);
+        // Prima su un file temporaneo: un download interrotto non lascia immagini rotte.
+        final tmp = File('${f.path}.tmp');
+        await tmp.writeAsBytes(dati, flush: true);
+        return await tmp.rename(f.path);
+      } catch (_) {
+        return null;
+      } finally {
+        client.close();
+        _inCorso.remove(percorso);
+      }
+    });
+
+/// Le immagini di un esercizio alternate ogni secondo, per mostrare il movimento.
+class AnimazioneEsercizio extends StatefulWidget {
+  final List<String> immagini;
+  const AnimazioneEsercizio({super.key, required this.immagini});
+
+  @override
+  State<AnimazioneEsercizio> createState() => _AnimazioneEsercizioState();
+}
+
+class _AnimazioneEsercizioState extends State<AnimazioneEsercizio> {
+  late final Future<List<File?>> _file = Future.wait(
+    widget.immagini.map(immagineEsercizio),
+  );
+  Timer? _timer;
+  int _indice = 0;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    // Le foto del catalogo sono 3:2 (850×567): stesso formato, niente bande.
+    return AspectRatio(
+      aspectRatio: 3 / 2,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: ColoredBox(
+          color: Colors.white,
+          child: FutureBuilder<List<File?>>(
+            future: _file,
+            builder: (context, snap) {
+              if (!snap.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final file = snap.data!.whereType<File>().toList();
+              if (file.isEmpty) {
+                return ColoredBox(
+                  color: scheme.surfaceContainerHighest,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.wifi_off, color: scheme.onSurfaceVariant),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Immagine non disponibile senza rete',
+                          style: TextStyle(color: scheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              if (file.length > 1) {
+                _timer ??= Timer.periodic(const Duration(seconds: 1), (_) {
+                  if (mounted) {
+                    setState(() => _indice = (_indice + 1) % file.length);
+                  }
+                });
+              }
+              return IndexedStack(
+                index: _indice % file.length,
+                sizing: StackFit.expand,
+                children: [
+                  for (final f in file) Image.file(f, fit: BoxFit.cover),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}

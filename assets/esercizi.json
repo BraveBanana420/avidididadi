@@ -1,0 +1,3031 @@
+[
+ {
+  "id": "Pushups",
+  "nome": "Piegamenti sulle braccia",
+  "nome_en": "Pushups",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Mani a terra poco più larghe delle spalle, corpo dritto dalla testa ai talloni.",
+   "Scendi piegando i gomiti a circa 45° finché il petto sfiora il pavimento.",
+   "Spingi per tornare su, senza far cedere il bacino."
+  ],
+  "immagini": [
+   "Pushups/0.jpg",
+   "Pushups/1.jpg"
+  ]
+ },
+ {
+  "id": "Incline_Push-Up",
+  "nome": "Piegamenti con mani rialzate",
+  "nome_en": "Incline Push-Up",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Appoggia le mani su un rialzo stabile (panca, sedia, gradino), alla larghezza delle spalle.",
+   "Con il corpo dritto, scendi fino a sfiorare il bordo con il petto.",
+   "Spingi per tornare su. Più il rialzo è alto, più l'esercizio è facile."
+  ],
+  "immagini": [
+   "Incline_Push-Up/0.jpg",
+   "Incline_Push-Up/1.jpg"
+  ]
+ },
+ {
+  "id": "Push-Ups_With_Feet_Elevated",
+  "nome": "Piegamenti con piedi rialzati",
+  "nome_en": "Push-Ups With Feet Elevated",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Piedi su un rialzo, mani a terra poco più larghe delle spalle.",
+   "Mantieni il corpo dritto e scendi fino a sfiorare il pavimento con il petto.",
+   "Spingi per tornare su: lavorano di più la parte alta del petto e le spalle."
+  ],
+  "immagini": [
+   "Push-Ups_With_Feet_Elevated/0.jpg",
+   "Push-Ups_With_Feet_Elevated/1.jpg"
+  ]
+ },
+ {
+  "id": "Push-Ups_-_Close_Triceps_Position",
+  "nome": "Piegamenti a presa stretta",
+  "nome_en": "Push-Ups - Close Triceps Position",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "intermedio",
+  "attrezzi": [],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [
+   "chest",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Mani sotto il petto, vicine tra loro.",
+   "Scendi tenendo i gomiti stretti lungo il corpo.",
+   "Spingi per tornare su: lavorano soprattutto i tricipiti."
+  ],
+  "immagini": [
+   "Push-Ups_-_Close_Triceps_Position/0.jpg",
+   "Push-Ups_-_Close_Triceps_Position/1.jpg"
+  ]
+ },
+ {
+  "id": "Push-Up_Wide",
+  "nome": "Piegamenti a presa larga",
+  "nome_en": "Push-Up Wide",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "abs",
+   "obliques",
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Mani molto più larghe delle spalle, corpo dritto.",
+   "Scendi finché il petto sfiora il pavimento.",
+   "Spingi per tornare su: lavora di più il petto."
+  ],
+  "immagini": [
+   "Push-Up_Wide/0.jpg",
+   "Push-Up_Wide/1.jpg"
+  ]
+ },
+ {
+  "id": "Push_Up_to_Side_Plank",
+  "nome": "Piegamento con plank laterale",
+  "nome_en": "Push Up to Side Plank",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "abs",
+   "obliques",
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Esegui un piegamento.",
+   "Risalendo, ruota su un fianco e porta il braccio libero verso il soffitto.",
+   "Torna in posizione di piegamento e ripeti ruotando dall'altro lato."
+  ],
+  "immagini": [
+   "Push_Up_to_Side_Plank/0.jpg",
+   "Push_Up_to_Side_Plank/1.jpg"
+  ]
+ },
+ {
+  "id": "Bench_Dips",
+  "nome": "Dip su panca",
+  "nome_en": "Bench Dips",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [
+   "chest",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Mani sul bordo di una panca o di una sedia stabile alle tue spalle, gambe distese davanti.",
+   "Scendi piegando i gomiti fino a circa 90°, con la schiena vicina alla panca.",
+   "Spingi con i tricipiti per tornare su. Piega le ginocchia per renderlo più facile."
+  ],
+  "immagini": [
+   "Bench_Dips/0.jpg",
+   "Bench_Dips/1.jpg"
+  ]
+ },
+ {
+  "id": "Dips_-_Triceps_Version",
+  "nome": "Dip alle parallele",
+  "nome_en": "Dips - Triceps Version",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "parallele"
+   ]
+  ],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [
+   "chest",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Sostieniti sulle parallele a braccia tese, busto dritto.",
+   "Scendi piegando i gomiti fino a circa 90°, tenendoli vicini al corpo.",
+   "Spingi per tornare su a braccia tese."
+  ],
+  "immagini": [
+   "Dips_-_Triceps_Version/0.jpg",
+   "Dips_-_Triceps_Version/1.jpg"
+  ]
+ },
+ {
+  "id": "Pullups",
+  "nome": "Trazioni alla sbarra",
+  "nome_en": "Pullups",
+  "tipo": "forza",
+  "schema": "trazione_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "sbarra"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps"
+  ],
+  "istruzioni": [
+   "Afferra la sbarra con i palmi in avanti, poco più larghi delle spalle, e resta appeso a braccia tese.",
+   "Tira portando il petto verso la sbarra finché il mento la supera.",
+   "Scendi lentamente fino a braccia tese."
+  ],
+  "immagini": [
+   "Pullups/0.jpg",
+   "Pullups/1.jpg"
+  ]
+ },
+ {
+  "id": "Chin-Up",
+  "nome": "Trazioni a presa supina",
+  "nome_en": "Chin-Up",
+  "tipo": "forza",
+  "schema": "trazione_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "sbarra"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps",
+   "forearm"
+  ],
+  "istruzioni": [
+   "Afferra la sbarra con i palmi verso di te, alla larghezza delle spalle.",
+   "Tira finché il mento supera la sbarra, gomiti vicini al corpo.",
+   "Scendi lentamente: lavorano di più i bicipiti."
+  ],
+  "immagini": [
+   "Chin-Up/0.jpg",
+   "Chin-Up/1.jpg"
+  ]
+ },
+ {
+  "id": "Band_Assisted_Pull-Up",
+  "nome": "Trazioni assistite con elastico",
+  "nome_en": "Band Assisted Pull-Up",
+  "tipo": "forza",
+  "schema": "trazione_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "sbarra",
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "abs",
+   "obliques",
+   "forearm"
+  ],
+  "istruzioni": [
+   "Aggancia un elastico alla sbarra e appoggia un piede o un ginocchio nell'anello.",
+   "Afferra la sbarra e tira finché il mento la supera: l'elastico ti aiuta nella parte bassa.",
+   "Scendi lentamente. Usa elastici più leggeri man mano che migliori."
+  ],
+  "immagini": [
+   "Band_Assisted_Pull-Up/0.jpg",
+   "Band_Assisted_Pull-Up/1.jpg"
+  ]
+ },
+ {
+  "id": "Scapular_Pull-Up",
+  "nome": "Trazioni scapolari",
+  "nome_en": "Scapular Pull-Up",
+  "tipo": "forza",
+  "schema": "trazione_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "sbarra"
+   ]
+  ],
+  "muscoli": [
+   "trapezius"
+  ],
+  "muscoli_secondari": [
+   "upper-back"
+  ],
+  "istruzioni": [
+   "Resta appeso alla sbarra a braccia tese, palmi in avanti.",
+   "Senza piegare i gomiti, abbassa le spalle allontanandole dalle orecchie: il corpo sale di pochi centimetri.",
+   "Fai una breve pausa e torna giù lentamente."
+  ],
+  "immagini": [
+   "Scapular_Pull-Up/0.jpg",
+   "Scapular_Pull-Up/1.jpg"
+  ]
+ },
+ {
+  "id": "Inverted_Row",
+  "nome": "Rematore inverso",
+  "nome_en": "Inverted Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "sbarra"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Posiziona una sbarra all'altezza della vita e mettiti sotto, presa più larga delle spalle.",
+   "Corpo dritto, talloni a terra, braccia tese.",
+   "Tira il petto verso la sbarra stringendo le scapole, poi scendi lentamente."
+  ],
+  "immagini": [
+   "Inverted_Row/0.jpg",
+   "Inverted_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "Suspended_Row",
+  "nome": "Rematore agli anelli o TRX",
+  "nome_en": "Suspended Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "trx"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps"
+  ],
+  "istruzioni": [
+   "Afferra le maniglie e inclinati all'indietro con il corpo dritto e le braccia tese.",
+   "Tira il petto verso le mani stringendo le scapole.",
+   "Torna giù lentamente. Più sei inclinato, più è difficile."
+  ],
+  "immagini": [
+   "Suspended_Row/0.jpg",
+   "Suspended_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "Suspended_Push-Up",
+  "nome": "Piegamenti agli anelli o TRX",
+  "nome_en": "Suspended Push-Up",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "trx"
+   ]
+  ],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Regola le maniglie a pochi centimetri da terra e mettiti in posizione di piegamento con le mani sulle maniglie.",
+   "Scendi controllando le maniglie, che non devono allargarsi.",
+   "Spingi per tornare su."
+  ],
+  "immagini": [
+   "Suspended_Push-Up/0.jpg",
+   "Suspended_Push-Up/1.jpg"
+  ]
+ },
+ {
+  "id": "Bodyweight_Squat",
+  "nome": "Squat a corpo libero",
+  "nome_en": "Bodyweight Squat",
+  "tipo": "forza",
+  "schema": "squat",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Piedi alla larghezza delle spalle, punte leggermente in fuori.",
+   "Scendi spingendo indietro il bacino e piegando le ginocchia, petto alto e talloni a terra.",
+   "Arriva almeno con le cosce parallele al pavimento e risali spingendo sui talloni."
+  ],
+  "immagini": [
+   "Bodyweight_Squat/0.jpg",
+   "Bodyweight_Squat/1.jpg"
+  ]
+ },
+ {
+  "id": "Freehand_Jump_Squat",
+  "nome": "Squat jump",
+  "nome_en": "Freehand Jump Squat",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "intermedio",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Parti in posizione di squat, piedi alla larghezza delle spalle.",
+   "Spingi con forza e salta più in alto che puoi.",
+   "Atterra morbido sulle punte e scendi subito nello squat successivo."
+  ],
+  "immagini": [
+   "Freehand_Jump_Squat/0.jpg",
+   "Freehand_Jump_Squat/1.jpg"
+  ]
+ },
+ {
+  "id": "Bodyweight_Walking_Lunge",
+  "nome": "Affondi camminati",
+  "nome_en": "Bodyweight Walking Lunge",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "In piedi, fai un passo lungo in avanti.",
+   "Scendi finché il ginocchio posteriore sfiora il pavimento, busto dritto.",
+   "Spingi sulla gamba anteriore e porta avanti l'altra gamba nel passo successivo."
+  ],
+  "immagini": [
+   "Bodyweight_Walking_Lunge/0.jpg",
+   "Bodyweight_Walking_Lunge/1.jpg"
+  ]
+ },
+ {
+  "id": "Step-up_with_Knee_Raise",
+  "nome": "Step-up con ginocchio al petto",
+  "nome_en": "Step-up with Knee Raise",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "rialzo"
+   ],
+   [
+    "panca"
+   ]
+  ],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "hamstring",
+   "quadriceps"
+  ],
+  "istruzioni": [
+   "Di fronte a un box o a una panca, sali appoggiando un piede sopra.",
+   "Distendi la gamba e porta il ginocchio dell'altra gamba verso il petto.",
+   "Scendi controllando il movimento e alterna le gambe."
+  ],
+  "immagini": [
+   "Step-up_with_Knee_Raise/0.jpg",
+   "Step-up_with_Knee_Raise/1.jpg"
+  ]
+ },
+ {
+  "id": "Butt_Lift_Bridge",
+  "nome": "Ponte glutei",
+  "nome_en": "Butt Lift (Bridge)",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla schiena, ginocchia piegate e piedi a terra vicino ai glutei.",
+   "Spingi sui talloni e solleva il bacino finché il corpo forma una linea dalle spalle alle ginocchia.",
+   "Stringi i glutei in alto per un secondo e scendi lentamente."
+  ],
+  "immagini": [
+   "Butt_Lift_Bridge/0.jpg",
+   "Butt_Lift_Bridge/1.jpg"
+  ]
+ },
+ {
+  "id": "Single_Leg_Glute_Bridge",
+  "nome": "Ponte glutei su una gamba",
+  "nome_en": "Single Leg Glute Bridge",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla schiena, un piede a terra e l'altra gamba distesa in aria.",
+   "Spingi sul tallone a terra e solleva il bacino.",
+   "Scendi lentamente; completa le ripetizioni e cambia gamba."
+  ],
+  "immagini": [
+   "Single_Leg_Glute_Bridge/0.jpg",
+   "Single_Leg_Glute_Bridge/1.jpg"
+  ]
+ },
+ {
+  "id": "Glute_Kickback",
+  "nome": "Slanci posteriori a quattro zampe",
+  "nome_en": "Glute Kickback",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "hamstring"
+  ],
+  "istruzioni": [
+   "A quattro zampe, mani sotto le spalle e ginocchia sotto le anche.",
+   "Spingi una gamba indietro e in alto, ginocchio piegato a 90°, finché la coscia è in linea con il busto.",
+   "Torna giù lentamente senza inarcare la schiena, poi cambia gamba."
+  ],
+  "immagini": [
+   "Glute_Kickback/0.jpg",
+   "Glute_Kickback/1.jpg"
+  ]
+ },
+ {
+  "id": "Superman",
+  "nome": "Superman",
+  "nome_en": "Superman",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "lower-back"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "A pancia in giù, braccia distese in avanti.",
+   "Solleva insieme braccia, petto e gambe da terra.",
+   "Tieni 2 secondi stringendo glutei e lombari, poi scendi lentamente."
+  ],
+  "immagini": [
+   "Superman/0.jpg",
+   "Superman/1.jpg"
+  ]
+ },
+ {
+  "id": "Plank",
+  "nome": "Plank",
+  "nome_en": "Plank",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Avambracci a terra con i gomiti sotto le spalle, punte dei piedi a terra.",
+   "Corpo dritto dalla testa ai talloni, addome e glutei contratti.",
+   "Mantieni la posizione senza far scendere o salire il bacino."
+  ],
+  "immagini": [
+   "Plank/0.jpg",
+   "Plank/1.jpg"
+  ]
+ },
+ {
+  "id": "Side_Bridge",
+  "nome": "Plank laterale",
+  "nome_en": "Side Bridge",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Sul fianco, appoggiato sull'avambraccio con il gomito sotto la spalla.",
+   "Solleva il bacino finché il corpo è dritto dalla testa ai piedi.",
+   "Mantieni la posizione, poi cambia lato."
+  ],
+  "immagini": [
+   "Side_Bridge/0.jpg",
+   "Side_Bridge/1.jpg"
+  ]
+ },
+ {
+  "id": "Dead_Bug",
+  "nome": "Dead bug",
+  "nome_en": "Dead Bug",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, braccia verso il soffitto e ginocchia piegate a 90° sopra le anche.",
+   "Distendi un braccio dietro la testa e la gamba opposta in avanti, senza staccare la zona lombare da terra.",
+   "Torna al centro e alterna i lati."
+  ],
+  "immagini": [
+   "Dead_Bug/0.jpg",
+   "Dead_Bug/1.jpg"
+  ]
+ },
+ {
+  "id": "Crunches",
+  "nome": "Crunch",
+  "nome_en": "Crunches",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, ginocchia piegate, mani ai lati della testa.",
+   "Solleva le spalle da terra contraendo l'addome, senza tirare il collo.",
+   "Torna giù lentamente."
+  ],
+  "immagini": [
+   "Crunches/0.jpg",
+   "Crunches/1.jpg"
+  ]
+ },
+ {
+  "id": "Reverse_Crunch",
+  "nome": "Crunch inverso",
+  "nome_en": "Reverse Crunch",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, braccia lungo i fianchi, ginocchia piegate sopra le anche.",
+   "Contrai l'addome e porta le ginocchia verso il petto staccando il bacino da terra.",
+   "Torna giù lentamente senza far cadere le gambe."
+  ],
+  "immagini": [
+   "Reverse_Crunch/0.jpg",
+   "Reverse_Crunch/1.jpg"
+  ]
+ },
+ {
+  "id": "Russian_Twist",
+  "nome": "Russian twist",
+  "nome_en": "Russian Twist",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "intermedio",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [
+   "lower-back"
+  ],
+  "istruzioni": [
+   "Seduto con le ginocchia piegate, busto inclinato indietro e piedi sollevati (a terra per renderlo più facile).",
+   "Ruota il busto da un lato portando le mani verso il pavimento.",
+   "Ruota dall'altro lato. Per aumentare la difficoltà tieni un disco o una palla medica."
+  ],
+  "immagini": [
+   "Russian_Twist/0.jpg",
+   "Russian_Twist/1.jpg"
+  ]
+ },
+ {
+  "id": "Air_Bike",
+  "nome": "Bicycle crunch",
+  "nome_en": "Air Bike",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, mani ai lati della testa, spalle sollevate da terra.",
+   "Porta un ginocchio verso il petto e avvicina il gomito opposto, distendendo l'altra gamba.",
+   "Alterna i lati con un movimento continuo, come pedalando."
+  ],
+  "immagini": [
+   "Air_Bike/0.jpg",
+   "Air_Bike/1.jpg"
+  ]
+ },
+ {
+  "id": "Flutter_Kicks",
+  "nome": "Sforbiciate",
+  "nome_en": "Flutter Kicks",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla schiena, mani sotto i glutei, gambe distese e sollevate di pochi centimetri.",
+   "Muovi le gambe su e giù alternandole, con movimenti piccoli e rapidi.",
+   "Tieni la zona lombare a contatto con il pavimento."
+  ],
+  "immagini": [
+   "Flutter_Kicks/0.jpg",
+   "Flutter_Kicks/1.jpg"
+  ]
+ },
+ {
+  "id": "Mountain_Climbers",
+  "nome": "Mountain climber",
+  "nome_en": "Mountain Climbers",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "chest",
+   "hamstring",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Mettiti in posizione di piegamento a braccia tese.",
+   "Porta un ginocchio verso il petto e riportalo indietro mentre porti avanti l'altro.",
+   "Alterna le gambe velocemente, senza alzare troppo il bacino."
+  ],
+  "immagini": [
+   "Mountain_Climbers/0.jpg",
+   "Mountain_Climbers/1.jpg"
+  ]
+ },
+ {
+  "id": "Star_Jump",
+  "nome": "Star jump",
+  "nome_en": "Star Jump",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Parti accosciato con le mani vicino alle ginocchia.",
+   "Salta in alto aprendo braccia e gambe a stella.",
+   "Atterra morbido richiudendo braccia e gambe e torna accosciato."
+  ],
+  "immagini": [
+   "Star_Jump/0.jpg",
+   "Star_Jump/1.jpg"
+  ]
+ },
+ {
+  "id": "Split_Jump",
+  "nome": "Affondi saltati",
+  "nome_en": "Split Jump",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Parti in posizione di affondo.",
+   "Salta in alto e scambia le gambe in aria.",
+   "Atterra morbido nell'affondo opposto e ripeti."
+  ],
+  "immagini": [
+   "Split_Jump/0.jpg",
+   "Split_Jump/1.jpg"
+  ]
+ },
+ {
+  "id": "Knee_Tuck_Jump",
+  "nome": "Salti con ginocchia al petto",
+  "nome_en": "Knee Tuck Jump",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "adductors",
+   "calves",
+   "quadriceps"
+  ],
+  "istruzioni": [
+   "In piedi, piedi alla larghezza delle spalle.",
+   "Salta portando le ginocchia verso il petto.",
+   "Atterra morbido sulle punte e ripeti subito."
+  ],
+  "immagini": [
+   "Knee_Tuck_Jump/0.jpg",
+   "Knee_Tuck_Jump/1.jpg"
+  ]
+ },
+ {
+  "id": "Front_Box_Jump",
+  "nome": "Box jump",
+  "nome_en": "Front Box Jump",
+  "tipo": "forza",
+  "schema": "pliometria",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "rialzo"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "adductors",
+   "calves",
+   "quadriceps"
+  ],
+  "istruzioni": [
+   "Di fronte a un box stabile, piedi alla larghezza delle spalle.",
+   "Piegati leggermente e salta sul box, atterrando con entrambi i piedi e le ginocchia morbide.",
+   "Scendi con un passo, senza saltare all'indietro."
+  ],
+  "immagini": [
+   "Front_Box_Jump/0.jpg",
+   "Front_Box_Jump/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Bench_Press",
+  "nome": "Distensioni con manubri su panca",
+  "nome_en": "Dumbbell Bench Press",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri",
+    "panca"
+   ]
+  ],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla panca, manubri all'altezza del petto, palmi in avanti.",
+   "Spingi i manubri verso l'alto fino a braccia tese.",
+   "Scendi lentamente fino a sentire un leggero allungamento del petto."
+  ],
+  "immagini": [
+   "Dumbbell_Bench_Press/0.jpg",
+   "Dumbbell_Bench_Press/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Flyes",
+  "nome": "Croci con manubri",
+  "nome_en": "Dumbbell Flyes",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri",
+    "panca"
+   ]
+  ],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla panca, manubri sopra il petto con i palmi uno di fronte all'altro e i gomiti appena piegati.",
+   "Apri le braccia ad arco finché senti allungare il petto.",
+   "Richiudi lo stesso arco fino a sopra il petto."
+  ],
+  "immagini": [
+   "Dumbbell_Flyes/0.jpg",
+   "Dumbbell_Flyes/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Shoulder_Press",
+  "nome": "Lento avanti con manubri",
+  "nome_en": "Dumbbell Shoulder Press",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "triceps"
+  ],
+  "istruzioni": [
+   "In piedi o seduto, manubri all'altezza delle spalle, palmi in avanti.",
+   "Spingi i manubri sopra la testa fino a braccia tese.",
+   "Scendi lentamente all'altezza delle spalle."
+  ],
+  "immagini": [
+   "Dumbbell_Shoulder_Press/0.jpg",
+   "Dumbbell_Shoulder_Press/1.jpg"
+  ]
+ },
+ {
+  "id": "Arnold_Dumbbell_Press",
+  "nome": "Arnold press",
+  "nome_en": "Arnold Dumbbell Press",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "triceps"
+  ],
+  "istruzioni": [
+   "In piedi o seduto, manubri davanti al petto con i palmi verso di te.",
+   "Spingi verso l'alto ruotando i polsi, finché i palmi guardano in avanti a braccia tese.",
+   "Torna giù invertendo la rotazione."
+  ],
+  "immagini": [
+   "Arnold_Dumbbell_Press/0.jpg",
+   "Arnold_Dumbbell_Press/1.jpg"
+  ]
+ },
+ {
+  "id": "Side_Lateral_Raise",
+  "nome": "Alzate laterali",
+  "nome_en": "Side Lateral Raise",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, manubri lungo i fianchi, gomiti leggermente piegati.",
+   "Solleva le braccia di lato fino all'altezza delle spalle.",
+   "Scendi lentamente senza dondolare con il busto."
+  ],
+  "immagini": [
+   "Side_Lateral_Raise/0.jpg",
+   "Side_Lateral_Raise/1.jpg"
+  ]
+ },
+ {
+  "id": "Front_Dumbbell_Raise",
+  "nome": "Alzate frontali",
+  "nome_en": "Front Dumbbell Raise",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, manubri davanti alle cosce, palmi verso il corpo.",
+   "Solleva un braccio davanti a te fino all'altezza delle spalle.",
+   "Scendi lentamente e alterna le braccia."
+  ],
+  "immagini": [
+   "Front_Dumbbell_Raise/0.jpg",
+   "Front_Dumbbell_Raise/1.jpg"
+  ]
+ },
+ {
+  "id": "Reverse_Flyes",
+  "nome": "Alzate posteriori a busto flesso",
+  "nome_en": "Reverse Flyes",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Busto inclinato in avanti con la schiena dritta, manubri sotto il petto.",
+   "Apri le braccia di lato fino all'altezza delle spalle, stringendo le scapole.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Reverse_Flyes/0.jpg",
+   "Reverse_Flyes/1.jpg"
+  ]
+ },
+ {
+  "id": "One-Arm_Dumbbell_Row",
+  "nome": "Rematore con manubrio a un braccio",
+  "nome_en": "One-Arm Dumbbell Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Una mano e un ginocchio su una panca o una sedia, schiena parallela al pavimento.",
+   "Con l'altra mano tira il manubrio verso il fianco, gomito vicino al corpo.",
+   "Scendi lentamente a braccio teso, poi cambia lato."
+  ],
+  "immagini": [
+   "One-Arm_Dumbbell_Row/0.jpg",
+   "One-Arm_Dumbbell_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "Bent_Over_Two-Dumbbell_Row",
+  "nome": "Rematore con due manubri",
+  "nome_en": "Bent Over Two-Dumbbell Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Ginocchia leggermente piegate, busto inclinato in avanti con la schiena dritta.",
+   "Tira i manubri verso i fianchi stringendo le scapole.",
+   "Scendi lentamente a braccia tese."
+  ],
+  "immagini": [
+   "Bent_Over_Two-Dumbbell_Row/0.jpg",
+   "Bent_Over_Two-Dumbbell_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Bicep_Curl",
+  "nome": "Curl con manubri",
+  "nome_en": "Dumbbell Bicep Curl",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "biceps"
+  ],
+  "muscoli_secondari": [
+   "forearm"
+  ],
+  "istruzioni": [
+   "In piedi, manubri lungo i fianchi con i palmi in avanti.",
+   "Piega i gomiti portando i manubri verso le spalle, gomiti fermi lungo il corpo.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Dumbbell_Bicep_Curl/0.jpg",
+   "Dumbbell_Bicep_Curl/1.jpg"
+  ]
+ },
+ {
+  "id": "Hammer_Curls",
+  "nome": "Curl a martello",
+  "nome_en": "Hammer Curls",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "biceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, manubri lungo i fianchi con i palmi rivolti verso il corpo.",
+   "Piega i gomiti mantenendo i palmi uno di fronte all'altro.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Hammer_Curls/0.jpg",
+   "Hammer_Curls/1.jpg"
+  ]
+ },
+ {
+  "id": "Tricep_Dumbbell_Kickback",
+  "nome": "Kickback per tricipiti",
+  "nome_en": "Tricep Dumbbell Kickback",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Busto inclinato in avanti, gomito piegato a 90° e braccio parallelo al busto.",
+   "Distendi il gomito portando il manubrio indietro, senza muovere il braccio.",
+   "Torna lentamente a 90°."
+  ],
+  "immagini": [
+   "Tricep_Dumbbell_Kickback/0.jpg",
+   "Tricep_Dumbbell_Kickback/1.jpg"
+  ]
+ },
+ {
+  "id": "Standing_Dumbbell_Triceps_Extension",
+  "nome": "French press in piedi con manubrio",
+  "nome_en": "Standing Dumbbell Triceps Extension",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, tieni un manubrio con due mani sopra la testa, braccia tese.",
+   "Piega i gomiti portando il manubrio dietro la testa, gomiti verso l'alto.",
+   "Distendi le braccia per tornare su."
+  ],
+  "immagini": [
+   "Standing_Dumbbell_Triceps_Extension/0.jpg",
+   "Standing_Dumbbell_Triceps_Extension/1.jpg"
+  ]
+ },
+ {
+  "id": "Goblet_Squat",
+  "nome": "Goblet squat",
+  "nome_en": "Goblet Squat",
+  "tipo": "forza",
+  "schema": "squat",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ],
+   [
+    "manubri"
+   ],
+   [
+    "dischi"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Tieni un kettlebell, un manubrio o un disco davanti al petto con due mani.",
+   "Scendi nello squat con il petto alto e i gomiti tra le ginocchia.",
+   "Risali spingendo sui talloni."
+  ],
+  "immagini": [
+   "Goblet_Squat/0.jpg",
+   "Goblet_Squat/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Squat",
+  "nome": "Squat con manubri",
+  "nome_en": "Dumbbell Squat",
+  "tipo": "forza",
+  "schema": "squat",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring",
+   "lower-back"
+  ],
+  "istruzioni": [
+   "In piedi, un manubrio per mano lungo i fianchi.",
+   "Scendi nello squat con la schiena dritta, fino alle cosce parallele al pavimento.",
+   "Risali spingendo sui talloni."
+  ],
+  "immagini": [
+   "Dumbbell_Squat/0.jpg",
+   "Dumbbell_Squat/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Lunges",
+  "nome": "Affondi con manubri",
+  "nome_en": "Dumbbell Lunges",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "In piedi, un manubrio per mano lungo i fianchi.",
+   "Fai un passo in avanti e scendi finché il ginocchio posteriore sfiora il pavimento.",
+   "Spingi sulla gamba anteriore per tornare in piedi e alterna."
+  ],
+  "immagini": [
+   "Dumbbell_Lunges/0.jpg",
+   "Dumbbell_Lunges/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Rear_Lunge",
+  "nome": "Affondi indietro con manubri",
+  "nome_en": "Dumbbell Rear Lunge",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "In piedi, un manubrio per mano.",
+   "Fai un passo indietro e scendi finché il ginocchio posteriore sfiora il pavimento.",
+   "Torna in piedi spingendo sulla gamba anteriore e alterna."
+  ],
+  "immagini": [
+   "Dumbbell_Rear_Lunge/0.jpg",
+   "Dumbbell_Rear_Lunge/1.jpg"
+  ]
+ },
+ {
+  "id": "Split_Squat_with_Dumbbells",
+  "nome": "Split squat con manubri",
+  "nome_en": "Split Squat with Dumbbells",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Un piede avanti e uno indietro, un manubrio per mano.",
+   "Scendi in verticale finché il ginocchio posteriore sfiora il pavimento.",
+   "Risali e completa le ripetizioni prima di cambiare gamba."
+  ],
+  "immagini": [
+   "Split_Squat_with_Dumbbells/0.jpg",
+   "Split_Squat_with_Dumbbells/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Step_Ups",
+  "nome": "Step-up con manubri",
+  "nome_en": "Dumbbell Step Ups",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "manubri",
+    "rialzo"
+   ],
+   [
+    "manubri",
+    "panca"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Un manubrio per mano, di fronte a un box o a una panca.",
+   "Sali appoggiando un piede sopra e distendi la gamba fino a stare in piedi sul rialzo.",
+   "Scendi controllando il movimento e alterna le gambe."
+  ],
+  "immagini": [
+   "Dumbbell_Step_Ups/0.jpg",
+   "Dumbbell_Step_Ups/1.jpg"
+  ]
+ },
+ {
+  "id": "Stiff-Legged_Dumbbell_Deadlift",
+  "nome": "Stacco a gambe tese con manubri",
+  "nome_en": "Stiff-Legged Dumbbell Deadlift",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "lower-back"
+  ],
+  "istruzioni": [
+   "In piedi, manubri davanti alle cosce, ginocchia appena piegate.",
+   "Spingi indietro il bacino e scendi con la schiena dritta finché senti allungare i femorali.",
+   "Risali spingendo il bacino in avanti e stringendo i glutei."
+  ],
+  "immagini": [
+   "Stiff-Legged_Dumbbell_Deadlift/0.jpg",
+   "Stiff-Legged_Dumbbell_Deadlift/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Shrug",
+  "nome": "Scrollate con manubri",
+  "nome_en": "Dumbbell Shrug",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "trapezius"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, manubri lungo i fianchi.",
+   "Solleva le spalle verso le orecchie senza piegare i gomiti.",
+   "Tieni un secondo e scendi lentamente."
+  ],
+  "immagini": [
+   "Dumbbell_Shrug/0.jpg",
+   "Dumbbell_Shrug/1.jpg"
+  ]
+ },
+ {
+  "id": "Standing_Dumbbell_Calf_Raise",
+  "nome": "Calf raise con manubri",
+  "nome_en": "Standing Dumbbell Calf Raise",
+  "tipo": "forza",
+  "schema": "polpacci",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "calves"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, un manubrio per mano; meglio con le punte su un gradino.",
+   "Sali sulle punte il più in alto possibile.",
+   "Scendi lentamente fino a sentire allungare i polpacci."
+  ],
+  "immagini": [
+   "Standing_Dumbbell_Calf_Raise/0.jpg",
+   "Standing_Dumbbell_Calf_Raise/1.jpg"
+  ]
+ },
+ {
+  "id": "Dumbbell_Side_Bend",
+  "nome": "Flessioni laterali con manubrio",
+  "nome_en": "Dumbbell Side Bend",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, un manubrio in una mano lungo il fianco.",
+   "Piegati di lato verso il manubrio, poi risali contraendo il fianco opposto.",
+   "Completa le ripetizioni e cambia lato."
+  ],
+  "immagini": [
+   "Dumbbell_Side_Bend/0.jpg",
+   "Dumbbell_Side_Bend/1.jpg"
+  ]
+ },
+ {
+  "id": "One-Arm_Kettlebell_Swings",
+  "nome": "Swing con kettlebell a un braccio",
+  "nome_en": "One-Arm Kettlebell Swings",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "lower-back",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Kettlebell tra i piedi, piedi poco più larghi delle spalle.",
+   "Spingi indietro il bacino, porta il kettlebell tra le gambe, poi distendi le anche con forza.",
+   "Il kettlebell sale fino al petto grazie alla spinta delle anche, non delle braccia."
+  ],
+  "immagini": [
+   "One-Arm_Kettlebell_Swings/0.jpg",
+   "One-Arm_Kettlebell_Swings/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_One-Legged_Deadlift",
+  "nome": "Stacco su una gamba con kettlebell",
+  "nome_en": "Kettlebell One-Legged Deadlift",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ],
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "lower-back"
+  ],
+  "istruzioni": [
+   "In piedi su una gamba, kettlebell nella mano opposta.",
+   "Inclinati in avanti con la schiena dritta mentre l'altra gamba si alza dietro di te.",
+   "Torna in piedi stringendo il gluteo, poi cambia gamba."
+  ],
+  "immagini": [
+   "Kettlebell_One-Legged_Deadlift/0.jpg",
+   "Kettlebell_One-Legged_Deadlift/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_Turkish_Get-Up_Squat_style",
+  "nome": "Turkish get-up",
+  "nome_en": "Kettlebell Turkish Get-Up (Squat style)",
+  "tipo": "forza",
+  "schema": "total_body",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ],
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "abs",
+   "obliques",
+   "calves",
+   "hamstring",
+   "quadriceps",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Sdraiato, kettlebell a braccio teso sopra di te, ginocchio dello stesso lato piegato.",
+   "Senza mai piegare il braccio, sollevati sul gomito, poi sulla mano, porta la gamba sotto e alzati in piedi.",
+   "Ripercorri i passaggi al contrario per tornare a terra. Inizia con un peso leggero."
+  ],
+  "immagini": [
+   "Kettlebell_Turkish_Get-Up_Squat_style/0.jpg",
+   "Kettlebell_Turkish_Get-Up_Squat_style/1.jpg"
+  ]
+ },
+ {
+  "id": "One-Arm_Kettlebell_Row",
+  "nome": "Rematore con kettlebell",
+  "nome_en": "One-Arm Kettlebell Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps"
+  ],
+  "istruzioni": [
+   "Busto inclinato in avanti con la schiena dritta, kettlebell in una mano.",
+   "Tira il kettlebell verso il fianco, gomito vicino al corpo.",
+   "Scendi lentamente, poi cambia lato."
+  ],
+  "immagini": [
+   "One-Arm_Kettlebell_Row/0.jpg",
+   "One-Arm_Kettlebell_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "One-Arm_Kettlebell_Military_Press_To_The_Side",
+  "nome": "Lento con kettlebell a un braccio",
+  "nome_en": "One-Arm Kettlebell Military Press To The Side",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "triceps"
+  ],
+  "istruzioni": [
+   "Porta il kettlebell alla spalla con un clean, palmo verso l'interno.",
+   "Spingilo sopra la testa fino a braccio teso, seguendolo con lo sguardo.",
+   "Riportalo lentamente alla spalla, poi cambia lato."
+  ],
+  "immagini": [
+   "One-Arm_Kettlebell_Military_Press_To_The_Side/0.jpg",
+   "One-Arm_Kettlebell_Military_Press_To_The_Side/1.jpg"
+  ]
+ },
+ {
+  "id": "One-Arm_Kettlebell_Clean",
+  "nome": "Clean con kettlebell a un braccio",
+  "nome_en": "One-Arm Kettlebell Clean",
+  "tipo": "forza",
+  "schema": "total_body",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "lower-back",
+   "deltoids",
+   "trapezius"
+  ],
+  "istruzioni": [
+   "Kettlebell tra i piedi: piegati spingendo indietro il bacino e afferralo con una mano.",
+   "Distendi gambe e anche con forza e porta il kettlebell alla spalla ruotando il polso.",
+   "Riportalo a terra controllando, poi cambia lato."
+  ],
+  "immagini": [
+   "One-Arm_Kettlebell_Clean/0.jpg",
+   "One-Arm_Kettlebell_Clean/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_Windmill",
+  "nome": "Windmill con kettlebell",
+  "nome_en": "Kettlebell Windmill",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "hamstring",
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Kettlebell sopra la testa a braccio teso, piedi più larghi delle spalle.",
+   "Guardando il kettlebell, spingi il bacino di lato e scendi con la mano libera verso il piede opposto.",
+   "Risali con il braccio sempre teso, poi cambia lato."
+  ],
+  "immagini": [
+   "Kettlebell_Windmill/0.jpg",
+   "Kettlebell_Windmill/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_Thruster",
+  "nome": "Thruster con kettlebell",
+  "nome_en": "Kettlebell Thruster",
+  "tipo": "forza",
+  "schema": "total_body",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "quadriceps",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Kettlebell all'altezza delle spalle (uno o due).",
+   "Scendi nello squat con il petto alto.",
+   "Risalendo con forza, spingi il kettlebell sopra la testa nello stesso movimento."
+  ],
+  "immagini": [
+   "Kettlebell_Thruster/0.jpg",
+   "Kettlebell_Thruster/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_Sumo_High_Pull",
+  "nome": "Tirata alta sumo con kettlebell",
+  "nome_en": "Kettlebell Sumo High Pull",
+  "tipo": "forza",
+  "schema": "total_body",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "trapezius"
+  ],
+  "muscoli_secondari": [
+   "adductors",
+   "gluteal",
+   "hamstring",
+   "quadriceps",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Piedi molto larghi, kettlebell a terra tra i piedi, afferrato con due mani.",
+   "Distendi gambe e anche e tira il kettlebell fino al petto, gomiti alti.",
+   "Riabbassalo controllando."
+  ],
+  "immagini": [
+   "Kettlebell_Sumo_High_Pull/0.jpg",
+   "Kettlebell_Sumo_High_Pull/1.jpg"
+  ]
+ },
+ {
+  "id": "Kettlebell_Figure_8",
+  "nome": "Otto con kettlebell",
+  "nome_en": "Kettlebell Figure 8",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "kettlebell"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [
+   "hamstring",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Piedi larghi, busto inclinato con la schiena dritta, kettlebell in una mano.",
+   "Passa il kettlebell all'altra mano tra le gambe: la mano lo riceve da dietro.",
+   "Continua disegnando un otto attorno alle gambe."
+  ],
+  "immagini": [
+   "Kettlebell_Figure_8/0.jpg",
+   "Kettlebell_Figure_8/1.jpg"
+  ]
+ },
+ {
+  "id": "Barbell_Squat",
+  "nome": "Squat con bilanciere",
+  "nome_en": "Barbell Squat",
+  "tipo": "forza",
+  "schema": "squat",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring",
+   "lower-back"
+  ],
+  "istruzioni": [
+   "Bilanciere sulla parte alta della schiena (meglio partendo da un rack), piedi alla larghezza delle spalle.",
+   "Scendi spingendo indietro il bacino, petto alto, fino alle cosce parallele al pavimento.",
+   "Risali spingendo sui talloni."
+  ],
+  "immagini": [
+   "Barbell_Squat/0.jpg",
+   "Barbell_Squat/1.jpg"
+  ]
+ },
+ {
+  "id": "Barbell_Deadlift",
+  "nome": "Stacco da terra",
+  "nome_en": "Barbell Deadlift",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "lower-back"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "forearm",
+   "gluteal",
+   "hamstring",
+   "upper-back",
+   "quadriceps",
+   "trapezius"
+  ],
+  "istruzioni": [
+   "Bilanciere a terra sopra la metà del piede: afferralo appena fuori dalle gambe.",
+   "Schiena dritta e petto alto, solleva distendendo insieme gambe e anche, con il bilanciere vicino alle gambe.",
+   "Riportalo a terra con lo stesso percorso."
+  ],
+  "immagini": [
+   "Barbell_Deadlift/0.jpg",
+   "Barbell_Deadlift/1.jpg"
+  ]
+ },
+ {
+  "id": "Romanian_Deadlift",
+  "nome": "Stacco rumeno",
+  "nome_en": "Romanian Deadlift",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "lower-back"
+  ],
+  "istruzioni": [
+   "In piedi con il bilanciere davanti alle cosce, ginocchia appena piegate.",
+   "Spingi indietro il bacino e scendi con la schiena dritta fino a metà tibia.",
+   "Risali stringendo i glutei."
+  ],
+  "immagini": [
+   "Romanian_Deadlift/0.jpg",
+   "Romanian_Deadlift/1.jpg"
+  ]
+ },
+ {
+  "id": "Barbell_Bench_Press_-_Medium_Grip",
+  "nome": "Panca piana con bilanciere",
+  "nome_en": "Barbell Bench Press - Medium Grip",
+  "tipo": "forza",
+  "schema": "spinta_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "bilanciere",
+    "panca"
+   ]
+  ],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "deltoids",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla panca, presa poco più larga delle spalle.",
+   "Scendi con il bilanciere fino a sfiorare il petto, gomiti a circa 45°.",
+   "Spingi fino a braccia tese. Con carichi alti fatti assistere."
+  ],
+  "immagini": [
+   "Barbell_Bench_Press_-_Medium_Grip/0.jpg",
+   "Barbell_Bench_Press_-_Medium_Grip/1.jpg"
+  ]
+ },
+ {
+  "id": "Bent_Over_Barbell_Row",
+  "nome": "Rematore con bilanciere",
+  "nome_en": "Bent Over Barbell Row",
+  "tipo": "forza",
+  "schema": "trazione_orizzontale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "biceps",
+   "deltoids"
+  ],
+  "istruzioni": [
+   "Ginocchia leggermente piegate, busto inclinato in avanti con la schiena dritta.",
+   "Tira il bilanciere verso l'addome stringendo le scapole.",
+   "Scendi lentamente a braccia tese."
+  ],
+  "immagini": [
+   "Bent_Over_Barbell_Row/0.jpg",
+   "Bent_Over_Barbell_Row/1.jpg"
+  ]
+ },
+ {
+  "id": "Standing_Military_Press",
+  "nome": "Lento in piedi con bilanciere",
+  "nome_en": "Standing Military Press",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "triceps"
+  ],
+  "istruzioni": [
+   "In piedi, bilanciere all'altezza delle spalle, presa poco più larga delle spalle.",
+   "Spingi il bilanciere sopra la testa fino a braccia tese, addome contratto.",
+   "Scendi lentamente alle spalle."
+  ],
+  "immagini": [
+   "Standing_Military_Press/0.jpg",
+   "Standing_Military_Press/1.jpg"
+  ]
+ },
+ {
+  "id": "Barbell_Curl",
+  "nome": "Curl con bilanciere",
+  "nome_en": "Barbell Curl",
+  "tipo": "forza",
+  "schema": "braccia",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "biceps"
+  ],
+  "muscoli_secondari": [
+   "forearm"
+  ],
+  "istruzioni": [
+   "In piedi, bilanciere davanti alle cosce con i palmi in avanti.",
+   "Piega i gomiti portando il bilanciere verso le spalle, gomiti fermi.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Barbell_Curl/0.jpg",
+   "Barbell_Curl/1.jpg"
+  ]
+ },
+ {
+  "id": "Barbell_Lunge",
+  "nome": "Affondi con bilanciere",
+  "nome_en": "Barbell Lunge",
+  "tipo": "forza",
+  "schema": "affondo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "bilanciere"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "hamstring"
+  ],
+  "istruzioni": [
+   "Bilanciere sulla parte alta della schiena.",
+   "Fai un passo in avanti e scendi finché il ginocchio posteriore sfiora il pavimento.",
+   "Torna in piedi e alterna le gambe."
+  ],
+  "immagini": [
+   "Barbell_Lunge/0.jpg",
+   "Barbell_Lunge/1.jpg"
+  ]
+ },
+ {
+  "id": "Front_Plate_Raise",
+  "nome": "Alzata frontale con disco",
+  "nome_en": "Front Plate Raise",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "dischi"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, tieni un disco con due mani davanti alle cosce, braccia quasi tese.",
+   "Solleva il disco davanti a te fino all'altezza degli occhi.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Front_Plate_Raise/0.jpg",
+   "Front_Plate_Raise/1.jpg"
+  ]
+ },
+ {
+  "id": "Plate_Twist",
+  "nome": "Rotazioni del busto con disco",
+  "nome_en": "Plate Twist",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "dischi"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Seduto, busto inclinato indietro, gambe sollevate e leggermente piegate, disco davanti all'addome.",
+   "Ruota il busto portando il disco da un lato.",
+   "Ruota dall'altro lato con un movimento controllato."
+  ],
+  "immagini": [
+   "Plate_Twist/0.jpg",
+   "Plate_Twist/1.jpg"
+  ]
+ },
+ {
+  "id": "Weighted_Crunches",
+  "nome": "Crunch con sovraccarico",
+  "nome_en": "Weighted Crunches",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "palla_medica"
+   ],
+   [
+    "dischi"
+   ],
+   [
+    "manubri"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, ginocchia piegate, tieni un peso sul petto.",
+   "Solleva le spalle da terra contraendo l'addome.",
+   "Torna giù lentamente."
+  ],
+  "immagini": [
+   "Weighted_Crunches/0.jpg",
+   "Weighted_Crunches/1.jpg"
+  ]
+ },
+ {
+  "id": "Band_Pull_Apart",
+  "nome": "Pull apart con elastico",
+  "nome_en": "Band Pull Apart",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "upper-back",
+   "trapezius"
+  ],
+  "istruzioni": [
+   "In piedi, tieni l'elastico davanti a te a braccia tese, all'altezza delle spalle.",
+   "Apri le braccia tirando l'elastico fino al petto, stringendo le scapole.",
+   "Torna lentamente alla posizione iniziale."
+  ],
+  "immagini": [
+   "Band_Pull_Apart/0.jpg",
+   "Band_Pull_Apart/1.jpg"
+  ]
+ },
+ {
+  "id": "External_Rotation_with_Band",
+  "nome": "Extrarotazione con elastico",
+  "nome_en": "External Rotation with Band",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Fissa l'elastico all'altezza del gomito e mettiti di fianco.",
+   "Con il gomito piegato a 90° e fermo contro il fianco, ruota l'avambraccio verso l'esterno.",
+   "Torna lentamente, poi cambia lato. Utile per proteggere le spalle, anche nel nuoto."
+  ],
+  "immagini": [
+   "External_Rotation_with_Band/0.jpg",
+   "External_Rotation_with_Band/1.jpg"
+  ]
+ },
+ {
+  "id": "Lateral_Raise_-_With_Bands",
+  "nome": "Alzate laterali con elastico",
+  "nome_en": "Lateral Raise - With Bands",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi sull'elastico, impugnature ai lati delle cosce.",
+   "Solleva le braccia di lato fino all'altezza delle spalle, gomiti leggermente piegati.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Lateral_Raise_-_With_Bands/0.jpg",
+   "Lateral_Raise_-_With_Bands/1.jpg"
+  ]
+ },
+ {
+  "id": "Shoulder_Press_-_With_Bands",
+  "nome": "Lento avanti con elastico",
+  "nome_en": "Shoulder Press - With Bands",
+  "tipo": "forza",
+  "schema": "spinta_verticale",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "triceps"
+  ],
+  "istruzioni": [
+   "In piedi sull'elastico, impugnature all'altezza delle spalle, palmi in avanti.",
+   "Spingi sopra la testa fino a braccia tese.",
+   "Scendi lentamente."
+  ],
+  "immagini": [
+   "Shoulder_Press_-_With_Bands/0.jpg",
+   "Shoulder_Press_-_With_Bands/1.jpg"
+  ]
+ },
+ {
+  "id": "Back_Flyes_-_With_Bands",
+  "nome": "Alzate posteriori con elastico",
+  "nome_en": "Back Flyes - With Bands",
+  "tipo": "forza",
+  "schema": "spalle",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "elastici"
+   ]
+  ],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "upper-back",
+   "triceps"
+  ],
+  "istruzioni": [
+   "Fissa l'elastico davanti a te all'altezza delle spalle e afferralo a braccia tese.",
+   "Apri le braccia di lato tenendole tese, stringendo le scapole.",
+   "Torna lentamente."
+  ],
+  "immagini": [
+   "Back_Flyes_-_With_Bands/0.jpg",
+   "Back_Flyes_-_With_Bands/1.jpg"
+  ]
+ },
+ {
+  "id": "Overhead_Slam",
+  "nome": "Slam con palla medica",
+  "nome_en": "Overhead Slam",
+  "tipo": "forza",
+  "schema": "total_body",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "palla_medica"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, palla medica tenuta con due mani.",
+   "Portala sopra la testa distendendo tutto il corpo.",
+   "Lanciala con forza a terra davanti a te e riprendila. Usa una palla che non rimbalza."
+  ],
+  "immagini": [
+   "Overhead_Slam/0.jpg",
+   "Overhead_Slam/1.jpg"
+  ]
+ },
+ {
+  "id": "Ball_Leg_Curl",
+  "nome": "Leg curl su fitball",
+  "nome_en": "Ball Leg Curl",
+  "tipo": "forza",
+  "schema": "cerniera",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "fitball"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla schiena, talloni sulla fitball.",
+   "Solleva il bacino e tira la palla verso i glutei piegando le ginocchia.",
+   "Distendi lentamente le gambe tenendo il bacino sollevato."
+  ],
+  "immagini": [
+   "Ball_Leg_Curl/0.jpg",
+   "Ball_Leg_Curl/1.jpg"
+  ]
+ },
+ {
+  "id": "Exercise_Ball_Pull-In",
+  "nome": "Ginocchia al petto su fitball",
+  "nome_en": "Exercise Ball Pull-In",
+  "tipo": "forza",
+  "schema": "core",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "fitball"
+   ]
+  ],
+  "muscoli": [
+   "abs",
+   "obliques"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In posizione di piegamento con le tibie appoggiate sulla fitball.",
+   "Porta le ginocchia verso il petto facendo rotolare la palla.",
+   "Distendi le gambe per tornare alla posizione iniziale."
+  ],
+  "immagini": [
+   "Exercise_Ball_Pull-In/0.jpg",
+   "Exercise_Ball_Pull-In/1.jpg"
+  ]
+ },
+ {
+  "id": "Worlds_Greatest_Stretch",
+  "nome": "World's greatest stretch",
+  "nome_en": "World's Greatest Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "intermedio",
+  "attrezzi": [],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves",
+   "gluteal",
+   "quadriceps"
+  ],
+  "istruzioni": [
+   "Fai un affondo in avanti con il ginocchio posteriore vicino a terra e resta 10-20 secondi.",
+   "Appoggia a terra la mano dal lato della gamba anteriore e ruota il busto portando l'altro braccio verso il soffitto.",
+   "Infine distendi la gamba anteriore portando il bacino indietro per allungare i femorali, poi cambia lato."
+  ],
+  "immagini": [
+   "Worlds_Greatest_Stretch/0.jpg",
+   "Worlds_Greatest_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Cat_Stretch",
+  "nome": "Allungamento del gatto",
+  "nome_en": "Cat Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "lower-back"
+  ],
+  "muscoli_secondari": [
+   "upper-back",
+   "trapezius"
+  ],
+  "istruzioni": [
+   "A quattro zampe, mani sotto le spalle e ginocchia sotto le anche.",
+   "Porta dentro l'addome e incurva la schiena verso l'alto, lasciando cadere la testa.",
+   "Tieni 15 secondi, poi rilassa."
+  ],
+  "immagini": [
+   "Cat_Stretch/0.jpg",
+   "Cat_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Childs_Pose",
+  "nome": "Posizione del bambino",
+  "nome_en": "Child's Pose",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "lower-back"
+  ],
+  "muscoli_secondari": [
+   "gluteal",
+   "upper-back"
+  ],
+  "istruzioni": [
+   "In ginocchio, siediti sui talloni.",
+   "Piegati in avanti allungando le braccia a terra davanti a te, fronte verso il pavimento.",
+   "Respira lentamente e resta 20-30 secondi."
+  ],
+  "immagini": [
+   "Childs_Pose/0.jpg",
+   "Childs_Pose/1.jpg"
+  ]
+ },
+ {
+  "id": "Kneeling_Hip_Flexor",
+  "nome": "Allungamento dei flessori dell'anca",
+  "nome_en": "Kneeling Hip Flexor",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In ginocchio su un tappetino, porta un piede avanti con il ginocchio a 90°.",
+   "Sposta il peso in avanti finché senti allungare la parte anteriore dell'anca della gamba dietro.",
+   "Tieni 15-30 secondi, poi cambia lato."
+  ],
+  "immagini": [
+   "Kneeling_Hip_Flexor/0.jpg",
+   "Kneeling_Hip_Flexor/1.jpg"
+  ]
+ },
+ {
+  "id": "Seated_Floor_Hamstring_Stretch",
+  "nome": "Allungamento dei femorali da seduto",
+  "nome_en": "Seated Floor Hamstring Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves"
+  ],
+  "istruzioni": [
+   "Seduto, una gamba distesa e il piede dell'altra contro l'interno coscia.",
+   "Piegati in avanti dalle anche verso la caviglia finché senti allungare il retro della coscia.",
+   "Tieni 15-30 secondi, poi cambia lato."
+  ],
+  "immagini": [
+   "Seated_Floor_Hamstring_Stretch/0.jpg",
+   "Seated_Floor_Hamstring_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Calf_Stretch_Hands_Against_Wall",
+  "nome": "Allungamento dei polpacci al muro",
+  "nome_en": "Calf Stretch Hands Against Wall",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "calves"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Mani al muro, un piede avanti e uno indietro.",
+   "Tieni il tallone posteriore a terra e la gamba tesa, spingendo il bacino verso il muro.",
+   "Tieni 15-30 secondi, poi cambia lato."
+  ],
+  "immagini": [
+   "Calf_Stretch_Hands_Against_Wall/0.jpg",
+   "Calf_Stretch_Hands_Against_Wall/1.jpg"
+  ]
+ },
+ {
+  "id": "Standing_Soleus_And_Achilles_Stretch",
+  "nome": "Allungamento di soleo e tendine d'Achille",
+  "nome_en": "Standing Soleus And Achilles Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "calves"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "In piedi, un piede avanti e uno indietro, entrambi i talloni a terra.",
+   "Piega entrambe le ginocchia spostando il peso sulla gamba posteriore.",
+   "Senti allungare la parte bassa del polpaccio: tieni 15-30 secondi e cambia lato."
+  ],
+  "immagini": [
+   "Standing_Soleus_And_Achilles_Stretch/0.jpg",
+   "Standing_Soleus_And_Achilles_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "On_Your_Side_Quad_Stretch",
+  "nome": "Allungamento dei quadricipiti sul fianco",
+  "nome_en": "On Your Side Quad Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sul fianco, con la gamba di sotto piegata davanti a te per stabilità.",
+   "Piega la gamba di sopra e afferra il piede con la mano.",
+   "Spingi l'anca in avanti e il piede contro la mano: tieni 15-30 secondi e cambia lato."
+  ],
+  "immagini": [
+   "On_Your_Side_Quad_Stretch/0.jpg",
+   "On_Your_Side_Quad_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Runners_Stretch",
+  "nome": "Allungamento del corridore",
+  "nome_en": "Runner's Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [
+   "calves"
+  ],
+  "istruzioni": [
+   "Da in piedi porta una gamba indietro e scendi con le mani a terra ai lati del piede anteriore.",
+   "Tieni il tallone anteriore a terra.",
+   "Per aumentare l'allungamento solleva il bacino distendendo la gamba anteriore."
+  ],
+  "immagini": [
+   "Runners_Stretch/0.jpg",
+   "Runners_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Hip_Circles_prone",
+  "nome": "Circonduzioni dell'anca a quattro zampe",
+  "nome_en": "Hip Circles (prone)",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [
+   "adductors"
+  ],
+  "istruzioni": [
+   "A quattro zampe, solleva da terra un ginocchio piegato.",
+   "Disegna con il ginocchio un cerchio ampio e lento.",
+   "Fai le ripetizioni in entrambe le direzioni, poi cambia gamba."
+  ],
+  "immagini": [
+   "Hip_Circles_prone/0.jpg",
+   "Hip_Circles_prone/1.jpg"
+  ]
+ },
+ {
+  "id": "Pelvic_Tilt_Into_Bridge",
+  "nome": "Retroversione del bacino e ponte",
+  "nome_en": "Pelvic Tilt Into Bridge",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "intermedio",
+  "attrezzi": [],
+  "muscoli": [
+   "lower-back"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sdraiato sulla schiena, piedi a terra con i talloni sotto le ginocchia.",
+   "Solleva solo il coccige portando dentro l'addome, per allungare la zona lombare.",
+   "Poi solleva tutta la colonna, vertebra per vertebra, tranne il collo, e scendi lentamente."
+  ],
+  "immagini": [
+   "Pelvic_Tilt_Into_Bridge/0.jpg",
+   "Pelvic_Tilt_Into_Bridge/1.jpg"
+  ]
+ },
+ {
+  "id": "Spinal_Stretch",
+  "nome": "Torsione della colonna da seduto",
+  "nome_en": "Spinal Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "lower-back",
+   "neck",
+   "trapezius"
+  ],
+  "istruzioni": [
+   "Seduto su una sedia con la schiena dritta, mani intrecciate dietro la testa.",
+   "Ruota il busto da un lato il più possibile, poi dall'altro.",
+   "Ripeti 3 volte per lato con movimenti lenti."
+  ],
+  "immagini": [
+   "Spinal_Stretch/0.jpg",
+   "Spinal_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Upper_Back_Stretch",
+  "nome": "Allungamento della parte alta della schiena",
+  "nome_en": "Upper Back Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Intreccia le dita con i pollici verso il basso.",
+   "Spingi le mani in avanti arrotondando le spalle.",
+   "Tieni 15-20 secondi."
+  ],
+  "immagini": [
+   "Upper_Back_Stretch/0.jpg",
+   "Upper_Back_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Shoulder_Stretch",
+  "nome": "Allungamento della spalla",
+  "nome_en": "Shoulder Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Porta un braccio teso davanti al corpo, verso la spalla opposta.",
+   "Con l'altra mano tienilo vicino al petto.",
+   "Tieni 15-20 secondi, poi cambia braccio."
+  ],
+  "immagini": [
+   "Shoulder_Stretch/0.jpg",
+   "Shoulder_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Triceps_Stretch",
+  "nome": "Allungamento dei tricipiti",
+  "nome_en": "Triceps Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "triceps"
+  ],
+  "muscoli_secondari": [
+   "upper-back"
+  ],
+  "istruzioni": [
+   "Porta una mano dietro la testa.",
+   "Con l'altra mano afferra il gomito e tiralo delicatamente.",
+   "Tieni 10-20 secondi, poi cambia lato."
+  ],
+  "immagini": [
+   "Triceps_Stretch/0.jpg",
+   "Triceps_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Dynamic_Chest_Stretch",
+  "nome": "Apertura dinamica del petto",
+  "nome_en": "Dynamic Chest Stretch",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "chest"
+  ],
+  "muscoli_secondari": [
+   "upper-back"
+  ],
+  "istruzioni": [
+   "In piedi, braccia tese davanti a te con le mani unite.",
+   "Apri le braccia indietro più che puoi, tenendole tese, e richiudile.",
+   "Ripeti 5-10 volte aumentando gradualmente la velocità."
+  ],
+  "immagini": [
+   "Dynamic_Chest_Stretch/0.jpg",
+   "Dynamic_Chest_Stretch/1.jpg"
+  ]
+ },
+ {
+  "id": "Arm_Circles",
+  "nome": "Circonduzioni delle braccia",
+  "nome_en": "Arm Circles",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "deltoids"
+  ],
+  "muscoli_secondari": [
+   "trapezius"
+  ],
+  "istruzioni": [
+   "In piedi, braccia aperte di lato all'altezza delle spalle.",
+   "Disegna piccoli cerchi, allargandoli man mano.",
+   "Ripeti nell'altra direzione."
+  ],
+  "immagini": [
+   "Arm_Circles/0.jpg",
+   "Arm_Circles/1.jpg"
+  ]
+ },
+ {
+  "id": "Ankle_Circles",
+  "nome": "Circonduzioni delle caviglie",
+  "nome_en": "Ankle Circles",
+  "tipo": "mobilita",
+  "schema": "mobilita",
+  "livello": "principiante",
+  "attrezzi": [],
+  "muscoli": [
+   "calves"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Seduto o in piedi, solleva un piede da terra.",
+   "Ruota lentamente la caviglia disegnando ampi cerchi.",
+   "Ripeti nell'altra direzione e cambia piede."
+  ],
+  "immagini": [
+   "Ankle_Circles/0.jpg",
+   "Ankle_Circles/1.jpg"
+  ]
+ },
+ {
+  "id": "Quadriceps-SMR",
+  "nome": "Rullo sui quadricipiti",
+  "nome_en": "Quadriceps-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "quadriceps"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "A pancia in giù, appoggiato sugli avambracci, con il rullo sotto le cosce.",
+   "Fai scorrere il rullo dall'anca al ginocchio.",
+   "Fermati 10-20 secondi sui punti più tesi."
+  ],
+  "immagini": [
+   "Quadriceps-SMR/0.jpg",
+   "Quadriceps-SMR/1.jpg"
+  ]
+ },
+ {
+  "id": "Calves-SMR",
+  "nome": "Rullo sui polpacci",
+  "nome_en": "Calves-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "calves"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Seduto, rullo sotto i polpacci e mani a terra dietro di te.",
+   "Solleva il bacino e fai scorrere il rullo dalla caviglia al ginocchio.",
+   "Per aumentare la pressione accavalla una gamba sull'altra."
+  ],
+  "immagini": [
+   "Calves-SMR/0.jpg",
+   "Calves-SMR/1.jpg"
+  ]
+ },
+ {
+  "id": "Iliotibial_Tract-SMR",
+  "nome": "Rullo sulla bandelletta ileotibiale",
+  "nome_en": "Iliotibial Tract-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Sul fianco, rullo sotto la parte esterna della coscia, appoggiato sull'avambraccio.",
+   "Fai scorrere il rullo dall'anca al ginocchio.",
+   "Usa l'altra gamba a terra per regolare la pressione, poi cambia lato."
+  ],
+  "immagini": [
+   "Iliotibial_Tract-SMR/0.jpg",
+   "Iliotibial_Tract-SMR/1.jpg"
+  ]
+ },
+ {
+  "id": "Hamstring-SMR",
+  "nome": "Rullo sui femorali",
+  "nome_en": "Hamstring-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "principiante",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "hamstring"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Seduto, rullo sotto il retro delle cosce, mani a terra dietro di te.",
+   "Solleva il bacino e fai scorrere il rullo dal gluteo al ginocchio.",
+   "Fermati sui punti più tesi."
+  ],
+  "immagini": [
+   "Hamstring-SMR/0.jpg",
+   "Hamstring-SMR/1.jpg"
+  ]
+ },
+ {
+  "id": "Piriformis-SMR",
+  "nome": "Rullo sui glutei",
+  "nome_en": "Piriformis-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "gluteal"
+  ],
+  "muscoli_secondari": [],
+  "istruzioni": [
+   "Seduto sul rullo, accavalla una caviglia sul ginocchio opposto.",
+   "Inclinati verso il lato della gamba accavallata e fai scorrere il rullo sul gluteo.",
+   "Poi cambia lato."
+  ],
+  "immagini": [
+   "Piriformis-SMR/0.jpg",
+   "Piriformis-SMR/1.jpg"
+  ]
+ },
+ {
+  "id": "Rhomboids-SMR",
+  "nome": "Rullo sulla parte alta della schiena",
+  "nome_en": "Rhomboids-SMR",
+  "tipo": "mobilita",
+  "schema": "rullo",
+  "livello": "intermedio",
+  "attrezzi": [
+   [
+    "rullo"
+   ]
+  ],
+  "muscoli": [
+   "upper-back"
+  ],
+  "muscoli_secondari": [
+   "trapezius"
+  ],
+  "istruzioni": [
+   "Sdraiato sulla schiena, rullo sotto la parte alta della schiena e braccia incrociate davanti.",
+   "Solleva il bacino e fai scorrere il rullo tra le scapole.",
+   "Sposta il peso un po' a destra e un po' a sinistra."
+  ],
+  "immagini": [
+   "Rhomboids-SMR/0.jpg",
+   "Rhomboids-SMR/1.jpg"
+  ]
+ }
+]

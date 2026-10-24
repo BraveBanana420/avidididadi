@@ -1,0 +1,499 @@
+import 'dart:convert';
+
+import 'carico.dart';
+import 'csv.dart';
+import 'feedback.dart';
+import 'models.dart';
+import 'obiettivo.dart';
+import 'recupero.dart';
+
+/// Assistente facoltativo: un modello linguistico scelto dall'utente (Claude,
+/// GPT, Gemini o Ollama sul proprio PC) legge un riassunto degli allenamenti
+/// e può proporre modifiche al piano, che si applicano solo dopo l'approvazione.
+
+enum Fornitore { claude, openai, gemini, ollama }
+
+const nomiFornitori = {
+  Fornitore.claude: 'Claude (Anthropic)',
+  Fornitore.openai: 'GPT (OpenAI)',
+  Fornitore.gemini: 'Gemini (Google)',
+  Fornitore.ollama: 'Ollama sul tuo PC',
+};
+
+const modelliPredefiniti = {
+  Fornitore.claude: 'claude-sonnet-5-5',
+  Fornitore.openai: 'gpt-5-mini',
+  Fornitore.gemini: 'gemini-2.5-flash',
+  Fornitore.ollama: 'llama3.1',
+};
+
+const descrizioniFornitori = {
+  Fornitore.claude:
+      'Serve una chiave API da console.anthropic.com (a consumo). '
+      "L'abbonamento Claude Pro non vale per le app esterne.",
+  Fornitore.openai:
+      'Serve una chiave API da platform.openai.com (a consumo). '
+      "L'abbonamento ChatGPT Plus non vale per le app esterne.",
+  Fornitore.gemini:
+      'Serve una chiave API da aistudio.google.com: c\'è un piano gratuito '
+      'con limiti giornalieri.',
+  Fornitore.ollama:
+      'Gratis e privato: il modello gira sul tuo PC, nella stessa rete Wi-Fi. '
+      'Nessuna chiave. Sul PC avvia Ollama con OLLAMA_HOST=0.0.0.0.',
+};
+
+bool serveChiave(Fornitore f) => f != Fornitore.ollama;
+
+enum StatoConnessione { daVerificare, inVerifica, connesso, errore }
+
+const configAssistenteHeader = ['chiave', 'valore'];
+
+/// Impostazioni dell'assistente (la chiave API no: sta nell'archivio sicuro).
+class ConfigAssistente {
+  Fornitore fornitore = Fornitore.gemini;
+  Map<Fornitore, String> modelli = {};
+  String urlOllama = 'http://192.168.1.10:11434';
+  Set<Fornitore> consensi = {}; // fornitori a cui l'utente ha detto sì
+  bool datiPersonali = false; // età, sesso, peso nel riassunto
+  // Assistente nell'app dell'utente (Claude, ChatGPT…), senza chiave API.
+  bool esterno = false;
+  String appEsterna = '';
+  String codiceEsterno = ''; // lega le risposte a questo telefono
+  DateTime? ultimoInvioEsterno;
+
+  String get modello => (modelli[fornitore] ?? '').isEmpty
+      ? modelliPredefiniti[fornitore]!
+      : modelli[fornitore]!;
+
+  bool get consenso => consensi.contains(fornitore);
+
+  List<List<String>> toRows() => [
+    ['fornitore', fornitore.name],
+    for (final e in modelli.entries) ['modello_${e.key.name}', e.value],
+    ['url_ollama', urlOllama],
+    ['consensi', consensi.map((f) => f.name).join(',')],
+    ['dati_personali', datiPersonali ? 'si' : 'no'],
+    ['esterno', esterno ? 'si' : ''],
+    ['app_esterna', appEsterna],
+    ['codice_esterno', codiceEsterno],
+    ['ultimo_invio_esterno', ultimoInvioEsterno?.toIso8601String() ?? ''],
+  ];
+
+  static ConfigAssistente da(Tabella? t) {
+    final c = ConfigAssistente();
+    if (t == null) return c;
+    final m = {for (final r in t.righe) t.v(r, 'chiave'): t.v(r, 'valore')};
+    Fornitore? perNome(String n) =>
+        Fornitore.values.where((f) => f.name == n).firstOrNull;
+    c.fornitore = perNome(m['fornitore'] ?? '') ?? c.fornitore;
+    for (final f in Fornitore.values) {
+      final v = m['modello_${f.name}'] ?? '';
+      if (v.isNotEmpty) c.modelli[f] = v;
+    }
+    if ((m['url_ollama'] ?? '').isNotEmpty) c.urlOllama = m['url_ollama']!;
+    c.consensi = {
+      for (final n in (m['consensi'] ?? '').split(',')) ?perNome(n.trim()),
+    };
+    c.datiPersonali = m['dati_personali'] == 'si';
+    c.appEsterna = m['app_esterna'] ?? '';
+    c.codiceEsterno = m['codice_esterno'] ?? '';
+    // Collegato solo se c'è anche il codice.
+    c.esterno = m['esterno'] == 'si' && c.codiceEsterno.isNotEmpty;
+    c.ultimoInvioEsterno = DateTime.tryParse(m['ultimo_invio_esterno'] ?? '');
+    return c;
+  }
+}
+
+class MessaggioChat {
+  final bool utente;
+  final String testo;
+  final List<Modifica>? proposta; // solo nelle risposte dell'assistente
+  bool applicata = false;
+  MessaggioChat(this.utente, this.testo, {this.proposta});
+}
+
+// ---------------------------------------------------------------------------
+// Riassunto dei dati inviati
+
+String _gg(DateTime d) =>
+    '${isoData(d)} ${giorniSettimana[d.weekday - 1].substring(0, 3).toLowerCase()}';
+
+/// Riassunto compatto dei dati di allenamento da inviare al modello. Niente
+/// nome, foto o identificativi; età, sesso e peso solo se [personali] non è null.
+String contestoAllenamento({
+  required DateTime oggi,
+  String? personali,
+  Obiettivo? gara,
+  required Zone zone,
+  int? passoCritico,
+  required List<Sessione> sessioni,
+  required List<PianoRiga> piano,
+  required List<FeedbackSessione> feedback,
+  required List<GiornoRecupero> recupero,
+  Set<String> sportGenerati = const {},
+}) {
+  final o = soloData(oggi);
+  final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
+  if (personali != null && personali.isNotEmpty) {
+    b.writeln('Atleta: $personali');
+  }
+  if (gara == null) {
+    b.writeln('Gara obiettivo: nessuna');
+  } else {
+    b.writeln(
+      'Gara obiettivo: ${gara.nome} il ${isoData(gara.data)} '
+      '(tra ${gara.settimaneMancanti(o)} settimane, fase ${nomiFasi[gara.fase(o)]})',
+    );
+  }
+  b.writeln(
+    'FC max ${zone.fcMax}${zone.fcMaxStimata ? ' (stimata)' : ''}'
+    '${zone.fcRiposo > 0 ? ', FC a riposo ${zone.fcRiposo}' : ''}. Zone: '
+    '${[for (var z = 1; z <= 5; z++) 'Z$z ${zone.zona(z).$1}-${zone.zona(z).$2}'].join(', ')}',
+  );
+  if (passoCritico != null) {
+    b.writeln('Passo critico nuoto: ${fmtPasso100(passoCritico)}');
+  }
+  if (sportGenerati.isNotEmpty) {
+    b.writeln('Sedute generate dall\'app: ${sportGenerati.join(', ')}, Forza');
+  }
+
+  int? rpe(Sessione s) {
+    for (final f in feedback) {
+      if (f.di(s.data, s.sport)) return f.fatica;
+    }
+    return null;
+  }
+
+  final perGiorno = caricoPerGiorno(sessioni, zone, rpeDi: rpe);
+  final acwr = rapportoAcutoCronico(perGiorno, o);
+  if (acwr != null) {
+    b.writeln(
+      'Carico ultimi 7 giorni / media 4 settimane: ${acwr.toStringAsFixed(2)} '
+      '(${descrizioniCarico[statoCarico(acwr)]})',
+    );
+  }
+
+  final recenti =
+      sessioni
+          .where((s) => !s.data.isAfter(o) && o.difference(s.data).inDays < 28)
+          .toList()
+        ..sort((a, b) => a.data.compareTo(b.data));
+  b.writeln('\nSessioni svolte (ultime 4 settimane):');
+  if (recenti.isEmpty) b.writeln('- nessuna');
+  for (final s in recenti.skip(recenti.length > 40 ? recenti.length - 40 : 0)) {
+    final f = feedback.where((x) => x.di(s.data, s.sport)).firstOrNull;
+    b.writeln(
+      [
+        '- ${_gg(s.data)} ${s.sport}',
+        if (s.tipo.isNotEmpty) s.tipo,
+        '${s.durataMin} min',
+        if (s.distanzaKm > 0) '${fmtNum(s.distanzaKm)} km',
+        if (s.fcMedia > 0) 'FC media ${s.fcMedia}',
+        if (f != null) 'fatica ${f.fatica}/10',
+        if (f != null && !f.completata) 'non completata',
+        if (f != null && f.dolore) 'DOLORE',
+        if (f != null && f.note.isNotEmpty) 'note: "${f.note}"',
+      ].join(', '),
+    );
+  }
+
+  final rec = recupero
+      .where((g) => !g.data.isAfter(o) && o.difference(g.data).inDays < 7)
+      .toList();
+  if (rec.isNotEmpty) {
+    b.writeln('\nRecupero (ultimi 7 giorni):');
+    for (final g in rec) {
+      b.writeln(
+        [
+          '- ${_gg(g.data)}',
+          if (g.sonnoMin > 0) 'sonno ${g.sonnoMin ~/ 60}h${g.sonnoMin % 60}',
+          if (g.fcRiposo > 0) 'FC riposo ${g.fcRiposo}',
+          if (g.hrv > 0) 'HRV ${g.hrv.round()} ms',
+        ].join(', '),
+      );
+    }
+  }
+
+  final prossimi =
+      piano
+          .where((r) => !r.data.isBefore(o) && r.data.difference(o).inDays < 14)
+          .toList()
+        ..sort((a, b) => a.data.compareTo(b.data));
+  b.writeln('\nPiano dei prossimi 14 giorni:');
+  if (prossimi.isEmpty) b.writeln('- nessuna seduta');
+  for (final r in prossimi) {
+    b.writeln(
+      [
+        '- ${_gg(r.data)} ${r.sport}',
+        if (r.tipo.isNotEmpty) r.tipo,
+        '${r.durataMin} min',
+        r.fascia.toLowerCase(),
+      ].join(', '),
+    );
+  }
+  return b.toString().trim();
+}
+
+/// Istruzioni di sistema: ruolo, sicurezza e formato delle proposte.
+String istruzioniAssistente(String contesto) =>
+    '''Sei l'allenatore personale dell'utente nell'app Avidididadi (corsa, nuoto, bici, forza).
+Rispondi in italiano, in modo breve e concreto, basandoti sui dati qui sotto.
+Non fare diagnosi mediche: in caso di dolore che continua, consiglia di fermarsi e sentire un medico.
+
+Se proponi di cambiare il piano, aggiungi IN FONDO alla risposta un blocco così (solo JSON valido dentro):
+<proposta>
+{"modifiche": [
+  {"azione": "cambia", "data": "AAAA-MM-GG", "sport": "Corsa", "durata_min": 40, "tipo": "Lento", "motivo": "..."},
+  {"azione": "sposta", "data": "AAAA-MM-GG", "sport": "Forza", "nuova_data": "AAAA-MM-GG", "motivo": "..."},
+  {"azione": "rimuovi", "data": "AAAA-MM-GG", "sport": "Bici", "motivo": "..."},
+  {"azione": "aggiungi", "data": "AAAA-MM-GG", "sport": "Nuoto", "durata_min": 45, "tipo": "Tecnica", "fascia": "Mattina", "motivo": "..."}
+]}
+</proposta>
+Regole per le proposte: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità (stretching, buona per recuperare); tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi; nuoto: Tecnica, Soglia; bici: Uscita, Intervalli, Uscita lunga; fasce: Mattina, Pranzo, Pomeriggio, Sera.
+Ogni settimana deve avere almeno un giorno di riposo e i minuti totali non possono crescere più del 10%. L'utente vedrà la proposta e deciderà se applicarla.
+Se non serve cambiare il piano, non aggiungere il blocco.
+
+DATI DELL'UTENTE
+$contesto''';
+
+// ---------------------------------------------------------------------------
+// Proposte di modifica
+
+enum Azione { cambia, sposta, rimuovi, aggiungi }
+
+class Modifica {
+  final Azione azione;
+  final DateTime data;
+  final String sport;
+  final DateTime? nuovaData;
+  final int? durataMin;
+  final String tipo;
+  final String fascia;
+  final String motivo;
+  const Modifica({
+    required this.azione,
+    required this.data,
+    required this.sport,
+    this.nuovaData,
+    this.durataMin,
+    this.tipo = '',
+    this.fascia = '',
+    this.motivo = '',
+  });
+
+  static Modifica? da(Map<String, dynamic> m) {
+    final azione = Azione.values
+        .where((a) => a.name == '${m['azione']}'.toLowerCase().trim())
+        .firstOrNull;
+    final data = parseData('${m['data'] ?? ''}');
+    final sport = normSport('${m['sport'] ?? ''}');
+    if (azione == null || data == null || sport.isEmpty) return null;
+    final durata = m['durata_min'];
+    return Modifica(
+      azione: azione,
+      data: data,
+      sport: sport,
+      nuovaData: parseData('${m['nuova_data'] ?? ''}'),
+      durataMin: durata is num ? durata.round() : int.tryParse('$durata'),
+      tipo: '${m['tipo'] ?? ''}'.trim(),
+      fascia: '${m['fascia'] ?? ''}'.trim(),
+      motivo: '${m['motivo'] ?? ''}'.trim(),
+    );
+  }
+}
+
+final _blocco = RegExp(r'<proposta>([\s\S]*?)</proposta>');
+final _json = RegExp(r'```(?:json)?\s*(\{[\s\S]*?"modifiche"[\s\S]*?\})\s*```');
+
+/// Separa il testo della risposta dalla proposta (null se non c'è o non è
+/// leggibile).
+(String, List<Modifica>?) estraiProposta(String risposta) {
+  final m = _blocco.firstMatch(risposta) ?? _json.firstMatch(risposta);
+  if (m == null) return (risposta.trim(), null);
+  final testo = risposta.replaceRange(m.start, m.end, '').trim();
+  try {
+    final j = jsonDecode(m.group(1)!.trim());
+    final lista = j is Map ? j['modifiche'] : null;
+    if (lista is! List) return (testo, null);
+    final modifiche = [
+      for (final x in lista)
+        if (x is Map<String, dynamic>) ?Modifica.da(x),
+    ];
+    return (testo, modifiche.isEmpty ? null : modifiche);
+  } on FormatException {
+    return (testo, null);
+  }
+}
+
+const _sportPiano = {'Corsa', 'Nuoto', 'Bici', 'Forza', 'Mobilità'};
+
+/// Esito dei controlli: le modifiche accettate, quelle scartate con il
+/// motivo e il piano che risulterebbe.
+class EsitoProposta {
+  final List<Modifica> accettate;
+  final List<(Modifica, String)> scartate;
+  final List<PianoRiga> piano;
+  const EsitoProposta(this.accettate, this.scartate, this.piano);
+}
+
+PianoRiga _copia(
+  PianoRiga r, {
+  DateTime? data,
+  int? durata,
+  String? tipo,
+  String? fascia,
+  String? note,
+}) => PianoRiga(
+  data: data ?? r.data,
+  fascia: fascia ?? r.fascia,
+  sport: r.sport,
+  tipo: tipo ?? r.tipo,
+  durataMin: durata ?? r.durataMin,
+  distanzaKm: r.distanzaKm,
+  intensita: r.intensita,
+  note: note ?? r.note,
+);
+
+/// Le righe toccate dall'assistente lo dicono nelle note: così il generatore
+/// rispetta tipo e durata scelti.
+const notaAssistente = 'Assistente';
+
+bool rigaDaAssistente(PianoRiga r) => r.note.startsWith(notaAssistente);
+
+String _nota(Modifica m) =>
+    m.motivo.isEmpty ? notaAssistente : '$notaAssistente: ${m.motivo}';
+
+/// Applica una modifica; restituisce il motivo se non si può applicare.
+String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
+  if (!_sportPiano.contains(m.sport)) return 'sport non previsto (${m.sport})';
+  if (m.data.isBefore(oggi)) return 'la data è già passata';
+  final d = m.durataMin;
+  if (d != null && (d < 10 || d > 300)) return 'durata non sensata ($d min)';
+  final i = p.indexWhere(
+    (r) => r.data == m.data && stessoSport(r.sport, m.sport),
+  );
+  switch (m.azione) {
+    case Azione.aggiungi:
+      if (i >= 0) return 'c\'è già una seduta di ${m.sport} quel giorno';
+      if (d == null) return 'manca la durata';
+      p.add(
+        PianoRiga(
+          data: m.data,
+          fascia: fasce.contains(m.fascia) ? m.fascia : 'Mattina',
+          sport: m.sport,
+          tipo: m.tipo,
+          durataMin: d,
+          note: _nota(m),
+        ),
+      );
+    case Azione.cambia:
+      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      p[i] = _copia(
+        p[i],
+        durata: d,
+        tipo: m.tipo.isEmpty ? null : m.tipo,
+        fascia: fasce.contains(m.fascia) ? m.fascia : null,
+        note: _nota(m),
+      );
+    case Azione.sposta:
+      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      final n = m.nuovaData;
+      if (n == null || n.isBefore(oggi)) return 'nuova data mancante o passata';
+      if (p.any((r) => r.data == n && stessoSport(r.sport, m.sport))) {
+        return 'c\'è già una seduta di ${m.sport} il giorno scelto';
+      }
+      p[i] = _copia(p[i], data: n, note: _nota(m));
+    case Azione.rimuovi:
+      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      p.removeAt(i);
+  }
+  return null;
+}
+
+/// Settimane toccate da una modifica (lunedì).
+Set<DateTime> _settimane(Modifica m) => {
+  lunediDi(m.data),
+  if (m.nuovaData != null) lunediDi(m.nuovaData!),
+};
+
+int _minuti(List<PianoRiga> p, DateTime lunedi) => p
+    .where((r) => lunediDi(r.data) == lunedi && !stessoSport(r.sport, 'Riposo'))
+    .fold(0, (t, r) => t + r.durataMin);
+
+bool _haRiposo(List<PianoRiga> p, DateTime lunedi) {
+  final attivi = {
+    for (final r in p)
+      if (lunediDi(r.data) == lunedi && !stessoSport(r.sport, 'Riposo')) r.data,
+  };
+  return attivi.length < 7;
+}
+
+/// Controlla e applica la proposta su una copia del piano. Una modifica che fa
+/// crescere i minuti di una settimana oltre il 10% o toglie l'ultimo giorno di
+/// riposo viene scartata.
+EsitoProposta valutaProposta(
+  List<PianoRiga> piano,
+  List<Modifica> modifiche,
+  DateTime oggi,
+) {
+  final o = soloData(oggi);
+  final accettate = <Modifica>[];
+  final scartate = <(Modifica, String)>[];
+  var p = [...piano];
+  for (final m in modifiche) {
+    final prova = [...p];
+    final errore = _applica(prova, m, o);
+    if (errore != null) {
+      scartate.add((m, errore));
+      continue;
+    }
+    String? limite;
+    for (final w in _settimane(m)) {
+      final prima = _minuti(piano, w);
+      final dopo = _minuti(prova, w);
+      if (dopo > prima && dopo > (prima * 1.1).round()) {
+        limite =
+            'la settimana passerebbe da $prima a $dopo minuti (oltre +10%)';
+      } else if (_haRiposo(piano, w) && !_haRiposo(prova, w)) {
+        limite = 'la settimana resterebbe senza un giorno di riposo';
+      }
+    }
+    if (limite != null) {
+      scartate.add((m, limite));
+      continue;
+    }
+    p = prova;
+    accettate.add(m);
+  }
+  p.sort((a, b) {
+    final c = a.data.compareTo(b.data);
+    return c != 0
+        ? c
+        : fasce.indexOf(a.fascia).compareTo(fasce.indexOf(b.fascia));
+  });
+  return EsitoProposta(accettate, scartate, p);
+}
+
+String _giorno(DateTime d) =>
+    '${giorniSettimana[d.weekday - 1].substring(0, 3)} ${d.day}/${d.month}';
+
+String _seduta(PianoRiga r) =>
+    [if (r.tipo.isNotEmpty) r.tipo, '${r.durataMin} min'].join(' ');
+
+/// "Prima → dopo" di una modifica, rispetto al piano attuale.
+String descriviModifica(Modifica m, List<PianoRiga> piano) {
+  final r = piano
+      .where((x) => x.data == m.data && stessoSport(x.sport, m.sport))
+      .firstOrNull;
+  final dove = '${_giorno(m.data)} ${m.sport}';
+  return switch (m.azione) {
+    Azione.aggiungi =>
+      '$dove: nuova seduta, ${[if (m.tipo.isNotEmpty) m.tipo, '${m.durataMin} min'].join(' ')}',
+    Azione.rimuovi => '$dove: tolta${r == null ? '' : ' (${_seduta(r)})'}',
+    Azione.sposta =>
+      '$dove → ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)}',
+    Azione.cambia =>
+      '$dove: ${r == null ? '?' : _seduta(r)} → '
+          '${[if (m.tipo.isNotEmpty) m.tipo else if (r != null && r.tipo.isNotEmpty) r.tipo, '${m.durataMin ?? r?.durataMin ?? 0} min'].join(' ')}',
+  };
+}

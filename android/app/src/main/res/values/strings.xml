@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_piccolo_nome">Oggi</string>
+    <string name="widget_piccolo_desc">La seduta di oggi, con il pulsante per iniziare</string>
+    <string name="widget_largo_nome">Oggi e settimana</string>
+    <string name="widget_largo_desc">La seduta di oggi e la tua settimana</string>
+</resources>

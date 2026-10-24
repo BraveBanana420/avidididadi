@@ -1,0 +1,45 @@
+#!/bin/sh
+# Controllo prima di ogni commit: blocca segreti e dati personali.
+# Attivo con: git config core.hooksPath tool/git-hooks
+
+blocca=0
+
+# File che non devono mai finire nel repository.
+vietati=$(git diff --cached --name-only --diff-filter=ACMR |
+  grep -E '(\.jks|\.keystore|\.p12|\.gz|\.apk|\.aab|\.env)$|(^|/)key\.properties$|(^|/)NOTE_PRIVATE\.md$|(^|/)backup/')
+if [ -n "$vietati" ]; then
+  echo "BLOCCATO: file da non caricare:"
+  echo "$vietati"
+  blocca=1
+fi
+
+# Righe aggiunte (escluso questo controllo, che contiene gli esempi).
+aggiunte() {
+  git diff --cached -U0 --no-color -- . ':(exclude)tool/git-hooks/*' "$@" |
+    grep '^+' | grep -v '^+++'
+}
+
+# Chiavi API, password della firma, chiavi private, email, cartelle personali.
+segreti='\bsk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|^\+(store|key)Password=[^[:space:]]|BEGIN [A-Z ]*PRIVATE KEY|[A-Za-z0-9._%+-]+@(gmail|outlook|hotmail|yahoo|icloud)\.[a-z]+|[A-Za-z]:\\Users\\'
+trovati=$(aggiunte | grep -nE "$segreti")
+if [ -n "$trovati" ]; then
+  echo "BLOCCATO: sembrano segreti o dati personali:"
+  echo "$trovati"
+  blocca=1
+fi
+
+# Indirizzi Tailscale reali (100.64-127.x.x), tranne nei test.
+ip=$(aggiunte ':(exclude)test/*' |
+  grep -nE '\b100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}\b')
+if [ -n "$ip" ]; then
+  echo "BLOCCATO: indirizzo Tailscale (va in NOTE_PRIVATE.md):"
+  echo "$ip"
+  blocca=1
+fi
+
+if [ "$blocca" -ne 0 ]; then
+  echo
+  echo "Commit annullato. Togli quelle righe o file e riprova."
+  exit 1
+fi
+exit 0

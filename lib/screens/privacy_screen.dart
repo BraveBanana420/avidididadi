@@ -1,0 +1,274 @@
+import 'package:flutter/material.dart';
+
+import '../widgets.dart';
+
+/// Versione di Termini e informativa: se cambia, all'apertura si chiede di
+/// accettarli di nuovo.
+const versioneTermini = '2026-10-24.2';
+const aggiornamentoTermini = '24 ottobre 2026';
+
+/// Una pagina di testo a sezioni (informativa, termini).
+class PaginaTesto extends StatelessWidget {
+  final String titolo;
+  final String? introduzione;
+  final List<(String, String)> sezioni;
+  const PaginaTesto({
+    super.key,
+    required this.titolo,
+    this.introduzione,
+    required this.sezioni,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Scaffold(
+      bottomNavigationBar: const MargineBarraSistema(),
+      appBar: AppBar(title: Text(titolo)),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          Text(
+            'Ultimo aggiornamento: $aggiornamentoTermini',
+            style: t.bodySmall,
+          ),
+          if (introduzione != null) ...[
+            const SizedBox(height: 8),
+            Text(introduzione!),
+          ],
+          const SizedBox(height: 16),
+          for (final (titolo, testo) in sezioni)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(titolo, style: t.titleMedium),
+                  const SizedBox(height: 4),
+                  Text(testo),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Informativa sull'uso dei dati. Health Connect la apre quando l'utente
+/// chiede perché l'app vuole accedere ai dati.
+class PrivacyScreen extends StatelessWidget {
+  const PrivacyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => const PaginaTesto(
+    titolo: 'Privacy e uso dei dati',
+    introduzione:
+        "In breve: i tuoi dati restano sul telefono. L'app non ha server, "
+        "account né pubblicità e non vende né condivide i tuoi dati. Escono "
+        "dal telefono solo nei casi descritti qui sotto, quasi tutti scelti "
+        "da te.",
+    sezioni: [
+      (
+        'Dati che inserisci tu',
+        "Nome, data di nascita, sesso, altezza, peso e misure, foto del "
+            "profilo, obiettivo e gara, settimana tipo, attrezzatura, feedback "
+            "dopo gli allenamenti (fatica, completata, dolore) e sessioni "
+            "importate da file CSV. Servono a preparare il piano e a mostrare i "
+            "progressi.",
+      ),
+      (
+        'Dati letti da Health Connect (solo lettura)',
+        "Con il tuo permesso l'app legge da Health Connect le sessioni di "
+            "allenamento (tipo, titolo, inizio e fine) e, nel tempo di ogni "
+            "sessione, frequenza cardiaca, distanza, calorie, passi e velocità. "
+            "Legge anche FC a riposo, variabilità cardiaca (HRV) e sonno per "
+            "valutare il recupero, e lo storico oltre i 30 giorni se lo concedi. "
+            "Sono i dati scritti da Garmin Connect, Freeletics e dalle altre app "
+            "collegate a Health Connect. L'app non scrive, non modifica e non "
+            "cancella nulla in Health Connect.",
+      ),
+      (
+        'Percorsi GPS delle sessioni',
+        "Se l'app che ha registrato una corsa o un'uscita in bici ha salvato "
+            "anche il percorso in Health Connect, Avidididadi lo legge solo con "
+            "il tuo permesso: per la singola sessione (te lo chiede Health "
+            "Connect) oppure per tutte, se scegli \"Consenti sempre\" nelle "
+            "impostazioni di Health Connect. Puoi anche aggiungere tu un "
+            "percorso caricando un file GPX (per esempio esportato da Garmin "
+            "Connect). Una copia del percorso resta nell'app per mostrare la "
+            "mappa.",
+      ),
+      (
+        'Posizione durante l\'allenamento',
+        "Solo per corsa e bici, e solo mentre la modalità allenamento è "
+            "aperta, l'app usa la posizione precisa (GPS e servizio di "
+            "posizione di Google Play sul telefono) per registrare percorso, "
+            "distanza e ritmo. Mentre registra mostra una notifica fissa e "
+            "continua anche a schermo spento; quando chiudi l'allenamento il "
+            "GPS si spegne. L'app non usa la posizione in nessun altro momento "
+            "e non la raccoglie in background. Il percorso viene salvato solo "
+            "sul telefono: non va in Health Connect, non va all'assistente e non "
+            "viene inviato a nessuno.",
+      ),
+      (
+        'Mappe',
+        "Per disegnare la mappa l'app scarica i riquadri della zona "
+            "mostrata da OpenFreeMap (tiles.openfreemap.org), con dati © "
+            "OpenStreetMap. Come per qualsiasi sito, quel servizio riceve "
+            "l'indirizzo IP del telefono e quali riquadri vengono chiesti, "
+            "quindi può capire quale zona stai guardando. Il percorso, i tempi e "
+            "gli altri dati dell'allenamento non vengono inviati: la linea viene "
+            "disegnata sul telefono.",
+      ),
+      (
+        'Immagini degli esercizi',
+        "Le foto degli esercizi vengono scaricate, quando servono, dalla "
+            "raccolta pubblica free-exercise-db su GitHub. GitHub riceve "
+            "l'indirizzo IP del telefono e quale immagine viene chiesta, "
+            "nient'altro.",
+      ),
+      (
+        'Assistente (facoltativo)',
+        "Solo se lo attivi tu, l'assistente invia un riassunto dei tuoi "
+            "allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, "
+            "zone e piano dei prossimi 14 giorni) al servizio che scegli: "
+            "Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e "
+            "percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo "
+            "permetti. Prima di attivarlo puoi vedere esattamente cosa viene "
+            "inviato. La chiave API resta cifrata sul telefono. Per i servizi "
+            "online valgono le loro condizioni sulla privacy e gli eventuali "
+            "costi del tuo abbonamento.",
+      ),
+      (
+        "Assistente nella tua app (facoltativo)",
+        "Se colleghi l'app del tuo assistente (Claude, ChatGPT, Gemini o "
+        "altre), Avidididadi prepara un messaggio con lo stesso riassunto "
+        "descritto sopra e lo passa a quell'app solo quando tocchi Condividi "
+        "o Copia. Da quel momento i dati sono nella chat del servizio scelto e "
+        "valgono le sue regole: con un abbonamento normale le chat possono "
+        "servire ad addestrare il modello, secondo le impostazioni del tuo "
+        "account. Le risposte che condividi o incolli nell'app vengono lette "
+        "solo se contengono il codice del tuo collegamento, e le modifiche al "
+        "piano si applicano solo dopo la tua conferma. Finché non lo colleghi, "
+        "Avidididadi non riceve testo da altre app; quando lo scolleghi, il "
+        "codice smette di valere.",
+      ),
+      (
+        'Widget sulla schermata home',
+        "Se aggiungi il widget, la seduta di oggi e la settimana sono "
+            "visibili sulla schermata home, quindi anche a chi vede il telefono "
+            "sbloccato.",
+      ),
+      (
+        'Dove restano i dati',
+        "Nella cartella privata dell'app sul telefono, a cui le altre app "
+            "non possono accedere. Non finiscono nel backup automatico di "
+            "Android su Google né nel trasferimento a un nuovo telefono: per "
+            "spostarli usa il backup dell'app.",
+      ),
+      (
+        'Backup',
+        "Il file di backup che crei contiene tutti i dati dell'app, "
+            "compresi dati sulla salute, foto e percorsi GPS (non la chiave "
+            "API). Lo salvi dove scegli tu: tienilo in un posto sicuro e non "
+            "condividerlo.",
+      ),
+      (
+        'Permessi del telefono',
+        "Health Connect (lettura dei dati elencati sopra), posizione precisa "
+            "(solo durante corsa e bici), internet (mappe, immagini, "
+            "assistente), notifica durante la registrazione del percorso. Puoi "
+            "negare ognuno di questi permessi: l'app continua a funzionare senza "
+            "la parte che ne ha bisogno.",
+      ),
+      (
+        'Come revocare o cancellare',
+        "Health Connect: Impostazioni di Health Connect → Permessi delle "
+            "app → Avidididadi, oppure dal Profilo con \"Rivedi permessi\". "
+            "Posizione: Impostazioni di Android → App → Avidididadi → Permessi. "
+            "Assistente: disattivalo e cancella la chiave nella pagina Coach. "
+            "Per cancellare tutto: Impostazioni di Android → App → Avidididadi → "
+            "Memoria → Cancella dati, oppure disinstalla l'app. I dati in Health "
+            "Connect restano lì, perché sono delle app che li hanno scritti.",
+      ),
+      (
+        'Modifiche',
+        "Se questa informativa cambia, all'apertura l'app te lo dice e ti "
+            "chiede di accettarla di nuovo.",
+      ),
+    ],
+  );
+}
+
+/// Termini e condizioni d'uso.
+class TerminiScreen extends StatelessWidget {
+  const TerminiScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => const PaginaTesto(
+    titolo: 'Termini e condizioni',
+    sezioni: [
+      (
+        'Cos\'è Avidididadi',
+        "Un'app personale per pianificare e seguire allenamenti di forza, "
+            "corsa, nuoto, bici e mobilità, e per vedere storico e progressi. "
+            "Usandola accetti questi termini e l'informativa sulla privacy.",
+      ),
+      (
+        'Non è un consiglio medico',
+        "Piani, carichi, zone di frequenza cardiaca, valutazione del "
+            "recupero e risposte dell'assistente sono stime automatiche a scopo "
+            "informativo. Non sono una diagnosi né un parere medico e non "
+            "sostituiscono medico, fisioterapista o allenatore. Prima di "
+            "iniziare un programma di allenamento, soprattutto se hai problemi "
+            "di salute, sei in gravidanza o non ti alleni da tempo, chiedi a un "
+            "medico. Se senti dolore, vertigini, fiato corto anomalo o dolore al "
+            "petto, fermati e cerca assistenza.",
+      ),
+      (
+        'Allenati in sicurezza',
+        "Ti alleni sotto la tua responsabilità: scegli carichi e ritmi "
+            "adatti a te, usa attrezzatura in buono stato e rispetta il codice "
+            "della strada. Durante corsa e bici non guardare il telefono mentre "
+            "ti muovi nel traffico.",
+      ),
+      (
+        'Precisione dei dati',
+        "GPS, distanze, ritmo, passi e i dati letti da Health Connect "
+            "possono contenere errori (per esempio tra palazzi alti o sotto gli "
+            "alberi). Calcoli e grafici dipendono da questi dati e dalla loro "
+            "completezza.",
+      ),
+      (
+        'Servizi di terzi',
+        "Alcune funzioni usano servizi di altri: Health Connect e le app che "
+            "vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le "
+            "mappe, GitHub per le immagini degli esercizi e, se lo attivi, il "
+            "servizio di intelligenza artificiale che scegli. Questi servizi "
+            "hanno condizioni proprie, possono cambiare o non essere "
+            "disponibili. Chiave API e costi del servizio di intelligenza "
+            "artificiale sono a tuo carico.",
+      ),
+      (
+        'I tuoi dati',
+        "I dati restano sul tuo telefono e ne sei responsabile tu: fai "
+            "backup periodici e conserva il file in un posto sicuro. "
+            "Disinstallando l'app senza backup i dati vanno persi.",
+      ),
+      (
+        'Nessuna garanzia',
+        "L'app è fornita così com'è, senza garanzie di funzionamento "
+            "continuo o privo di errori. Nei limiti consentiti dalla legge, chi "
+            "l'ha sviluppata non risponde di danni derivanti dall'uso dell'app, "
+            "da dati non corretti o dalla perdita di dati.",
+      ),
+      (
+        'Modifiche',
+        "Questi termini possono essere aggiornati. Se cambiano, all'apertura "
+            "l'app te lo dice e ti chiede di accettarli di nuovo prima di "
+            "continuare.",
+      ),
+    ],
+  );
+}

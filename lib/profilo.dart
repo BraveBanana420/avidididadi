@@ -1,0 +1,178 @@
+import 'csv.dart';
+import 'models.dart';
+import 'obiettivo.dart';
+
+const sessi = ['Uomo', 'Donna'];
+
+const profiloHeader = ['chiave', 'valore'];
+
+/// Dati anagrafici, salvati in profilo.csv come coppie chiave/valore.
+class Profilo {
+  String nome = '';
+  String cognome = '';
+  DateTime? nascita;
+  String sesso = '';
+  double altezzaCm = 0;
+  String foto = ''; // nome del file nella cartella dell'app
+  // Piano di forza: scelti alla creazione; il livello poi si adatta ai feedback.
+  String obiettivo = '';
+  String livello = '';
+  DateTime? inizioForza; // da qui si contano i blocchi di 4 settimane
+  int regolazione = 0; // passi di carico decisi dai feedback
+  DateTime? cambioLivello; // ultimo cambio di livello automatico
+  // Corsa, nuoto e bici generati dall'app (vuoto = workout Garmin fissi).
+  Set<String> sportGenerati = {};
+  DateTime? inizioEndurance; // da qui si contano i blocchi di 4 settimane
+  Map<String, int> regolazioneEndurance = {}; // per sport, dai feedback
+  Map<String, String> progressione = {}; // per sport: durata, intensita, auto
+  bool benvenuto = false; // configurazione guidata già fatta (o saltata)
+  String terminiAccettati = ''; // versione di termini e informativa accettata
+  // Gara obiettivo (vuota = nessuna).
+  String garaSport = '';
+  String garaTipo = '';
+  DateTime? garaData;
+  int garaTempoMin = 0;
+  // Correzioni manuali delle zone (0 = usa la stima).
+  int fcMaxManuale = 0;
+  int fcRiposoManuale = 0;
+  int passoCriticoManuale = 0; // secondi per 100 m
+
+  Obiettivo? get obiettivoGara => garaSport.isEmpty || garaData == null
+      ? null
+      : Obiettivo(
+          sport: garaSport,
+          gara: garaTipo,
+          data: garaData!,
+          tempoMin: garaTempoMin,
+        );
+
+  String get nomeCompleto => '$nome $cognome'.trim();
+
+  String get iniziali => [
+    nome,
+    cognome,
+  ].where((s) => s.isNotEmpty).map((s) => s[0].toUpperCase()).join();
+
+  /// Età calcolata dalla data di nascita, così resta sempre aggiornata.
+  int? get eta {
+    final n = nascita;
+    if (n == null) return null;
+    final oggi = DateTime.now();
+    var a = oggi.year - n.year;
+    final primaDelCompleanno =
+        oggi.month < n.month || (oggi.month == n.month && oggi.day < n.day);
+    return primaDelCompleanno ? a - 1 : a;
+  }
+
+  List<List<String>> toRows() => [
+    ['nome', nome],
+    ['cognome', cognome],
+    ['nascita', nascita == null ? '' : isoData(nascita!)],
+    ['sesso', sesso],
+    ['altezza_cm', fmtNum(altezzaCm)],
+    ['foto', foto],
+    ['obiettivo', obiettivo],
+    ['livello', livello],
+    ['inizio_forza', inizioForza == null ? '' : isoData(inizioForza!)],
+    ['regolazione', '$regolazione'],
+    ['cambio_livello', cambioLivello == null ? '' : isoData(cambioLivello!)],
+    ['sport_generati', sportGenerati.join(',')],
+    [
+      'inizio_endurance',
+      inizioEndurance == null ? '' : isoData(inizioEndurance!),
+    ],
+    [
+      'regolazione_endurance',
+      regolazioneEndurance.entries.map((e) => '${e.key}:${e.value}').join(','),
+    ],
+    ['benvenuto', benvenuto ? 'si' : ''],
+    ['termini', terminiAccettati],
+    [
+      'progressione',
+      progressione.entries.map((e) => '${e.key}:${e.value}').join(','),
+    ],
+    ['gara_sport', garaSport],
+    ['gara_tipo', garaTipo],
+    ['gara_data', garaData == null ? '' : isoData(garaData!)],
+    ['gara_tempo_min', garaTempoMin == 0 ? '' : '$garaTempoMin'],
+    ['fc_max', fcMaxManuale == 0 ? '' : '$fcMaxManuale'],
+    ['fc_riposo', fcRiposoManuale == 0 ? '' : '$fcRiposoManuale'],
+    ['passo_critico_s', passoCriticoManuale == 0 ? '' : '$passoCriticoManuale'],
+  ];
+
+  static Profilo da(Tabella? t) {
+    final p = Profilo();
+    if (t == null) return p;
+    final m = {for (final r in t.righe) t.v(r, 'chiave'): t.v(r, 'valore')};
+    p.nome = m['nome'] ?? '';
+    p.cognome = m['cognome'] ?? '';
+    p.nascita = parseData(m['nascita'] ?? '');
+    p.sesso = m['sesso'] ?? '';
+    p.altezzaCm = numero(m['altezza_cm'] ?? '');
+    p.foto = m['foto'] ?? '';
+    p.obiettivo = m['obiettivo'] ?? '';
+    p.livello = m['livello'] ?? '';
+    p.inizioForza = parseData(m['inizio_forza'] ?? '');
+    p.regolazione = int.tryParse(m['regolazione'] ?? '') ?? 0;
+    p.cambioLivello = parseData(m['cambio_livello'] ?? '');
+    p.sportGenerati = (m['sport_generati'] ?? '')
+        .split(',')
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .toSet();
+    p.inizioEndurance = parseData(m['inizio_endurance'] ?? '');
+    p.benvenuto = m['benvenuto'] == 'si';
+    p.terminiAccettati = m['termini'] ?? '';
+    for (final x in (m['regolazione_endurance'] ?? '').split(',')) {
+      final kv = x.split(':');
+      final v = kv.length == 2 ? int.tryParse(kv[1]) : null;
+      if (v != null) p.regolazioneEndurance[kv[0].trim()] = v;
+    }
+    for (final x in (m['progressione'] ?? '').split(',')) {
+      final kv = x.split(':');
+      if (kv.length == 2 && kv[1].trim().isNotEmpty) {
+        p.progressione[kv[0].trim()] = kv[1].trim();
+      }
+    }
+    p.garaSport = m['gara_sport'] ?? '';
+    p.garaTipo = m['gara_tipo'] ?? '';
+    p.garaData = parseData(m['gara_data'] ?? '');
+    p.garaTempoMin = int.tryParse(m['gara_tempo_min'] ?? '') ?? 0;
+    p.fcMaxManuale = int.tryParse(m['fc_max'] ?? '') ?? 0;
+    p.fcRiposoManuale = int.tryParse(m['fc_riposo'] ?? '') ?? 0;
+    p.passoCriticoManuale = int.tryParse(m['passo_critico_s'] ?? '') ?? 0;
+    return p;
+  }
+}
+
+/// Campi delle misure corporee, nell'ordine delle colonne di misure.csv.
+const campiMisure = [
+  'peso_kg',
+  'braccio_cm',
+  'petto_cm',
+  'vita_cm',
+  'fianchi_cm',
+  'coscia_cm',
+];
+const misureHeader = ['data', ...campiMisure];
+
+/// Peso e misure rilevati in un giorno; un campo assente non è stato misurato.
+class Misura {
+  final DateTime data;
+  final Map<String, double> valori;
+  Misura(this.data, this.valori);
+
+  List<String> toRow() => [
+    isoData(data),
+    for (final c in campiMisure) fmtNum(valori[c] ?? 0),
+  ];
+
+  static Misura? da(Tabella t, List<String> r) {
+    final d = parseData(t.v(r, 'data'));
+    if (d == null) return null;
+    return Misura(d, {
+      for (final c in campiMisure)
+        if (numero(t.v(r, c)) > 0) c: numero(t.v(r, c)),
+    });
+  }
+}
