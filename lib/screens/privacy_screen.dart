@@ -143,16 +143,16 @@ class PrivacyScreen extends StatelessWidget {
       (
         "Assistente nella tua app (facoltativo)",
         "Se colleghi l'app del tuo assistente (Claude, ChatGPT, Gemini o "
-        "altre), Avidididadi prepara un messaggio con lo stesso riassunto "
-        "descritto sopra e lo passa a quell'app solo quando tocchi Condividi "
-        "o Copia. Da quel momento i dati sono nella chat del servizio scelto e "
-        "valgono le sue regole: con un abbonamento normale le chat possono "
-        "servire ad addestrare il modello, secondo le impostazioni del tuo "
-        "account. Le risposte che condividi o incolli nell'app vengono lette "
-        "solo se contengono il codice del tuo collegamento, e le modifiche al "
-        "piano si applicano solo dopo la tua conferma. Finché non lo colleghi, "
-        "Avidididadi non riceve testo da altre app; quando lo scolleghi, il "
-        "codice smette di valere.",
+            "altre), Avidididadi prepara un messaggio con lo stesso riassunto "
+            "descritto sopra e lo passa a quell'app solo quando tocchi Condividi "
+            "o Copia. Da quel momento i dati sono nella chat del servizio scelto e "
+            "valgono le sue regole: con un abbonamento normale le chat possono "
+            "servire ad addestrare il modello, secondo le impostazioni del tuo "
+            "account. Le risposte che condividi o incolli nell'app vengono lette "
+            "solo se contengono il codice del tuo collegamento, e le modifiche al "
+            "piano si applicano solo dopo la tua conferma. Finché non lo colleghi, "
+            "Avidididadi non riceve testo da altre app; quando lo scolleghi, il "
+            "codice smette di valere.",
       ),
       (
         'Widget sulla schermata home',

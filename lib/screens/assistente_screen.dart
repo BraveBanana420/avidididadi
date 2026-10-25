@@ -6,6 +6,7 @@ import '../llm.dart';
 import '../widgets.dart';
 import 'agente_screen.dart';
 import 'privacy_screen.dart';
+import 'testo_formattato.dart';
 
 const _suggerimenti = [
   "Com'è andata questa settimana?",
@@ -308,14 +309,13 @@ class _Fumetto extends StatelessWidget {
                     : scheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: SelectableText(
-                m.testo,
-                style: TextStyle(
-                  color: m.utente
-                      ? scheme.onPrimaryContainer
-                      : scheme.onSurface,
-                ),
-              ),
+              // Le risposte dell'assistente con grassetti, titoli ed elenchi.
+              child: m.utente
+                  ? SelectableText(
+                      m.testo,
+                      style: TextStyle(color: scheme.onPrimaryContainer),
+                    )
+                  : TestoFormattato(m.testo, colore: scheme.onSurface),
             ),
             if (m.proposta != null) SchedaProposta(state: state, messaggio: m),
           ],

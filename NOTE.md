@@ -60,6 +60,26 @@
   dalla pagina Coach per tornare a Ollama.
 - [ ] **Da provare**: con Claude Pro, chiedere un piano nuovo di 4 settimane e
   applicarlo dal pannello Coach.
+- [ ] **Invia allo smartwatch** (in pausa dal 25/10/2026: per ora Garmin a
+  mano; riprendere se esce qualcosa di più efficace e ufficiale). Già
+  verificato:
+  - intervals.icu: API con chiave (Basic, utente `API_KEY`, athlete `0`),
+    `POST /api/v1/athlete/0/events/bulk?upsert=true` con `external_id`,
+    `PUT .../events/bulk-delete`; testo allenamento in `description`
+    (`- 50mtr 2:50/100m Pace`, `8x`, `Press lap`; niente ripetizioni annidate).
+    Da provare dal vivo: `Pool length: 25m`, `intensity=rest`.
+  - Nuoto: stile, esercizi e attrezzi (tavoletta, panino) non esistono in
+    intervals.icu né nell'invio a Garmin (richiesta aperta sul forum).
+  - Forza: intervals.icu non ha serie/ripetizioni/pesi. Alternativa:
+    script Python con python-garminconnect (fuori dall'app).
+  - OAuth intervals.icu: registrazione a mano e client secret (servirebbe un
+    server): meglio la chiave API.
+  - File FIT: libreria `fit_tool` (Stages Cycling, BSD-3, ferma da 3 anni);
+    il FIT ha stile e attrezzo del nuoto; l'app Garmin Connect non lo importa,
+    si copia sull'orologio via USB (GARMIN/NewFiles).
+  - Piano proposto: modello StructuredWorkout indipendente, WorkoutExporter
+    (prima IntervalsIcuExporter), collegamento guidato nel browser,
+    sincronizzazione con coda offline, export FIT, script forza.
 
 ## Appunti
 

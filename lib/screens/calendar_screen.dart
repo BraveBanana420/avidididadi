@@ -1104,7 +1104,7 @@ class _Fatto extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Fatto: ${titoloSessione(s.sport, s.tipo)}',
+                        titoloSessione(s.sport, s.tipo),
                         style: t.titleMedium,
                       ),
                       if (dati.isNotEmpty) Text(dati.join(' · ')),
