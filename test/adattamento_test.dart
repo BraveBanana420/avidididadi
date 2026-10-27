@@ -314,4 +314,24 @@ void main() {
       );
     });
   });
+
+  test('Test FTP scritto a mano: fatica attesa al massimo', () {
+    expect(faticaPrevista('Test FTP'), 9);
+    final r = RitoccoSessione('hc-1', nome: 'Test FTP', alChiuso: true);
+    final t = Tabella.da(toCsv([ritocchiHeader, r.toRow()]))!;
+    final letto = RitoccoSessione.da(t, t.righe.single)!;
+    expect(letto.nome, 'Test FTP');
+    expect(letto.alChiuso, isTrue);
+    expect(
+      faticaAttesa(
+        attivita: Sessione(
+          id: 'hc-1',
+          data: DateTime(2026, 10, 27),
+          sport: 'Bici',
+          tipo: 'Test FTP',
+        ),
+      ),
+      9,
+    );
+  });
 }

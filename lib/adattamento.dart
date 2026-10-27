@@ -38,6 +38,8 @@ StatoSeduta statoSeduta({
 }
 
 const _tipiNoti = [
+  'test',
+  'ftp',
   'lento',
   'lungo',
   'fartlek',

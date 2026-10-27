@@ -69,6 +69,8 @@ flutter:
 
   assets:
     - assets/esercizi.json
+    # Animazioni WebP degli esercizi (vedi lib/animazioni_esercizi.dart).
+    - assets/exercises/animated/
 
   # Caratteri dello stile "Pulse" (licenza SIL OFL, file in assets/fonts).
   fonts:

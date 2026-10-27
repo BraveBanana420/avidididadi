@@ -146,6 +146,7 @@ const regolazioneMin = -3, regolazioneMax = 5;
 /// Fatica attesa per un tipo di seduta di corsa, nuoto o bici.
 int faticaPrevista(String tipo) {
   final t = tipo.toLowerCase();
+  if (t.contains('test') || t.contains('ftp')) return 9; // test al massimo
   if (t.contains('ripetute')) return 8;
   if (t.contains('fartlek') ||
       t.contains('tempo') ||

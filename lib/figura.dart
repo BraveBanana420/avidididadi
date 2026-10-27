@@ -4,30 +4,32 @@ import 'package:flutter/material.dart';
 import 'package:path_drawing/path_drawing.dart';
 
 import 'muscoli_dati.dart';
-import 'tema.dart';
 
 /// Parti del corpo che non sono muscoli: disegnate in grigio.
 const _neutre = {'head', 'hair', 'hands', 'feet'};
 
-/// Colori della figura: corpo in grigio, muscoli evidenziati nel rosso del tema.
+/// Colori della figura: corpo in grigio, muscoli evidenziati nel colore del tema.
 class _Colori {
   final Color muscoli, spento, neutro, evidenza;
   const _Colori(this.muscoli, this.spento, this.neutro, this.evidenza);
 
-  factory _Colori.di(BuildContext context) =>
-      Theme.of(context).brightness == Brightness.dark
-      ? const _Colori(
-          Color(0xFF8C8C8C),
-          Color(0xFF4A4A4A),
-          Color(0xFF5A5A5A),
-          rossoPulse,
-        )
-      : const _Colori(
-          Color(0xFF8C8C8C),
-          Color(0xFFC4C4C4),
-          Color(0xFFA6A6A6),
-          rosaNeon,
-        );
+  // L'evidenza segue l'accento scelto: rosso standard o rosa neon.
+  factory _Colori.di(BuildContext context) {
+    final evidenza = Theme.of(context).colorScheme.primary;
+    return Theme.of(context).brightness == Brightness.dark
+        ? _Colori(
+            const Color(0xFF8C8C8C),
+            const Color(0xFF4A4A4A),
+            const Color(0xFF5A5A5A),
+            evidenza,
+          )
+        : _Colori(
+            const Color(0xFF8C8C8C),
+            const Color(0xFFC4C4C4),
+            const Color(0xFFA6A6A6),
+            evidenza,
+          );
+  }
 }
 
 DatiVista _vista(String sesso, bool retro) => sesso == 'Donna'

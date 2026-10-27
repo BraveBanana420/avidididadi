@@ -555,3 +555,26 @@ String fmtRitmo(String sport, double v) {
   }
   return '$m:${two(s)}';
 }
+
+const ritocchiHeader = ['id_sessione', 'nome', 'al_chiuso'];
+
+/// Quello che l'orologio non manda e l'utente scrive a mano su una sessione:
+/// il nome (es. "Test FTP") e se era al chiuso (rulli, Tacx, tapis roulant).
+class RitoccoSessione {
+  final String id;
+  final String nome;
+  final bool alChiuso;
+  const RitoccoSessione(this.id, {this.nome = '', this.alChiuso = false});
+
+  List<String> toRow() => [id, nome, alChiuso ? 'si' : ''];
+
+  static RitoccoSessione? da(Tabella t, List<String> r) {
+    final id = t.v(r, 'id_sessione');
+    if (id.isEmpty) return null;
+    return RitoccoSessione(
+      id,
+      nome: t.v(r, 'nome'),
+      alChiuso: t.v(r, 'al_chiuso') == 'si',
+    );
+  }
+}

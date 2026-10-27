@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'animazioni_esercizi.dart';
 import 'storage.dart';
 
 const _base =
@@ -39,16 +40,32 @@ Future<File?> immagineEsercizio(String percorso) =>
       }
     });
 
-/// Le immagini di un esercizio alternate ogni secondo, per mostrare il movimento.
-class AnimazioneEsercizio extends StatefulWidget {
+/// Il movimento di un esercizio: il WebP animato se c'è (vedi
+/// animazioni_esercizi.dart), altrimenti le sue foto alternate ogni secondo.
+class AnimazioneEsercizio extends StatelessWidget {
+  final String id;
   final List<String> immagini;
-  const AnimazioneEsercizio({super.key, required this.immagini});
+  const AnimazioneEsercizio({super.key, this.id = '', required this.immagini});
 
   @override
-  State<AnimazioneEsercizio> createState() => _AnimazioneEsercizioState();
+  Widget build(BuildContext context) {
+    final webp = animazioneDi(id);
+    return webp != null
+        ? AnimazioneWebp(webp)
+        : _DueFotogrammi(immagini: immagini);
+  }
 }
 
-class _AnimazioneEsercizioState extends State<AnimazioneEsercizio> {
+/// Le foto di un esercizio alternate ogni secondo, per mostrare il movimento.
+class _DueFotogrammi extends StatefulWidget {
+  final List<String> immagini;
+  const _DueFotogrammi({required this.immagini});
+
+  @override
+  State<_DueFotogrammi> createState() => _DueFotogrammiState();
+}
+
+class _DueFotogrammiState extends State<_DueFotogrammi> {
   late final Future<List<File?>> _file = Future.wait(
     widget.immagini.map(immagineEsercizio),
   );

@@ -122,12 +122,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     // (storico CSV, Garmin, Health Connect).
     for (final s in svolte) {
       // Il percorso GPS (registrato dall'app o letto da Health Connect).
-      if (sportConPercorso(s.sport)) {
+      // Al chiuso (rulli, Tacx, tapis roulant) non c'è un percorso.
+      if (sportConPercorso(s.sport) && !state.alChiuso(s)) {
         children.add(
           AnteprimaPercorso(key: ValueKey(s.id), state: state, sessione: s),
         );
       }
-      children.add(_DatiSessione(sessione: s));
+      children.add(_DatiSessione(state: state, sessione: s));
       children.add(const SizedBox(height: 12));
     }
     // Fatto un allenamento diverso da quello in programma: lo si dice.
@@ -546,8 +547,70 @@ String _nomi(Set<String> muscoli) =>
 
 /// Tutti i dati di una sessione svolta.
 class _DatiSessione extends StatelessWidget {
+  final AppState state;
   final Sessione sessione;
-  const _DatiSessione({required this.sessione});
+  const _DatiSessione({required this.state, required this.sessione});
+
+  /// Nome e "al chiuso", che l'orologio non manda.
+  Future<void> _ritocca(BuildContext context) async {
+    final s = sessione;
+    final prima = state.ritocchi[s.id];
+    final nome = TextEditingController(text: prima?.nome ?? '');
+    var chiuso = prima?.alChiuso ?? false;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => StatefulBuilder(
+        builder: (c, aggiorna) => AlertDialog(
+          title: const Text('Modifica la sessione'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 12,
+            children: [
+              TextField(
+                controller: nome,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(
+                  labelText: 'Nome dell\'allenamento',
+                  hintText: stessoSport(s.sport, 'Bici')
+                      ? 'es. Test FTP'
+                      : 'es. Ripetute in pista',
+                  helperText: 'Vuoto = quello dell\'orologio',
+                ),
+              ),
+              if (sportConPercorso(s.sport))
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    stessoSport(s.sport, 'Bici')
+                        ? 'Al chiuso (rulli, Tacx)'
+                        : 'Al chiuso (tapis roulant)',
+                  ),
+                  subtitle: const Text('Niente mappa né GPX'),
+                  value: chiuso,
+                  onChanged: (v) => aggiorna(() => chiuso = v),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Annulla'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Salva'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (ok == true) {
+      await state.ritoccaSessione(
+        RitoccoSessione(s.id, nome: nome.text.trim(), alChiuso: chiuso),
+      );
+    }
+    nome.dispose();
+  }
 
   String _ora(DateTime d) => '${two(d.hour)}:${two(d.minute)}';
 
@@ -599,6 +662,19 @@ class _DatiSessione extends StatelessWidget {
                     titoloSessione(s.sport, s.tipo),
                     style: t.titleMedium,
                   ),
+                ),
+                if (state.alChiuso(s))
+                  const Padding(
+                    padding: EdgeInsets.only(right: 4),
+                    child: Chip(
+                      label: Text('Al chiuso'),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                IconButton(
+                  tooltip: 'Modifica nome e luogo',
+                  onPressed: () => _ritocca(context),
+                  icon: const Icon(Icons.edit_outlined, size: 20),
                 ),
               ],
             ),

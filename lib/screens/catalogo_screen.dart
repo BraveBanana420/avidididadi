@@ -174,7 +174,7 @@ class EsercizioScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          AnimazioneEsercizio(immagini: e.immagini),
+          AnimazioneEsercizio(id: e.id, immagini: e.immagini),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,

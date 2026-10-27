@@ -116,6 +116,11 @@ class AppState extends ChangeNotifier {
       await Storage.readTabella('health_connect_sessioni.csv'),
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
+    final tRitocchi = await Storage.readTabella('ritocchi_sessioni.csv');
+    ritocchi = {
+      if (tRitocchi != null)
+        for (final r in tRitocchi.righe) ?RitoccoSessione.da(tRitocchi, r),
+    }.fold({}, (m, r) => m..[r.id] = r);
     _ricombina();
 
     final tw = await Storage.readTabella('workout.csv');
@@ -1177,10 +1182,33 @@ class AppState extends ChangeNotifier {
   }
 
   void _ricombina() {
-    sessioni = combina(
-      storicoCsv,
-      conTipoDalPiano(sessioniHc, piano),
-    ).where((s) => !sportEsclusi.contains(s.sport)).toList();
+    sessioni = [
+      for (final s in combina(
+        storicoCsv,
+        conTipoDalPiano(sessioniHc, piano),
+      ).where((s) => !sportEsclusi.contains(s.sport)))
+        // Il nome scritto a mano vince su quello dell'orologio.
+        (ritocchi[s.id]?.nome ?? '').isEmpty
+            ? s
+            : s.copyWith(tipo: ritocchi[s.id]!.nome),
+    ];
+  }
+
+  /// Nome e "al chiuso" scritti a mano sulle sessioni, per id.
+  Map<String, RitoccoSessione> ritocchi = {};
+
+  bool alChiuso(Sessione s) => ritocchi[s.id]?.alChiuso ?? false;
+
+  Future<void> ritoccaSessione(RitoccoSessione r) async {
+    ritocchi = {...ritocchi, r.id: r};
+    if (r.nome.isEmpty && !r.alChiuso) ritocchi.remove(r.id);
+    await Storage.write(
+      'ritocchi_sessioni.csv',
+      ritocchiHeader,
+      ritocchi.values.map((x) => x.toRow()).toList(),
+    );
+    _ricombina();
+    notifyListeners();
   }
 
   /// Legge da Health Connect le sessioni nuove o cambiate dall'ultima volta
