@@ -42,9 +42,8 @@ IconData iconaSport(String sport) {
   }
 }
 
-// Colori degli sport, diversi per tema: nello scuro toni caldi accanto al
-// rosso (forza in grigio); nel chiaro tutti neon fluo (forza in viola). Cambiano sia la
-// tinta sia la luminosità, così si distinguono anche quando sono piccoli.
+// Colori degli sport: standard nei toni del rosso (ben distinti per tinta e
+// luminosità) oppure neon, uguali nel tema chiaro e nello scuro.
 const _palette = [
   Color(0xFFE57373),
   Color(0xFFFFA270),
@@ -54,21 +53,23 @@ const _palette = [
 ];
 
 Color coloreSport(String sport) {
-  final scuro = temaScuroAttivo;
+  final n = neonAttivo;
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return scuro ? const Color(0xFF8E8E96) : const Color(0xFF9D4DFF);
+      return n ? const Color(0xFF9D4DFF) : const Color(0xFF8E8E96);
     case 'corsa':
-      return scuro ? const Color(0xFFFF3B47) : const Color(0xFFFF2E93);
+      return n ? const Color(0xFFFF2E93) : const Color(0xFFFF3B47);
     case 'nuoto':
-      return scuro ? const Color(0xFFFF7A59) : const Color(0xFF00B2FF);
+      return n ? const Color(0xFF00B2FF) : const Color(0xFFFF8A3D);
     case 'bici':
-      return scuro ? const Color(0xFFD9324A) : const Color(0xFF00E0B8);
+      return n ? const Color(0xFF00E0B8) : const Color(0xFFB3123A);
     case 'mobilità':
-      return scuro ? const Color(0xFFE8A598) : const Color(0xFFFF7A00);
+      return n ? const Color(0xFFFF7A00) : const Color(0xFFF48FB1);
     case 'riposo':
-      return scuro ? const Color(0xFF6E6E6E) : const Color(0xFF9A9AA5);
+      return temaScuroAttivo
+          ? const Color(0xFF6E6E6E)
+          : const Color(0xFF9A9AA5);
     default:
       final somma = sport.codeUnits.fold<int>(0, (a, b) => a + b);
       return _palette[somma % _palette.length];
@@ -126,12 +127,10 @@ class SessioneSvoltaTile extends StatelessWidget {
         onTap: onTap,
         leading: CircleAvatar(
           backgroundColor: c,
-          // Spunta nera sui grigi chiari, bianca su quelli scuri.
+          // La spunta ha il colore del fondo del tema, su ogni sport.
           child: Icon(
             Icons.check,
-            color: ThemeData.estimateBrightnessForColor(c) == Brightness.dark
-                ? Colors.white
-                : Colors.black87,
+            color: Theme.of(context).colorScheme.surface,
           ),
         ),
         title: Text(titoloSessione(s.sport, s.tipo)),

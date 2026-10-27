@@ -317,11 +317,22 @@ class ProfileScreen extends StatelessWidget {
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.dark_mode_outlined),
                       titolo: 'Tema scuro',
-                      sottotitolo: 'Scuro con il rosso, chiaro con i neon',
+                      sottotitolo: 'Fondo grafite oppure bianco',
                       onTap: cambiaTema,
                       fine: Switch(
                         value: Theme.of(context).brightness == Brightness.dark,
                         onChanged: (_) => cambiaTema(),
+                      ),
+                    ),
+                    RigaPulse(
+                      segno: const IconaQuadrata(Icons.auto_awesome_outlined),
+                      titolo: 'Versione neon',
+                      sottotitolo:
+                          'Rosa, verde acqua e azzurro al posto del rosso',
+                      onTap: cambiaNeon,
+                      fine: Switch(
+                        value: neon.value,
+                        onChanged: (_) => cambiaNeon(),
                       ),
                     ),
                     voce(

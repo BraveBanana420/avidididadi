@@ -95,6 +95,8 @@ object WidgetOggi {
             null
         }
         val scuro = dati?.optBoolean("scuro", true) ?: true
+        // Sfumature dell'accento: rosso (standard) o neon.
+        val neon = dati?.optBoolean("neon", false) ?: false
         val colori = dati?.optJSONObject("colori")
         fun colore(nome: String, base: String): Int =
             colori?.optLong(nome)?.takeIf { it != 0L }?.toInt() ?: Color.parseColor(base)
@@ -108,7 +110,7 @@ object WidgetOggi {
         if (largo) {
             v.setInt(R.id.root, "setBackgroundResource",
                 if (scuro) R.drawable.widget_sfondo_scuro else R.drawable.widget_sfondo_chiaro)
-            val quadro = if (scuro) R.drawable.widget_icona_scuro else R.drawable.widget_icona_chiaro
+            val quadro = if (neon) R.drawable.widget_icona_chiaro else R.drawable.widget_icona_scuro
             v.setInt(R.id.icona, "setBackgroundResource", quadro)
             v.setInt(R.id.play, "setBackgroundResource", quadro)
             v.setTextColor(R.id.etichetta, accento)
@@ -117,7 +119,7 @@ object WidgetOggi {
             v.setInt(R.id.play, "setColorFilter", suHero)
         } else {
             v.setInt(R.id.root, "setBackgroundResource",
-                if (scuro) R.drawable.widget_hero_scuro else R.drawable.widget_hero_chiaro)
+                if (neon) R.drawable.widget_hero_chiaro else R.drawable.widget_hero_scuro)
             v.setTextColor(R.id.etichetta, suHero)
             v.setTextColor(R.id.titolo, suHero)
             v.setTextColor(R.id.sottotitolo, suHero)

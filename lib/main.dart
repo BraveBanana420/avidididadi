@@ -30,14 +30,14 @@ class AllenamentiApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: tema,
-      builder: (context, modo, _) => MaterialApp(
+    return ListenableBuilder(
+      listenable: Listenable.merge([tema, neon]),
+      builder: (context, _) => MaterialApp(
         title: 'Avidididadi',
         debugShowCheckedModeBanner: false,
-        theme: creaTema(Brightness.light),
-        darkTheme: creaTema(Brightness.dark),
-        themeMode: modo,
+        theme: creaTema(Brightness.light, neon: neon.value),
+        darkTheme: creaTema(Brightness.dark, neon: neon.value),
+        themeMode: tema.value,
         // Tutta l'app in italiano: calendari in GG/MM/AAAA e settimana da lunedì.
         locale: const Locale('it'),
         supportedLocales: const [Locale('it')],
@@ -45,6 +45,7 @@ class AllenamentiApp extends StatelessWidget {
         // I colori degli sport seguono il tema in uso.
         builder: (context, child) {
           temaScuroAttivo = Theme.of(context).brightness == Brightness.dark;
+          neonAttivo = neon.value;
           return child!;
         },
         home: const HomePage(),
@@ -96,6 +97,7 @@ class _HomePageState extends State<HomePage> {
     // Il widget della schermata home segue piano, sedute fatte e tema.
     state.addListener(_aggiornaWidget);
     tema.addListener(_aggiornaWidget);
+    neon.addListener(_aggiornaWidget);
     _aggiornaWidget();
     if (azione == azioneAvviaWidget) _avviaOggi();
     // Avidididadi nel menu Condividi solo con l'assistente esterno collegato
@@ -176,6 +178,7 @@ class _HomePageState extends State<HomePage> {
     _attesaWidget?.cancel();
     state.removeListener(_aggiornaWidget);
     tema.removeListener(_aggiornaWidget);
+    neon.removeListener(_aggiornaWidget);
     pagine.dispose();
     super.dispose();
   }

@@ -507,12 +507,10 @@ class _StripSettimana extends StatelessWidget {
                 final previsti = previstiDi(d);
                 final fatto = fatti.isNotEmpty;
                 final colore = fatto ? coloreSport(fatti.first.sport) : null;
+                // Spunta del colore del fondo del tema, su ogni sport.
                 final suColore = colore == null
                     ? null
-                    : ThemeData.estimateBrightnessForColor(colore) ==
-                          Brightness.dark
-                    ? Colors.white
-                    : const Color(0xFF14141A);
+                    : Theme.of(context).colorScheme.surface;
                 return Expanded(
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
@@ -1032,11 +1030,7 @@ class _Fatto extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.check,
-                    color:
-                        ThemeData.estimateBrightnessForColor(c) ==
-                            Brightness.dark
-                        ? Colors.white
-                        : const Color(0xFF14141A),
+                    color: Theme.of(context).colorScheme.surface,
                   ),
                 ),
                 const SizedBox(width: 14),

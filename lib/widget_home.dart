@@ -28,6 +28,7 @@ Map<String, dynamic> datiWidget({
   required List<Sessione> sessioni,
   required DateTime oggi,
   required bool scuro,
+  bool neon = false, // accento neon al posto del rosso
   required String cartellaIcone,
   required bool Function(PianoRiga) haPassi,
 }) {
@@ -96,22 +97,20 @@ Map<String, dynamic> datiWidget({
   }
   return {
     'scuro': scuro,
+    'neon': neon,
     'giorni': giorni,
-    'colori': scuro
-        ? {
-            'testo': 0xFFF4F4F5,
-            'testo2': 0xFFA1A1AA,
-            'accento': 0xFFFF3B47,
-            'suHero': 0xFF160304,
-            'traccia': 0xFF3F3F46,
-          }
-        : {
-            'testo': 0xFF14141A,
-            'testo2': 0xFF55555F,
-            'accento': 0xFFFF2E93,
-            'suHero': 0xFF14141A,
-            'traccia': 0xFFB9B9C4,
-          },
+    // Fondo dal tema chiaro o scuro, accento dal rosso o dal neon.
+    'colori': {
+      'testo': scuro ? 0xFFF4F4F5 : 0xFF14141A,
+      'testo2': scuro ? 0xFFA1A1AA : 0xFF55555F,
+      'accento': neon
+          ? 0xFFFF2E93
+          : scuro
+          ? 0xFFFF3B47
+          : 0xFFC8102E,
+      'suHero': neon ? 0xFF14141A : 0xFF160304,
+      'traccia': scuro ? 0xFF3F3F46 : 0xFFB9B9C4,
+    },
   };
 }
 
@@ -166,6 +165,7 @@ Future<void> aggiornaWidgetHome(AppState state) async {
       sessioni: state.sessioni,
       oggi: soloData(DateTime.now()),
       scuro: temaScuroAttivo,
+      neon: neonAttivo,
       cartellaIcone: await _preparaIcone(),
       haPassi: (r) => state.passiSeduta(r.data, r.sport, r.tipo).isNotEmpty,
     );
