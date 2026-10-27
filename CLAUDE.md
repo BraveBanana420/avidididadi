@@ -89,7 +89,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
-- **APK per gli amici**: copialo in `Desktop\Avidididadi-1.0.1.apk` solo se l'utente lo chiede. La versione resta `1.0.1+2` finché l'utente non chiede di cambiarla.
+- **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` solo se l'utente lo chiede. La versione attuale è `1.0.2+3`: si cambia solo quando lo chiede l'utente.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
 ## 5. Linee guida grafiche (stile "Pulse")
