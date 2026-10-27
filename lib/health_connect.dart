@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:health/health.dart';
 
+import 'dettagli_sessione.dart';
 import 'percorso.dart';
 import 'recupero.dart';
 import 'sincronizzazione.dart';
@@ -215,6 +216,20 @@ class HealthConnectService {
       return r ?? const {};
     } on MissingPluginException {
       return const {};
+    }
+  }
+
+  /// Segmenti, lap e distanze parziali di una sessione (codice nativo).
+  Future<DettagliHc?> dettagli(String uuid) async {
+    try {
+      final r = await _canale.invokeMapMethod<Object?, Object?>(
+        'dettagliSessione',
+        uuid,
+      );
+      if (r == null || r['errore'] != null) return null;
+      return DettagliHc.daMappa(r);
+    } on MissingPluginException {
+      return null;
     }
   }
 

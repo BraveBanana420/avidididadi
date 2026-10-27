@@ -10,6 +10,10 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
 import androidx.health.connect.client.records.ExerciseRouteResult
+import androidx.health.connect.client.records.DistanceRecord
+import androidx.health.connect.client.records.metadata.DataOrigin
+import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.time.TimeRangeFilter
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -71,6 +75,7 @@ class MainActivity : FlutterFragmentActivity() {
                         )
                         result.success(null)
                     }
+                    "dettagliSessione" -> leggiDettagli(call.arguments as String, result)
                     "percorsoSessione" -> leggiPercorso(call.arguments as String, result)
                     "chiediPercorso" -> {
                         attesaPercorso?.success(null)
@@ -180,6 +185,60 @@ class MainActivity : FlutterFragmentActivity() {
             } catch (e: Exception) {
                 Log.w("Avidididadi", "Health Connect: percorso non leggibile: $e")
                 mapOf("stato" to "errore")
+            }
+            result.success(risposta)
+        }
+    }
+
+    /**
+     * Dettagli di una sessione che il pacchetto health non dà: segmenti
+     * (esercizio, ripetizioni), lap (con la lunghezza) e distanze parziali
+     * scritte dalla stessa app. Liste piatte: inizio e fine in millisecondi,
+     * poi i valori.
+     */
+    private fun leggiDettagli(uuid: String, result: MethodChannel.Result) {
+        lifecycleScope.launch {
+            val risposta: Map<String, Any?> = try {
+                val client = HealthConnectClient.getOrCreate(this@MainActivity)
+                val r = client.readRecord(ExerciseSessionRecord::class, uuid).record
+                val segmenti = r.segments.flatMap {
+                    listOf(
+                        it.startTime.toEpochMilli().toDouble(),
+                        it.endTime.toEpochMilli().toDouble(),
+                        it.segmentType.toDouble(),
+                        it.repetitions.toDouble(),
+                    )
+                }
+                val lap = r.laps.flatMap {
+                    listOf(
+                        it.startTime.toEpochMilli().toDouble(),
+                        it.endTime.toEpochMilli().toDouble(),
+                        it.length?.inMeters ?: -1.0,
+                    )
+                }
+                val distanze = client.readRecords(
+                    ReadRecordsRequest(
+                        DistanceRecord::class,
+                        TimeRangeFilter.between(r.startTime, r.endTime),
+                        dataOriginFilter = setOf(DataOrigin(r.metadata.dataOrigin.packageName)),
+                    ),
+                ).records.flatMap {
+                    listOf(
+                        it.startTime.toEpochMilli().toDouble(),
+                        it.endTime.toEpochMilli().toDouble(),
+                        it.distance.inMeters,
+                    )
+                }
+                mapOf(
+                    "titolo" to r.title,
+                    "note" to r.notes,
+                    "segmenti" to segmenti.toDoubleArray(),
+                    "lap" to lap.toDoubleArray(),
+                    "distanze" to distanze.toDoubleArray(),
+                )
+            } catch (e: Exception) {
+                Log.w("Avidididadi", "Health Connect: dettagli non leggibili: $e")
+                mapOf("errore" to e.javaClass.simpleName)
             }
             result.success(risposta)
         }

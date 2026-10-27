@@ -43,7 +43,7 @@ IconData iconaSport(String sport) {
 }
 
 // Colori degli sport, diversi per tema: nello scuro toni caldi accanto al
-// rosso (forza in grigio); nel chiaro i neon (forza in nero). Cambiano sia la
+// rosso (forza in grigio); nel chiaro tutti neon fluo (forza in viola). Cambiano sia la
 // tinta sia la luminosità, così si distinguono anche quando sono piccoli.
 const _palette = [
   Color(0xFFE57373),
@@ -58,15 +58,15 @@ Color coloreSport(String sport) {
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return scuro ? const Color(0xFF8E8E96) : const Color(0xFF14141A);
+      return scuro ? const Color(0xFF8E8E96) : const Color(0xFF9D4DFF);
     case 'corsa':
       return scuro ? const Color(0xFFFF3B47) : const Color(0xFFFF2E93);
     case 'nuoto':
-      return scuro ? const Color(0xFFFF7A59) : const Color(0xFF2EA8FF);
+      return scuro ? const Color(0xFFFF7A59) : const Color(0xFF00B2FF);
     case 'bici':
-      return scuro ? const Color(0xFFD9324A) : const Color(0xFF00BFB1);
+      return scuro ? const Color(0xFFD9324A) : const Color(0xFF00E0B8);
     case 'mobilità':
-      return scuro ? const Color(0xFFE8A598) : const Color(0xFFB566FF);
+      return scuro ? const Color(0xFFE8A598) : const Color(0xFFFF7A00);
     case 'riposo':
       return scuro ? const Color(0xFF6E6E6E) : const Color(0xFF9A9AA5);
     default:

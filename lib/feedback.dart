@@ -9,6 +9,10 @@ const feedbackHeader = [
   'dolore',
   'note',
   'sport',
+  // Colonne aggiunte: l'attività davvero svolta e il passo della principale.
+  'id_sessione',
+  'passo_s',
+  'esito_passo',
 ];
 
 /// Feedback rapido a fine sessione, per ogni sport.
@@ -19,6 +23,9 @@ class FeedbackSessione {
   final bool completata; // tutte le serie fatte
   final bool dolore; // dolore o fastidio
   final String note;
+  final String idSessione; // l'attività svolta (es. hc-…), vuoto se non c'è
+  final int passoS; // passo della principale (s/100 m nel nuoto), 0 = non detto
+  final String esitoPasso; // tenuto, lento, molto_lento o vuoto
   const FeedbackSessione({
     required this.data,
     required this.fatica,
@@ -26,6 +33,9 @@ class FeedbackSessione {
     this.completata = true,
     this.dolore = false,
     this.note = '',
+    this.idSessione = '',
+    this.passoS = 0,
+    this.esitoPasso = '',
   });
 
   List<String> toRow() => [
@@ -35,6 +45,9 @@ class FeedbackSessione {
     dolore ? 'si' : 'no',
     note,
     sport,
+    idSessione,
+    passoS > 0 ? '$passoS' : '',
+    esitoPasso,
   ];
 
   bool di(DateTime giorno, String s) =>
@@ -51,6 +64,9 @@ class FeedbackSessione {
       completata: t.v(r, 'completata') != 'no',
       dolore: t.v(r, 'dolore') == 'si',
       note: t.v(r, 'note'),
+      idSessione: t.v(r, 'id_sessione'),
+      passoS: int.tryParse(t.v(r, 'passo_s')) ?? 0,
+      esitoPasso: t.v(r, 'esito_passo'),
     );
   }
 }

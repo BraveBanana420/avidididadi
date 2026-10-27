@@ -439,4 +439,18 @@ void main() {
       expect(letto.ignorati, {'WALKING': 3, 'OTHER': 1});
     });
   });
+
+  test('Freeletics: il nome dai blocchi, non "HIIT"', () {
+    expect(
+      nomeFreeletics([
+        'Riscaldamento',
+        'Intervallo',
+        '5/10 PANDORA',
+        '25x Leg Wipers',
+        'Defaticamento',
+      ]),
+      '5/10 PANDORA · 25x Leg Wipers',
+    );
+    expect(nomeFreeletics(['Riscaldamento', 'Intervallo']), isNull);
+  });
 }

@@ -109,7 +109,7 @@ void main() {
   });
 
   group('nuoto e bici', () {
-    test('nuoto al passo critico, soglia a settimane alterne', () {
+    test('nuoto al passo di riferimento, soglia a settimane alterne', () {
       final p = genera({'Nuoto'}, passoCritico: 120);
       expect(tipo(p, 0, 1, 'Nuoto'), 'Tecnica');
       expect(tipo(p, 1, 1, 'Nuoto'), 'Soglia');
@@ -118,7 +118,8 @@ void main() {
             w.id == 'nuoto_${isoData(lunedi.add(const Duration(days: 8)))}' &&
             w.fase == 'principale',
       );
-      expect(soglia.single.intensita, 'passo 2:00/100 m');
+      // Soglia: il 3% più veloce del riferimento (2:00), non di più.
+      expect(soglia.single.intensita, 'passo 1:56/100 m');
     });
 
     test('una sola uscita in bici: Z2 e intervalli alternati', () {

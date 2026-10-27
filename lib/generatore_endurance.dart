@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'adattamento.dart';
 import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
@@ -109,8 +110,11 @@ PianoEndurance generaPianoEndurance({
   required DateTime inizio,
   required DateTime da,
   Obiettivo? obiettivo,
-  int? passoCritico,
-  Map<String, int> regolazione = const {}, // per sport, dai feedback
+  int?
+  passoCritico, // passo di riferimento in piscina (s/100 m), dai dati reali
+  Map<String, int> regolazione = const {}, // per sport, dai feedback (vecchio)
+  // Esiti dei feedback per sport: se ci sono, la progressione viene da qui.
+  Map<String, List<(DateTime, EsitoSeduta)>> esiti = const {},
   Map<String, String> progressione =
       const {}, // per sport: durata, intensità, auto
   bool principiante = false, // si parte da zero: prima solo corse facili
@@ -138,10 +142,23 @@ PianoEndurance generaPianoEndurance({
       0,
       lunediDi(da).difference(lunInizio).inDays ~/ 28,
     );
-    final base = _base(
+    final inizioBlocco = lunInizio.add(Duration(days: 28 * bloccoDa));
+    final base = _base(storico, sp, inizioBlocco);
+    // Con dei feedback la progressione viene solo dall'adattamento (contano
+    // quelli del blocco in corso: la base riparte dai dati recenti).
+    final esitiSp = esiti[sp] ?? const [];
+    final ad = esitiSp.isEmpty
+        ? null
+        : adatta([
+            for (final e in esitiSp)
+              if (!e.$1.isBefore(inizioBlocco)) e,
+          ], modo: progressione[sp] ?? progressioneAuto);
+    // Volume delle due settimane prima, per il tetto del +10%.
+    var prima1 = _volumeFatto(storico, sp, lunediDi(da));
+    var prima2 = _volumeFatto(
       storico,
       sp,
-      lunInizio.add(Duration(days: 28 * bloccoDa)),
+      lunediDi(da).subtract(const Duration(days: 7)),
     );
     for (final e in perSettimana.entries) {
       final settimane = math.max(0, e.key.difference(lunInizio).inDays ~/ 7);
@@ -151,25 +168,73 @@ PianoEndurance generaPianoEndurance({
         regolazione[sp] ?? 0,
         progressione[sp] ?? progressioneAuto,
       );
-      final fattore = _fattore(sb, fase, passiDurata);
+      var fattore = _fattore(sb, fase, passiDurata);
       // Nelle settimane di scarico l'intensità non sale.
-      final scarico = sb == 3 || fase == Fase.scarico || fase == Fase.gara;
-      final intensita = scarico ? math.min(0, passiIntensita) : passiIntensita;
-      for (final s in _ruoli(
-        e.value,
-        sp,
-        settimane,
-        fattore,
-        base,
-        obiettivo,
-        principiante,
-      )) {
-        final k = s.fissa ? 0 : intensita;
-        final w = switch (sp) {
-          'Corsa' => _corsa(s, fase, sb, settimane, obiettivo, k, principiante),
-          'Nuoto' => _nuoto(s, fase, sb, base, fattore, passoCritico, k),
-          _ => _bici(s, k),
-        };
+      var scarico = sb == 3 || fase == Fase.scarico || fase == Fase.gara;
+      var intensita = scarico ? math.min(0, passiIntensita) : passiIntensita;
+      if (ad != null) {
+        final settimanaScarico =
+            ad.scaricoFino != null && !e.key.isAfter(ad.scaricoFino!);
+        final f = fase == Fase.scarico
+            ? 0.7
+            : fase == Fase.gara
+            ? 0.5
+            : settimanaScarico
+            ? 0.75
+            : 1.0;
+        fattore = (f * ad.volume).clamp(0.4, 1.5).toDouble();
+        scarico = f < 1;
+        intensita = scarico ? math.min(0, ad.intensita) : ad.intensita;
+      }
+      List<(_Seduta, (String, List<WorkoutStep>))> costruisci(double fat) => [
+        for (final s in _ruoli(
+          e.value,
+          sp,
+          settimane,
+          fat,
+          base,
+          obiettivo,
+          principiante,
+        ))
+          (
+            s,
+            switch (sp) {
+              'Corsa' => _corsa(
+                s,
+                fase,
+                sb,
+                settimane,
+                obiettivo,
+                s.fissa ? 0 : intensita,
+                principiante,
+              ),
+              'Nuoto' => _nuoto(
+                s,
+                fase,
+                sb,
+                base,
+                fat,
+                passoCritico,
+                s.fissa ? 0 : intensita,
+              ),
+              _ => _bici(s, s.fissa ? 0 : intensita),
+            },
+          ),
+      ];
+      var settimana = costruisci(fattore);
+      // Tetto: al massimo +10% sulla più impegnativa delle due settimane
+      // prima (così dopo uno scarico si torna al livello di prima).
+      final riferimento = math.max(prima1, prima2);
+      // Le serie arrotondano i metri: si riduce finché si sta nel limite.
+      for (var prova = 0; prova < 6 && riferimento > 0; prova++) {
+        final volume = _volumeSettimana(sp, settimana.map((x) => x.$2.$2));
+        if (volume <= riferimento * 1.1) break;
+        fattore *= riferimento * 1.1 / volume * 0.97;
+        settimana = costruisci(fattore);
+      }
+      prima2 = prima1;
+      prima1 = _volumeSettimana(sp, settimana.map((x) => x.$2.$2));
+      for (final (s, w) in settimana) {
         passi.addAll(w.$2);
         programma.add(
           ProgrammaRiga(data: s.data, sport: sp, idWorkout: w.$2.first.id),
@@ -179,6 +244,38 @@ PianoEndurance generaPianoEndurance({
     }
   }
   return PianoEndurance(passi, programma, tipi);
+}
+
+/// Volume di una seduta: metri nel nuoto, minuti negli altri sport.
+double _volumeSeduta(String sport, List<WorkoutStep> passi) {
+  if (sport != 'Nuoto') {
+    return passi.isEmpty ? 0 : passi.first.durataTot.toDouble();
+  }
+  return passi.fold(0.0, (t, p) {
+    final m = double.tryParse(p.distanzaM) ?? 0;
+    final n = int.tryParse(p.serie) ?? 1;
+    return t + m * math.max(1, n);
+  });
+}
+
+double _volumeSettimana(String sport, Iterable<List<WorkoutStep>> sedute) =>
+    sedute.fold(0.0, (t, p) => t + _volumeSeduta(sport, p));
+
+/// Volume fatto nella settimana prima di [lunedi] (metri nel nuoto, minuti
+/// negli altri sport).
+double _volumeFatto(List<Sessione> storico, String sport, DateTime lunedi) {
+  final da = lunedi.subtract(const Duration(days: 7));
+  return storico
+      .where(
+        (s) =>
+            stessoSport(s.sport, sport) &&
+            !s.data.isBefore(da) &&
+            s.data.isBefore(lunedi),
+      )
+      .fold(
+        0.0,
+        (t, s) => t + (sport == 'Nuoto' ? s.distanzaKm * 1000 : s.durataMin),
+      );
 }
 
 /// Riferimenti dai dati recenti (ultime 4 settimane): durata della seduta più
@@ -572,8 +669,9 @@ WorkoutStep _passo(
   final f = s.fissa ? 1.0 : fattore;
   final totale = math.max(600, ((partenza * f) / 50).round() * 50);
   final principale = math.max(200, totale - 200 - 200 - 200);
-  String passo(int extra) =>
-      pc == null ? '' : 'passo ${fmtPasso100(pc + extra)}';
+  String passo({required bool soglia}) => pc == null
+      ? ''
+      : 'passo ${fmtPasso100(targetNuoto(pc, soglia: soglia, k: k))}';
   final soglia = s.fissa
       ? s.ruolo == 'soglia'
       : s.ruolo == 'soglia' && sb != 3 && fase != Fase.scarico;
@@ -611,7 +709,7 @@ WorkoutStep _passo(
           'Stile libero sostenuto',
           serie: '${principale ~/ 100}',
           metri: '100',
-          intensita: pc == null ? 'sostenuto, costante' : passo(-2 * k),
+          intensita: pc == null ? 'sostenuto, costante' : passo(soglia: true),
           recupero: '${(15 - 3 * k).clamp(5, 30)}',
         )
       else
@@ -625,7 +723,7 @@ WorkoutStep _passo(
           metri: '200',
           intensita: pc == null
               ? 'medio, respirazione regolare'
-              : passo(10 - 2 * k),
+              : passo(soglia: false),
           recupero: '${(30 - 5 * k).clamp(10, 45)}',
         ),
       _passo(s, nome, 4, 'defaticamento', 'Dorso facile', metri: '200'),

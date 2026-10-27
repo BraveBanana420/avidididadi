@@ -209,8 +209,11 @@ class _SlotDialogState extends State<SlotDialog> {
     return AlertDialog(
       title: Text(widget.titolo ?? giorniSettimana[widget.slot.giorno - 1]),
       content: SingleChildScrollView(
+        // Un po' di respiro tra i campi: le etichette non si toccano.
+        padding: const EdgeInsets.only(top: 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          spacing: 14,
           children: [
             DropdownButtonFormField<String>(
               initialValue: sport,

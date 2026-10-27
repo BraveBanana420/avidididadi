@@ -10,6 +10,7 @@ import '../recupero.dart';
 import '../tema.dart';
 import '../widgets.dart';
 import '../workout_base.dart';
+import 'energia.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
@@ -409,11 +410,12 @@ class _PillolaEnergia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (parola, colore) = switch (p.stato) {
-      StatoRecupero.buono => ('Buona', const Color(0xFF22E07A)),
-      StatoRecupero.normale => ('Normale', const Color(0xFFFFC233)),
-      StatoRecupero.basso => ('Bassa', const Color(0xFFFF3B47)),
+    final parola = switch (p.stato) {
+      StatoRecupero.buono => 'Buona',
+      StatoRecupero.normale => 'Normale',
+      StatoRecupero.basso => 'Bassa',
     };
+    final colore = coloreEnergia(p.stato);
     return Semantics(
       label: 'Energia ${parola.toLowerCase()}',
       button: true,
@@ -421,28 +423,14 @@ class _PillolaEnergia extends StatelessWidget {
       child: SuperficiePulse(
         raggio: 999,
         padding: const EdgeInsets.fromLTRB(8, 8, 12, 8),
-        onTap: () => showDialog<void>(
-          context: context,
-          builder: (c) => AlertDialog(
-            title: Text(nomiRecupero[p.stato]!),
-            content: Text(
-              [consigliRecupero[p.stato]!, ...p.motivi].join('\n\n'),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(c),
-                child: const Text('Ok'),
-              ),
-            ],
-          ),
-        ),
+        onTap: () => mostraEnergia(context, p),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(
               width: 24,
               height: 24,
-              child: CustomPaint(painter: _FulmineNeon(colore)),
+              child: CustomPaint(painter: FulmineNeon(colore)),
             ),
             const SizedBox(width: 6),
             Text(
@@ -457,53 +445,6 @@ class _PillolaEnergia extends StatelessWidget {
 }
 
 /// Fulmine a contorno con alone neon: verde (buona), giallo, rosso (bassa).
-class _FulmineNeon extends CustomPainter {
-  final Color colore;
-  const _FulmineNeon(this.colore);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Lo stesso fulmine del mockup, disegnato in una griglia 24×24.
-    final k = size.width / 24;
-    final fulmine = Path()
-      ..moveTo(13 * k, 2 * k)
-      ..lineTo(4 * k, 14 * k)
-      ..lineTo(11 * k, 14 * k)
-      ..lineTo(10 * k, 22 * k)
-      ..lineTo(19 * k, 10 * k)
-      ..lineTo(12 * k, 10 * k)
-      ..close();
-    final tratto = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
-    // Alone: lo stesso tratto, più largo e sfocato.
-    canvas.drawPath(
-      fulmine,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4.5 * k
-        ..strokeJoin = StrokeJoin.round
-        ..color = colore.withValues(alpha: 0.55)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3.5 * k),
-    );
-    canvas.drawPath(
-      fulmine,
-      Paint()
-        ..style = PaintingStyle.fill
-        ..color = colore.withValues(alpha: 0.18),
-    );
-    canvas.drawPath(
-      fulmine,
-      tratto
-        ..strokeWidth = 2 * k
-        ..color = colore,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_FulmineNeon o) => o.colore != colore;
-}
 
 /// La settimana in una riga di cerchi: pieno e colorato = fatto, bordo = da
 /// fare, rosso = oggi. Un tocco su un giorno lo mostra sopra.
@@ -1122,7 +1063,7 @@ class _Fatto extends StatelessWidget {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () =>
-                      apriFeedback(context, state, s.data, s.sport),
+                      apriFeedback(context, state, s.data, s.sport, s),
                   icon: const Icon(Icons.rate_review_outlined),
                   label: const Text("Com'è andata?"),
                 ),
@@ -1423,7 +1364,7 @@ class PromemoriaFeedback extends StatelessWidget {
                     avatar: Icon(iconaSport(s.sport), size: 18),
                     label: Text('${s.sport} ${quando(s.data)}'),
                     onPressed: () =>
-                        apriFeedback(context, state, s.data, s.sport),
+                        apriFeedback(context, state, s.data, s.sport, s),
                   ),
               ],
             ),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:health/health.dart' show HealthDataType;
 
+import 'adattamento.dart';
 import 'agente_esterno.dart';
 import 'assistente.dart';
 import 'backup.dart';
@@ -729,7 +730,8 @@ class AppState extends ChangeNotifier {
             inizio: inizio,
             da: oggi,
             obiettivo: profilo.obiettivoGara,
-            passoCritico: passoCritico,
+            passoCritico: passoNuoto,
+            esiti: esitiEndurance,
             regolazione: profilo.regolazioneEndurance,
             progressione: profilo.progressione,
             principiante: profilo.livello == 'principiante',
@@ -1050,7 +1052,127 @@ class AppState extends ChangeNotifier {
   /// Passo critico del nuoto in secondi per 100 m (null se non stimabile).
   int? get passoCritico => profilo.passoCriticoManuale > 0
       ? profilo.passoCriticoManuale
-      : stimaPassoCritico(sessioni, DateTime.now());
+      : passoNuoto ?? stimaPassoCritico(sessioni, DateTime.now());
+
+  // ---------------------------------------------------------------------
+  // Adattamento ai feedback (corsa, nuoto, bici)
+
+  /// Gli step della seduta di [sport] di quel giorno, anche passata.
+  List<WorkoutStep> passiDel(DateTime d, String sport) =>
+      passiSeduta(soloData(d), sport, tipoDel(d, sport));
+
+  PianoRiga? _previsto(DateTime d, String sport) => piano
+      .where((r) => r.data == soloData(d) && stessoSport(r.sport, sport))
+      .firstOrNull;
+
+  /// L'attività davvero svolta a cui si riferisce il feedback.
+  Sessione? attivitaDi(FeedbackSessione f) {
+    if (f.idSessione.isNotEmpty) {
+      for (final s in sessioni) {
+        if (s.id == f.idSessione || s.parti.any((p) => p.id == f.idSessione)) {
+          return s;
+        }
+      }
+    }
+    return sessioni
+        .where((s) => s.data == f.data && stessoSport(s.sport, f.sport))
+        .firstOrNull;
+  }
+
+  /// Il feedback di un'attività: quello legato a lei, o del suo giorno.
+  FeedbackSessione? feedbackDi(Sessione s) =>
+      feedback
+          .where(
+            (f) =>
+                f.idSessione == s.id ||
+                s.parti.any((p) => p.id == f.idSessione),
+          )
+          .firstOrNull ??
+      feedbackDel(s.data, s.sport);
+
+  /// La seduta in programma rispetto a quello che è stato fatto quel giorno.
+  StatoSeduta statoDel(PianoRiga r) {
+    final passi = passiDel(r.data, r.sport);
+    return statoSeduta(
+      previsto: r,
+      fatte: sessioni,
+      metriPrevisti: stessoSport(r.sport, 'Nuoto') ? metriDi(passi).round() : 0,
+    );
+  }
+
+  /// Passo target della nuotata in programma quel giorno (s/100 m).
+  int? passoTargetDel(DateTime d) => passoTargetDi(passiDel(d, 'Nuoto'));
+
+  /// Com'è andata davvero: fatica attesa per l'attività svolta, scarto dal
+  /// passo target (solo se è stata fatta la seduta in programma) ed esito.
+  ({EsitoSeduta esito, int atteso, double? scarto, StatoSeduta stato})
+  valutaFeedback(FeedbackSessione f) {
+    final attivita = attivitaDi(f);
+    final previsto = _previsto(f.data, f.sport);
+    final stato = previsto == null
+        ? StatoSeduta.sostituita
+        : attivita == null
+        ? StatoSeduta
+              .svolta // feedback senza attività: fatta a mano
+        : statoDel(previsto);
+    final atteso = faticaAttesa(
+      attivita: attivita,
+      previsto: previsto,
+      stato: stato,
+    );
+    final target = stato == StatoSeduta.svolta && stessoSport(f.sport, 'Nuoto')
+        ? passoTargetDel(f.data)
+        : null;
+    final scarto = scartoPasso(f, target);
+    return (
+      esito: valutaSeduta(f: f, atteso: atteso, scarto: scarto),
+      atteso: atteso,
+      scarto: scarto,
+      stato: stato,
+    );
+  }
+
+  /// Esiti dei feedback per sport, in ordine di data.
+  Map<String, List<(DateTime, EsitoSeduta)>> get esitiEndurance {
+    final out = <String, List<(DateTime, EsitoSeduta)>>{};
+    for (final f in feedback) {
+      final sp = normSport(f.sport);
+      if (!sportEndurance.contains(sp)) continue;
+      (out[sp] ??= []).add((f.data, valutaFeedback(f).esito));
+    }
+    return out;
+  }
+
+  /// Passo di riferimento in piscina (s/100 m): mediana del passo della parte
+  /// principale nelle ultime 3 nuotate (dal feedback o stimato), oppure quello
+  /// scritto a mano nel profilo.
+  int? get passoNuoto {
+    if (profilo.passoCriticoManuale > 0) return profilo.passoCriticoManuale;
+    final oggi = soloData(DateTime.now());
+    final nuotate =
+        sessioni
+            .where(
+              (s) => stessoSport(s.sport, 'Nuoto') && !s.data.isAfter(oggi),
+            )
+            .toList()
+          ..sort((a, b) => b.data.compareTo(a.data));
+    final valori = <int>[];
+    for (final s in nuotate) {
+      final previsto = _previsto(s.data, 'Nuoto');
+      final passi = passiDel(s.data, 'Nuoto');
+      final svolta =
+          previsto != null && statoDel(previsto) == StatoSeduta.svolta;
+      final v = passoEseguito(
+        s: s,
+        f: feedbackDi(s),
+        target: svolta ? passoTargetDi(passi) : null,
+        recuperoS: svolta ? recuperoPrevisto(passi) : 0,
+      );
+      if (v != null) valori.add(v);
+      if (valori.length == 3) break;
+    }
+    return passoRiferimento(valori);
+  }
 
   void _ricombina() {
     sessioni = combina(
@@ -1261,17 +1383,48 @@ class AppState extends ChangeNotifier {
         notifyListeners();
         return 'Feedback salvato: conta nel carico di allenamento.';
       }
-      final r = regolaEndurance(
-        f,
-        tipoDel(f.data, sport),
-        profilo.regolazioneEndurance[sport] ?? 0,
-        modo: profilo.progressione[sport] ?? progressioneAuto,
-      );
-      profilo.regolazioneEndurance[sport] = r.regolazione;
-      await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+      // La prossima seduta di questo sport, prima e dopo il ricalcolo.
+      final oggi = soloData(DateTime.now());
+      final prossima =
+          piano
+              .where(
+                (r) =>
+                    stessoSport(r.sport, sport) &&
+                    !r.data.isBefore(oggi) &&
+                    r.data != f.data &&
+                    !sessioni.any(
+                      (s) => s.data == r.data && stessoSport(s.sport, sport),
+                    ),
+              )
+              .toList()
+            ..sort((a, b) => a.data.compareTo(b.data));
+      final quando = prossima.firstOrNull?.data;
+      final prima = quando == null ? <WorkoutStep>[] : passiDel(quando, sport);
+      final v = valutaFeedback(f);
+      final esiti = esitiEndurance[sport] ?? const [];
+      final scarico =
+          adatta(
+            esiti,
+            modo: profilo.progressione[sport] ?? progressioneAuto,
+          ).scaricoFino ==
+          f.data.add(const Duration(days: 7));
       await _aggiornaEndurance();
       notifyListeners();
-      return r.messaggio;
+      final frase = fraseEsito(
+        esito: v.esito,
+        fatica: f.fatica,
+        atteso: v.atteso,
+        scarto: v.scarto,
+        scarico: scarico,
+        sport: sport,
+      );
+      if (quando == null) return frase;
+      final cambi = cambiSeduta(prima, passiDel(quando, sport));
+      final giorno =
+          '${giorniSettimana[quando.weekday - 1].toLowerCase()} '
+          '${quando.day}/${quando.month}';
+      return '$frase\n\nProssima seduta ($giorno): '
+          '${cambi.isEmpty ? 'resta uguale' : cambi.join(', ')}.';
     }
     if (profilo.obiettivo.isEmpty) {
       notifyListeners();

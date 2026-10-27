@@ -138,4 +138,30 @@ void main() {
       expect(letto.di(DateTime(2026, 10, 20), 'Corsa'), false);
     });
   });
+
+  test('energia: una barra per ogni dato, rispetto al tuo solito', () {
+    final oggi = DateTime(2026, 10, 27);
+    final giorni = [
+      for (var i = 1; i <= 10; i++)
+        GiornoRecupero(
+          oggi.subtract(Duration(days: i)),
+          fcRiposo: 52,
+          hrv: 60,
+          sonnoMin: 420,
+        ),
+      GiornoRecupero(oggi, fcRiposo: 52, hrv: 60, sonnoMin: 488),
+    ];
+    final p = valutaRecupero(giorni, oggi)!;
+    expect(p.stato, StatoRecupero.buono);
+    expect(nomiRecupero[p.stato], 'Energia buona');
+    expect(p.indicatori.map((i) => i.nome), [
+      'Variabilità cardiaca (HRV)',
+      'FC a riposo',
+      'Sonno',
+    ]);
+    // HRV e FC uguali al solito: al centro della barra.
+    expect(p.indicatori[0].posizione, closeTo(0.5, 0.01));
+    expect(p.indicatori[1].posizione, closeTo(0.5, 0.01));
+    expect(p.indicatori[2].verso, 1);
+  });
 }

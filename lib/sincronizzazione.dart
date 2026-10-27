@@ -17,6 +17,34 @@ const versioneRegole = 4; // 4: yoga, pilates e stretching come mobilità
 bool _daFreeletics(String pacchetto) =>
     pacchetto.toLowerCase().contains('freeletics');
 
+bool daFreeletics(Sessione s) => _daFreeletics(s.origine);
+
+const _titoliGenerici = {
+  'riscaldamento',
+  'intervallo',
+  'intervalli',
+  'defaticamento',
+  'warm up',
+  'warm-up',
+  'warmup',
+  'cool down',
+  'cooldown',
+  'recupero',
+  'pausa',
+  'hiit',
+};
+
+/// Nome dell'allenamento Freeletics dai titoli dei blocchi, senza quelli
+/// generici (riscaldamento, intervallo, defaticamento). Null se non ce ne sono.
+String? nomeFreeletics(Iterable<String> titoli) {
+  final nomi = <String>[];
+  for (final t in titoli.map((x) => x.trim())) {
+    if (t.isEmpty || _titoliGenerici.contains(t.toLowerCase())) continue;
+    if (!nomi.contains(t)) nomi.add(t);
+  }
+  return nomi.isEmpty ? null : nomi.join(' · ');
+}
+
 /// Nome leggibile dell'app di origine.
 String nomeFonte(String pacchetto, String nome) {
   final p = pacchetto.toLowerCase();
@@ -263,7 +291,11 @@ List<Sessione> _senzaDoppioni(List<Sessione> s) {
 /// - se c'è Freeletics, i pezzi sono i suoi blocchi (nome e tipo), mentre FC e
 ///   calorie vengono dall'orologio. La fonte mostrata è solo quella dei pezzi.
 Sessione _unisciGruppo(List<Sessione> g) {
-  if (g.length == 1) return g.first;
+  if (g.length == 1) {
+    final s = g.first;
+    final nome = _daFreeletics(s.origine) ? nomeFreeletics([s.note]) : null;
+    return nome == null ? s : s.copyWith(tipo: nome);
+  }
   final freeletics = g.where((s) => _daFreeletics(s.origine)).toList();
   final parti = _senzaDoppioni(freeletics.isNotEmpty ? freeletics : g);
   final orologio = freeletics.isNotEmpty
@@ -282,9 +314,16 @@ Sessione _unisciGruppo(List<Sessione> g) {
     id: primo.id,
     data: primo.data,
     sport: primo.sport,
-    tipo: tipi.isEmpty
-        ? primo.tipo
-        : (tipi.entries.toList()..sort((a, b) => b.value - a.value)).first.key,
+    // Freeletics: il nome dei blocchi veri (es. "5/10 PANDORA"), non "HIIT".
+    tipo:
+        (freeletics.isEmpty
+            ? null
+            : nomeFreeletics(parti.map((s) => s.note))) ??
+        (tipi.isEmpty
+            ? primo.tipo
+            : (tipi.entries.toList()..sort((a, b) => b.value - a.value))
+                  .first
+                  .key),
     durataMin: parti.fold(0, (t, s) => t + s.durataMin),
     distanzaKm:
         (parti.fold(0.0, (t, s) => t + s.distanzaKm) * 100).round() / 100,

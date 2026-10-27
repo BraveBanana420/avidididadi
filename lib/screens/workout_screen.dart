@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../adattamento.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../figura.dart';
@@ -10,6 +11,7 @@ import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../pulse.dart';
+import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
 import 'catalogo_screen.dart';
@@ -128,6 +130,32 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       children.add(_DatiSessione(sessione: s));
       children.add(const SizedBox(height: 12));
     }
+    // Fatto un allenamento diverso da quello in programma: lo si dice.
+    final previsto = state.piano
+        .where((r) => r.data == data && stessoSport(r.sport, sport))
+        .firstOrNull;
+    if (svolte.isNotEmpty &&
+        previsto != null &&
+        state.statoDel(previsto) == StatoSeduta.sostituita) {
+      children.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Row(
+            children: [
+              const Icon(Icons.swap_horiz, size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Hai fatto un allenamento diverso da quello in programma: '
+                  'il feedback vale per quello che hai fatto davvero.',
+                  style: t.bodySmall,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     // Feedback rapido, da oggi indietro: sedute generate dall'app o svolte.
     final generata =
@@ -155,7 +183,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     ].join(' · '),
             ),
             trailing: Text(f == null ? 'Rispondi' : 'Modifica'),
-            onTap: () => apriFeedback(context, state, data, sport),
+            onTap: () =>
+                apriFeedback(context, state, data, sport, svolte.firstOrNull),
           ),
         ),
       );
@@ -601,23 +630,17 @@ class _DatiSessione extends StatelessWidget {
             // visibili solo qui, nel calendario la sessione è una sola.
             if (s.parti.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text('Intervalli', style: t.titleSmall),
+              Text(
+                daFreeletics(s) ? 'Blocchi' : 'Intervalli',
+                style: t.titleSmall,
+              ),
               const SizedBox(height: 4),
               for (final p in s.parti)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Text(
-                    [
-                      if (p.inizio != null && p.fine != null)
-                        '${_ora(p.inizio!)}–${_ora(p.fine!)}',
-                      '${p.durataMin} min',
-                      if (p.tipo.isNotEmpty) p.tipo,
-                      if (p.distanzaKm > 0)
-                        nuoto
-                            ? '${(p.distanzaKm * 1000).round()} m'
-                            : '${fmtNum(p.distanzaKm)} km',
-                      if (p.fcMedia > 0) 'FC ${p.fcMedia}',
-                    ].join(' · '),
+                    // Freeletics: il nome del blocco (es. "25x Leg Wipers").
+                    '• ${[if (daFreeletics(p) && p.note.isNotEmpty) p.note else if (p.inizio != null && p.fine != null) '${_ora(p.inizio!)}–${_ora(p.fine!)}', '${p.durataMin} min', if (!daFreeletics(p) && p.tipo.isNotEmpty) p.tipo, if (p.distanzaKm > 0) nuoto ? '${(p.distanzaKm * 1000).round()} m' : '${fmtNum(p.distanzaKm)} km', if (p.fcMedia > 0) 'FC ${p.fcMedia}'].join(' · ')}',
                   ),
                 ),
             ],

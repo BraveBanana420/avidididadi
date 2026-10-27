@@ -8,6 +8,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../recupero.dart';
 import '../widgets.dart';
+import 'energia.dart';
 import 'health_connect_card.dart';
 import 'sport_screen.dart';
 
@@ -387,25 +388,7 @@ class _RiassuntoState extends State<_Riassunto> {
     return InkWell(
       onTap: pronto == null
           ? null
-          : () => showDialog<void>(
-              context: context,
-              builder: (c) => AlertDialog(
-                title: Text(nomiRecupero[pronto.stato]!),
-                content: Text(
-                  [
-                    consigliRecupero[pronto.stato]!,
-                    ...pronto.motivi,
-                    glossario['Recupero']!,
-                  ].join('\n\n'),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(c),
-                    child: const Text('Ok'),
-                  ),
-                ],
-              ),
-            ),
+          : () => mostraEnergia(context, pronto, nota: glossario['Recupero']),
       child: numero(
         pronto == null
             ? '–'

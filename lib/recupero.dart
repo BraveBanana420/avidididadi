@@ -109,10 +109,11 @@ int fcRiposoTipica(List<GiornoRecupero> giorni, DateTime oggi) {
 
 enum StatoRecupero { buono, normale, basso }
 
+// Come la pillola in alto: "Energia" buona, normale o bassa.
 const nomiRecupero = {
-  StatoRecupero.buono: 'Recupero buono',
-  StatoRecupero.normale: 'Recupero nella norma',
-  StatoRecupero.basso: 'Recupero basso',
+  StatoRecupero.buono: 'Energia buona',
+  StatoRecupero.normale: 'Energia normale',
+  StatoRecupero.basso: 'Energia bassa',
 };
 
 const consigliRecupero = {
@@ -122,12 +123,39 @@ const consigliRecupero = {
       'Meglio una seduta facile o un giorno di riposo: abbassa l\'intensità.',
 };
 
+/// Un dato del recupero di oggi, da disegnare su una barra: [posizione] va
+/// da 0 a 1 (0,5 = il tuo solito), [verso] dice se è buono (+1), nella norma
+/// (0) o un campanello (-1).
+class Indicatore {
+  final String nome;
+  final String valore;
+  final String riferimento;
+  final double posizione;
+  final int verso;
+  const Indicatore(
+    this.nome,
+    this.valore,
+    this.riferimento,
+    this.posizione,
+    this.verso,
+  );
+}
+
 class Prontezza {
   final StatoRecupero stato;
   final List<String> motivi;
   final GiornoRecupero giorno;
-  const Prontezza(this.stato, this.motivi, this.giorno);
+  final List<Indicatore> indicatori;
+  const Prontezza(
+    this.stato,
+    this.motivi,
+    this.giorno, [
+    this.indicatori = const [],
+  ]);
 }
+
+double _sulla(double v, double da, double a) =>
+    ((v - da) / (a - da)).clamp(0.0, 1.0).toDouble();
 
 /// Com'è il recupero di oggi rispetto alle tue ultime 4 settimane. Null se
 /// oggi non c'è nessun dato.
@@ -140,6 +168,7 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
   );
   var punti = 0;
   final motivi = <String>[];
+  final indicatori = <Indicatore>[];
 
   final hrv = [
     for (final x in prima)
@@ -147,6 +176,15 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
   ];
   if (g.hrv > 0 && hrv.length >= 5) {
     final media = hrv.reduce((a, b) => a + b) / hrv.length;
+    indicatori.add(
+      Indicatore(
+        'Variabilità cardiaca (HRV)',
+        '${g.hrv.round()} ms',
+        'di solito ${media.round()} ms · più alta è meglio',
+        _sulla(g.hrv, media * 0.7, media * 1.3),
+        g.hrv < media * 0.9 ? -1 : (g.hrv > media * 1.05 ? 1 : 0),
+      ),
+    );
     if (g.hrv < media * 0.9) {
       punti -= 1;
       motivi.add(
@@ -164,6 +202,16 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
   ];
   if (g.fcRiposo > 0 && fc.length >= 5) {
     final tipica = _mediana(fc);
+    // Barra rovesciata: più bassa è meglio, quindi va verso destra.
+    indicatori.add(
+      Indicatore(
+        'FC a riposo',
+        '${g.fcRiposo} bpm',
+        'di solito ${tipica.round()} bpm · più bassa è meglio',
+        _sulla(-g.fcRiposo.toDouble(), -(tipica + 10), -(tipica - 10)),
+        g.fcRiposo >= tipica + 5 ? -1 : (g.fcRiposo <= tipica - 3 ? 1 : 0),
+      ),
+    );
     if (g.fcRiposo >= tipica + 5) {
       punti -= 1;
       motivi.add(
@@ -175,6 +223,15 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
   if (g.sonnoMin > 0) {
     final ore =
         '${g.sonnoMin ~/ 60} h ${(g.sonnoMin % 60).toString().padLeft(2, '0')}';
+    indicatori.add(
+      Indicatore(
+        'Sonno',
+        ore,
+        'bene da 7 h 30 in su, poco sotto le 6 h',
+        _sulla(g.sonnoMin.toDouble(), 240, 540),
+        g.sonnoMin < 360 ? -1 : (g.sonnoMin >= 450 ? 1 : 0),
+      ),
+    );
     if (g.sonnoMin < 360) {
       punti -= 1;
       motivi.add('Hai dormito poco ($ore)');
@@ -189,5 +246,5 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
       : punti >= 1
       ? StatoRecupero.buono
       : StatoRecupero.normale;
-  return Prontezza(stato, motivi, g);
+  return Prontezza(stato, motivi, g, indicatori);
 }
