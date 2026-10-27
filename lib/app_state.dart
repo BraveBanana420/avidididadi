@@ -166,6 +166,8 @@ class AppState extends ChangeNotifier {
         : (tm.righe.map((r) => Misura.da(tm, r)).whereType<Misura>().toList()
             ..sort((a, b) => a.data.compareTo(b.data)));
 
+    // Le sedute future seguono sempre i feedback e i dati più recenti.
+    await _aggiornaEndurance();
     notifyListeners();
   }
 
