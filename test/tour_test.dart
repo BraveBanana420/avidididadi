@@ -56,7 +56,7 @@ void main() {
     await attendi(t);
     expect(find.text('1 di 10'), findsOneWidget);
     expect(find.text('La barra in basso'), findsOneWidget);
-    expect(find.text('Tocca il cerchio per continuare.'), findsOneWidget);
+    expect(find.text('Tocca Avanti per continuare.'), findsOneWidget);
 
     // Il tocco dentro il cerchio (la barra) passa al passo dopo.
     // Un tocco fuori dal cerchio non fa niente.
@@ -101,7 +101,6 @@ void main() {
     }
     expect(find.text('Com\'è andata?'), findsOneWidget);
     expect(find.textContaining('Quando un allenamento fatto'), findsOneWidget);
-    expect(find.text('Tocca il cerchio per continuare.'), findsNothing);
     await t.tap(find.text('Esci'));
     await t.pumpAndSettle();
     expect(find.text('6 di 10'), findsNothing);

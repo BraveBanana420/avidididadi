@@ -335,14 +335,13 @@ class _MascheraState extends State<_Maschera>
             Text(p.titolo, style: t.titleLarge),
             const SizedBox(height: 6),
             Text(testo, style: t.bodyMedium),
-            if (b != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  'Tocca il cerchio per continuare.',
-                  style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
-                ),
+            Padding(
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'Tocca Avanti per continuare.',
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
+            ),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -380,7 +379,10 @@ class _MascheraState extends State<_Maschera>
                 builder: (_, _) => CustomPaint(
                   painter: _PittoreMaschera(
                     buco: pronto ? b : null,
-                    fondo: Colors.black.withValues(alpha: 0.72),
+                    // Velo leggero: antracite nel tema scuro, bianco nel chiaro.
+                    fondo: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF2A2A30).withValues(alpha: 0.82)
+                        : Colors.white.withValues(alpha: 0.78),
                     anello: Pulse.di(context).anello.first,
                     pulsazione: _pulsa.value,
                   ),
