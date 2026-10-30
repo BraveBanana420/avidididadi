@@ -115,6 +115,7 @@ class _HomePageState extends State<HomePage> {
     // All'apertura sincronizza solo se Health Connect è già collegato:
     // nessuna richiesta di permessi senza che l'utente lo chieda.
     await state.sincronizzaHc();
+    await state.sincronizzaIntervals();
   }
 
   Timer? _attesaWidget;

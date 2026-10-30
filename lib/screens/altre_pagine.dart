@@ -7,6 +7,7 @@ import '../models.dart';
 import '../widgets.dart';
 import 'backup_card.dart';
 import 'health_connect_card.dart';
+import 'intervals_card.dart';
 import 'import_csv.dart';
 import 'privacy_screen.dart';
 
@@ -32,6 +33,8 @@ class DatiCollegamentiScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SezioneHealthConnect(state: state),
+          const SizedBox(height: 12),
+          SezioneIntervals(state: state),
           const SizedBox(height: 12),
           SezioneBackup(state: state),
           const SizedBox(height: 12),

@@ -17,12 +17,14 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
+import 'intervals.dart';
 import 'llm.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'percorso.dart';
 import 'profilo.dart';
 import 'recupero.dart';
+import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
 import 'workout_base.dart';
@@ -116,6 +118,7 @@ class AppState extends ChangeNotifier {
       await Storage.readTabella('health_connect_sessioni.csv'),
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
+    await _caricaIntervals();
     final tRitocchi = await Storage.readTabella('ritocchi_sessioni.csv');
     ritocchi = {
       if (tRitocchi != null)
@@ -517,6 +520,7 @@ class AppState extends ChangeNotifier {
   /// Percorso GPS di una sessione svolta: la copia già salvata, poi quello
   /// registrato dall'app quel giorno, poi Health Connect (es. Garmin).
   Future<RispostaPercorso> percorsoDi(Sessione s) async {
+    if (s.id.startsWith(prefissoIcu)) return _percorsoIcu(s);
     final uuid = _uuidHc(s);
     for (final u in uuid) {
       final t = await Storage.leggiTesto(filePercorsoHc(u));
@@ -536,6 +540,25 @@ class AppState extends ChangeNotifier {
     return RispostaPercorso(
       consenso ? StatoPercorso.consenso : StatoPercorso.nessuno,
     );
+  }
+
+  Future<RispostaPercorso> _percorsoIcu(Sessione s) async {
+    final file = filePercorsoHc(s.id); // es. percorso_hc_icu_i123.csv
+    final t = await Storage.leggiTesto(file);
+    if (t != null) return RispostaPercorso.dati(Percorso.daCsv(t));
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null || s.inizio == null || alChiuso(s)) {
+      return const RispostaPercorso(StatoPercorso.nessuno);
+    }
+    try {
+      final p = await ClientIntervals(chiave)
+          .percorso(s.id.substring(prefissoIcu.length), s.inizio!);
+      if (p.vuoto) return const RispostaPercorso(StatoPercorso.nessuno);
+      await Storage.scriviTesto(file, p.toCsvText());
+      return RispostaPercorso.dati(p);
+    } on ErroreIntervals {
+      return const RispostaPercorso(StatoPercorso.errore);
+    }
   }
 
   /// Chiede a Health Connect il permesso di vedere il percorso della sessione.
@@ -1185,7 +1208,10 @@ class AppState extends ChangeNotifier {
     sessioni = [
       for (final s in combina(
         storicoCsv,
-        conTipoDalPiano(sessioniHc, piano),
+        conTipoDalPiano([
+          ...senzaDoppioniIcu(sessioniHc, sessioniIcu),
+          ...sessioniIcu,
+        ], piano),
       ).where((s) => !sportEsclusi.contains(s.sport)))
         // Il nome scritto a mano vince su quello dell'orologio.
         (ritocchi[s.id]?.nome ?? '').isEmpty
@@ -1197,7 +1223,151 @@ class AppState extends ChangeNotifier {
   /// Nome e "al chiuso" scritti a mano sulle sessioni, per id.
   Map<String, RitoccoSessione> ritocchi = {};
 
-  bool alChiuso(Sessione s) => ritocchi[s.id]?.alChiuso ?? false;
+  bool alChiuso(Sessione s) =>
+      ritocchi[s.id]?.alChiuso ?? icuAlChiuso.contains(s.id);
+
+  // ---------------------------------------------------------------------
+  // intervals.icu (attività complete da Garmin, Polar, Suunto…)
+
+  List<Sessione> sessioniIcu = [];
+  Set<String> icuAlChiuso = {}; // rulli e tapis roulant, da intervals.icu
+  bool intervalsCollegato = false;
+  DateTime? ultimaIntervals;
+  String? erroreIntervals;
+  bool sincronizzandoIntervals = false;
+
+  static const _fileIcu = 'intervals_sessioni.csv';
+  static const _infoIcu = 'intervals.csv';
+  static const _icuHeader = [...sessioniHeader, 'al_chiuso'];
+
+  Future<void> _caricaIntervals() async {
+    final t = await Storage.readTabella(_fileIcu);
+    sessioniIcu = [];
+    icuAlChiuso = {};
+    if (t != null) {
+      for (final r in t.righe) {
+        final s = Sessione.da(t, r);
+        if (s == null) continue;
+        sessioniIcu.add(s);
+        if (t.v(r, 'al_chiuso') == 'si') icuAlChiuso.add(s.id);
+      }
+    }
+    final info = await Storage.readTabella(_infoIcu);
+    final m = {
+      if (info != null)
+        for (final r in info.righe) info.v(r, 'chiave'): info.v(r, 'valore'),
+    };
+    intervalsCollegato = m['collegato'] == 'si';
+    ultimaIntervals = DateTime.tryParse(m['ultima'] ?? '');
+  }
+
+  Future<void> _salvaIntervals() async {
+    await Storage.write(_fileIcu, _icuHeader, [
+      for (final s in sessioniIcu)
+        [...s.toRow(), icuAlChiuso.contains(s.id) ? 'si' : ''],
+    ]);
+    await Storage.write(
+      _infoIcu,
+      const ['chiave', 'valore'],
+      [
+        ['collegato', intervalsCollegato ? 'si' : ''],
+        ['ultima', ultimaIntervals?.toIso8601String() ?? ''],
+      ],
+    );
+  }
+
+  /// Prova la chiave, la salva cifrata e scarica gli ultimi 90 giorni.
+  Future<String> collegaIntervals(String chiave) async {
+    final k = chiave.trim();
+    if (k.isEmpty) return 'Incolla prima la chiave API.';
+    try {
+      final nome = await ClientIntervals(k).verifica();
+      await ChiaveIntervals.salva(k);
+      intervalsCollegato = true;
+      ultimaIntervals = null;
+      final esito = await sincronizzaIntervals();
+      return '${nome.isEmpty ? 'Collegato' : 'Collegato come $nome'}. $esito';
+    } on ErroreIntervals catch (e) {
+      return e.messaggio;
+    }
+  }
+
+  /// Scarica le attività nuove o cambiate (dall'ultima volta, con 3 giorni
+  /// di margine; la prima volta gli ultimi 90 giorni).
+  Future<String> sincronizzaIntervals() async {
+    if (!intervalsCollegato || sincronizzandoIntervals) return '';
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) {
+      erroreIntervals = 'Chiave non trovata: collega di nuovo intervals.icu.';
+      notifyListeners();
+      return erroreIntervals!;
+    }
+    sincronizzandoIntervals = true;
+    notifyListeners();
+    try {
+      final oggi = soloData(DateTime.now());
+      final da = ultimaIntervals == null
+          ? oggi.subtract(const Duration(days: 90))
+          : soloData(ultimaIntervals!).subtract(const Duration(days: 3));
+      final nuove = await ClientIntervals(chiave).attivita(da, oggi);
+      final perId = {
+        for (final s in sessioniIcu)
+          if (s.data.isBefore(da)) s.id: s,
+      };
+      final chiuse = {
+        for (final id in icuAlChiuso)
+          if (perId.containsKey(id)) id,
+      };
+      for (final a in nuove) {
+        perId[a.sessione.id] = a.sessione;
+        if (a.alChiuso) chiuse.add(a.sessione.id);
+      }
+      sessioniIcu = perId.values.toList()
+        ..sort((a, b) => a.data.compareTo(b.data));
+      icuAlChiuso = chiuse;
+      ultimaIntervals = DateTime.now();
+      erroreIntervals = null;
+      await _salvaIntervals();
+      _ricombina();
+      await _aggiornaEndurance();
+      return '${nuove.length} attività lette da intervals.icu.';
+    } on ErroreIntervals catch (e) {
+      erroreIntervals = e.messaggio;
+      return e.messaggio;
+    } finally {
+      sincronizzandoIntervals = false;
+      notifyListeners();
+    }
+  }
+
+  /// Toglie chiave e attività di intervals.icu: tornano quelle di Health
+  /// Connect.
+  Future<void> scollegaIntervals() async {
+    await ChiaveIntervals.elimina();
+    intervalsCollegato = false;
+    ultimaIntervals = null;
+    erroreIntervals = null;
+    sessioniIcu = [];
+    icuAlChiuso = {};
+    await _salvaIntervals();
+    _ricombina();
+    await _aggiornaEndurance();
+    notifyListeners();
+  }
+
+  /// Battito, velocità, altitudine e potenza di un'attività di intervals.icu.
+  Future<SerieSessione?> serieIcu(Sessione s) async {
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null || !s.id.startsWith(prefissoIcu) || s.inizio == null) {
+      return null;
+    }
+    try {
+      return await ClientIntervals(chiave)
+          .serie(s.id.substring(prefissoIcu.length), s.inizio!);
+    } on ErroreIntervals {
+      return null;
+    }
+  }
 
   Future<void> ritoccaSessione(RitoccoSessione r) async {
     ritocchi = {...ritocchi, r.id: r};

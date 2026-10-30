@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-10-30';
+const versioneTermini = '2026-10-30.2';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -122,6 +122,18 @@ class PrivacyScreen extends StatelessWidget {
             "quale zona stai guardando. Il percorso, i tempi e gli altri dati "
             "dell'allenamento non vengono inviati: la linea viene disegnata sul "
             "telefono.",
+      ),
+      (
+        'intervals.icu (facoltativo)',
+        "Se colleghi intervals.icu con la tua chiave API, l'app scarica da lì "
+            "le tue attività di corsa, bici e nuoto (nome, orari, distanza, "
+            "battito, velocità, altitudine, potenza, percorso GPS). intervals.icu "
+            "le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai "
+            "collegato tu, con le sue condizioni sulla privacy. Avidididadi non "
+            "invia nulla a intervals.icu: solo le richieste di lettura con la "
+            "chiave, che resta cifrata sul telefono. Le attività scaricate "
+            "restano sul telefono ed entrano nel backup; scollegando, vengono "
+            "tolte.",
       ),
       (
         'Immagini degli esercizi',

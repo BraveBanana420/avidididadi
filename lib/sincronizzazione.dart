@@ -456,3 +456,23 @@ List<Sessione> conTipoDalPiano(List<Sessione> hc, List<PianoRiga> piano) => [
       return s;
     }(),
 ];
+
+/// Le sessioni di Health Connect senza quelle che intervals.icu ha già, più
+/// complete (stesso sport e orari sovrapposti): corsa, bici e nuoto.
+List<Sessione> senzaDoppioniIcu(List<Sessione> hc, List<Sessione> icu) {
+  if (icu.isEmpty) return hc;
+  bool coperta(Sessione h) => icu.any((i) {
+    if (!stessoSport(i.sport, h.sport) || i.data != h.data) return false;
+    final a1 = h.inizio, a2 = h.fine, b1 = i.inizio, b2 = i.fine;
+    if (a1 == null || a2 == null || b1 == null || b2 == null) {
+      return (i.durataMin - h.durataMin).abs() <= 5;
+    }
+    // Orari che si sovrappongono (con 2 minuti di margine).
+    const m = Duration(minutes: 2);
+    return a1.isBefore(b2.add(m)) && b1.isBefore(a2.add(m));
+  });
+  return [
+    for (final h in hc)
+      if (!['Corsa', 'Bici', 'Nuoto'].contains(h.sport) || !coperta(h)) h,
+  ];
+}

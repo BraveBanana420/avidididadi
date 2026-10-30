@@ -11,6 +11,7 @@ Funzioni principali:
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
 - **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
+- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni.
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Progressi**: carico, grafici, report per sport.
 - **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
@@ -56,6 +57,8 @@ lib/
   feedback.dart        feedback e regole di carico
   recupero.dart        energia e prontezza dai dati di recupero
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
+  intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
+  serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   backup.dart          backup in .gz (JSON di tutti i CSV)
@@ -72,7 +75,8 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`.
+- `ritocchi_sessioni.csv`, `percorso_*.csv`;
+- `intervals_sessioni.csv`, `intervals.csv`.
 
 I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
@@ -164,7 +168,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 ### Sicurezza e privacy (non rompere)
 
 - Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa e bici.
-- Chiavi API solo in `flutter_secure_storage`: mai in CSV, backup o log.
+- Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.
 - `allowBackup=false`: il backup è quello dell'app.

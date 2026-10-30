@@ -14,5 +14,7 @@
         <domain includeSubdomains="true">github.com</domain>
         <domain includeSubdomains="true">githubusercontent.com</domain>
         <domain includeSubdomains="true">openfreemap.org</domain>
+        <domain includeSubdomains="true">intervals.icu</domain>
+        <domain includeSubdomains="true">arcgisonline.com</domain>
     </domain-config>
 </network-security-config>

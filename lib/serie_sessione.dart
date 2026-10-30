@@ -5,7 +5,7 @@ import 'percorso.dart';
 
 /// Le serie nel tempo di un'attività (battito, velocità) per i grafici, come
 /// nel dettaglio di Garmin. Da Health Connect arrivano un campione ogni 15-20
-/// secondi circa; altitudine e pendenza non arrivano.
+/// secondi circa; altitudine, pendenza e potenza arrivano solo da intervals.icu.
 
 class Campione {
   final DateTime t;
@@ -16,8 +16,21 @@ class Campione {
 class SerieSessione {
   final List<Campione> fc; // battiti al minuto
   final List<Campione> velocita; // metri al secondo
-  const SerieSessione({this.fc = const [], this.velocita = const []});
-  bool get vuota => fc.isEmpty && velocita.isEmpty;
+  // Solo da intervals.icu: Health Connect non le ha.
+  final List<Campione> altitudine; // metri
+  final List<Campione> pendenza; // %
+  final List<Campione> potenza; // watt
+  final List<Campione> cadenza; // giri o passi al minuto
+  const SerieSessione({
+    this.fc = const [],
+    this.velocita = const [],
+    this.altitudine = const [],
+    this.pendenza = const [],
+    this.potenza = const [],
+    this.cadenza = const [],
+  });
+  bool get vuota =>
+      fc.isEmpty && velocita.isEmpty && altitudine.isEmpty && potenza.isEmpty;
 }
 
 /// Al massimo [punti] valori: media dei campioni in intervalli uguali di

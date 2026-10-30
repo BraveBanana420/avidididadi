@@ -26,6 +26,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
 
   Future<SerieSessione> _carica() async {
     final s = widget.sessione;
+    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
+    final icu = await widget.state.serieIcu(s);
+    if (icu != null && !icu.vuota) return icu;
     var serie = const SerieSessione();
     if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
       // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
@@ -80,18 +83,80 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 _Zone(fc: serie.fc, zone: widget.state.zone),
                 const SizedBox(height: 12),
               ],
-              if (serie.velocita.isNotEmpty)
+              if (serie.velocita.isNotEmpty) ...[
                 _Velocita(
                   serie: serie.velocita,
                   inizio: _inizio(serie),
                   sport: s.sport,
                 ),
-              const SizedBox(height: 12),
-              Text(
-                'Altitudine e pendenza non ci sono: Garmin non le condivide '
-                'con Health Connect.',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+                const SizedBox(height: 12),
+              ],
+              if (serie.altitudine.isNotEmpty) ...[
+                _Semplice(
+                  titolo: 'Altitudine',
+                  serie: serie.altitudine,
+                  inizio: _inizio(serie),
+                  unita: 'm',
+                  colore: const Color(0xFF8E8E96),
+                  numeri: [
+                    ('Minima', '${_min(serie.altitudine).round()} m'),
+                    ('Massima', '${massimo(serie.altitudine).round()} m'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (serie.pendenza.isNotEmpty) ...[
+                _Semplice(
+                  titolo: 'Pendenza',
+                  serie: serie.pendenza,
+                  inizio: _inizio(serie),
+                  unita: '%',
+                  colore: const Color(0xFFFFC233),
+                  numeri: [
+                    ('Salita massima', '${massimo(serie.pendenza).round()} %'),
+                    ('Discesa massima', '${_min(serie.pendenza).round()} %'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (serie.potenza.isNotEmpty) ...[
+                _Semplice(
+                  titolo: 'Potenza',
+                  serie: serie.potenza,
+                  inizio: _inizio(serie),
+                  unita: 'W',
+                  colore: const Color(0xFFB566FF),
+                  numeri: [
+                    ('Media', '${media(serie.potenza).round()} W'),
+                    ('Massima', '${massimo(serie.potenza).round()} W'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (serie.cadenza.isNotEmpty) ...[
+                _Semplice(
+                  titolo: 'Cadenza',
+                  serie: serie.cadenza,
+                  inizio: _inizio(serie),
+                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'ppm',
+                  colore: const Color(0xFF2EA8FF),
+                  numeri: [
+                    (
+                      'Media',
+                      '${media(serie.cadenza.where((c) => c.v > 0).toList()).round()}',
+                    ),
+                    ('Massima', '${massimo(serie.cadenza).round()}'),
+                  ],
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (serie.altitudine.isEmpty)
+                Text(
+                  'Altitudine, pendenza e potenza non ci sono: Health Connect '
+                  'non le riceve. Collega intervals.icu (Profilo → Dati e '
+                  'collegamenti) per averle.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
             ],
           );
         },
@@ -301,6 +366,46 @@ class _Velocita extends StatelessWidget {
         dettagli: [
           for (final c in r)
             '${fmtMinSec(passoDa(c.v))} /km\n${_dal(inizio, c.t)}',
+        ],
+      ),
+    );
+  }
+}
+
+double _min(List<Campione> s) =>
+    s.isEmpty ? 0 : s.map((c) => c.v).reduce((a, b) => a < b ? a : b);
+
+/// Un grafico semplice con due numeri sopra (altitudine, pendenza, potenza…).
+class _Semplice extends StatelessWidget {
+  final String titolo;
+  final List<Campione> serie;
+  final DateTime inizio;
+  final String unita;
+  final Color colore;
+  final List<(String, String)> numeri;
+  const _Semplice({
+    required this.titolo,
+    required this.serie,
+    required this.inizio,
+    required this.unita,
+    required this.colore,
+    required this.numeri,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final r = ricampiona(serie);
+    return _Riquadro(
+      titolo: titolo,
+      numeri: numeri,
+      grafico: GraficoLinea(
+        ys: [for (final c in r) c.v],
+        etichette: [for (final c in r) _dal(inizio, c.t)],
+        fmt: (v) => v.toStringAsFixed(0),
+        colore: colore,
+        dettagli: [
+          for (final c in r)
+            '${c.v.toStringAsFixed(c.v.abs() < 10 ? 1 : 0)} $unita\n${_dal(inizio, c.t)}',
         ],
       ),
     );

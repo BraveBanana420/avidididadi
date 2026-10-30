@@ -80,6 +80,15 @@
   - Piano proposto: modello StructuredWorkout indipendente, WorkoutExporter
     (prima IntervalsIcuExporter), collegamento guidato nel browser,
     sincronizzazione con coda offline, export FIT, script forza.
+- [x] **intervals.icu** (30/10/2026): Profilo → Dati e collegamenti → incolla
+  la chiave API. Corsa, bici e nuoto arrivano da lì (nome vero, rulli,
+  percorso, altitudine, pendenza, potenza) al posto di Health Connect.
+- [ ] **Da verificare con la chiave vera**: nomi dei dati nel tempo
+  (`heartrate`, `velocity_smooth`, `altitude`, `distance`, `watts`,
+  `cadence`, presi dal forum) e formato di `/activity/{id}/map` (`latlngs`).
+  Se un grafico non compare, controllare la risposta di `streams.json`.
+- [ ] **Da installare sul telefono**: la versione con intervals.icu, mappa a
+  livelli e grafici (telefono scollegato il 30/10).
 
 ## Appunti
 
