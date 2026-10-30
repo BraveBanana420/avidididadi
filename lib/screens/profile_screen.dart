@@ -16,6 +16,7 @@ import 'catalogo_screen.dart';
 import 'crea_piano_screen.dart';
 import 'dati_personali_screen.dart';
 import 'obiettivo_screen.dart';
+import 'schede_screen.dart';
 import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
 
@@ -256,6 +257,15 @@ class ProfileScreen extends StatelessWidget {
                             ].join(' · '),
                       CreaPianoScreen(state: state),
                       evidenza: true,
+                    ),
+                    voce(
+                      Icons.assignment_outlined,
+                      'Le mie schede',
+                      state.schedaAttiva == null
+                          ? 'La scheda del tuo personal trainer, scritta a mano'
+                          : '${state.schedaAttiva!.nome.isEmpty ? 'Scheda' : state.schedaAttiva!.nome}'
+                                ' · ${descriviValidita(state.schedaAttiva!).toLowerCase()}',
+                      SchedeScreen(state: state),
                     ),
                     voce(
                       Icons.fitness_center,

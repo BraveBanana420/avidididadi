@@ -14,6 +14,7 @@ import 'energia.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
+import 'schede_screen.dart';
 import 'week_screen.dart';
 import 'workout_screen.dart';
 
@@ -148,6 +149,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 const SizedBox(height: 20),
                 PromemoriaPiano(state: state),
+                PromemoriaScheda(state: state),
                 PromemoriaFeedback(state: state),
                 SchedaGiorno(
                   state: state,
@@ -1435,6 +1437,64 @@ class PromemoriaPiano extends StatelessWidget {
               tooltip: 'Più tardi',
               onPressed: state.chiudiPromemoria,
               icon: Icon(Icons.close, color: scheme.onPrimaryContainer),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Quando la scheda scritta a mano è finita: rinnovarla, cambiarla o tornare
+/// alla forza preparata dall'app.
+class PromemoriaScheda extends StatelessWidget {
+  final AppState state;
+  const PromemoriaScheda({super.key, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = state.schedaFinita;
+    if (s == null) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+    final durata = s.durataGiorni ?? 15;
+    final nome = s.nome.isEmpty ? 'La scheda' : 'La scheda "${s.nome}"';
+    return Card(
+      color: scheme.primaryContainer,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$nome è finita il ${dataLunga(s.fine!)}. Intanto la forza è '
+              "quella preparata dall'app.",
+              style: TextStyle(color: scheme.onPrimaryContainer),
+            ),
+            Wrap(
+              spacing: 4,
+              children: [
+                TextButton(
+                  onPressed: () => state.salvaScheda(s.rinnovata(durata)),
+                  child: Text('Rinnova per $durata giorni'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => SchedaScreen(
+                        state: state,
+                        scheda: s.rinnovata(durata),
+                      ),
+                    ),
+                  ),
+                  child: const Text('Cambiala'),
+                ),
+                TextButton(
+                  onPressed: () =>
+                      state.salvaScheda(s.copyWith(archiviata: true)),
+                  child: const Text("Usa quella dell'app"),
+                ),
+              ],
             ),
           ],
         ),

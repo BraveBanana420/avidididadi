@@ -26,6 +26,7 @@ import 'percorso.dart';
 import 'profilo.dart';
 import 'recupero.dart';
 import 'registro_forza.dart';
+import 'scheda.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
@@ -64,6 +65,7 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
+  List<SchedaForza> schede = []; // schede scritte a mano (personal trainer)
   List<GiornoRecupero> recupero = []; // FC a riposo, HRV e sonno, per giorno
   ConfigAssistente assistente = ConfigAssistente();
   List<MessaggioChat> chat = []; // solo in memoria: si azzera alla chiusura
@@ -173,6 +175,10 @@ class AppState extends ChangeNotifier {
     fcRiposoMisurata = fcRiposoTipica(recupero, soloData(DateTime.now()));
     attrezzatura = attrezzaturaDa(
       await Storage.readTabella('attrezzatura.csv'),
+    );
+    schede = schedeDa(
+      await Storage.readTabella('schede.csv'),
+      await Storage.readTabella('schede_esercizi.csv'),
     );
     profilo = Profilo.da(await Storage.readTabella('profilo.csv'));
     assistente = ConfigAssistente.da(
@@ -414,24 +420,44 @@ class AppState extends ChangeNotifier {
   /// se un piano di forza è stato creato.
   Future<int> _aggiornaForza() async {
     final inizio = profilo.inizioForza;
-    if (profilo.obiettivo.isEmpty || inizio == null) return 0;
+    final generatore = profilo.obiettivo.isNotEmpty && inizio != null;
+    if (!generatore && schede.isEmpty) return 0;
     final oggi = soloData(DateTime.now());
-    final nuovo = generaPianoForza(
-      piano: piano,
-      esercizi: esercizi,
-      attrezzatura: attrezzatura,
-      obiettivo: profilo.obiettivo,
-      livello: profilo.livello,
-      inizio: inizio,
-      da: oggi,
-      regolazione: profilo.regolazione,
+    // La scheda scritta a mano, dove vale, prende il posto di quella generata.
+    final nuovo = conScheda(
+      generatore
+          ? generaPianoForza(
+              piano: piano,
+              esercizi: esercizi,
+              attrezzatura: attrezzatura,
+              obiettivo: profilo.obiettivo,
+              livello: profilo.livello,
+              inizio: inizio,
+              da: oggi,
+              regolazione: profilo.regolazione,
+            )
+          : const PianoForza([], []),
+      piano.where((r) => !r.data.isBefore(oggi)).toList(),
+      schede,
     );
+    final coperti = {
+      for (final p in nuovo.programma) p.data,
+      // Anche quelli fatti prima dall'app (scheda tolta o finita).
+      for (final p in programma)
+        if (stessoSport(p.sport, 'Forza') &&
+            p.idWorkout.startsWith(prefissoForza))
+          p.data,
+    };
     // Le sessioni con un feedback non si riscrivono: resta quello che è stato fatto.
+    // Senza piano generato si toccano solo i giorni della scheda.
     final valutate = {
       for (final f in feedback)
         if (stessoSport(f.sport, 'Forza')) f.data,
     };
-    bool daRifare(DateTime d) => !d.isBefore(oggi) && !valutate.contains(d);
+    bool daRifare(DateTime d) =>
+        !d.isBefore(oggi) &&
+        !valutate.contains(d) &&
+        (generatore || coperti.contains(d));
     DateTime? dataDi(String id) =>
         parseData(id.substring(prefissoForza.length));
     workout = [
@@ -1740,6 +1766,58 @@ class AppState extends ChangeNotifier {
       serieFatte.map((s) => s.toRow()).toList(),
     );
     notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------
+  // Schede scritte a mano
+
+  /// La scheda che vale oggi, se c'è.
+  SchedaForza? get schedaAttiva => schedaDel(schede, DateTime.now());
+
+  /// Una scheda appena finita, se oggi non ne vale un'altra: si chiede cosa fare.
+  SchedaForza? get schedaFinita {
+    final oggi = soloData(DateTime.now());
+    if (schedaAttiva != null) return null;
+    SchedaForza? f;
+    for (final s in schede) {
+      if (s.finita(oggi) && (f == null || s.fine!.isAfter(f.fine!))) f = s;
+    }
+    return f;
+  }
+
+  Future<void> _salvaSchede() async {
+    await Storage.write('schede.csv', schedeHeader, righeSchede(schede));
+    await Storage.write(
+      'schede_esercizi.csv',
+      schedeEserciziHeader,
+      righeEserciziSchede(schede),
+    );
+  }
+
+  /// Salva una scheda nuova o modificata e rifà le sedute di forza da oggi.
+  Future<void> salvaScheda(SchedaForza s) async {
+    schede = [...schede.where((x) => x.id != s.id), s]
+      ..sort((a, b) => a.inizio.compareTo(b.inizio));
+    await _salvaSchede();
+    await _aggiornaForza();
+    notifyListeners();
+  }
+
+  Future<void> eliminaScheda(String id) async {
+    schede = schede.where((x) => x.id != id).toList();
+    await _salvaSchede();
+    await _aggiornaForza();
+    notifyListeners();
+  }
+
+  /// Scrive nella scheda i kg nuovi (per nome dell'esercizio).
+  Future<void> aggiornaPesiScheda(
+    String id,
+    Map<String, List<double>> kg,
+  ) async {
+    final s = schede.where((x) => x.id == id).firstOrNull;
+    if (s == null || kg.isEmpty) return;
+    await salvaScheda(conPesi(s, kg));
   }
 
   /// Le serie di forza di un giorno, raggruppate per esercizio in ordine.

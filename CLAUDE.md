@@ -61,6 +61,7 @@ lib/
   invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
+  scheda.dart          schede di forza scritte a mano (personal trainer): giorni, kg per serie
   avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
@@ -80,7 +81,8 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
 - `ritocchi_sessioni.csv`, `percorso_*.csv`;
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`;
-- `serie.csv` (ripetizioni e kg della forza).
+- `serie.csv` (ripetizioni e kg della forza);
+- `schede.csv`, `schede_esercizi.csv` (schede scritte a mano).
 
 I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 

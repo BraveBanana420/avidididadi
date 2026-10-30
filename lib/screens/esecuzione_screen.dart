@@ -14,6 +14,7 @@ import '../obiettivo.dart';
 import '../percorso.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
+import '../scheda.dart';
 import '../tema.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
@@ -193,7 +194,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Mostra i kg se l'esercizio usa un peso (dal catalogo, dal piano o
   /// dall'ultima volta).
   bool _conKg(Blocco x) {
-    if (kgDalleNote(x.note) != null) return true;
+    if (x.kg != null || kgDalleNote(x.note) != null) return true;
     if (_ultima(x).any((s) => s.kg > 0)) return true;
     final e = widget.state.esercizi.where((e) => e.id == x.esercizio);
     return e.isNotEmpty && !e.first.corpoLibero;
@@ -214,7 +215,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       previste: ripetizioniPreviste(x.ripetizioni)!,
       ultima: _ultima(x),
       precedente: precedente,
-      kgPiano: kgDalleNote(x.note),
+      kgPiano: x.kg ?? kgDalleNote(x.note),
+      kgPerSerie: x.kgPerSerie,
     );
   }();
 
@@ -729,6 +731,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             ],
           ),
         ),
+        _PesiScheda(
+          state: widget.state,
+          nomeWorkout: widget.passi.firstOrNull?.nome ?? '',
+          fatte: [for (final l in seriePasso.values) ...l],
+        ),
         Material(
           type: MaterialType.transparency,
           child: CheckboxListTile(
@@ -1080,6 +1087,67 @@ class _Contatore extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+/// Se l'allenamento era della scheda e hai usato altri pesi: un tocco per
+/// scriverli nella scheda, senza rifarla.
+class _PesiScheda extends StatefulWidget {
+  final AppState state;
+  final String nomeWorkout;
+  final List<SerieFatta> fatte;
+  const _PesiScheda({
+    required this.state,
+    required this.nomeWorkout,
+    required this.fatte,
+  });
+
+  @override
+  State<_PesiScheda> createState() => _PesiSchedaState();
+}
+
+class _PesiSchedaState extends State<_PesiScheda> {
+  bool _salvati = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final s = widget.state.schedaAttiva;
+    final g = s?.giornoPer(DateTime.now());
+    if (s == null || g == null || g.nome != widget.nomeWorkout) {
+      return const SizedBox.shrink();
+    }
+    final cambi = pesiCambiati(g, widget.fatte);
+    if (cambi.isEmpty) return const SizedBox.shrink();
+    String kg(List<double> l) =>
+        l.isEmpty ? 'nessun peso' : '${l.map(fmtKg).join(', ')} kg';
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: SuperficiePulse(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Pesi diversi dalla scheda', style: t.titleSmall),
+            const SizedBox(height: 4),
+            for (final (nome, prima, dopo) in cambi)
+              Text('• $nome: ${kg(prima)} → ${kg(dopo)}', style: t.bodySmall),
+            const SizedBox(height: 8),
+            _salvati
+                ? Text('Scritti nella scheda.', style: t.bodyMedium)
+                : FilledButton.tonalIcon(
+                    onPressed: () async {
+                      await widget.state.aggiornaPesiScheda(s.id, {
+                        for (final (nome, _, dopo) in cambi) nome: dopo,
+                      });
+                      if (mounted) setState(() => _salvati = true);
+                    },
+                    icon: const Icon(Icons.save_outlined),
+                    label: const Text('Aggiorna la scheda'),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 }

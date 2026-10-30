@@ -18,6 +18,8 @@ class Blocco {
   final int passo; // a quale passo del workout appartiene (da 0)
   final int serie; // numero della serie (da 1)
   final String ripetizioni; // previste: "8-10", "45 s"…
+  final double? kg; // dalla scheda del personal trainer, se c'è
+  final bool kgPerSerie; // la scheda dà pesi diversi per serie
   const Blocco({
     required this.tipo,
     required this.titolo,
@@ -30,6 +32,8 @@ class Blocco {
     required this.passo,
     this.serie = 1,
     this.ripetizioni = '',
+    this.kg,
+    this.kgPerSerie = false,
   });
 
   bool get aTempo => secondi != null;
@@ -57,6 +61,15 @@ String _quantita(WorkoutStep s) {
   }
   final min = s.durataMin.trim();
   return min.isEmpty ? '' : '$min min';
+}
+
+/// I kg della serie [n] da "20;22,5;25": l'ultimo vale per le serie dopo.
+double? kgDellaSerie(String kg, int n) {
+  final v = [
+    for (final x in kg.split(';'))
+      ?double.tryParse(x.trim().replaceAll(',', '.')),
+  ];
+  return v.isEmpty ? null : v[(n - 1).clamp(0, v.length - 1)];
 }
 
 /// I blocchi da eseguire, nell'ordine dei passi.
@@ -90,6 +103,8 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           passo: p,
           serie: i,
           ripetizioni: s.ripetizioni,
+          kg: kgDellaSerie(s.kg, i),
+          kgPerSerie: s.kg.split(';').toSet().length > 1,
         ),
       );
       // Recupero tra le serie, e dopo l'ultima se c'è un altro passo.

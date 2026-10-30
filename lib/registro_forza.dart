@@ -141,7 +141,12 @@ bool prontoPerAumentare(List<SerieFatta> ultima, int massimo) =>
   required List<SerieFatta> ultima,
   (int, double)? precedente,
   double? kgPiano,
+  bool kgPerSerie = false,
 }) {
+  // Pesi diversi serie per serie (piramide della scheda): vale la scheda.
+  if (kgPerSerie && kgPiano != null) {
+    return (precedente?.$1 ?? previste.$1, kgPiano);
+  }
   if (precedente != null) return precedente;
   final stessa =
       ultima.where((s) => s.serie == serie).firstOrNull ?? ultima.lastOrNull;

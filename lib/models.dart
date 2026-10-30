@@ -80,6 +80,7 @@ const workoutHeader = [
   'recupero_s',
   'note',
   'id_esercizio',
+  'kg', // aggiunta: pesi per serie dalla scheda del personal trainer
 ];
 const programmaHeader = ['data', 'sport', 'id_workout'];
 
@@ -410,6 +411,7 @@ class WorkoutStep {
   final String recuperoS;
   final String note;
   final String esercizio; // id nel catalogo esercizi, se c'è
+  final String kg; // pesi per serie, es. "20;22,5;25" (vuoto se non detti)
 
   const WorkoutStep({
     required this.id,
@@ -427,6 +429,7 @@ class WorkoutStep {
     required this.recuperoS,
     required this.note,
     this.esercizio = '',
+    this.kg = '',
   });
 
   List<String> toRow() => [
@@ -445,6 +448,7 @@ class WorkoutStep {
     recuperoS,
     note,
     esercizio,
+    kg,
   ];
 
   static WorkoutStep? da(Tabella t, List<String> r) {
@@ -466,6 +470,7 @@ class WorkoutStep {
       recuperoS: t.v(r, 'recupero_s'),
       note: t.v(r, 'note'),
       esercizio: t.v(r, 'id_esercizio'),
+      kg: t.v(r, 'kg'),
     );
   }
 

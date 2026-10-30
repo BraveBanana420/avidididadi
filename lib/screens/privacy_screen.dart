@@ -74,7 +74,7 @@ class PrivacyScreen extends StatelessWidget {
         "Nome, data di nascita, sesso, altezza, peso e misure, foto del "
             "profilo, obiettivo e gara, settimana tipo, attrezzatura, feedback "
             "dopo gli allenamenti (fatica, completata, dolore), ripetizioni e "
-            "kg delle serie di forza e sessioni "
+            "kg delle serie di forza, schede scritte a mano e sessioni "
             "importate da file CSV. Servono a preparare il piano e a mostrare i "
             "progressi.",
       ),
