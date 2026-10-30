@@ -223,6 +223,89 @@ class _SchedaScreenState extends State<SchedaScreen> {
     navigator.pop();
   }
 
+  /// Mette lo sport della scheda nei giorni della settimana tipo che non
+  /// lo hanno, dicendo prima cosa si toglie da ciascun giorno.
+  Future<void> _modificaSettimana(Set<int> giorni) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final state = widget.state;
+    final prima = [...state.settimana];
+    var settimana = prima;
+    var cambiati = 0;
+    for (final d in giorni.toList()..sort()) {
+      final sostituendo = conSportNelGiorno(settimana, d, _sport);
+      final scelta = await _conferma(
+        d,
+        sostituendo.tolti,
+        sostituendo.aggiunto,
+      );
+      if (scelta == null) continue;
+      settimana = scelta
+          ? sostituendo.settimana
+          : conSportNelGiorno(
+              settimana,
+              d,
+              _sport,
+              sostituisci: false,
+            ).settimana;
+      cambiati++;
+    }
+    if (cambiati == 0) return;
+    state.settimana = settimana;
+    await state.salvaSettimana(prima: prima);
+    if (!mounted) return;
+    setState(() {});
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Settimana tipo aggiornata.')),
+    );
+  }
+
+  /// true: sostituisci; false: aggiungi accanto; null: lascia com'è.
+  Future<bool?> _conferma(int giorno, List<Slot> tolti, Slot aggiunto) {
+    String descrivi(Slot x) => [
+      titoloSessione(x.sport, x.tipo),
+      x.fascia.toLowerCase(),
+      '${x.durataMin} min',
+    ].join(' · ');
+    final nome = giorniSettimana[giorno - 1];
+    return showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text('$nome nella settimana tipo'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Aggiungo: ${descrivi(aggiunto)}.'),
+            const SizedBox(height: 12),
+            if (tolti.isEmpty)
+              Text('$nome è un giorno di riposo: non tolgo niente.')
+            else ...[
+              const Text('Per fargli posto tolgo da questo giorno:'),
+              for (final x in tolti) Text('• ${descrivi(x)}'),
+              const SizedBox(height: 8),
+              const Text('Oppure puoi tenerle e fare tutte e due le cose.'),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c),
+            child: const Text('Annulla'),
+          ),
+          if (tolti.isNotEmpty)
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Tieni entrambe'),
+            ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: Text(tolti.isEmpty ? 'Aggiungi' : 'Sostituisci'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _elimina() async {
     final navigator = Navigator.of(context);
     final ok = await showDialog<bool>(
@@ -381,11 +464,19 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   '${senzaForza.map((d) => giorniSettimana[d - 1]).join(', ')}: '
-                  'nella settimana tipo non c\'è ${_sport.toLowerCase()}, '
-                  'aggiungila lì.',
+                  'nella settimana tipo non c\'è ${_sport.toLowerCase()}.',
                   style: t.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
+                ),
+              ),
+            if (senzaForza.isNotEmpty)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: OutlinedButton.icon(
+                  onPressed: () => _modificaSettimana(senzaForza),
+                  icon: const Icon(Icons.edit_calendar_outlined),
+                  label: const Text('Modifica settimana'),
                 ),
               ),
             const SizedBox(height: 8),
@@ -561,9 +652,32 @@ class _GiornoCardState extends State<_GiornoCard> {
                   tooltip: giorniSettimana[d - 1],
                   label: Text(_iniziali[d - 1]),
                   showCheckmark: false,
-                  // Con la forza nella settimana tipo: bordo pieno.
-                  side: widget.giorniForza.contains(d)
-                      ? BorderSide(color: scheme.primary)
+                  // Con lo sport nella settimana tipo: bordo colorato; scelto:
+                  // pieno dello stesso colore, un po' più chiaro. Scelto ma
+                  // senza lo sport nella settimana: rosso.
+                  side: BorderSide(
+                    color:
+                        g.giorni.contains(d) && !widget.giorniForza.contains(d)
+                        ? scheme.error
+                        : widget.giorniForza.contains(d)
+                        ? scheme.primary
+                        : scheme.outlineVariant,
+                    width: widget.giorniForza.contains(d) ? 1.5 : 1,
+                  ),
+                  selectedColor: Color.lerp(
+                    g.giorni.contains(d) && !widget.giorniForza.contains(d)
+                        ? scheme.error
+                        : scheme.primary,
+                    Colors.white,
+                    0.25,
+                  ),
+                  labelStyle: g.giorni.contains(d)
+                      ? TextStyle(
+                          color: widget.giorniForza.contains(d)
+                              ? scheme.onPrimary
+                              : scheme.onError,
+                          fontWeight: FontWeight.w800,
+                        )
                       : null,
                   selected: g.giorni.contains(d),
                   onSelected: widget.occupati.contains(d)

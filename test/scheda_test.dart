@@ -319,4 +319,31 @@ void main() {
       );
     });
   });
+
+  test('settimana tipo: lo sport nel giorno, dicendo cosa si toglie', () {
+    final settimana = [
+      Slot(giorno: 1, fascia: 'Sera', sport: 'Forza', durataMin: 50),
+      Slot(giorno: 2, fascia: 'Mattina', sport: 'Corsa', durataMin: 60),
+    ];
+    final r = conSportNelGiorno(settimana, 2, 'Forza');
+    expect(r.tolti.single.sport, 'Corsa');
+    expect(r.aggiunto.durataMin, 50); // come l'altra forza
+    expect(r.aggiunto.fascia, 'Mattina'); // come quello che c'era
+    expect(r.settimana.map((x) => (x.giorno, x.sport)), [
+      (1, 'Forza'),
+      (2, 'Forza'),
+    ]);
+    // Tenendo entrambe non si toglie niente.
+    final entrambe = conSportNelGiorno(
+      settimana,
+      2,
+      'Forza',
+      sostituisci: false,
+    );
+    expect(entrambe.tolti, isEmpty);
+    expect(entrambe.settimana.length, 3);
+    // Giorno di riposo: solo aggiunto.
+    expect(conSportNelGiorno(settimana, 4, 'Nuoto').tolti, isEmpty);
+    expect(conSportNelGiorno(settimana, 4, 'Nuoto').aggiunto.durataMin, 45);
+  });
 }

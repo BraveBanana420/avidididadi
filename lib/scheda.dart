@@ -492,3 +492,38 @@ List<Esercizio> cercaEsercizi(
         e,
   ]..sort((a, b) => a.nome.compareTo(b.nome));
 }
+
+// ---------------------------------------------------------------------------
+// Settimana tipo
+
+/// La settimana tipo con [sport] anche nel giorno [giorno] (1 = lunedì).
+/// Con [sostituisci] toglie quello che c'era in quel giorno, e lo restituisce
+/// in [tolti] per dirlo prima di confermare. Durata e fascia vengono da un
+/// altro giorno dello stesso sport, o da quello che si toglie.
+({List<Slot> settimana, List<Slot> tolti, Slot aggiunto}) conSportNelGiorno(
+  List<Slot> settimana,
+  int giorno,
+  String sport, {
+  bool sostituisci = true,
+}) {
+  final nelGiorno = settimana.where((x) => x.giorno == giorno).toList();
+  final simile = settimana
+      .where((x) => stessoSport(x.sport, sport) && x.giorno != giorno)
+      .firstOrNull;
+  final aggiunto = Slot(
+    giorno: giorno,
+    fascia: nelGiorno.firstOrNull?.fascia ?? simile?.fascia ?? 'Mattina',
+    sport: normSport(sport),
+    durataMin: simile?.durataMin ?? nelGiorno.firstOrNull?.durataMin ?? 45,
+  );
+  final tolti = sostituisci ? nelGiorno : <Slot>[];
+  return (
+    settimana: [
+      for (final x in settimana)
+        if (!tolti.contains(x)) x,
+      aggiunto,
+    ]..sort((a, b) => a.giorno.compareTo(b.giorno)),
+    tolti: tolti,
+    aggiunto: aggiunto,
+  );
+}
