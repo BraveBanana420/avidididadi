@@ -56,6 +56,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
     mese = DateTime(d.year, d.month);
   });
 
+  /// Da dove entra la settimana nuova: 1 da destra (successiva), -1 da sinistra.
+  int _verso = 0;
+
+  /// Settimana prima o dopo, con lo stesso giorno della settimana; se è
+  /// quella di oggi, si torna su oggi.
+  void _cambiaSettimana(int verso) {
+    final oggi = soloData(DateTime.now());
+    final d = DateTime(
+      selezionato.year,
+      selezionato.month,
+      selezionato.day + 7 * verso,
+    );
+    _verso = verso;
+    _seleziona(lunediDi(d) == lunediDi(oggi) ? oggi : d);
+  }
+
   /// Icona dello sport: nel suo colore se la sessione è svolta, grigia se in
   /// programma. Lo sport si riconosce dalla forma, lo stato dal colore.
   Widget _icona(String sport, bool svolta, {double size = 14}) => Icon(
@@ -169,6 +185,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     previstiDi: previstiDi,
                     icona: _icona,
                     onTocca: _seleziona,
+                    onSettimana: _cambiaSettimana,
+                    verso: _verso,
                   ),
                 ),
                 Center(
@@ -458,6 +476,8 @@ class _StripSettimana extends StatelessWidget {
   final List<PianoRiga> Function(DateTime) previstiDi;
   final Widget Function(String, bool, {double size}) icona;
   final void Function(DateTime) onTocca;
+  final void Function(int) onSettimana; // -1 precedente, 1 successiva
+  final int verso; // da dove entra la settimana nuova
   const _StripSettimana({
     required this.state,
     required this.selezionato,
@@ -466,21 +486,58 @@ class _StripSettimana extends StatelessWidget {
     required this.previstiDi,
     required this.icona,
     required this.onTocca,
+    required this.onSettimana,
+    required this.verso,
   });
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
-    final p = Pulse.di(context);
     final lunedi = lunediDi(selezionato);
     final c = confrontaSettimana(state.piano, state.sessioni, lunedi, oggi);
     final fatte = c.fatte.length + c.extra.length;
+    // Scorrendo sulla settimana si passa alla precedente o alla successiva;
+    // fuori dalla settimana lo scorrimento cambia pagina come prima.
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onHorizontalDragEnd: (d) {
+        final v = d.primaryVelocity ?? 0;
+        if (v.abs() < 150) return;
+        onSettimana(v < 0 ? 1 : -1);
+      },
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 220),
+        layoutBuilder: (attuale, _) => attuale ?? const SizedBox.shrink(),
+        transitionBuilder: (figlio, a) => SlideTransition(
+          position: Tween(
+            begin: Offset(0.25 * verso, 0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: a, curve: Curves.easeOutCubic)),
+          child: FadeTransition(opacity: a, child: figlio),
+        ),
+        child: KeyedSubtree(
+          key: ValueKey(lunedi),
+          child: _contenuto(context, lunedi, c, fatte),
+        ),
+      ),
+    );
+  }
+
+  Widget _contenuto(
+    BuildContext context,
+    DateTime lunedi,
+    Confronto c,
+    int fatte,
+  ) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final p = Pulse.di(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitoloSezione(
-          'La tua settimana',
+          lunedi == lunediDi(oggi)
+              ? 'La tua settimana'
+              : 'Settimana dal ${lunedi.day} ${mesiNomi[lunedi.month - 1]}',
           destra: c.previste == 0
               ? null
               : Text.rich(
