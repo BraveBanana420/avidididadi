@@ -71,6 +71,14 @@ class AttrezzaturaScreen extends StatelessWidget {
     );
   }
 
+  /// In palestra di solito ci sono tutte: si selezionano con un tocco.
+  Future<void> _tutteLeMacchine(BuildContext context) async {
+    for (final a in attrezzi.where((a) => a.palestra)) {
+      state.attrezzatura[a.chiave] ??= [];
+    }
+    await state.salvaAttrezzatura();
+  }
+
   Future<void> _cambia(BuildContext context, Attrezzo a, bool attivo) async {
     if (!attivo) {
       state.attrezzatura.remove(a.chiave);
@@ -116,7 +124,25 @@ class AttrezzaturaScreen extends StatelessWidget {
                   '${fattibili.length} esercizi su ${state.esercizi.length}.',
                 ),
               ),
-              for (final a in attrezzi)
+              for (final a in attrezzi) ...[
+                if (a.palestra && a == attrezzi.firstWhere((x) => x.palestra))
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'In palestra',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => _tutteLeMacchine(context),
+                          child: const Text('Seleziona tutte'),
+                        ),
+                      ],
+                    ),
+                  ),
                 CheckboxListTile(
                   value: state.attrezzatura.containsKey(a.chiave),
                   onChanged: (v) => _cambia(context, a, v ?? false),
@@ -141,6 +167,7 @@ class AttrezzaturaScreen extends StatelessWidget {
                         )
                       : null,
                 ),
+              ],
             ],
           );
         },

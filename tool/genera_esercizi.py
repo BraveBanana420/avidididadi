@@ -481,6 +481,175 @@ E = [
         'Sdraiato sulla schiena, rullo sotto la parte alta della schiena e braccia incrociate davanti.',
         'Solleva il bacino e fai scorrere il rullo tra le scapole.',
         'Sposta il peso un po\' a destra e un po\' a sinistra.']),
+    # --- Palestra: macchine e cavi
+    ('Wide-Grip_Lat_Pulldown', 'Lat machine presa larga', 'lat_machine', 'trazione_verticale', [
+        'Siediti con le cosce bloccate sotto i rulli e afferra la barra più larga delle spalle.',
+        'Petto in fuori, tira la barra verso la parte alta del petto portando i gomiti giù e indietro.',
+        'Risali lentamente fino a braccia tese, senza dondolare con il busto.']),
+    ('Close-Grip_Front_Lat_Pulldown', 'Lat machine presa stretta', 'lat_machine', 'trazione_verticale', [
+        'Afferra la barra con le mani alla larghezza delle spalle, palmi in avanti.',
+        'Tira la barra verso il petto tenendo i gomiti vicini al corpo.',
+        'Torna su lentamente fino a sentire i dorsali allungati.']),
+    ('Underhand_Cable_Pulldowns', 'Lat machine presa inversa', 'lat_machine', 'trazione_verticale', [
+        'Afferra la barra con i palmi verso di te, mani alla larghezza delle spalle.',
+        'Tira fino al petto portando i gomiti verso i fianchi.',
+        'Risali lentamente: lavorano anche i bicipiti.']),
+    ('Straight-Arm_Pulldown', 'Pulldown a braccia tese', 'lat_machine|cavi', 'trazione_verticale', [
+        'In piedi davanti al cavo alto, afferra la barra a braccia quasi tese.',
+        'Con il busto leggermente inclinato in avanti, porta la barra verso le cosce senza piegare i gomiti.',
+        'Torna su lentamente fino all\'altezza della testa.']),
+    ('Seated_Cable_Rows', 'Pulley basso (rematore ai cavi)', 'pulley', 'trazione_orizzontale', [
+        'Siediti con i piedi sulla pedana e le ginocchia leggermente piegate, schiena dritta.',
+        'Tira la maniglia verso l\'ombelico portando i gomiti indietro e stringendo le scapole.',
+        'Torna avanti lentamente a braccia tese, senza curvare la schiena.']),
+    ('Seated_One-arm_Cable_Pulley_Rows', 'Pulley a un braccio', 'pulley|cavi', 'trazione_orizzontale', [
+        'Seduto o in piedi, afferra la maniglia con una mano sola, busto fermo.',
+        'Tira la maniglia verso il fianco portando il gomito indietro.',
+        'Torna lentamente a braccio teso e ripeti con l\'altro braccio.']),
+    ('Leverage_Iso_Row', 'Rematore alla macchina', 'rematore_macchina', 'trazione_orizzontale', [
+        'Regola il sedile in modo che le maniglie siano all\'altezza del petto, petto contro il cuscino.',
+        'Tira le maniglie verso di te portando i gomiti indietro e stringendo le scapole.',
+        'Torna avanti lentamente fino a braccia tese.']),
+    ('Leverage_High_Row', 'Rematore alto alla macchina', 'rematore_macchina', 'trazione_orizzontale', [
+        'Siediti con le maniglie in alto davanti a te e le cosce bloccate.',
+        'Tira le maniglie in basso e indietro, verso il petto, stringendo le scapole.',
+        'Torna su lentamente controllando il peso.']),
+    ('Face_Pull', 'Face pull ai cavi', 'cavi', 'spalle', [
+        'Cavo all\'altezza del viso con la corda: afferrala con i pollici verso di te.',
+        'Tira la corda verso la fronte aprendo le mani e portando i gomiti in alto e indietro.',
+        'Torna lentamente: lavorano i deltoidi posteriori e la postura.']),
+    ('Leverage_Chest_Press', 'Chest press', 'chest_press', 'spinta_orizzontale', [
+        'Regola il sedile in modo che le maniglie siano all\'altezza del centro del petto.',
+        'Spingi le maniglie in avanti fino a braccia quasi tese, senza staccare la schiena.',
+        'Torna indietro lentamente fino a sentire il petto allungato.']),
+    ('Leverage_Incline_Chest_Press', 'Chest press inclinata', 'chest_press', 'spinta_orizzontale', [
+        'Siediti con la schiena appoggiata e le maniglie all\'altezza della parte alta del petto.',
+        'Spingi in avanti e verso l\'alto fino a braccia quasi tese.',
+        'Torna lentamente: lavora di più la parte alta del petto.']),
+    ('Butterfly', 'Pectoral machine (butterfly)', 'pectoral', 'spinta_orizzontale', [
+        'Siediti con la schiena appoggiata, braccia aperte sui cuscinetti o sulle maniglie.',
+        'Chiudi le braccia davanti al petto stringendo i pettorali.',
+        'Riapri lentamente fino a sentire il petto allungato, senza andare oltre.']),
+    ('Reverse_Machine_Flyes', 'Pectoral inversa', 'pectoral', 'spalle', [
+        'Siediti con il petto contro lo schienale e afferra le maniglie a braccia tese davanti.',
+        'Apri le braccia all\'indietro stringendo le scapole.',
+        'Torna lentamente: lavorano i deltoidi posteriori e la parte alta della schiena.']),
+    ('Cable_Crossover', 'Croce ai cavi', 'cavi', 'spinta_orizzontale', [
+        'Al centro tra i due cavi alti, una maniglia per mano, un piede avanti.',
+        'Con i gomiti appena piegati, porta le mani una verso l\'altra davanti al petto.',
+        'Riapri lentamente fino a sentire il petto allungato.']),
+    ('Low_Cable_Crossover', 'Croce ai cavi dal basso', 'cavi', 'spinta_orizzontale', [
+        'Cavi in basso, una maniglia per mano, busto dritto.',
+        'Porta le mani in alto e davanti, all\'altezza del viso, con i gomiti appena piegati.',
+        'Torna giù lentamente: lavora la parte alta del petto.']),
+    ('Leverage_Shoulder_Press', 'Shoulder press alla macchina', 'shoulder_press', 'spinta_verticale', [
+        'Regola il sedile in modo che le maniglie siano all\'altezza delle spalle.',
+        'Spingi verso l\'alto fino a braccia quasi tese, schiena appoggiata.',
+        'Torna giù lentamente fino all\'altezza delle orecchie.']),
+    ('Standing_Low-Pulley_Deltoid_Raise', 'Alzata laterale al cavo', 'cavi', 'spalle', [
+        'Di fianco al cavo basso, afferra la maniglia con la mano più lontana.',
+        'Alza il braccio di lato fino all\'altezza della spalla, gomito appena piegato.',
+        'Torna giù lentamente e ripeti dall\'altro lato.']),
+    ('Triceps_Pushdown', 'Push down ai cavi', 'cavi|lat_machine', 'braccia', [
+        'Davanti al cavo alto, afferra la barra con i palmi verso il basso, gomiti stretti ai fianchi.',
+        'Spingi la barra in basso fino a braccia tese, muovendo solo gli avambracci.',
+        'Risali lentamente fino a circa 90° ai gomiti.']),
+    ('Triceps_Pushdown_-_Rope_Attachment', 'Push down con corda', 'cavi|lat_machine', 'braccia', [
+        'Afferra la corda al cavo alto con i pollici in su, gomiti stretti ai fianchi.',
+        'Spingi in basso e, alla fine, apri un po\' le mani verso l\'esterno.',
+        'Risali lentamente senza muovere i gomiti.']),
+    ('Cable_Rope_Overhead_Triceps_Extension', 'Tricipiti sopra la testa al cavo', 'cavi', 'braccia', [
+        'Di spalle al cavo, corda dietro la testa, gomiti alti e vicini.',
+        'Distendi le braccia in avanti e in alto senza muovere i gomiti.',
+        'Torna lentamente con le mani dietro la testa.']),
+    ('Standing_Biceps_Cable_Curl', 'Curl ai cavi', 'cavi|pulley', 'braccia', [
+        'Davanti al cavo basso, afferra la barra con i palmi in su, gomiti ai fianchi.',
+        'Piega i gomiti portando la barra verso le spalle.',
+        'Torna giù lentamente senza dondolare.']),
+    ('Cable_Hammer_Curls_-_Rope_Attachment', 'Curl a martello al cavo', 'cavi|pulley', 'braccia', [
+        'Afferra la corda al cavo basso con i pollici in su, gomiti ai fianchi.',
+        'Piega i gomiti portando le mani verso le spalle.',
+        'Torna giù lentamente: lavorano bicipiti e avambracci.']),
+    ('Cable_Crunch', 'Crunch al cavo in ginocchio', 'cavi|lat_machine', 'core', [
+        'In ginocchio davanti al cavo alto, corda tenuta ai lati della testa.',
+        'Arrotonda la schiena portando i gomiti verso le ginocchia, senza tirare con le braccia.',
+        'Torna su lentamente.']),
+    ('Pallof_Press', 'Pallof press', 'cavi|elastici', 'core', [
+        'Di fianco al cavo (o all\'elastico) all\'altezza del petto, maniglia con due mani al petto.',
+        'Spingi le mani in avanti a braccia tese senza farti ruotare dal cavo.',
+        'Tieni un secondo, torna al petto e ripeti dall\'altro lato.']),
+    ('Standing_Cable_Wood_Chop', 'Taglialegna al cavo', 'cavi', 'core', [
+        'Di fianco al cavo alto, maniglia con due mani, piedi alla larghezza delle spalle.',
+        'Porta le mani in diagonale verso il basso, ruotando il busto e le anche.',
+        'Torna lentamente e ripeti dall\'altro lato.']),
+    ('Leg_Press', 'Leg press', 'leg_press', 'squat', [
+        'Siediti con la schiena appoggiata, piedi sulla pedana alla larghezza delle spalle.',
+        'Togli le sicure e piega le ginocchia verso il petto senza staccare il bacino.',
+        'Spingi fino a gambe quasi tese, senza bloccare le ginocchia.']),
+    ('Calf_Press_On_The_Leg_Press_Machine', 'Polpacci alla leg press', 'leg_press', 'polpacci', [
+        'Gambe tese, solo la punta dei piedi sul bordo basso della pedana.',
+        'Spingi con le punte allontanando la pedana.',
+        'Torna lentamente fino a sentire i polpacci allungati.']),
+    ('Hack_Squat', 'Hack squat', 'hack_squat', 'squat', [
+        'Schiena contro lo schienale, spalle sotto i cuscinetti, piedi alla larghezza delle spalle.',
+        'Togli le sicure e scendi piegando le ginocchia fino a circa 90°.',
+        'Spingi per tornare su senza bloccare le ginocchia.']),
+    ('Smith_Machine_Squat', 'Squat al multipower', 'multipower', 'squat', [
+        'Barra sulla parte alta della schiena, piedi un po\' avanti rispetto alla barra.',
+        'Sgancia la barra e scendi come per sederti, schiena dritta.',
+        'Spingi per tornare su e riaggancia la barra alla fine.']),
+    ('Smith_Machine_Bench_Press', 'Panca piana al multipower', 'multipower+panca', 'spinta_orizzontale', [
+        'Sdraiati sulla panca con la barra sopra il centro del petto.',
+        'Sgancia la barra e scendi lentamente fino a sfiorare il petto.',
+        'Spingi fino a braccia tese e riaggancia alla fine.']),
+    ('Smith_Machine_Incline_Bench_Press', 'Panca inclinata al multipower', 'multipower+panca', 'spinta_orizzontale', [
+        'Panca inclinata a circa 30°, barra sopra la parte alta del petto.',
+        'Sgancia e scendi lentamente fino a sfiorare il petto.',
+        'Spingi fino a braccia tese: lavora di più la parte alta del petto.']),
+    ('Smith_Single-Leg_Split_Squat', 'Affondo al multipower', 'multipower', 'affondo', [
+        'Barra sulla schiena, un piede avanti e uno indietro, come in un affondo.',
+        'Scendi piegando entrambe le ginocchia, il busto resta dritto.',
+        'Spingi con la gamba davanti per tornare su; poi cambia gamba.']),
+    ('Smith_Machine_Stiff-Legged_Deadlift', 'Stacco a gambe tese al multipower', 'multipower', 'cerniera', [
+        'In piedi con la barra davanti alle cosce, ginocchia appena piegate.',
+        'Porta il bacino indietro e scendi con la barra lungo le gambe, schiena dritta.',
+        'Torna su spingendo il bacino in avanti: lavorano femorali e glutei.']),
+    ('Pull_Through', 'Pull through al cavo', 'cavi', 'cerniera', [
+        'Di spalle al cavo basso, corda tra le gambe, piedi un po\' più larghi delle spalle.',
+        'Porta il bacino indietro piegandoti in avanti con la schiena dritta.',
+        'Torna su spingendo il bacino in avanti e stringendo i glutei.']),
+    ('Leg_Extensions', 'Leg extension', 'leg_extension', 'isolamento_gambe', [
+        'Siediti con la schiena appoggiata e il rullo sopra le caviglie.',
+        'Distendi le gambe fino a quasi tese, stringendo i quadricipiti.',
+        'Torna giù lentamente.']),
+    ('Seated_Leg_Curl', 'Leg curl da seduto', 'leg_curl', 'isolamento_gambe', [
+        'Siediti con il rullo dietro le caviglie e le cosce bloccate.',
+        'Piega le ginocchia portando i talloni sotto il sedile.',
+        'Torna lentamente a gambe tese.']),
+    ('Lying_Leg_Curls', 'Leg curl sdraiato', 'leg_curl', 'isolamento_gambe', [
+        'Sdraiati a pancia in giù con il rullo dietro le caviglie.',
+        'Piega le ginocchia portando i talloni verso i glutei, bacino a contatto con la panca.',
+        'Torna giù lentamente.']),
+    ('Thigh_Adductor', 'Adduttori alla macchina', 'adduttori', 'isolamento_gambe', [
+        'Siediti con le gambe aperte e i cuscinetti all\'interno delle ginocchia.',
+        'Chiudi le gambe stringendo l\'interno coscia.',
+        'Riapri lentamente.']),
+    ('Thigh_Abductor', 'Abduttori alla macchina', 'adduttori', 'isolamento_gambe', [
+        'Siediti con le gambe chiuse e i cuscinetti all\'esterno delle ginocchia.',
+        'Apri le gambe spingendo verso l\'esterno.',
+        'Richiudi lentamente: lavorano i glutei laterali.']),
+    ('One-Legged_Cable_Kickback', 'Slanci del gluteo al cavo', 'cavi', 'isolamento_gambe', [
+        'Cavigliera al cavo basso, di fronte alla macchina con le mani appoggiate.',
+        'Porta la gamba indietro e in alto stringendo il gluteo, busto fermo.',
+        'Torna lentamente e cambia gamba.']),
+    ('Seated_Calf_Raise', 'Polpacci da seduto alla macchina', 'calf_machine', 'polpacci', [
+        'Siediti con i cuscinetti sulle ginocchia e le punte dei piedi sulla pedana.',
+        'Sali sulle punte il più possibile.',
+        'Scendi lentamente fino a sentire i polpacci allungati.']),
+    ('Standing_Calf_Raises', 'Polpacci in piedi alla macchina', 'calf_machine', 'polpacci', [
+        'Spalle sotto i cuscinetti, punte dei piedi sul bordo della pedana.',
+        'Sali sulle punte a gambe tese.',
+        'Scendi lentamente sotto il livello della pedana.']),
 ]
 
 

@@ -14,12 +14,14 @@ class Attrezzo {
   final IconData icona;
   final bool conPeso; // se selezionato, chiede i pesi disponibili
   final String aiutoPeso;
+  final bool palestra; // macchine e cavi: i pesi li legge sulla macchina
   const Attrezzo(
     this.chiave,
     this.nome,
     this.icona, {
     this.conPeso = false,
     this.aiutoPeso = '',
+    this.palestra = false,
   });
 }
 
@@ -67,6 +69,81 @@ const attrezzi = [
   Attrezzo('rialzo', 'Step o box', Icons.crop_square),
   Attrezzo('fitball', 'Fitball', Icons.circle_outlined),
   Attrezzo('rullo', 'Rullo (foam roller)', Icons.view_week_outlined),
+  // In palestra: macchine e cavi.
+  Attrezzo(
+    'lat_machine',
+    'Lat machine',
+    Icons.vertical_align_bottom,
+    palestra: true,
+  ),
+  Attrezzo('pulley', 'Pulley basso', Icons.rowing, palestra: true),
+  Attrezzo(
+    'cavi',
+    'Cavi regolabili (croce ai cavi)',
+    Icons.cable,
+    palestra: true,
+  ),
+  Attrezzo('chest_press', 'Chest press', Icons.fitness_center, palestra: true),
+  Attrezzo(
+    'pectoral',
+    'Pectoral machine',
+    Icons.fitness_center,
+    palestra: true,
+  ),
+  Attrezzo(
+    'shoulder_press',
+    'Shoulder press',
+    Icons.fitness_center,
+    palestra: true,
+  ),
+  Attrezzo(
+    'rematore_macchina',
+    'Rematore alla macchina',
+    Icons.rowing,
+    palestra: true,
+  ),
+  Attrezzo(
+    'multipower',
+    'Multipower (Smith machine)',
+    Icons.fitness_center,
+    palestra: true,
+  ),
+  Attrezzo(
+    'leg_press',
+    'Leg press',
+    Icons.airline_seat_legroom_extra,
+    palestra: true,
+  ),
+  Attrezzo(
+    'hack_squat',
+    'Hack squat',
+    Icons.airline_seat_legroom_extra,
+    palestra: true,
+  ),
+  Attrezzo(
+    'leg_extension',
+    'Leg extension',
+    Icons.airline_seat_legroom_normal,
+    palestra: true,
+  ),
+  Attrezzo(
+    'leg_curl',
+    'Leg curl',
+    Icons.airline_seat_legroom_normal,
+    palestra: true,
+  ),
+  Attrezzo(
+    'adduttori',
+    'Adduttori e abduttori',
+    Icons.airline_seat_legroom_reduced,
+    palestra: true,
+  ),
+  Attrezzo(
+    'calf_machine',
+    'Calf machine (polpacci)',
+    Icons.directions_walk,
+    palestra: true,
+  ),
 ];
 
 Attrezzo? attrezzoDa(String chiave) {
@@ -157,6 +234,7 @@ const nomiSchemi = {
   'spalle': 'Spalle e postura',
   'braccia': 'Braccia',
   'polpacci': 'Polpacci',
+  'isolamento_gambe': 'Gambe alle macchine',
   'pliometria': 'Pliometria',
   'total_body': 'Total body',
   'mobilita': 'Mobilità e stretching',

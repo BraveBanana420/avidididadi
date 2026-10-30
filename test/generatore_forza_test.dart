@@ -114,6 +114,22 @@ void main() {
     }
   });
 
+  test('in palestra usa anche le macchine, ma non quelle di isolamento', () {
+    final palestra = <String, List<double>>{
+      ...palestraCasa,
+      for (final a in attrezzi.where((a) => a.palestra)) a.chiave: <double>[],
+    };
+    final p = genera(pianoDiProva(4), attrezzatura: palestra);
+    final usati = p.passi.map((s) => perId[s.esercizio]).nonNulls.toList();
+    expect(
+      usati.where(
+        (e) => e.attrezzi.any((g) => g.any((k) => attrezzoDa(k)!.palestra)),
+      ),
+      isNotEmpty,
+    );
+    expect(usati.where((e) => e.schema == 'isolamento_gambe'), isEmpty);
+  });
+
   test('il giorno prima di Fartlek e Lungo le gambe restano leggere', () {
     final p = genera(pianoDiProva(1), obiettivo: 'generale');
     final venerdi = sessione(p, DateTime(2026, 10, 23)); // sabato Lungo
