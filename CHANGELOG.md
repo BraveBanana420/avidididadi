@@ -2,6 +2,14 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.2.0
+
+- Nuovo pulsante "+" in Oggi: avvii subito un'attività libera (corsa, camminata, bici, nuoto, forza, mobilità) che si aggiunge al calendario.
+- La camminata è un nuovo sport, con GPS e percorso sulla mappa.
+- Il conto alla rovescia iniziale si salta anche toccando il timer.
+- Un'attività fatta col telefono non viene più nascosta da un'altra dello stesso sport registrata dall'orologio in un altro orario.
+- All'apertura riaccetta l'informativa (GPS anche per la camminata).
+
 ## 1.1.0
 
 - Forza: segni ripetizioni e kg di ogni serie, con "ultima volta" e record per esercizio.
