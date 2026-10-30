@@ -73,6 +73,7 @@ test/                  un file *_test.dart per area
 tool/                  script Python (catalogo esercizi, icona), git-hooks/pre-commit
 android/               progetto Android, firma, manifest, widget
 NOTE.md                appunti e lavori in sospeso (pubblico)
+CHANGELOG.md           novità di ogni versione distribuita
 NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo locale, ignorato da git
 ```
 
@@ -108,6 +109,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - Il numero di build (`+N`) sale sempre di 1. Più modifiche nella stessa sessione, prima di un nuovo APK distribuito, possono stare nella stessa versione.
   - Attuale: `1.1.0+4`.
 - **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
+  - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, parole semplici, per chi usa l'app) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
 ## 5. Linee guida grafiche (stile "Pulse")
