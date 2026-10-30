@@ -65,7 +65,7 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
-  List<SchedaForza> schede = []; // schede scritte a mano (personal trainer)
+  List<Scheda> schede = []; // schede scritte a mano (personal trainer)
   List<GiornoRecupero> recupero = []; // FC a riposo, HRV e sonno, per giorno
   ConfigAssistente assistente = ConfigAssistente();
   List<MessaggioChat> chat = []; // solo in memoria: si azzera alla chiusura
@@ -782,12 +782,14 @@ class AppState extends ChangeNotifier {
     final inizio = profilo.inizioEndurance;
     final scelti = profilo.sportGenerati.intersection(sportEndurance.toSet());
     final oggi = soloData(DateTime.now());
+    final conSchede = schede.any((x) => !stessoSport(x.sport, 'Forza'));
     if (inizio == null &&
+        !conSchede &&
         !workout.any((w) => idEndurance(w.id)) &&
         !programma.any((p) => idEndurance(p.idWorkout))) {
       return 0;
     }
-    final nuovo = scelti.isEmpty || inizio == null
+    final generato = scelti.isEmpty || inizio == null
         ? const PianoEndurance([], [], {})
         : generaPianoEndurance(
             piano: piano,
@@ -802,6 +804,23 @@ class AppState extends ChangeNotifier {
             progressione: profilo.progressione,
             principiante: profilo.livello == 'principiante',
           );
+    // Le schede scritte a mano, dove valgono, al posto delle sedute preparate.
+    var nuovo = generato;
+    final futuro = piano.where((r) => !r.data.isBefore(oggi)).toList();
+    for (final sport in sportEndurance) {
+      final r = applicaSchede(
+        nuovo.passi,
+        nuovo.programma,
+        futuro,
+        schede,
+        sport,
+      );
+      nuovo = PianoEndurance(r.passi, r.programma, {
+        ...nuovo.tipi,
+        for (final MapEntry(key: d, value: t) in r.tipi.entries)
+          (d, normSport(sport)): t,
+      });
+    }
     bool svolta(DateTime d, String sport) =>
         sessioni.any((s) => s.data == d && stessoSport(s.sport, sport)) ||
         feedback.any((f) => f.di(d, sport));
@@ -809,6 +828,10 @@ class AppState extends ChangeNotifier {
         !d.isBefore(oggi) && !svolta(d, sport);
     DateTime dataDi(String id) =>
         parseData(id.substring(id.indexOf('_') + 1)) ?? oggi;
+    // Scelto per le sedute preparate, oppure coperto da una scheda.
+    final coperti = {
+      for (final p in nuovo.programma) (p.data, normSport(p.sport)),
+    };
     bool scelto(String sport) => scelti.any((x) => stessoSport(x, sport));
     workout = [
       for (final w in workout)
@@ -818,7 +841,9 @@ class AppState extends ChangeNotifier {
     ];
     programma = [
       for (final p in programma)
-        if (!((idEndurance(p.idWorkout) || scelto(p.sport)) &&
+        if (!((idEndurance(p.idWorkout) ||
+                scelto(p.sport) ||
+                coperti.contains((p.data, normSport(p.sport)))) &&
             daRifare(p.data, p.sport)))
           p,
       for (final p in nuovo.programma)
@@ -1772,15 +1797,25 @@ class AppState extends ChangeNotifier {
   // Schede scritte a mano
 
   /// La scheda che vale oggi, se c'è.
-  SchedaForza? get schedaAttiva => schedaDel(schede, DateTime.now());
+  Scheda? get schedaAttiva => schedaDel(schede, DateTime.now());
 
-  /// Una scheda appena finita, se oggi non ne vale un'altra: si chiede cosa fare.
-  SchedaForza? get schedaFinita {
+  /// Le schede che valgono oggi, una per sport.
+  List<Scheda> get schedeAttive => [
+    for (final sport in const ['Forza', ...sportEndurance])
+      ?schedaDel(schede, DateTime.now(), sport),
+  ];
+
+  /// Una scheda appena finita, se oggi non ne vale un'altra dello stesso
+  /// sport: si chiede cosa fare.
+  Scheda? get schedaFinita {
     final oggi = soloData(DateTime.now());
-    if (schedaAttiva != null) return null;
-    SchedaForza? f;
+    Scheda? f;
     for (final s in schede) {
-      if (s.finita(oggi) && (f == null || s.fine!.isAfter(f.fine!))) f = s;
+      if (s.finita(oggi) &&
+          schedaDel(schede, oggi, s.sport) == null &&
+          (f == null || s.fine!.isAfter(f.fine!))) {
+        f = s;
+      }
     }
     return f;
   }
@@ -1795,11 +1830,12 @@ class AppState extends ChangeNotifier {
   }
 
   /// Salva una scheda nuova o modificata e rifà le sedute di forza da oggi.
-  Future<void> salvaScheda(SchedaForza s) async {
+  Future<void> salvaScheda(Scheda s) async {
     schede = [...schede.where((x) => x.id != s.id), s]
       ..sort((a, b) => a.inizio.compareTo(b.inizio));
     await _salvaSchede();
     await _aggiornaForza();
+    await _aggiornaEndurance(); // le schede di corsa, bici e nuoto
     notifyListeners();
   }
 
@@ -1807,6 +1843,7 @@ class AppState extends ChangeNotifier {
     schede = schede.where((x) => x.id != id).toList();
     await _salvaSchede();
     await _aggiornaForza();
+    await _aggiornaEndurance(); // le schede di corsa, bici e nuoto
     notifyListeners();
   }
 

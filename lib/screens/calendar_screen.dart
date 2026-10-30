@@ -1457,7 +1457,9 @@ class PromemoriaScheda extends StatelessWidget {
     if (s == null) return const SizedBox.shrink();
     final scheme = Theme.of(context).colorScheme;
     final durata = s.durataGiorni ?? 15;
-    final nome = s.nome.isEmpty ? 'La scheda' : 'La scheda "${s.nome}"';
+    final nome = s.nome.isEmpty
+        ? 'La scheda di ${s.sport.toLowerCase()}'
+        : 'La scheda "${s.nome}"';
     return Card(
       color: scheme.primaryContainer,
       margin: const EdgeInsets.only(bottom: 12),
@@ -1467,8 +1469,8 @@ class PromemoriaScheda extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$nome è finita il ${dataLunga(s.fine!)}. Intanto la forza è '
-              "quella preparata dall'app.",
+              '$nome è finita il ${dataLunga(s.fine!)}. Intanto le sedute '
+              "sono quelle preparate dall'app.",
               style: TextStyle(color: scheme.onPrimaryContainer),
             ),
             Wrap(
@@ -1484,6 +1486,7 @@ class PromemoriaScheda extends StatelessWidget {
                       builder: (_) => SchedaScreen(
                         state: state,
                         scheda: s.rinnovata(durata),
+                        sport: s.sport,
                       ),
                     ),
                   ),

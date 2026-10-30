@@ -1,6 +1,7 @@
 import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/generatore_forza.dart';
+import 'package:allenamenti_app/invio_intervals.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/registro_forza.dart';
 import 'package:allenamenti_app/scheda.dart';
@@ -10,7 +11,7 @@ void main() {
   // Lunedì 2 novembre 2026: scheda di 15 giorni, Busto il lunedì e Gambe il
   // mercoledì, come quella di un personal trainer.
   final lun = DateTime(2026, 11, 2);
-  final scheda = SchedaForza(
+  final scheda = Scheda(
     id: 'sch-1',
     nome: 'Novembre',
     inizio: lun,
@@ -205,5 +206,117 @@ void main() {
     });
     expect(nuova.giorni[0].esercizi[1].kg, [30, 35, 42.5]);
     expect(nuova.giorni[0].esercizi[0].kg, [40]);
+  });
+
+  group('corsa, bici e nuoto', () {
+    // Scheda del gruppo di corsa: ripetute il martedì.
+    final corsa = Scheda(
+      id: 'sch-2',
+      nome: 'Gruppo del martedì',
+      sport: 'Corsa',
+      inizio: lun,
+      fine: lun.add(const Duration(days: 29)),
+      giorni: const [
+        GiornoScheda(
+          nome: 'Ripetute',
+          giorni: {2},
+          esercizi: [
+            EsercizioScheda(
+              nome: 'Corsa facile',
+              fase: 'riscaldamento',
+              serie: 1,
+              ripetizioni: '',
+              recuperoS: 0,
+              durataMin: '15',
+              intensita: 'zona 2',
+            ),
+            EsercizioScheda(
+              nome: 'Ripetute',
+              serie: 6,
+              ripetizioni: '',
+              recuperoS: 90,
+              distanzaM: '400',
+              intensita: 'passo 4:30/km',
+            ),
+            EsercizioScheda(
+              nome: 'Defaticamento',
+              fase: 'defaticamento',
+              serie: 1,
+              ripetizioni: '',
+              recuperoS: 0,
+              durataMin: '10',
+              intensita: 'zona 1',
+            ),
+          ],
+        ),
+      ],
+    );
+    final mar = lun.add(const Duration(days: 1));
+
+    test('riassunto dei passi', () {
+      final e = corsa.giorni[0].esercizi;
+      expect(e[0].riassunto, '15 min · zona 2');
+      expect(e[1].riassunto, '6 × 400 m · passo 4:30/km · recupero 90 s');
+    });
+
+    test('vale solo per la corsa, anche insieme a quella di forza', () {
+      expect(schedaDel([scheda, corsa], mar, 'Corsa')!.id, 'sch-2');
+      // Per la forza vale l'altra, ma il martedì non ha un giorno di forza.
+      expect(schedaDel([scheda, corsa], mar)!.id, 'sch-1');
+      expect(schedaDel([scheda, corsa], mar)!.giornoPer(mar), isNull);
+      expect(schedaDel([scheda, corsa], lun)!.id, 'sch-1');
+    });
+
+    test('si salva e si rilegge con fase, tempo, distanza e intensità', () {
+      Tabella t(List<String> h, List<List<String>> r) =>
+          Tabella.da(toCsv([h, ...r]))!;
+      final letta = schedeDa(
+        t(schedeHeader, righeSchede([scheda, corsa])),
+        t(schedeEserciziHeader, righeEserciziSchede([scheda, corsa])),
+      );
+      expect(letta[0].sport, 'Forza');
+      final c = letta[1];
+      expect(c.sport, 'Corsa');
+      final passi = c.giorni.single.esercizi;
+      expect(passi.map((x) => x.fase), [
+        'riscaldamento',
+        'principale',
+        'defaticamento',
+      ]);
+      expect(passi[1].distanzaM, '400');
+      expect(passi[1].serie, 6);
+      expect(passi[1].intensita, 'passo 4:30/km');
+      expect(passi[0].durataMin, '15');
+    });
+
+    test('nel piano e verso intervals.icu', () {
+      final piano = [
+        PianoRiga(data: mar, fascia: 'Sera', sport: 'Corsa', durataMin: 50),
+        PianoRiga(
+          data: mar.add(const Duration(days: 2)),
+          fascia: 'Sera',
+          sport: 'Corsa',
+          durataMin: 40,
+        ),
+      ];
+      final r = applicaSchede(const [], const [], piano, [corsa], 'Corsa');
+      expect(r.programma.single.idWorkout, 'corsa_2026-11-03');
+      expect(r.tipi[mar], 'Ripetute');
+      final passi = r.passi;
+      expect(passi.length, 3);
+      expect(passi[1].serie, '6');
+      expect(passi[1].distanzaM, '400');
+      expect(passi[0].serie, '');
+      // Il player: 6 ripetute con 90 s di recupero in mezzo.
+      final b = blocchiDa(passi);
+      expect(b.where((x) => x.titolo == 'Ripetute').length, 6);
+      expect(
+        testoIcu('Corsa', passi),
+        contains(
+          'Principale 6x\n- Ripetute 400mtr 4:30/km Pace\n'
+          '- Recupero 90s Z1 HR',
+        ),
+      );
+    });
   });
 }

@@ -1,23 +1,31 @@
 import 'csv.dart';
 import 'esercizi.dart';
+import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'models.dart';
 import 'registro_forza.dart';
 
-// Scheda di forza scritta a mano, per esempio quella del personal trainer:
-// uno o più giorni (Busto, Gambe…) legati ai giorni della settimana, con
-// esercizi, serie, ripetizioni, recupero e kg. Finché è attiva prende il posto
-// della forza generata dall'app, che non cambia nulla da sola.
+// Scheda scritta a mano, per esempio quella del personal trainer o
+// dell'allenatore: uno o più giorni (Busto, Gambe, Ripetute…) legati ai giorni
+// della settimana. Per la forza esercizi con serie, ripetizioni, recupero e kg;
+// per corsa, bici e nuoto passi a tempo o a distanza, con zona o passo.
+// Finché è attiva prende il posto delle sedute preparate dall'app per quello
+// sport, che non cambia nulla da sola.
 
-/// Un esercizio della scheda.
+/// Un esercizio (forza) o un passo (corsa, bici, nuoto) della scheda.
 class EsercizioScheda {
   final String esercizio; // id nel catalogo; vuoto se scritto a mano
   final String nome;
-  final int serie;
+  final int serie; // forza: serie; resistenza: quante volte si ripete
   final String ripetizioni; // "10", "8-10", "30 s"
   final int recuperoS;
   final List<double> kg; // uno per tutte le serie, oppure uno per serie
   final String note;
+  // Corsa, bici e nuoto
+  final String fase; // riscaldamento, principale, defaticamento
+  final String durataMin; // "10", "1,5"
+  final String distanzaM; // "400"
+  final String intensita; // "zona 2", "passo 5:00/km", "passo 1:50/100 m"
   const EsercizioScheda({
     this.esercizio = '',
     required this.nome,
@@ -26,7 +34,14 @@ class EsercizioScheda {
     this.recuperoS = 90,
     this.kg = const [],
     this.note = '',
+    this.fase = 'principale',
+    this.durataMin = '',
+    this.distanzaM = '',
+    this.intensita = '',
   });
+
+  /// Un passo a tempo o a distanza (corsa, bici, nuoto).
+  bool get diResistenza => durataMin.isNotEmpty || distanzaM.isNotEmpty;
 
   /// I kg della serie [n] (da 1): l'ultimo valore vale per le serie dopo.
   double? kgSerie(int n) =>
@@ -40,6 +55,10 @@ class EsercizioScheda {
     int? recuperoS,
     List<double>? kg,
     String? note,
+    String? fase,
+    String? durataMin,
+    String? distanzaM,
+    String? intensita,
   }) => EsercizioScheda(
     esercizio: esercizio ?? this.esercizio,
     nome: nome ?? this.nome,
@@ -48,14 +67,31 @@ class EsercizioScheda {
     recuperoS: recuperoS ?? this.recuperoS,
     kg: kg ?? this.kg,
     note: note ?? this.note,
+    fase: fase ?? this.fase,
+    durataMin: durataMin ?? this.durataMin,
+    distanzaM: distanzaM ?? this.distanzaM,
+    intensita: intensita ?? this.intensita,
   );
 
-  /// "3 × 10 · 90 s · 20 kg" oppure "3 × 10 · 20, 22,5, 25 kg".
-  String get riassunto => [
-    '$serie × $ripetizioni',
-    if (recuperoS > 0) '$recuperoS s',
-    if (kg.isNotEmpty) '${kg.map(fmtKg).join(', ')} kg',
-  ].join(' · ');
+  /// Forza: "3 × 10 · 90 s · 20 kg" oppure "3 × 10 · 20, 22,5, 25 kg".
+  /// Resistenza: "6 × 400 m · zona 4 · recupero 90 s".
+  String get riassunto {
+    if (diResistenza) {
+      final quanto = distanzaM.isNotEmpty
+          ? '$distanzaM m'
+          : '${durataMin.replaceAll('.', ',')} min';
+      return [
+        serie > 1 ? '$serie × $quanto' : quanto,
+        if (intensita.isNotEmpty) intensita,
+        if (recuperoS > 0) 'recupero $recuperoS s',
+      ].join(' · ');
+    }
+    return [
+      '$serie × $ripetizioni',
+      if (recuperoS > 0) '$recuperoS s',
+      if (kg.isNotEmpty) '${kg.map(fmtKg).join(', ')} kg',
+    ].join(' · ');
+  }
 }
 
 /// Un giorno della scheda (Busto, Gambe…) e i giorni della settimana in cui
@@ -82,16 +118,18 @@ class GiornoScheda {
 }
 
 /// La scheda: valida da [inizio] a [fine] compresa (null: finché non cambia).
-class SchedaForza {
+class Scheda {
   final String id;
   final String nome;
+  final String sport; // Forza, Corsa, Bici o Nuoto
   final DateTime inizio;
   final DateTime? fine;
   final bool archiviata;
   final List<GiornoScheda> giorni;
-  const SchedaForza({
+  const Scheda({
     required this.id,
     required this.nome,
+    this.sport = 'Forza',
     required this.inizio,
     this.fine,
     this.archiviata = false,
@@ -122,15 +160,16 @@ class SchedaForza {
   int? get durataGiorni =>
       fine == null ? null : fine!.difference(inizio).inDays + 1;
 
-  SchedaForza copyWith({
+  Scheda copyWith({
     String? nome,
     DateTime? inizio,
     DateTime? Function()? fine,
     bool? archiviata,
     List<GiornoScheda>? giorni,
-  }) => SchedaForza(
+  }) => Scheda(
     id: id,
     nome: nome ?? this.nome,
+    sport: sport,
     inizio: inizio ?? this.inizio,
     fine: fine == null ? this.fine : fine(),
     archiviata: archiviata ?? this.archiviata,
@@ -138,7 +177,7 @@ class SchedaForza {
   );
 
   /// Stessa scheda per altri [giorni] giorni dal giorno dopo la fine.
-  SchedaForza rinnovata(int giorniValidita) {
+  Scheda rinnovata(int giorniValidita) {
     final da = fine == null
         ? soloData(DateTime.now())
         : fine!.add(const Duration(days: 1));
@@ -149,11 +188,15 @@ class SchedaForza {
   }
 }
 
-/// La scheda che vale in [d] (l'ultima iniziata, se più d'una).
-SchedaForza? schedaDel(List<SchedaForza> schede, DateTime d) {
-  SchedaForza? s;
+/// La scheda di [sport] che vale in [d] (l'ultima iniziata, se più d'una).
+Scheda? schedaDel(List<Scheda> schede, DateTime d, [String sport = 'Forza']) {
+  Scheda? s;
   for (final x in schede) {
-    if (x.valida(d) && (s == null || x.inizio.isAfter(s.inizio))) s = x;
+    if (stessoSport(x.sport, sport) &&
+        x.valida(d) &&
+        (s == null || x.inizio.isAfter(s.inizio))) {
+      s = x;
+    }
   }
   return s;
 }
@@ -161,7 +204,7 @@ SchedaForza? schedaDel(List<SchedaForza> schede, DateTime d) {
 // ---------------------------------------------------------------------------
 // CSV: una riga per scheda e una per esercizio.
 
-const schedeHeader = ['id', 'nome', 'inizio', 'fine', 'archiviata'];
+const schedeHeader = ['id', 'nome', 'inizio', 'fine', 'archiviata', 'sport'];
 const schedeEserciziHeader = [
   'scheda',
   'giorno',
@@ -174,6 +217,11 @@ const schedeEserciziHeader = [
   'recupero_s',
   'kg',
   'note',
+  // Colonne per corsa, bici e nuoto.
+  'fase',
+  'durata_min',
+  'distanza_m',
+  'intensita',
 ];
 
 String _kgTesto(List<double> kg) => kg.map(fmtKg).join(';');
@@ -183,7 +231,7 @@ List<double> _kgDa(String t) => [
       if (v >= 0) v,
 ];
 
-List<List<String>> righeSchede(List<SchedaForza> schede) => [
+List<List<String>> righeSchede(List<Scheda> schede) => [
   for (final s in schede)
     [
       s.id,
@@ -191,10 +239,11 @@ List<List<String>> righeSchede(List<SchedaForza> schede) => [
       isoData(s.inizio),
       s.fine == null ? '' : isoData(s.fine!),
       s.archiviata ? 'si' : '',
+      s.sport,
     ],
 ];
 
-List<List<String>> righeEserciziSchede(List<SchedaForza> schede) => [
+List<List<String>> righeEserciziSchede(List<Scheda> schede) => [
   for (final s in schede)
     for (final g in s.giorni)
       // Un giorno senza esercizi resta con una riga vuota, per non perderlo.
@@ -215,10 +264,14 @@ List<List<String>> righeEserciziSchede(List<SchedaForza> schede) => [
           e.nome.isEmpty ? '' : '${e.recuperoS}',
           _kgTesto(e.kg),
           e.note,
+          e.nome.isEmpty ? '' : e.fase,
+          e.durataMin,
+          e.distanzaM,
+          e.intensita,
         ],
 ];
 
-List<SchedaForza> schedeDa(Tabella? schede, Tabella? esercizi) {
+List<Scheda> schedeDa(Tabella? schede, Tabella? esercizi) {
   if (schede == null) return [];
   // scheda -> giorno -> (giorni della settimana, esercizi in ordine)
   final giorni =
@@ -242,13 +295,19 @@ List<SchedaForza> schedeDa(Tabella? schede, Tabella? esercizi) {
         EsercizioScheda(
           esercizio: esercizi.v(r, 'esercizio'),
           nome: nome,
-          serie: (int.tryParse(esercizi.v(r, 'serie')) ?? 3).clamp(1, 20),
+          serie: (int.tryParse(esercizi.v(r, 'serie')) ?? 3).clamp(1, 50),
           ripetizioni: esercizi.v(r, 'ripetizioni').isEmpty
               ? '10'
               : esercizi.v(r, 'ripetizioni'),
           recuperoS: int.tryParse(esercizi.v(r, 'recupero_s')) ?? 90,
           kg: _kgDa(esercizi.v(r, 'kg')),
           note: esercizi.v(r, 'note'),
+          fase: esercizi.v(r, 'fase').isEmpty
+              ? 'principale'
+              : esercizi.v(r, 'fase'),
+          durataMin: esercizi.v(r, 'durata_min'),
+          distanzaM: esercizi.v(r, 'distanza_m'),
+          intensita: esercizi.v(r, 'intensita'),
         ),
       ));
     }
@@ -256,9 +315,12 @@ List<SchedaForza> schedeDa(Tabella? schede, Tabella? esercizi) {
   return [
     for (final r in schede.righe)
       if (parseData(schede.v(r, 'inizio')) case final inizio?)
-        SchedaForza(
+        Scheda(
           id: schede.v(r, 'id'),
           nome: schede.v(r, 'nome'),
+          sport: schede.v(r, 'sport').isEmpty
+              ? 'Forza'
+              : normSport(schede.v(r, 'sport')),
           inizio: inizio,
           fine: parseData(schede.v(r, 'fine')),
           archiviata: schede.v(r, 'archiviata') == 'si',
@@ -281,32 +343,80 @@ List<SchedaForza> schedeDa(Tabella? schede, Tabella? esercizi) {
 // ---------------------------------------------------------------------------
 // Dalla scheda al piano
 
-/// I passi del workout di un giorno della scheda, con lo stesso id dei
-/// workout di forza generati: così valgono le stesse regole (un feedback
-/// blocca la seduta, da oggi in poi si riscrive).
-List<WorkoutStep> passiScheda(GiornoScheda g, DateTime d, int durataMin) {
-  final id = '$prefissoForza${isoData(d)}';
+/// Id del workout di un giorno: lo stesso dei workout generati, così valgono
+/// le stesse regole (una seduta fatta non si tocca, da oggi in poi si
+/// riscrive).
+String idSeduta(String sport, DateTime d) => stessoSport(sport, 'Forza')
+    ? '$prefissoForza${isoData(d)}'
+    : '${prefissoEndurance(normSport(sport))}${isoData(d)}';
+
+/// I passi del workout di un giorno della scheda.
+List<WorkoutStep> passiScheda(
+  GiornoScheda g,
+  DateTime d,
+  int durataMin, {
+  String sport = 'Forza',
+}) {
+  final id = idSeduta(sport, d);
+  final forza = stessoSport(sport, 'Forza');
   return [
     for (final (i, e) in g.esercizi.indexed)
       WorkoutStep(
         id: id,
-        sport: 'Forza',
+        sport: normSport(sport),
         nome: g.nome,
         durataTot: durataMin,
         ordine: i + 1,
-        fase: 'principale',
+        fase: forza ? 'principale' : e.fase,
         descrizione: e.nome,
-        serie: '${e.serie}',
-        ripetizioni: e.ripetizioni,
-        distanzaM: '',
-        durataMin: '',
-        intensita: '',
+        serie: forza || e.serie > 1 ? '${e.serie}' : '',
+        ripetizioni: forza ? e.ripetizioni : '',
+        distanzaM: forza ? '' : e.distanzaM,
+        durataMin: forza ? '' : e.durataMin,
+        intensita: forza ? '' : e.intensita,
         recuperoS: e.recuperoS > 0 ? '${e.recuperoS}' : '',
         note: e.note,
-        esercizio: e.esercizio,
-        kg: _kgTesto(e.kg),
+        esercizio: forza ? e.esercizio : '',
+        kg: forza ? _kgTesto(e.kg) : '',
       ),
   ];
+}
+
+/// Passi e programma con le schede di [sport] al posto delle sedute
+/// preparate dall'app, nei giorni della settimana tipo che coprono. Restituisce
+/// anche il nome del giorno della scheda, da mostrare nel calendario.
+({
+  List<WorkoutStep> passi,
+  List<ProgrammaRiga> programma,
+  Map<DateTime, String> tipi,
+})
+applicaSchede(
+  List<WorkoutStep> generati,
+  List<ProgrammaRiga> programmati,
+  List<PianoRiga> piano,
+  List<Scheda> schede,
+  String sport,
+) {
+  final passi = [...generati];
+  final programma = [...programmati];
+  final tipi = <DateTime, String>{};
+  for (final r in piano) {
+    if (!stessoSport(r.sport, sport)) continue;
+    final g = schedaDel(schede, r.data, sport)?.giornoPer(r.data);
+    if (g == null) continue;
+    final id = idSeduta(sport, r.data);
+    passi
+      ..removeWhere((w) => w.id == id)
+      ..addAll(passiScheda(g, r.data, r.durataMin, sport: sport));
+    programma
+      ..removeWhere((p) => p.data == r.data && stessoSport(p.sport, sport))
+      ..add(
+        ProgrammaRiga(data: r.data, sport: normSport(sport), idWorkout: id),
+      );
+    tipi[r.data] = g.nome;
+  }
+  programma.sort((a, b) => a.data.compareTo(b.data));
+  return (passi: passi, programma: programma, tipi: tipi);
 }
 
 /// Il piano di forza con la scheda al posto delle sedute generate, nei giorni
@@ -314,25 +424,16 @@ List<WorkoutStep> passiScheda(GiornoScheda g, DateTime d, int durataMin) {
 PianoForza conScheda(
   PianoForza generato,
   List<PianoRiga> piano,
-  List<SchedaForza> schede,
+  List<Scheda> schede,
 ) {
-  final passi = [...generato.passi];
-  final programma = [...generato.programma];
-  for (final r in piano) {
-    if (!stessoSport(r.sport, 'Forza')) continue;
-    final s = schedaDel(schede, r.data);
-    final g = s?.giornoPer(r.data);
-    if (g == null) continue;
-    final id = '$prefissoForza${isoData(r.data)}';
-    passi
-      ..removeWhere((w) => w.id == id)
-      ..addAll(passiScheda(g, r.data, r.durataMin));
-    programma
-      ..removeWhere((p) => p.data == r.data && stessoSport(p.sport, 'Forza'))
-      ..add(ProgrammaRiga(data: r.data, sport: 'Forza', idWorkout: id));
-  }
-  programma.sort((a, b) => a.data.compareTo(b.data));
-  return PianoForza(passi, programma);
+  final r = applicaSchede(
+    generato.passi,
+    generato.programma,
+    piano,
+    schede,
+    'Forza',
+  );
+  return PianoForza(r.passi, r.programma);
 }
 
 /// I kg segnati che non corrispondono alla scheda: (esercizio, prima, dopo).
@@ -361,7 +462,7 @@ List<(String, List<double>, List<double>)> pesiCambiati(
 }
 
 /// La scheda con i kg nuovi per gli esercizi indicati (per nome).
-SchedaForza conPesi(SchedaForza s, Map<String, List<double>> kg) => s.copyWith(
+Scheda conPesi(Scheda s, Map<String, List<double>> kg) => s.copyWith(
   giorni: [
     for (final g in s.giorni)
       g.copyWith(

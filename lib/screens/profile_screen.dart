@@ -261,10 +261,9 @@ class ProfileScreen extends StatelessWidget {
                     voce(
                       Icons.assignment_outlined,
                       'Le mie schede',
-                      state.schedaAttiva == null
-                          ? 'La scheda del tuo personal trainer, scritta a mano'
-                          : '${state.schedaAttiva!.nome.isEmpty ? 'Scheda' : state.schedaAttiva!.nome}'
-                                ' · ${descriviValidita(state.schedaAttiva!).toLowerCase()}',
+                      state.schedeAttive.isEmpty
+                          ? "Le schede del personal trainer o dell'allenatore"
+                          : 'In corso: ${state.schedeAttive.map((s) => s.nome.isEmpty ? s.sport : s.nome).join(', ')}',
                       SchedeScreen(state: state),
                     ),
                     voce(

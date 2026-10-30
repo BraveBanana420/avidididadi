@@ -31,6 +31,8 @@ String obiettivoIcu(String intensita) {
   if (z != null) return 'Z${z.group(1)} HR';
   final p = RegExp(r'(\d+:\d\d)\s*/\s*100\s*m').firstMatch(intensita);
   if (p != null) return '${p.group(1)}/100m Pace';
+  final km = RegExp(r'(\d+:\d\d)\s*/\s*km').firstMatch(intensita);
+  if (km != null) return '${km.group(1)}/km Pace';
   return '';
 }
 

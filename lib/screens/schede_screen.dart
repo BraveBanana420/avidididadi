@@ -8,17 +8,49 @@ import '../registro_forza.dart';
 import '../scheda.dart';
 import '../widgets.dart';
 
-/// Le schede di forza scritte a mano (per esempio dal personal trainer).
+/// Le schede scritte a mano: forza (per esempio dal personal trainer) e
+/// corsa, bici e nuoto (per esempio dall'allenatore o dal gruppo).
 class SchedeScreen extends StatelessWidget {
   final AppState state;
   const SchedeScreen({super.key, required this.state});
 
-  void _apri(BuildContext context, SchedaForza? s) => Navigator.of(context)
-      .push(
+  void _apri(BuildContext context, Scheda? s, [String sport = 'Forza']) =>
+      Navigator.of(context).push(
         MaterialPageRoute<void>(
-          builder: (_) => SchedaScreen(state: state, scheda: s),
+          builder: (_) => SchedaScreen(state: state, scheda: s, sport: sport),
         ),
       );
+
+  /// Prima lo sport, poi la scheda.
+  Future<void> _nuova(BuildContext context) async {
+    final sport = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (c) => SafeArea(
+        child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final (sp, testo) in const [
+                ('Forza', 'Esercizi, serie, ripetizioni e kg'),
+                ('Corsa', 'Passi a tempo o distanza, con zona o passo'),
+                ('Bici', 'Passi a tempo o distanza, con zona'),
+                ('Nuoto', 'Vasche, passo per 100 m e pause'),
+              ])
+                ListTile(
+                  leading: Icon(iconaSport(sp), color: coloreSport(sp)),
+                  title: Text(sp),
+                  subtitle: Text(testo),
+                  onTap: () => Navigator.pop(c, sp),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (sport != null && context.mounted) _apri(context, null, sport);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,12 +71,11 @@ class SchedeScreen extends StatelessWidget {
             for (final s in state.schede.reversed)
               if (!inCorso.contains(s)) s,
           ];
-          Widget riga(SchedaForza s, bool linea) => RigaPulse(
-            segno: IconaQuadrata(
-              Icons.assignment_outlined,
-              evidenza: s.valida(oggi),
-            ),
-            titolo: s.nome.isEmpty ? 'Scheda' : s.nome,
+          Widget riga(Scheda s, bool linea) => RigaPulse(
+            segno: IconaQuadrata(iconaSport(s.sport), evidenza: s.valida(oggi)),
+            titolo: s.nome.isEmpty
+                ? 'Scheda di ${s.sport.toLowerCase()}'
+                : s.nome,
             sottotitolo: [
               descriviValidita(s),
               s.giorni.map((g) => g.nome).join(', '),
@@ -56,14 +87,15 @@ class SchedeScreen extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
               Text(
-                'Scrivi la scheda del tuo personal trainer: esercizi, serie, '
-                'ripetizioni e pesi. Nei giorni che scegli prende il posto '
-                'della forza preparata dall\'app, che non la cambia da sola.',
+                'Scrivi la scheda del tuo personal trainer o del tuo '
+                'allenatore: forza, corsa, bici o nuoto. Nei giorni che scegli '
+                'prende il posto delle sedute preparate dall\'app, che non la '
+                'cambia da sola.',
                 style: t.bodyMedium,
               ),
               const SizedBox(height: 16),
               PulsantePrincipale(
-                onPressed: () => _apri(context, null),
+                onPressed: () => _nuova(context),
                 icona: Icons.add,
                 testo: 'Nuova scheda',
               ),
@@ -100,7 +132,7 @@ class SchedeScreen extends StatelessWidget {
 }
 
 /// "Dal 2 novembre al 16 novembre", "Dal 2 novembre, senza scadenza".
-String descriviValidita(SchedaForza s) {
+String descriviValidita(Scheda s) {
   String d(DateTime x) => '${x.day} ${mesiNomi[x.month - 1]}';
   if (s.archiviata) return 'Archiviata';
   return s.fine == null
@@ -114,35 +146,48 @@ const _durate = [15, 30, 60];
 /// Scrittura e modifica di una scheda.
 class SchedaScreen extends StatefulWidget {
   final AppState state;
-  final SchedaForza? scheda; // null: nuova
-  const SchedaScreen({super.key, required this.state, this.scheda});
+  final Scheda? scheda; // null: nuova
+  final String sport; // per una scheda nuova
+  const SchedaScreen({
+    super.key,
+    required this.state,
+    this.scheda,
+    this.sport = 'Forza',
+  });
 
   @override
   State<SchedaScreen> createState() => _SchedaScreenState();
 }
 
 class _SchedaScreenState extends State<SchedaScreen> {
-  late SchedaForza s =
+  late Scheda s =
       widget.scheda ??
-      SchedaForza(
+      Scheda(
         id: 'sch-${DateTime.now().millisecondsSinceEpoch}',
         nome: '',
+        sport: widget.sport,
         inizio: soloData(DateTime.now()),
         fine: soloData(DateTime.now()).add(const Duration(days: 14)),
         giorni: [
           GiornoScheda(
-            nome: 'Giorno A',
-            giorni: _giorniForza().take(1).toSet(),
+            nome: _nomeGiorno(0),
+            giorni: _giorniSport().take(1).toSet(),
           ),
         ],
       );
   late final _nome = TextEditingController(text: s.nome);
   bool _modificata = false;
 
-  /// I giorni della settimana con la forza nella settimana tipo.
-  Set<int> _giorniForza() => {
+  String get _sport => widget.scheda?.sport ?? widget.sport;
+  bool get _forza => stessoSport(_sport, 'Forza');
+
+  String _nomeGiorno(int i) =>
+      '${_forza ? 'Giorno' : 'Seduta'} ${String.fromCharCode(65 + i)}';
+
+  /// I giorni della settimana con questo sport nella settimana tipo.
+  Set<int> _giorniSport() => {
     for (final x in widget.state.settimana)
-      if (stessoSport(x.sport, 'Forza')) x.giorno,
+      if (stessoSport(x.sport, _sport)) x.giorno,
   };
 
   @override
@@ -151,7 +196,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
     super.dispose();
   }
 
-  void _cambia(SchedaForza nuova) => setState(() {
+  void _cambia(Scheda nuova) => setState(() {
     s = nuova;
     _modificata = true;
   });
@@ -164,7 +209,13 @@ class _SchedaScreenState extends State<SchedaScreen> {
     final vuoti = s.giorni.every((g) => g.esercizi.isEmpty);
     if (vuoti) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aggiungi almeno un esercizio.')),
+        SnackBar(
+          content: Text(
+            _forza
+                ? 'Aggiungi almeno un esercizio.'
+                : 'Aggiungi almeno un passo.',
+          ),
+        ),
       );
       return;
     }
@@ -179,8 +230,8 @@ class _SchedaScreenState extends State<SchedaScreen> {
       builder: (c) => AlertDialog(
         title: const Text('Eliminare la scheda?'),
         content: const Text(
-          'Le sedute già fatte restano. Da oggi la forza torna quella '
-          'preparata dall\'app.',
+          'Le sedute già fatte restano. Da oggi tornano quelle preparate '
+          'dall\'app.',
         ),
         actions: [
           TextButton(
@@ -240,7 +291,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
-    final forza = _giorniForza();
+    final forza = _giorniSport();
     final durata = s.durataGiorni;
     final senzaForza = {
       for (final g in s.giorni)
@@ -257,7 +308,9 @@ class _SchedaScreenState extends State<SchedaScreen> {
       child: Scaffold(
         bottomNavigationBar: const MargineBarraSistema(),
         appBar: AppBar(
-          title: Text(widget.scheda == null ? 'Nuova scheda' : 'Scheda'),
+          title: Text(
+            '${widget.scheda == null ? 'Nuova scheda' : 'Scheda'} · $_sport',
+          ),
           actions: [
             if (widget.scheda != null)
               IconButton(
@@ -314,9 +367,13 @@ class _SchedaScreenState extends State<SchedaScreen> {
             ),
             const TitoloSezione('Giorni'),
             Text(
-              'Ogni giorno della scheda (Busto, Gambe…) va nei giorni della '
-              'settimana che scegli. Valgono quelli con la forza nella '
-              'settimana tipo.',
+              _forza
+                  ? 'Ogni giorno della scheda (Busto, Gambe…) va nei giorni '
+                        'della settimana che scegli. Valgono quelli con la '
+                        'forza nella settimana tipo.'
+                  : 'Ogni seduta della scheda (Ripetute, Lungo…) va nei '
+                        'giorni della settimana che scegli. Valgono quelli con '
+                        '${_sport.toLowerCase()} nella settimana tipo.',
               style: t.bodySmall,
             ),
             if (senzaForza.isNotEmpty)
@@ -324,7 +381,8 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   '${senzaForza.map((d) => giorniSettimana[d - 1]).join(', ')}: '
-                  'nella settimana tipo non c\'è forza, aggiungila lì.',
+                  'nella settimana tipo non c\'è ${_sport.toLowerCase()}, '
+                  'aggiungila lì.',
                   style: t.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -336,6 +394,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 state: widget.state,
                 giorno: g,
                 giorniForza: forza,
+                sport: _sport,
                 occupati: {
                   for (final (j, x) in s.giorni.indexed)
                     if (j != i) ...x.giorni,
@@ -354,15 +413,14 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 s.copyWith(
                   giorni: [
                     ...s.giorni,
-                    GiornoScheda(
-                      nome:
-                          'Giorno ${String.fromCharCode(65 + s.giorni.length)}',
-                    ),
+                    GiornoScheda(nome: _nomeGiorno(s.giorni.length)),
                   ],
                 ),
               ),
               icon: const Icon(Icons.add),
-              label: const Text('Aggiungi un giorno'),
+              label: Text(
+                _forza ? 'Aggiungi un giorno' : 'Aggiungi una seduta',
+              ),
             ),
             const SizedBox(height: 24),
             PulsantePrincipale(
@@ -381,7 +439,8 @@ class _SchedaScreenState extends State<SchedaScreen> {
 class _GiornoCard extends StatefulWidget {
   final AppState state;
   final GiornoScheda giorno;
-  final Set<int> giorniForza;
+  final Set<int> giorniForza; // con questo sport nella settimana tipo
+  final String sport;
   final Set<int> occupati; // già presi da un altro giorno della scheda
   final ValueChanged<GiornoScheda> cambia;
   final VoidCallback? elimina;
@@ -389,6 +448,7 @@ class _GiornoCard extends StatefulWidget {
     required this.state,
     required this.giorno,
     required this.giorniForza,
+    required this.sport,
     required this.occupati,
     required this.cambia,
     required this.elimina,
@@ -416,7 +476,26 @@ class _GiornoCardState extends State<_GiornoCard> {
     if (_nome.text.trim() != g.nome) _nome.text = g.nome;
   }
 
+  bool get _forza => stessoSport(widget.sport, 'Forza');
+
   Future<void> _aggiungi() async {
+    if (!_forza) {
+      final nuovo = await modificaPasso(
+        context,
+        widget.sport,
+        EsercizioScheda(
+          nome: '',
+          serie: 1,
+          ripetizioni: '',
+          recuperoS: 0,
+          fase: g.esercizi.isEmpty ? 'riscaldamento' : 'principale',
+          durataMin: '10',
+        ),
+      );
+      if (nuovo == null) return;
+      widget.cambia(g.copyWith(esercizi: [...g.esercizi, nuovo]));
+      return;
+    }
     final scelto = await Navigator.of(context).push<EsercizioScheda>(
       MaterialPageRoute(
         builder: (_) => SceltaEsercizioScreen(state: widget.state),
@@ -429,7 +508,9 @@ class _GiornoCardState extends State<_GiornoCard> {
   }
 
   Future<void> _modifica(int i) async {
-    final e = await modificaEsercizio(context, g.esercizi[i]);
+    final e = _forza
+        ? await modificaEsercizio(context, g.esercizi[i])
+        : await modificaPasso(context, widget.sport, g.esercizi[i]);
     if (e == null) return;
     widget.cambia(g.copyWith(esercizi: [...g.esercizi]..[i] = e));
   }
@@ -498,7 +579,11 @@ class _GiornoCardState extends State<_GiornoCard> {
             ],
           ),
           const SizedBox(height: 8),
-          if (g.esercizi.isEmpty) Text('Nessun esercizio.', style: t.bodySmall),
+          if (g.esercizi.isEmpty)
+            Text(
+              _forza ? 'Nessun esercizio.' : 'Nessun passo.',
+              style: t.bodySmall,
+            ),
           Material(
             type: MaterialType.transparency,
             child: Column(
@@ -540,7 +625,7 @@ class _GiornoCardState extends State<_GiornoCard> {
           TextButton.icon(
             onPressed: _aggiungi,
             icon: const Icon(Icons.add),
-            label: const Text('Aggiungi esercizio'),
+            label: Text(_forza ? 'Aggiungi esercizio' : 'Aggiungi un passo'),
           ),
         ],
       ),
@@ -778,4 +863,231 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
       ),
     );
   }
+}
+
+const _fasi = [
+  ('riscaldamento', 'Riscaldamento'),
+  ('principale', 'Principale'),
+  ('defaticamento', 'Defaticamento'),
+];
+
+/// Un passo di corsa, bici o nuoto: fase, cosa fare, quante volte, a tempo o
+/// a distanza, zona o passo, recupero tra le ripetizioni.
+Future<EsercizioScheda?> modificaPasso(
+  BuildContext context,
+  String sport,
+  EsercizioScheda e,
+) {
+  final nuoto = stessoSport(sport, 'Nuoto');
+  final nome = TextEditingController(text: e.nome);
+  var aDistanza = e.distanzaM.isNotEmpty || (nuoto && e.durataMin.isEmpty);
+  final quanto = TextEditingController(
+    text: aDistanza ? e.distanzaM : e.durataMin,
+  );
+  final zona = RegExp(r'zona ([1-5])').firstMatch(e.intensita);
+  var scelta = zona != null
+      ? 'zona ${zona.group(1)}'
+      : e.intensita.startsWith('passo')
+      ? 'passo'
+      : '';
+  final passo = TextEditingController(
+    text: e.intensita.startsWith('passo')
+        ? e.intensita.substring(5).trim()
+        : '',
+  );
+  final rec = TextEditingController(
+    text: e.recuperoS > 0 ? '${e.recuperoS}' : '',
+  );
+  final note = TextEditingController(text: e.note);
+  var fase = e.fase;
+  var volte = e.serie;
+  return showModalBottomSheet<EsercizioScheda>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (c) => StatefulBuilder(
+      builder: (c, aggiorna) {
+        final t = Theme.of(c).textTheme;
+        return Padding(
+          padding: EdgeInsets.fromLTRB(
+            20,
+            0,
+            20,
+            20 + MediaQuery.viewInsetsOf(c).bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              spacing: 12,
+              children: [
+                Text('Passo di ${sport.toLowerCase()}', style: t.titleLarge),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    for (final (f, testo) in _fasi)
+                      ChoiceChip(
+                        label: Text(testo),
+                        selected: fase == f,
+                        onSelected: (_) => aggiorna(() => fase = f),
+                      ),
+                  ],
+                ),
+                TextField(
+                  controller: nome,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelText: 'Cosa fare',
+                    hintText: nuoto
+                        ? 'Es. Stile libero, gambe con tavoletta'
+                        : 'Es. Corsa facile, ripetute, salita',
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Expanded(child: Text('Quante volte')),
+                    IconButton.filledTonal(
+                      tooltip: 'Una in meno',
+                      onPressed: volte > 1
+                          ? () => aggiorna(() => volte--)
+                          : null,
+                      icon: const Icon(Icons.remove),
+                    ),
+                    SizedBox(
+                      width: 44,
+                      child: Text(
+                        '$volte',
+                        textAlign: TextAlign.center,
+                        style: t.titleLarge,
+                      ),
+                    ),
+                    IconButton.filledTonal(
+                      tooltip: 'Una in più',
+                      onPressed: volte < 50
+                          ? () => aggiorna(() => volte++)
+                          : null,
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
+                ),
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(
+                      value: false,
+                      label: Text('A tempo'),
+                      icon: Icon(Icons.timer_outlined),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      label: Text('A distanza'),
+                      icon: Icon(Icons.straighten),
+                    ),
+                  ],
+                  selected: {aDistanza},
+                  onSelectionChanged: (v) =>
+                      aggiorna(() => aDistanza = v.first),
+                ),
+                TextField(
+                  controller: quanto,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: aDistanza ? 'Metri' : 'Minuti',
+                    hintText: aDistanza ? 'Es. 400' : 'Es. 10, oppure 1,5',
+                  ),
+                ),
+                Text('Intensità', style: t.titleSmall),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Libera'),
+                      selected: scelta.isEmpty,
+                      onSelected: (_) => aggiorna(() => scelta = ''),
+                    ),
+                    for (var z = 1; z <= 5; z++)
+                      ChoiceChip(
+                        label: Text('Zona $z'),
+                        selected: scelta == 'zona $z',
+                        onSelected: (_) => aggiorna(() => scelta = 'zona $z'),
+                      ),
+                    if (!stessoSport(sport, 'Bici'))
+                      ChoiceChip(
+                        label: const Text('Passo'),
+                        selected: scelta == 'passo',
+                        onSelected: (_) => aggiorna(() => scelta = 'passo'),
+                      ),
+                  ],
+                ),
+                if (scelta == 'passo')
+                  TextField(
+                    controller: passo,
+                    decoration: InputDecoration(
+                      labelText: 'Passo',
+                      hintText: nuoto ? 'Es. 1:50/100 m' : 'Es. 5:00/km',
+                    ),
+                  ),
+                TextField(
+                  controller: rec,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Recupero (secondi)',
+                    helperText: nuoto
+                        ? 'Pausa a bordo vasca dopo ogni ripetizione'
+                        : 'Tra una ripetizione e l\'altra; vuoto se non c\'è',
+                  ),
+                ),
+                TextField(
+                  controller: note,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(labelText: 'Note'),
+                ),
+                PulsantePrincipale(
+                  onPressed: () {
+                    final q = quanto.text.trim().replaceAll(',', '.');
+                    if ((double.tryParse(q) ?? 0) <= 0) {
+                      ScaffoldMessenger.of(c).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            aDistanza ? 'Scrivi i metri.' : 'Scrivi i minuti.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                    final testo = nome.text.trim();
+                    Navigator.pop(
+                      c,
+                      e.copyWith(
+                        nome: testo.isEmpty
+                            ? _fasi.firstWhere((x) => x.$1 == fase).$2
+                            : testo,
+                        fase: fase,
+                        serie: volte,
+                        durataMin: aDistanza ? '' : q,
+                        distanzaM: aDistanza
+                            ? '${double.parse(q).round()}'
+                            : '',
+                        intensita: scelta == 'passo'
+                            ? (passo.text.trim().isEmpty
+                                  ? ''
+                                  : 'passo ${passo.text.trim()}')
+                            : scelta,
+                        recuperoS: int.tryParse(rec.text.trim()) ?? 0,
+                        note: note.text.trim(),
+                      ),
+                    );
+                  },
+                  icona: Icons.check,
+                  testo: 'Fatto',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+  );
 }

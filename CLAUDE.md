@@ -61,7 +61,7 @@ lib/
   invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
-  scheda.dart          schede di forza scritte a mano (personal trainer): giorni, kg per serie
+  scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
   avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
