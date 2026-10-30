@@ -3,6 +3,11 @@ package it.avidididadi.app
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
+import android.media.ToneGenerator
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.os.Build
 import android.util.Log
 import android.view.WindowManager
@@ -25,6 +30,15 @@ import kotlinx.coroutines.launch
 // con registerForActivityResult, che richiede una ComponentActivity.
 class MainActivity : FlutterFragmentActivity() {
     private var canale: MethodChannel? = null
+
+    /** Generatore dei bip della modalità allenamento, creato al primo uso. */
+    private var tono: ToneGenerator? = null
+
+    override fun onDestroy() {
+        tono?.release()
+        tono = null
+        super.onDestroy()
+    }
 
     // Azione con cui è stata aperta l'app (es. Health Connect che chiede la privacy).
     private var azioneAvvio: String? = null
@@ -100,6 +114,36 @@ class MainActivity : FlutterFragmentActivity() {
                         } else {
                             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         }
+                        result.success(null)
+                    }
+                    // Bip degli ultimi secondi: sul volume dei media, così si
+                    // sente anche con la suoneria silenziosa e sopra la musica.
+                    "bip" -> {
+                        try {
+                            val t = tono ?: ToneGenerator(AudioManager.STREAM_MUSIC, 90)
+                                .also { tono = it }
+                            if (call.arguments == true) {
+                                t.startTone(ToneGenerator.TONE_PROP_BEEP2, 450)
+                            } else {
+                                t.startTone(ToneGenerator.TONE_PROP_BEEP, 150)
+                            }
+                        } catch (e: RuntimeException) {
+                            Log.w("Avidididadi", "bip non riuscito", e)
+                        }
+                        result.success(null)
+                    }
+                    // Vibrazione degli ultimi secondi: diretta, così funziona
+                    // anche con la vibrazione al tocco spenta nel telefono.
+                    "vibra" -> {
+                        val v = if (Build.VERSION.SDK_INT >= 31) {
+                            (getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager)
+                                .defaultVibrator
+                        } else {
+                            @Suppress("DEPRECATION")
+                            getSystemService(VIBRATOR_SERVICE) as Vibrator
+                        }
+                        val ms = if (call.arguments == true) 400L else 80L
+                        v.vibrate(VibrationEffect.createOneShot(ms, VibrationEffect.DEFAULT_AMPLITUDE))
                         result.success(null)
                     }
                     else -> result.notImplemented()

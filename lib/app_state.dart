@@ -24,6 +24,7 @@ import 'obiettivo.dart';
 import 'percorso.dart';
 import 'profilo.dart';
 import 'recupero.dart';
+import 'registro_forza.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
@@ -61,6 +62,7 @@ class AppState extends ChangeNotifier {
   List<Esercizio> esercizi = []; // catalogo, dagli asset dell'app
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
+  List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
   List<GiornoRecupero> recupero = []; // FC a riposo, HRV e sonno, per giorno
   ConfigAssistente assistente = ConfigAssistente();
   List<MessaggioChat> chat = []; // solo in memoria: si azzera alla chiusura
@@ -152,6 +154,13 @@ class AppState extends ChangeNotifier {
               .whereType<FeedbackSessione>()
               .toList()
             ..sort((a, b) => a.data.compareTo(b.data)));
+    final tSerie = await Storage.readTabella('serie.csv');
+    serieFatte = tSerie == null
+        ? []
+        : tSerie.righe
+              .map((r) => SerieFatta.da(tSerie, r))
+              .whereType<SerieFatta>()
+              .toList();
     final tr = await Storage.readTabella('recupero.csv');
     recupero = tr == null
         ? []
@@ -1564,6 +1573,37 @@ class AppState extends ChangeNotifier {
       }
     }
     return '';
+  }
+
+  /// Salva le serie di forza fatte in un giorno: sostituiscono quelle dello
+  /// stesso giorno e degli stessi esercizi (se la seduta si ripete).
+  Future<void> salvaSerie(DateTime giorno, List<SerieFatta> nuove) async {
+    if (nuove.isEmpty) return;
+    final d = soloData(giorno);
+    final chiavi = nuove.map((s) => s.chiave).toSet();
+    serieFatte = [
+      ...serieFatte.where((s) => s.data != d || !chiavi.contains(s.chiave)),
+      ...nuove,
+    ];
+    await Storage.write(
+      'serie.csv',
+      serieHeader,
+      serieFatte.map((s) => s.toRow()).toList(),
+    );
+    notifyListeners();
+  }
+
+  /// Le serie di forza di un giorno, raggruppate per esercizio in ordine.
+  Map<String, List<SerieFatta>> serieDel(DateTime giorno) {
+    final d = soloData(giorno);
+    final out = <String, List<SerieFatta>>{};
+    for (final s in serieFatte.where((s) => s.data == d)) {
+      (out[s.nome] ??= []).add(s);
+    }
+    for (final l in out.values) {
+      l.sort((a, b) => a.serie.compareTo(b.serie));
+    }
+    return out;
   }
 
   /// Salva il feedback di una sessione e riprepara quelle future: per la forza

@@ -11,6 +11,7 @@ import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../pulse.dart';
+import '../registro_forza.dart';
 import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
@@ -720,6 +721,19 @@ class _DatiSessione extends StatelessWidget {
                     // Freeletics: il nome del blocco (es. "25x Leg Wipers").
                     '• ${[if (daFreeletics(p) && p.note.isNotEmpty) p.note else if (p.inizio != null && p.fine != null) '${_ora(p.inizio!)}–${_ora(p.fine!)}', '${p.durataMin} min', if (!daFreeletics(p) && p.tipo.isNotEmpty) p.tipo, if (p.distanzaKm > 0) nuoto ? '${(p.distanzaKm * 1000).round()} m' : '${fmtNum(p.distanzaKm)} km', if (p.fcMedia > 0) 'FC ${p.fcMedia}'].join(' · ')}',
                   ),
+                ),
+            ],
+            // Forza: ripetizioni e kg segnati nella modalità allenamento.
+            if (stessoSport(s.sport, 'Forza') &&
+                state.serieDel(s.data).isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('Serie', style: t.titleSmall),
+              const SizedBox(height: 4),
+              for (final MapEntry(key: nome, value: serie)
+                  in state.serieDel(s.data).entries)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Text('• $nome: ${fmtSerie(serie)}'),
                 ),
             ],
             if (s.note.isNotEmpty) ...[

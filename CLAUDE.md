@@ -37,7 +37,7 @@ Funzioni principali:
 | `flutter_localizations` | tutta l'app in italiano |
 
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
-  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, widget;
+  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip e vibrazione, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
 - **Nessuna libreria di state management**: un solo `AppState` (`ChangeNotifier`). I dati sono CSV nella cartella privata dell'app.
 
@@ -59,6 +59,8 @@ lib/
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
+  registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
+  avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   backup.dart          backup in .gz (JSON di tutti i CSV)
@@ -76,7 +78,8 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
 - `ritocchi_sessioni.csv`, `percorso_*.csv`;
-- `intervals_sessioni.csv`, `intervals.csv`.
+- `intervals_sessioni.csv`, `intervals.csv`;
+- `serie.csv` (ripetizioni e kg della forza).
 
 I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 

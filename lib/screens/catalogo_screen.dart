@@ -5,6 +5,8 @@ import '../esercizi.dart';
 import '../figura.dart';
 import '../immagini.dart';
 import '../models.dart';
+import '../pulse.dart';
+import '../registro_forza.dart';
 import '../widgets.dart';
 
 class CatalogoScreen extends StatefulWidget {
@@ -188,6 +190,10 @@ class EsercizioScreen extends StatelessWidget {
               ),
             ],
           ),
+          if (state.serieFatte.any((x) => x.chiave == e.id)) ...[
+            const SizedBox(height: 16),
+            _StoricoEsercizio(serie: state.serieFatte, chiave: e.id),
+          ],
           const SizedBox(height: 16),
           Text('Muscoli', style: t.titleLarge),
           const SizedBox(height: 8),
@@ -242,6 +248,47 @@ class EsercizioScreen extends StatelessWidget {
             'Immagini da free-exercise-db (${e.nomeEn}).',
             style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Le tue serie di un esercizio: record e ultime sedute.
+class _StoricoEsercizio extends StatelessWidget {
+  final List<SerieFatta> serie;
+  final String chiave;
+  const _StoricoEsercizio({required this.serie, required this.chiave});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final sue = serie.where((s) => s.chiave == chiave).toList();
+    final giorni = sue.map((s) => s.data).toSet().toList()
+      ..sort((a, b) => b.compareTo(a));
+    final record = recordDi(sue, chiave)!;
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Le tue serie', style: t.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            record.kg > 0
+                ? 'Record: ${fmtKg(record.kg)} kg × ${record.ripetizioni}'
+                : 'Record: ${record.ripetizioni} ripetizioni',
+            style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 6),
+          for (final g in giorni.take(5))
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Text(
+                '${dataLunga(g)}: '
+                '${fmtSerie(sue.where((s) => s.data == g).toList()..sort((a, b) => a.serie.compareTo(b.serie)))}',
+                style: t.bodySmall,
+              ),
+            ),
         ],
       ),
     );

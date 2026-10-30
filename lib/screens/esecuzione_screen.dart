@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_state.dart';
+import '../avvisi.dart';
 import '../esecuzione.dart';
 import '../figura.dart';
 import '../glossario.dart';
@@ -12,6 +13,7 @@ import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../pulse.dart';
+import '../registro_forza.dart';
 import '../tema.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
@@ -87,6 +89,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   bool finito = false;
   int extra = 0; // secondi aggiunti al recupero con "+15 s"
   int _ultimoBip = -1;
+
+  /// Forza: ripetizioni e kg di ogni serie fatta, per blocco.
+  final fatte = <int, (int, double)>{};
+
+  /// Valori proposti (e ritoccati) per le serie non ancora finite.
+  final _valori = <int, (int, double)>{};
   late bool registra = !widget.state.sessioni.any(
     (s) =>
         s.data == soloData(DateTime.now()) &&
@@ -104,6 +112,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void initState() {
     super.initState();
     _schermoAcceso(true);
+    caricaAvvisi();
     if (gps == null) {
       blocco.start();
     } else {
@@ -143,12 +152,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (!mounted || pausa || finito) return;
     if (preparati || b.aTempo) {
       final r = _restano;
-      if (r <= 3 && r > 0 && r != _ultimoBip) {
+      if (r <= secondiAvviso && r > 0 && r != _ultimoBip) {
         _ultimoBip = r;
-        HapticFeedback.selectionClick();
+        avviso();
       }
       if (r <= 0) {
-        HapticFeedback.heavyImpact();
+        avviso(fine: true);
         _avanti();
         return;
       }
@@ -164,7 +173,59 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _ultimoBip = -1;
   }
 
-  void _avanti() {
+  // ---------------------------------------------------------------------
+  // Registro delle serie di forza
+
+  /// Vero se il blocco è una serie di forza a ripetizioni, da registrare.
+  bool _daRegistrare(int k) {
+    final x = blocchi[k];
+    return x.tipo == TipoBlocco.lavoro &&
+        !x.aTempo &&
+        stessoSport(widget.sport, 'Forza') &&
+        ripetizioniPreviste(x.ripetizioni) != null;
+  }
+
+  String _chiave(Blocco x) => x.esercizio.isEmpty ? x.titolo : x.esercizio;
+
+  List<SerieFatta> _ultima(Blocco x) =>
+      ultimaVolta(widget.state.serieFatte, _chiave(x), prima: DateTime.now());
+
+  /// Mostra i kg se l'esercizio usa un peso (dal catalogo, dal piano o
+  /// dall'ultima volta).
+  bool _conKg(Blocco x) {
+    if (kgDalleNote(x.note) != null) return true;
+    if (_ultima(x).any((s) => s.kg > 0)) return true;
+    final e = widget.state.esercizi.where((e) => e.id == x.esercizio);
+    return e.isNotEmpty && !e.first.corpoLibero;
+  }
+
+  (int, double) _valoriDi(int k) => _valori[k] ??= () {
+    final x = blocchi[k];
+    // La serie prima dello stesso esercizio, in questa seduta.
+    (int, double)? precedente;
+    for (var j = k - 1; j >= 0; j--) {
+      if (blocchi[j].passo != x.passo) break;
+      if (blocchi[j].tipo != TipoBlocco.lavoro) continue;
+      precedente = fatte[j] ?? _valori[j];
+      break;
+    }
+    return proposta(
+      serie: x.serie,
+      previste: ripetizioniPreviste(x.ripetizioni)!,
+      ultima: _ultima(x),
+      precedente: precedente,
+      kgPiano: kgDalleNote(x.note),
+    );
+  }();
+
+  void _avanti({bool saltato = false}) {
+    if (!preparati && _daRegistrare(i)) {
+      if (saltato) {
+        fatte.remove(i);
+      } else {
+        fatte[i] = _valoriDi(i);
+      }
+    }
     if (preparati) {
       setState(() {
         preparati = false;
@@ -212,7 +273,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     blocco.stop();
     gps?.ferma();
     _schermoAcceso(false);
-    HapticFeedback.heavyImpact();
+    avviso(fine: true);
     setState(() => finito = true);
   }
 
@@ -257,6 +318,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (percorso != null && !percorso.vuoto) {
       await widget.state.salvaPercorsoApp(oggi, widget.sport, percorso);
     }
+    await widget.state.salvaSerie(oggi, [
+      for (final e in fatte.entries)
+        SerieFatta(
+          data: oggi,
+          esercizio: blocchi[e.key].esercizio,
+          nome: blocchi[e.key].titolo,
+          serie: blocchi[e.key].serie,
+          ripetizioni: e.value.$1,
+          kg: e.value.$2,
+        ),
+    ]);
     if (registra) {
       await widget.state.registraSvolta(
         Sessione(
@@ -344,6 +416,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ),
                     Text('tempo totale', style: t.labelSmall),
                   ],
+                ),
+              ),
+              IconButton(
+                tooltip: 'Bip e vibrazione',
+                onPressed: () => mostraAvvisi(context),
+                icon: ValueListenableBuilder(
+                  valueListenable: bipAttivo,
+                  builder: (_, bip, _) =>
+                      Icon(bip ? Icons.volume_up : Icons.volume_off),
                 ),
               ),
               IconButton(
@@ -443,6 +524,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(b.note, style: t.bodyMedium),
                   ),
+                if (_daRegistrare(i)) ...[
+                  const SizedBox(height: 16),
+                  RegistroSerie(
+                    valori: _valoriDi(i),
+                    massimo: ripetizioniPreviste(b.ripetizioni)!.$2,
+                    conKg: _conKg(b),
+                    ultima: _ultima(b),
+                    cambia: (v) => setState(() => _valori[i] = v),
+                  ),
+                ],
               ],
               const SizedBox(height: 24),
               Center(
@@ -528,7 +619,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ? null
                     : recupero
                     ? () => setState(() => extra += 15)
-                    : _avanti,
+                    : () => _avanti(saltato: true),
                 icon: recupero
                     ? Text(
                         '+15',
@@ -551,11 +642,25 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final scheme = Theme.of(context).colorScheme;
     // Tempo per esercizio: somma dei blocchi di lavoro di ogni passo.
     final perPasso = <int, (String, Duration)>{};
+    final seriePasso = <int, List<SerieFatta>>{};
     for (var k = 0; k < blocchi.length; k++) {
       final x = blocchi[k];
       if (x.tipo != TipoBlocco.lavoro || tempi[k] == null) continue;
       final prima = perPasso[x.passo]?.$2 ?? Duration.zero;
       perPasso[x.passo] = (x.titolo, prima + tempi[k]!);
+      final f = fatte[k];
+      if (f != null) {
+        (seriePasso[x.passo] ??= []).add(
+          SerieFatta(
+            data: DateTime.now(),
+            esercizio: x.esercizio,
+            nome: x.titolo,
+            serie: x.serie,
+            ripetizioni: f.$1,
+            kg: f.$2,
+          ),
+        );
+      }
     }
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -611,9 +716,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Column(
             children: [
-              for (final (k, e) in perPasso.values.indexed)
+              for (final (k, (passo, e))
+                  in perPasso.entries.map((x) => (x.key, x.value)).indexed)
                 RigaPulse(
                   titolo: e.$1,
+                  sottotitolo: seriePasso[passo] == null
+                      ? null
+                      : fmtSerie(seriePasso[passo]!),
                   linea: k < perPasso.length - 1,
                   fine: Text(fmtTimer(e.$2), style: t.titleSmall),
                 ),
@@ -776,6 +885,201 @@ class _Orologio extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Foglio con le scelte di bip e vibrazione degli ultimi secondi.
+Future<void> mostraAvvisi(BuildContext context) => showModalBottomSheet<void>(
+  context: context,
+  showDragHandle: true,
+  builder: (c) => SafeArea(
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
+      child: ListenableBuilder(
+        listenable: Listenable.merge([bipAttivo, vibrazioneAttiva]),
+        builder: (c, _) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SwitchListTile(
+              secondary: const Icon(Icons.volume_up),
+              title: const Text('Bip'),
+              subtitle: const Text(
+                'Negli ultimi $secondiAvviso secondi di recuperi ed esercizi '
+                'a tempo. Usa il volume dei media.',
+              ),
+              value: bipAttivo.value,
+              onChanged: (v) => salvaAvvisi(bip: v),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.vibration),
+              title: const Text('Vibrazione'),
+              subtitle: const Text('Insieme ai bip.'),
+              value: vibrazioneAttiva.value,
+              onChanged: (v) => salvaAvvisi(vibrazione: v),
+            ),
+          ],
+        ),
+      ),
+    ),
+  ),
+);
+
+/// Ripetizioni e kg della serie in corso, con l'ultima volta sotto.
+class RegistroSerie extends StatelessWidget {
+  final (int, double) valori;
+  final int massimo; // ripetizioni massime previste
+  final bool conKg;
+  final List<SerieFatta> ultima;
+  final ValueChanged<(int, double)> cambia;
+  const RegistroSerie({
+    super.key,
+    required this.valori,
+    required this.massimo,
+    required this.conKg,
+    required this.ultima,
+    required this.cambia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final (rip, kg) = valori;
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Cosa hai fatto', style: t.titleSmall),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: _Contatore(
+                  etichetta: 'Ripetizioni',
+                  testo: '$rip',
+                  meno: rip > 1 ? () => cambia((rip - 1, kg)) : null,
+                  piu: () => cambia((rip + 1, kg)),
+                  scrivi: (v) {
+                    final n = int.tryParse(v);
+                    if (n != null && n > 0 && n < 1000) cambia((n, kg));
+                  },
+                ),
+              ),
+              if (conKg) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _Contatore(
+                    etichetta: 'Kg',
+                    testo: fmtKg(kg),
+                    meno: kg > 0
+                        ? () => cambia((rip, (kg - 1).clamp(0, 999).toDouble()))
+                        : null,
+                    piu: () => cambia((rip, kg + 1)),
+                    scrivi: (v) {
+                      final n = double.tryParse(v.replaceAll(',', '.'));
+                      if (n != null && n >= 0 && n < 1000) cambia((rip, n));
+                    },
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (ultima.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Text('Ultima volta: ${fmtSerie(ultima)}', style: t.bodySmall),
+            if (conKg && prontoPerAumentare(ultima, massimo))
+              Text(
+                'Avevi fatto tutte le ripetizioni: prova un peso in più.',
+                style: t.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Un numero con − e +; toccandolo si scrive a mano.
+class _Contatore extends StatelessWidget {
+  final String etichetta;
+  final String testo;
+  final VoidCallback? meno;
+  final VoidCallback piu;
+  final ValueChanged<String> scrivi;
+  const _Contatore({
+    required this.etichetta,
+    required this.testo,
+    required this.meno,
+    required this.piu,
+    required this.scrivi,
+  });
+
+  Future<void> _aMano(BuildContext context) async {
+    final c = TextEditingController(text: testo);
+    final v = await showDialog<String>(
+      context: context,
+      builder: (d) => AlertDialog(
+        title: Text(etichetta),
+        content: TextField(
+          controller: c,
+          autofocus: true,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          onSubmitted: (x) => Navigator.pop(d, x),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(d),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(d, c.text),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    c.dispose();
+    if (v != null) scrivi(v.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Column(
+      children: [
+        Text(etichetta, style: t.labelMedium),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton.filledTonal(
+              tooltip: '$etichetta: meno',
+              onPressed: meno,
+              icon: const Icon(Icons.remove),
+            ),
+            Expanded(
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => _aMano(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    testo,
+                    textAlign: TextAlign.center,
+                    style: t.headlineSmall?.copyWith(
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            IconButton.filledTonal(
+              tooltip: '$etichetta: più',
+              onPressed: piu,
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

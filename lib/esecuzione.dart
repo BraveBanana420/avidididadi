@@ -16,6 +16,8 @@ class Blocco {
   final String esercizio; // id nel catalogo, per la figura dei muscoli
   final int? secondi; // null: si va avanti toccando "Fatto"
   final int passo; // a quale passo del workout appartiene (da 0)
+  final int serie; // numero della serie (da 1)
+  final String ripetizioni; // previste: "8-10", "45 s"…
   const Blocco({
     required this.tipo,
     required this.titolo,
@@ -26,6 +28,8 @@ class Blocco {
     this.esercizio = '',
     this.secondi,
     required this.passo,
+    this.serie = 1,
+    this.ripetizioni = '',
   });
 
   bool get aTempo => secondi != null;
@@ -84,6 +88,8 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           esercizio: s.esercizio,
           secondi: secondiDi(s),
           passo: p,
+          serie: i,
+          ripetizioni: s.ripetizioni,
         ),
       );
       // Recupero tra le serie, e dopo l'ultima se c'è un altro passo.
