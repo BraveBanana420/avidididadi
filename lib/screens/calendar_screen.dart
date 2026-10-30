@@ -15,6 +15,7 @@ import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
 import 'schede_screen.dart';
+import 'tour.dart';
 import 'week_screen.dart';
 import 'workout_screen.dart';
 
@@ -160,15 +161,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ],
                         ),
                       ),
-                      if (pronto != null) _PillolaEnergia(pronto),
+                      if (pronto != null)
+                        KeyedSubtree(
+                          key: ChiaviTour.energia,
+                          child: _PillolaEnergia(pronto),
+                        ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
+                if (!state.primaVolta) const InvitoTour(),
                 PromemoriaPiano(state: state),
                 PromemoriaScheda(state: state),
-                PromemoriaFeedback(state: state),
+                KeyedSubtree(
+                  key: ChiaviTour.feedback,
+                  child: PromemoriaFeedback(state: state),
+                ),
                 SchedaGiorno(
+                  key: ChiaviTour.giorno,
                   state: state,
                   giorno: selezionato,
                   fatti: fattiDi(selezionato),
@@ -177,6 +187,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   onOggi: selezionato == oggi ? null : () => _seleziona(oggi),
                 ),
                 Padding(
+                  key: ChiaviTour.settimana,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: _StripSettimana(
                     state: state,
@@ -249,6 +260,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         onTap: () => _apriModifica(selezionato),
                       ),
                       RigaPulse(
+                        key: ChiaviTour.settimanaTipo,
                         segno: const IconaQuadrata(Icons.view_week_outlined),
                         titolo: 'La mia settimana tipo',
                         sottotitolo:

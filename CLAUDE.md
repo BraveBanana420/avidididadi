@@ -67,6 +67,7 @@ lib/
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   backup.dart          backup in .gz (JSON di tutti i CSV)
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
+  screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
 assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
 test/                  un file *_test.dart per area
 tool/                  script Python (catalogo esercizi, icona), git-hooks/pre-commit

@@ -17,11 +17,13 @@ import 'screens/privacy_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
+import 'screens/tour.dart';
 import 'tema.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await caricaTema();
+  await caricaTour();
   runApp(const AllenamentiApp());
 }
 
@@ -69,6 +71,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    // Il giro guidato passa da una sezione all'altra.
+    vaiAllaSezione = (i) {
+      if (!mounted) return;
+      pagine.jumpToPage(i);
+      setState(() => tab = i);
+    };
     _avvia();
   }
 
@@ -204,6 +212,8 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       bottomNavigationBar: BarraPulse(
+        key: ChiaviTour.barra,
+        chiavi: ChiaviTour.voci,
         attiva: tab,
         voci: const [
           VoceBarra(Icons.today_outlined, 'Oggi'),

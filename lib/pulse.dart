@@ -305,11 +305,13 @@ class BarraPulse extends StatelessWidget {
   final List<VoceBarra> voci;
   final int attiva;
   final void Function(int) onTocca;
+  final List<GlobalKey>? chiavi; // una per voce, per il giro guidato
   const BarraPulse({
     super.key,
     required this.voci,
     required this.attiva,
     required this.onTocca,
+    this.chiavi,
   });
 
   @override
@@ -339,6 +341,7 @@ class BarraPulse extends StatelessWidget {
                       label: voci[i].etichetta,
                       excludeSemantics: true,
                       child: AnimatedContainer(
+                        key: chiavi?[i],
                         duration: const Duration(milliseconds: 220),
                         curve: Curves.easeOut,
                         height: 52,

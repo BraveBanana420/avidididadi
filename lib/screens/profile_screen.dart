@@ -17,6 +17,7 @@ import 'crea_piano_screen.dart';
 import 'dati_personali_screen.dart';
 import 'obiettivo_screen.dart';
 import 'schede_screen.dart';
+import 'tour.dart';
 import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
 
@@ -143,7 +144,9 @@ class ProfileScreen extends StatelessWidget {
           Widget pagina, {
           bool evidenza = false,
           bool linea = true,
+          Key? chiave,
         }) => RigaPulse(
+          key: chiave,
           segno: IconaQuadrata(icona, evidenza: evidenza),
           titolo: titolo,
           sottotitolo: sottotitolo,
@@ -232,6 +235,12 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    // Il giro guidato delle funzioni principali.
+                    IconButton.filledTonal(
+                      tooltip: 'Giro guidato',
+                      onPressed: () => avviaTour(context),
+                      icon: const Icon(Icons.question_mark),
+                    ),
                   ],
                 ),
                 const TitoloSezione('Il mio allenamento'),
@@ -245,26 +254,32 @@ class ProfileScreen extends StatelessWidget {
                           : '${o.nome} · ${dataLunga(o.data)}',
                       ObiettivoScreen(state: state),
                     ),
-                    voce(
-                      Icons.auto_awesome,
-                      'Prepara le sedute',
-                      p.obiettivo.isEmpty && p.sportGenerati.isEmpty
-                          ? "Scegli gli sport: l'app scrive gli allenamenti passo passo"
-                          : [
-                              if (p.obiettivo.isNotEmpty)
-                                'Forza: ${obiettivi[p.obiettivo]?.$1.toLowerCase() ?? p.obiettivo}',
-                              ...p.sportGenerati,
-                            ].join(' · '),
-                      CreaPianoScreen(state: state),
-                      evidenza: true,
-                    ),
-                    voce(
-                      Icons.assignment_outlined,
-                      'Le mie schede',
-                      state.schedeAttive.isEmpty
-                          ? "Le schede del personal trainer o dell'allenatore"
-                          : 'In corso: ${state.schedeAttive.map((s) => s.nome.isEmpty ? s.sport : s.nome).join(', ')}',
-                      SchedeScreen(state: state),
+                    // "Prepara le sedute" e "Le mie schede" insieme, per il giro.
+                    Column(
+                      key: ChiaviTour.prepara,
+                      children: [
+                        voce(
+                          Icons.auto_awesome,
+                          'Prepara le sedute',
+                          p.obiettivo.isEmpty && p.sportGenerati.isEmpty
+                              ? "Scegli gli sport: l'app scrive gli allenamenti passo passo"
+                              : [
+                                  if (p.obiettivo.isNotEmpty)
+                                    'Forza: ${obiettivi[p.obiettivo]?.$1.toLowerCase() ?? p.obiettivo}',
+                                  ...p.sportGenerati,
+                                ].join(' · '),
+                          CreaPianoScreen(state: state),
+                          evidenza: true,
+                        ),
+                        voce(
+                          Icons.assignment_outlined,
+                          'Le mie schede',
+                          state.schedeAttive.isEmpty
+                              ? "Le schede del personal trainer o dell'allenatore"
+                              : 'In corso: ${state.schedeAttive.map((s) => s.nome.isEmpty ? s.sport : s.nome).join(', ')}',
+                          SchedeScreen(state: state),
+                        ),
+                      ],
                     ),
                     voce(
                       Icons.fitness_center,
@@ -349,6 +364,7 @@ class ProfileScreen extends StatelessWidget {
                       'Dati e collegamenti',
                       'Orologio e app, backup dei dati',
                       DatiCollegamentiScreen(state: state),
+                      chiave: ChiaviTour.collegamenti,
                     ),
                     voce(
                       Icons.school_outlined,
