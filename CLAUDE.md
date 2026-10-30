@@ -101,7 +101,13 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
-- **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` solo se l'utente lo chiede. La versione attuale è `1.0.2+3`: si cambia solo quando lo chiede l'utente.
+- **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): alzala tu a ogni modifica completata, nello stesso commit.
+  - solo correzioni o piccoli ritocchi → PATCH (1.1.0 → 1.1.1);
+  - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
+  - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
+  - Il numero di build (`+N`) sale sempre di 1. Più modifiche nella stessa sessione, prima di un nuovo APK distribuito, possono stare nella stessa versione.
+  - Attuale: `1.1.0+4`.
+- **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
 ## 5. Linee guida grafiche (stile "Pulse")
