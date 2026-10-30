@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_state.dart';
+import '../attivita_libera.dart';
 import '../avvisi.dart';
 import '../esecuzione.dart';
 import '../figura.dart';
@@ -38,6 +39,7 @@ void avviaAllenamento(
   required String tipo,
   required String nome,
   required List<WorkoutStep> passi,
+  bool libera = false,
 }) {
   Navigator.of(context).push(
     MaterialPageRoute<void>(
@@ -48,6 +50,7 @@ void avviaAllenamento(
         tipo: tipo,
         nome: nome,
         passi: passi,
+        libera: libera,
       ),
     ),
   );
@@ -62,6 +65,7 @@ class EsecuzioneScreen extends StatefulWidget {
   final String tipo;
   final String nome;
   final List<WorkoutStep> passi;
+  final bool libera; // fuori dal piano: si aggiunge a quello che c'è
   const EsecuzioneScreen({
     super.key,
     required this.state,
@@ -69,6 +73,7 @@ class EsecuzioneScreen extends StatefulWidget {
     required this.tipo,
     required this.nome,
     required this.passi,
+    this.libera = false,
   });
 
   @override
@@ -96,11 +101,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   /// Valori proposti (e ritoccati) per le serie non ancora finite.
   final _valori = <int, (int, double)>{};
-  late bool registra = !widget.state.sessioni.any(
-    (s) =>
-        s.data == soloData(DateTime.now()) &&
-        stessoSport(s.sport, widget.sport),
-  );
+
+  /// Quando è partito davvero (dopo "Preparati").
+  DateTime? _partenza;
+  late bool registra =
+      widget.libera ||
+      !widget.state.sessioni.any(
+        (s) =>
+            s.data == soloData(DateTime.now()) &&
+            stessoSport(s.sport, widget.sport),
+      );
 
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
   late final RegistratoreGps? gps = sportConPercorso(widget.sport, widget.tipo)
@@ -231,6 +241,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (preparati) {
       setState(() {
         preparati = false;
+        _partenza ??= DateTime.now();
         totale.start();
         gps?.imposta(true);
         _nuovoBlocco();
@@ -332,10 +343,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
     ]);
     if (registra) {
+      final inizio = _partenza ?? DateTime.now().subtract(totale.elapsed);
       await widget.state.registraSvolta(
         Sessione(
-          id: 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}',
+          id: widget.libera
+              ? idLibera(inizio, widget.sport)
+              : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}',
           data: oggi,
+          inizio: inizio,
+          fine: inizio.add(totale.elapsed),
           sport: widget.sport,
           tipo: widget.tipo,
           durataMin: (totale.elapsed.inSeconds / 60).round().clamp(1, 600),
@@ -478,7 +494,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               const SizedBox(height: 6),
               Text(
                 preparati
-                    ? '${widget.nome} · $nPassi esercizi'
+                    ? widget.libera
+                          ? widget.nome
+                          : '${widget.nome} · $nPassi esercizi'
                     : 'Esercizio ${b.passo + 1} di $nPassi'
                           '${faseNome.isEmpty ? '' : ' · $faseNome'}',
                 style: t.bodySmall,
@@ -539,13 +557,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ],
               const SizedBox(height: 24),
               Center(
-                child: _Orologio(
-                  recupero: recupero,
-                  aTempo: aTempo,
-                  restano: aTempo ? _restano.clamp(0, 99999).toInt() : 0,
-                  totale: aTempo ? _durata : 0,
-                  trascorso: blocco.elapsed,
-                  pausa: pausa,
+                // Durante "Preparati" un tocco sul timer fa partire subito.
+                child: GestureDetector(
+                  onTap: preparati && !pausa ? _avanti : null,
+                  child: _Orologio(
+                    recupero: recupero,
+                    aTempo: aTempo,
+                    restano: aTempo ? _restano.clamp(0, 99999).toInt() : 0,
+                    totale: aTempo ? _durata : 0,
+                    trascorso: blocco.elapsed,
+                    pausa: pausa,
+                  ),
                 ),
               ),
               if (recupero && prossimo != null) ...[
@@ -688,7 +710,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          '${fmtTimer(totale.elapsed)} · ${perPasso.length} esercizi',
+          widget.libera
+              ? fmtTimer(totale.elapsed)
+              : '${fmtTimer(totale.elapsed)} · ${perPasso.length} esercizi',
           style: t.titleLarge,
           textAlign: TextAlign.center,
         ),

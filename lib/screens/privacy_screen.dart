@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-10-30.3';
+const versioneTermini = '2026-10-31.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -102,7 +102,7 @@ class PrivacyScreen extends StatelessWidget {
       ),
       (
         'Posizione durante l\'allenamento',
-        "Solo per corsa e bici, e solo mentre la modalità allenamento è "
+        "Solo per corsa, camminata e bici, e solo mentre la modalità allenamento è "
             "aperta, l'app usa la posizione precisa (GPS e servizio di "
             "posizione di Google Play sul telefono) per registrare percorso, "
             "distanza e ritmo. Mentre registra mostra una notifica fissa e "
@@ -196,7 +196,7 @@ class PrivacyScreen extends StatelessWidget {
       (
         'Permessi del telefono',
         "Health Connect (lettura dei dati elencati sopra), posizione precisa "
-            "(solo durante corsa e bici), internet (mappe, immagini, "
+            "(solo durante corsa, camminata e bici), internet (mappe, immagini, "
             "assistente), notifica durante la registrazione del percorso. Puoi "
             "negare ognuno di questi permessi: l'app continua a funzionare senza "
             "la parte che ne ha bisogno.",
@@ -249,7 +249,7 @@ class TerminiScreen extends StatelessWidget {
         'Allenati in sicurezza',
         "Ti alleni sotto la tua responsabilità: scegli carichi e ritmi "
             "adatti a te, usa attrezzatura in buono stato e rispetta il codice "
-            "della strada. Durante corsa e bici non guardare il telefono mentre "
+            "della strada. Durante corsa, camminata e bici non guardare il telefono mentre "
             "ti muovi nel traffico.",
       ),
       (

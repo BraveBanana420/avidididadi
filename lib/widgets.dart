@@ -35,6 +35,8 @@ IconData iconaSport(String sport) {
       return Icons.directions_bike;
     case 'mobilità':
       return Icons.self_improvement;
+    case 'camminata':
+      return Icons.directions_walk;
     case 'riposo':
       return Icons.bedtime_outlined;
     default:
@@ -66,6 +68,8 @@ Color coloreSport(String sport) {
       return n ? const Color(0xFF00E0B8) : const Color(0xFFB3123A);
     case 'mobilità':
       return n ? const Color(0xFFFF7A00) : const Color(0xFFF48FB1);
+    case 'camminata':
+      return n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A);
     case 'riposo':
       return temaScuroAttivo
           ? const Color(0xFF6E6E6E)

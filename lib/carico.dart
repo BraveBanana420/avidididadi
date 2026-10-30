@@ -20,6 +20,7 @@ double faticaStimata(Sessione s, Zone z, {int? rpe}) {
       return ((riserva - 0.3) / 0.07 + 1).clamp(1, 10).toDouble();
     }
   }
+  if (stessoSport(s.sport, 'Camminata')) return 3;
   final t = s.tipo.toLowerCase();
   if (t.contains('ripetute') || t.contains('hiit')) return 8;
   if (t.contains('fartlek') || t.contains('tempo')) return 7;

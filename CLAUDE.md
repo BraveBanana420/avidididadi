@@ -63,6 +63,7 @@ lib/
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
   scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
   avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
+  attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   backup.dart          backup in .gz (JSON di tutti i CSV)
@@ -107,7 +108,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
   - Il numero di build (`+N`) sale sempre di 1. Più modifiche nella stessa sessione, prima di un nuovo APK distribuito, possono stare nella stessa versione.
-  - Attuale: `1.1.0+4`.
+  - Attuale: `1.2.0+5`.
 - **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
@@ -130,6 +131,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 | Nuoto | `#FF8A3D` | `#00B2FF` |
 | Bici | `#B3123A` | `#00E0B8` |
 | Mobilità | `#F48FB1` | `#FF7A00` |
+| Camminata | `#E0A33A` | `#C6FF3D` |
 
 - Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
 - **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).
@@ -183,7 +185,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa e bici.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.

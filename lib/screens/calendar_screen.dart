@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../attivita_libera.dart';
 import '../carico.dart';
 import '../generatore_mobilita.dart';
 import '../glossario.dart';
@@ -127,164 +128,187 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
         return SafeArea(
           bottom: false,
-          // Trascinando verso il basso si sincronizza con Health Connect.
-          child: RefreshIndicator(
-            onRefresh: () => sincronizzaConMessaggio(context, state),
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 16, 16, spazioBarra(context)),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              dataLunga(oggi),
-                              style: t.bodyMedium?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                              ),
+          child: Stack(
+            children: [
+              // Trascinando verso il basso si sincronizza con Health Connect.
+              RefreshIndicator(
+                onRefresh: () => sincronizzaConMessaggio(context, state),
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  // In fondo, spazio anche per il pulsante "+".
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    16,
+                    16,
+                    spazioBarra(context) + 76,
+                  ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  dataLunga(oggi),
+                                  style: t.bodyMedium?.copyWith(
+                                    color: scheme.onSurfaceVariant,
+                                  ),
+                                ),
+                                // Su una riga sola: se il nome è lungo, rimpicciolisce.
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    nome.isEmpty ? 'Ciao!' : 'Ciao $nome',
+                                    maxLines: 1,
+                                    style: t.headlineMedium,
+                                  ),
+                                ),
+                              ],
                             ),
-                            // Su una riga sola: se il nome è lungo, rimpicciolisce.
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                nome.isEmpty ? 'Ciao!' : 'Ciao $nome',
-                                maxLines: 1,
-                                style: t.headlineMedium,
-                              ),
+                          ),
+                          if (pronto != null)
+                            KeyedSubtree(
+                              key: ChiaviTour.energia,
+                              child: _PillolaEnergia(pronto),
                             ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (!state.primaVolta) const InvitoTour(),
+                    PromemoriaPiano(state: state),
+                    PromemoriaScheda(state: state),
+                    KeyedSubtree(
+                      key: ChiaviTour.feedback,
+                      child: PromemoriaFeedback(state: state),
+                    ),
+                    SchedaGiorno(
+                      key: ChiaviTour.giorno,
+                      state: state,
+                      giorno: selezionato,
+                      fatti: fattiDi(selezionato),
+                      previsti: previstiDi(selezionato),
+                      onModifica: () => _apriModifica(selezionato),
+                      onOggi: selezionato == oggi
+                          ? null
+                          : () => _seleziona(oggi),
+                    ),
+                    Padding(
+                      key: ChiaviTour.settimana,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: _StripSettimana(
+                        state: state,
+                        selezionato: selezionato,
+                        lunedi: settimanaVista,
+                        oggi: oggi,
+                        fattiDi: fattiDi,
+                        previstiDi: previstiDi,
+                        icona: _icona,
+                        onTocca: _seleziona,
+                        onSettimana: _cambiaSettimana,
+                        verso: _verso,
+                      ),
+                    ),
+                    Center(
+                      child: TextButton.icon(
+                        onPressed: () =>
+                            setState(() => meseAperto = !meseAperto),
+                        icon: Icon(
+                          meseAperto ? Icons.expand_less : Icons.calendar_month,
+                        ),
+                        label: Text(
+                          meseAperto ? 'Chiudi il mese' : 'Vedi tutto il mese',
+                        ),
+                      ),
+                    ),
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 250),
+                      alignment: Alignment.topCenter,
+                      child: meseAperto
+                          ? _mese(context, oggi, fattiDi, previstiDi)
+                          : const SizedBox(width: double.infinity),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (prossimi.isNotEmpty) ...[
+                            const TitoloSezione('Prossimi'),
+                            for (var i = 0; i < prossimi.length; i++)
+                              RigaPulse(
+                                segno: PallinoPulse(
+                                  coloreSport(prossimi[i].$2.sport),
+                                ),
+                                titolo: titoloSessione(
+                                  prossimi[i].$2.sport,
+                                  prossimi[i].$2.tipo,
+                                ),
+                                sottotitolo: [
+                                  maiuscola(quandoGiorno(prossimi[i].$1, oggi)),
+                                  if (prossimi[i].$2.durataMin > 0)
+                                    '${prossimi[i].$2.durataMin} min',
+                                ].join(' · '),
+                                linea: i < prossimi.length - 1,
+                                onTap: () => apriSessione(
+                                  context,
+                                  state,
+                                  prossimi[i].$2,
+                                ),
+                              ),
                           ],
-                        ),
-                      ),
-                      if (pronto != null)
-                        KeyedSubtree(
-                          key: ChiaviTour.energia,
-                          child: _PillolaEnergia(pronto),
-                        ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (!state.primaVolta) const InvitoTour(),
-                PromemoriaPiano(state: state),
-                PromemoriaScheda(state: state),
-                KeyedSubtree(
-                  key: ChiaviTour.feedback,
-                  child: PromemoriaFeedback(state: state),
-                ),
-                SchedaGiorno(
-                  key: ChiaviTour.giorno,
-                  state: state,
-                  giorno: selezionato,
-                  fatti: fattiDi(selezionato),
-                  previsti: previstiDi(selezionato),
-                  onModifica: () => _apriModifica(selezionato),
-                  onOggi: selezionato == oggi ? null : () => _seleziona(oggi),
-                ),
-                Padding(
-                  key: ChiaviTour.settimana,
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: _StripSettimana(
-                    state: state,
-                    selezionato: selezionato,
-                    lunedi: settimanaVista,
-                    oggi: oggi,
-                    fattiDi: fattiDi,
-                    previstiDi: previstiDi,
-                    icona: _icona,
-                    onTocca: _seleziona,
-                    onSettimana: _cambiaSettimana,
-                    verso: _verso,
-                  ),
-                ),
-                Center(
-                  child: TextButton.icon(
-                    onPressed: () => setState(() => meseAperto = !meseAperto),
-                    icon: Icon(
-                      meseAperto ? Icons.expand_less : Icons.calendar_month,
-                    ),
-                    label: Text(
-                      meseAperto ? 'Chiudi il mese' : 'Vedi tutto il mese',
-                    ),
-                  ),
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 250),
-                  alignment: Alignment.topCenter,
-                  child: meseAperto
-                      ? _mese(context, oggi, fattiDi, previstiDi)
-                      : const SizedBox(width: double.infinity),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (prossimi.isNotEmpty) ...[
-                        const TitoloSezione('Prossimi'),
-                        for (var i = 0; i < prossimi.length; i++)
+                          const TitoloSezione('Il tuo piano'),
                           RigaPulse(
-                            segno: PallinoPulse(
-                              coloreSport(prossimi[i].$2.sport),
+                            segno: const IconaQuadrata(
+                              Icons.edit_calendar_outlined,
                             ),
-                            titolo: titoloSessione(
-                              prossimi[i].$2.sport,
-                              prossimi[i].$2.tipo,
+                            titolo: selezionato == oggi
+                                ? 'Cambia gli allenamenti di oggi'
+                                : 'Cambia gli allenamenti di '
+                                      '${quandoGiorno(selezionato, oggi)}',
+                            sottotitolo: 'Sposta, aggiungi o togli: solo per quel giorno',
+                            onTap: () => _apriModifica(selezionato),
+                          ),
+                          RigaPulse(
+                            key: ChiaviTour.settimanaTipo,
+                            segno: const IconaQuadrata(
+                              Icons.view_week_outlined,
                             ),
-                            sottotitolo: [
-                              maiuscola(quandoGiorno(prossimi[i].$1, oggi)),
-                              if (prossimi[i].$2.durataMin > 0)
-                                '${prossimi[i].$2.durataMin} min',
-                            ].join(' · '),
-                            linea: i < prossimi.length - 1,
-                            onTap: () =>
-                                apriSessione(context, state, prossimi[i].$2),
+                            titolo: 'La mia settimana tipo',
+                            sottotitolo:
+                                'Quali giorni ti alleni e per quanto tempo',
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => WeekScreen(state: state),
+                              ),
+                            ),
                           ),
-                      ],
-                      const TitoloSezione('Il tuo piano'),
-                      RigaPulse(
-                        segno: const IconaQuadrata(
-                          Icons.edit_calendar_outlined,
-                        ),
-                        titolo: selezionato == oggi
-                            ? 'Cambia gli allenamenti di oggi'
-                            : 'Cambia gli allenamenti di '
-                                  '${quandoGiorno(selezionato, oggi)}',
-                        sottotitolo:
-                            'Sposta, aggiungi o togli: solo per quel giorno',
-                        onTap: () => _apriModifica(selezionato),
-                      ),
-                      RigaPulse(
-                        key: ChiaviTour.settimanaTipo,
-                        segno: const IconaQuadrata(Icons.view_week_outlined),
-                        titolo: 'La mia settimana tipo',
-                        sottotitolo:
-                            'Quali giorni ti alleni e per quanto tempo',
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => WeekScreen(state: state),
+                          RigaPulse(
+                            segno: const IconaQuadrata(Icons.auto_awesome),
+                            titolo: 'Allunga il calendario',
+                            sottotitolo:
+                                'Ripete la settimana tipo nei prossimi mesi: '
+                                'decide i giorni, non gli esercizi',
+                            linea: false,
+                            onTap: _apriGenera,
                           ),
-                        ),
+                        ],
                       ),
-                      RigaPulse(
-                        segno: const IconaQuadrata(Icons.auto_awesome),
-                        titolo: 'Allunga il calendario',
-                        sottotitolo:
-                            'Ripete la settimana tipo nei prossimi mesi: '
-                            'decide i giorni, non gli esercizi',
-                        linea: false,
-                        onTap: _apriGenera,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              // Attività libera, fuori dal piano: sempre a portata di pollice.
+              Positioned(
+                right: 20,
+                bottom: spazioBarra(context),
+                child: PulsanteLibera(state: state),
+              ),
+            ],
           ),
         );
       },
@@ -1572,6 +1596,142 @@ class PromemoriaScheda extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Pulsante rotondo "+": parte subito un'attività che si aggiunge al
+/// calendario, qualunque cosa ci sia in programma.
+class PulsanteLibera extends StatelessWidget {
+  final AppState state;
+  const PulsanteLibera({super.key, required this.state});
+
+  Future<void> _scegli(BuildContext context) async {
+    final scelta = await showModalBottomSheet<(String, String, String)>(
+      context: context,
+      showDragHandle: true,
+      builder: (c) {
+        final t = Theme.of(c).textTheme;
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Cosa vuoi fare adesso?', style: t.titleLarge),
+                const SizedBox(height: 4),
+                Text(
+                  "Si aggiunge a quello che c'è in programma oggi.",
+                  style: t.bodySmall,
+                ),
+                const SizedBox(height: 16),
+                GridView.count(
+                  crossAxisCount: 3,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  children: [
+                    for (final a in attivitaLibere)
+                      _Scelta(
+                        sport: a.$1,
+                        nome: a.$3,
+                        onTap: () => Navigator.pop(c, a),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    if (scelta == null || !context.mounted) return;
+    final (sport, tipo, nome) = scelta;
+    avviaAllenamento(
+      context,
+      state,
+      sport: sport,
+      tipo: tipo,
+      nome: nome,
+      passi: passiLiberi(sport, nome),
+      libera: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = Pulse.di(context);
+    return Tooltip(
+      message: 'Attività libera',
+      child: Semantics(
+        button: true,
+        label: 'Inizia un\'attività libera',
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: p.primario,
+            boxShadow: p.ombraPrimario,
+          ),
+          child: Material(
+            type: MaterialType.transparency,
+            shape: const CircleBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () => _scegli(context),
+              child: SizedBox(
+                width: 60,
+                height: 60,
+                child: Icon(Icons.add, size: 32, color: p.suPrimario),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Una scelta della griglia: icona dello sport nel suo colore e nome.
+class _Scelta extends StatelessWidget {
+  final String sport;
+  final String nome;
+  final VoidCallback onTap;
+  const _Scelta({required this.sport, required this.nome, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final c = coloreSport(sport);
+    return Material(
+      color: scheme.surfaceContainerHigh,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: c.withValues(alpha: 0.18),
+                child: Icon(iconaSport(sport), color: c),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                nome,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                style: t.labelMedium,
+              ),
+            ],
+          ),
         ),
       ),
     );

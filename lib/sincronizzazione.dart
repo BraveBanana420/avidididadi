@@ -386,9 +386,22 @@ List<Sessione> combina(List<Sessione> storico, List<Sessione> hc) {
     (h) =>
         h.data == s.data &&
         stessoSport(h.sport, s.sport) &&
-        (s.fonte == fonteApp || (h.durataMin - s.durataMin).abs() <= 3),
+        (s.fonte == fonteApp
+            ? _stessoMomento(s, h)
+            : (h.durataMin - s.durataMin).abs() <= 3),
   );
   return _inOrdine([...storico.where((s) => !doppione(s)), ...unite]);
+}
+
+/// Una seduta dell'app con l'orario è lo stesso allenamento dell'orologio
+/// solo se gli orari si sovrappongono (5 minuti di margine): una camminata la
+/// sera resta anche se la mattina l'orologio ha registrato un'altra uscita.
+/// Senza orario (sedute vecchie) basta lo stesso giorno.
+bool _stessoMomento(Sessione app, Sessione orologio) {
+  final a = app.inizio, b = app.fine, c = orologio.inizio, d = orologio.fine;
+  if (a == null || b == null || c == null || d == null) return true;
+  const margine = Duration(minutes: 5);
+  return a.isBefore(d.add(margine)) && c.isBefore(b.add(margine));
 }
 
 const infoSyncHeader = ['chiave', 'valore'];

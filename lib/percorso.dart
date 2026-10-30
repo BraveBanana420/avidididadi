@@ -20,6 +20,7 @@ const percorsoHeader = ['lat', 'lon', 'tempo_ms', 'precisione_m'];
 bool sportConPercorso(String sport, [String tipo = '']) =>
     stessoSport(sport, 'Corsa') ||
     stessoSport(sport, 'Bici') ||
+    stessoSport(sport, 'Camminata') ||
     (stessoSport(sport, 'Nuoto') &&
         tipo.toLowerCase().contains('acque libere'));
 
