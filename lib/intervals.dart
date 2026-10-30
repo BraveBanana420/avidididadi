@@ -190,11 +190,20 @@ class ClientIntervals {
   final String chiave;
   const ClientIntervals(this.chiave);
 
-  Future<Object?> _get(String percorso, [Map<String, String>? query]) async {
+  Future<Object?> _get(String percorso, [Map<String, String>? query]) =>
+      _richiesta('GET', percorso, query);
+
+  Future<Object?> _richiesta(
+    String metodo,
+    String percorso, [
+    Map<String, String>? query,
+    Object? dati,
+  ]) async {
     final client = HttpClient()
       ..connectionTimeout = const Duration(seconds: 15);
     try {
-      final req = await client.getUrl(
+      final req = await client.openUrl(
+        metodo,
         Uri.parse('$baseIntervals$percorso').replace(queryParameters: query),
       );
       req.headers
@@ -204,10 +213,14 @@ class ClientIntervals {
         )
         ..set(HttpHeaders.acceptHeader, 'application/json')
         ..set(HttpHeaders.userAgentHeader, 'Avidididadi');
+      if (dati != null) {
+        req.headers.contentType = ContentType.json;
+        req.add(utf8.encode(jsonEncode(dati)));
+      }
       final res = await req.close().timeout(const Duration(seconds: 40));
       final corpo = await res.transform(utf8.decoder).join();
       switch (res.statusCode) {
-        case 200:
+        case >= 200 && < 300:
           return corpo.isEmpty ? null : jsonDecode(corpo);
         case 401 || 403:
           throw const ErroreIntervals(
@@ -260,6 +273,30 @@ class ClientIntervals {
   Future<SerieSessione> serie(String id, DateTime inizio) async {
     final j = await _get('/api/v1/activity/$id/streams.json');
     return j is List ? serieDaIcu(j, inizio) : const SerieSessione();
+  }
+
+  /// Crea gli allenamenti nel calendario; restituisce external_id e id di
+  /// quelli creati. Con upsert, uno con lo stesso external_id si aggiorna.
+  Future<Map<String, int>> creaEventi(List<Map<String, Object?>> eventi) async {
+    if (eventi.isEmpty) return const {};
+    final j = await _richiesta('POST', '/api/v1/athlete/0/events/bulk', {
+      'upsert': 'true',
+      'upsertOnUid': 'false',
+      'updatePlanApplied': 'false',
+    }, eventi);
+    return {
+      for (final e in (j is List ? j : const []))
+        if (e is Map && e['id'] is int && e['external_id'] is String)
+          e['external_id'] as String: e['id'] as int,
+    };
+  }
+
+  /// Cancella dal calendario gli eventi creati prima dall'app.
+  Future<void> cancellaEventi(List<int> id) async {
+    if (id.isEmpty) return;
+    await _richiesta('PUT', '/api/v1/athlete/0/events/bulk-delete', null, [
+      for (final x in id) {'id': x},
+    ]);
   }
 
   /// Il percorso GPS (vuoto per le attività al chiuso).

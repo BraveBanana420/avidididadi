@@ -130,9 +130,13 @@ class PrivacyScreen extends StatelessWidget {
             "le tue attività di corsa, bici e nuoto (nome, orari, distanza, "
             "battito, velocità, altitudine, potenza, percorso GPS). intervals.icu "
             "le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai "
-            "collegato tu, con le sue condizioni sulla privacy. Avidididadi non "
-            "invia nulla a intervals.icu: solo le richieste di lettura con la "
-            "chiave, che resta cifrata sul telefono. Le attività scaricate "
+            "collegato tu, con le sue condizioni sulla privacy. La chiave resta "
+            "cifrata sul telefono. Solo se accendi \"Manda il piano a "
+            "intervals.icu\", l'app scrive nel tuo calendario di intervals.icu "
+            "le sedute di corsa, bici e nuoto dei prossimi 14 giorni (data, "
+            "sport, nome, durata, passi con zone di battito o passo): niente "
+            "nome, foto, misure, feedback o forza. Spegnendolo, le sedute future "
+            "mandate dall'app vengono tolte. Le attività scaricate "
             "restano sul telefono ed entrano nel backup; scollegando, vengono "
             "tolte.",
       ),

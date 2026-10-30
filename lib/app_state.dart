@@ -18,6 +18,7 @@ import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
 import 'intervals.dart';
+import 'invio_intervals.dart';
 import 'llm.dart';
 import 'models.dart';
 import 'obiettivo.dart';
@@ -1245,6 +1246,14 @@ class AppState extends ChangeNotifier {
   String? erroreIntervals;
   bool sincronizzandoIntervals = false;
 
+  /// Invio del piano (corsa, bici, nuoto) al calendario di intervals.icu.
+  bool invioIntervals = false;
+  List<EventoInviato> inviatiIcu = [];
+  DateTime? ultimoInvio;
+  String? erroreInvio;
+  bool inviando = false;
+  static const _fileInviati = 'intervals_inviati.csv';
+
   static const _fileIcu = 'intervals_sessioni.csv';
   static const _infoIcu = 'intervals.csv';
   static const _icuHeader = [...sessioniHeader, 'al_chiuso'];
@@ -1268,7 +1277,22 @@ class AppState extends ChangeNotifier {
     };
     intervalsCollegato = m['collegato'] == 'si';
     ultimaIntervals = DateTime.tryParse(m['ultima'] ?? '');
+    invioIntervals = m['invio'] == 'si';
+    ultimoInvio = DateTime.tryParse(m['ultimo_invio'] ?? '');
+    final ti = await Storage.readTabella(_fileInviati);
+    inviatiIcu = ti == null
+        ? []
+        : ti.righe
+              .map((r) => EventoInviato.da(ti, r))
+              .whereType<EventoInviato>()
+              .toList();
   }
+
+  Future<void> _salvaInviati() => Storage.write(
+    _fileInviati,
+    inviatiHeader,
+    inviatiIcu.map((x) => x.toRow()).toList(),
+  );
 
   Future<void> _salvaIntervals() async {
     await Storage.write(_fileIcu, _icuHeader, [
@@ -1281,6 +1305,8 @@ class AppState extends ChangeNotifier {
       [
         ['collegato', intervalsCollegato ? 'si' : ''],
         ['ultima', ultimaIntervals?.toIso8601String() ?? ''],
+        ['invio', invioIntervals ? 'si' : ''],
+        ['ultimo_invio', ultimoInvio?.toIso8601String() ?? ''],
       ],
     );
   }
@@ -1339,7 +1365,10 @@ class AppState extends ChangeNotifier {
       await _salvaIntervals();
       _ricombina();
       await _aggiornaEndurance();
-      return '${nuove.length} attività lette da intervals.icu.';
+      final letto = '${nuove.length} attività lette da intervals.icu.';
+      if (!invioIntervals) return letto;
+      sincronizzandoIntervals = false;
+      return '$letto ${await inviaPianoIntervals()}';
     } on ErroreIntervals catch (e) {
       erroreIntervals = e.messaggio;
       return e.messaggio;
@@ -1349,9 +1378,129 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Le sedute di corsa, bici e nuoto dei prossimi [giorniInvio] giorni, con
+  /// i passi dell'allenamento. Quelle di oggi già fatte non si mandano.
+  List<SedutaDaInviare> seduteDaInviare() {
+    final oggi = soloData(DateTime.now());
+    final fine = oggi.add(const Duration(days: giorniInvio));
+    final out = <SedutaDaInviare>[];
+    final contati = <String, int>{};
+    for (final r in piano) {
+      if (r.data.isBefore(oggi) || !r.data.isBefore(fine)) continue;
+      if (tipoEventoIcu(r.sport, r.tipo) == null) continue;
+      if (r.data == oggi &&
+          sessioni.any(
+            (x) => x.data == oggi && stessoSport(x.sport, r.sport),
+          )) {
+        continue;
+      }
+      final chiave = '${isoData(r.data)}-${r.sport}';
+      final indice = contati[chiave] ?? 0;
+      contati[chiave] = indice + 1;
+      out.add(
+        SedutaDaInviare(
+          data: r.data,
+          sport: r.sport,
+          tipo: r.tipo,
+          durataMin: r.durataMin,
+          indice: indice,
+          // I passi dettagliati valgono per la prima seduta del giorno.
+          passi: indice == 0 ? passiSeduta(r.data, r.sport, r.tipo) : const [],
+        ),
+      );
+    }
+    return out;
+  }
+
+  /// Manda a intervals.icu le sedute nuove o cambiate e toglie quelle non più
+  /// in programma. Restituisce il messaggio per l'utente.
+  Future<String> inviaPianoIntervals() async {
+    if (!intervalsCollegato || inviando) return '';
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) {
+      return 'Chiave non trovata: collega di nuovo intervals.icu.';
+    }
+    inviando = true;
+    notifyListeners();
+    try {
+      final oggi = soloData(DateTime.now());
+      final (:nuovi, :daCancellare) = pianoInvio(
+        seduteDaInviare(),
+        inviatiIcu,
+        oggi,
+      );
+      final client = ClientIntervals(chiave);
+      await client.cancellaEventi(daCancellare);
+      final creati = await client.creaEventi(nuovi);
+      final perId = {
+        for (final x in inviatiIcu)
+          if (!daCancellare.contains(x.id)) x.externalId: x,
+      };
+      for (final e in nuovi) {
+        final ext = e['external_id']! as String;
+        final id = creati[ext];
+        if (id == null) continue;
+        perId[ext] = EventoInviato(
+          ext,
+          id,
+          parseData((e['start_date_local']! as String).substring(0, 10))!,
+          firmaDi(e),
+        );
+      }
+      // Si dimenticano i giorni passati: restano nel calendario così come sono.
+      inviatiIcu = perId.values.where((x) => !x.data.isBefore(oggi)).toList()
+        ..sort((a, b) => a.data.compareTo(b.data));
+      ultimoInvio = DateTime.now();
+      erroreInvio = null;
+      await _salvaInviati();
+      await _salvaIntervals();
+      if (nuovi.isEmpty && daCancellare.isEmpty) {
+        return 'Il calendario di intervals.icu è già aggiornato.';
+      }
+      final tolte = daCancellare.length - nuovi.length;
+      final fatto = [
+        if (nuovi.isNotEmpty)
+          '${nuovi.length} ${nuovi.length == 1 ? 'seduta mandata' : 'sedute mandate'}',
+        if (tolte > 0) '$tolte ${tolte == 1 ? 'tolta' : 'tolte'}',
+      ].join(', ');
+      return '${maiuscola(fatto)} a intervals.icu.';
+    } on ErroreIntervals catch (e) {
+      erroreInvio = e.messaggio;
+      return e.messaggio;
+    } finally {
+      inviando = false;
+      notifyListeners();
+    }
+  }
+
+  /// Accende o spegne l'invio. Spegnendolo, le sedute future mandate
+  /// dall'app spariscono dal calendario di intervals.icu.
+  Future<String> impostaInvioIntervals(bool attivo) async {
+    invioIntervals = attivo;
+    await _salvaIntervals();
+    notifyListeners();
+    if (attivo) return inviaPianoIntervals();
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null || inviatiIcu.isEmpty) return '';
+    try {
+      await ClientIntervals(chiave)
+          .cancellaEventi([for (final x in inviatiIcu) x.id]);
+      final n = inviatiIcu.length;
+      inviatiIcu = [];
+      await _salvaInviati();
+      notifyListeners();
+      return '$n sedute tolte dal calendario di intervals.icu.';
+    } on ErroreIntervals catch (e) {
+      return e.messaggio;
+    }
+  }
+
   /// Toglie chiave e attività di intervals.icu: tornano quelle di Health
   /// Connect.
   Future<void> scollegaIntervals() async {
+    if (inviatiIcu.isNotEmpty) await impostaInvioIntervals(false);
+    invioIntervals = false;
+    ultimoInvio = null;
     await ChiaveIntervals.elimina();
     intervalsCollegato = false;
     ultimaIntervals = null;

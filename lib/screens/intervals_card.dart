@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_state.dart';
+import '../invio_intervals.dart';
 import '../models.dart';
 import '../pulse.dart';
 
@@ -139,6 +140,66 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
           TextButton(onPressed: _scollega, child: const Text('Scollega')),
         ],
       ),
+      const Divider(height: 24),
+      Material(
+        type: MaterialType.transparency,
+        child: SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Manda il piano a intervals.icu'),
+          subtitle: Text(
+            'Corsa, bici e nuoto dei prossimi $giorniInvio giorni, passo per '
+            'passo. Si aggiornano da soli quando il piano cambia. La forza '
+            'resta qui.',
+            style: t.bodySmall,
+          ),
+          value: state.invioIntervals,
+          onChanged: _inCorso || state.inviando
+              ? null
+              : (v) => _esegui(() => state.impostaInvioIntervals(v)),
+        ),
+      ),
+      if (state.invioIntervals) ...[
+        Text(
+          state.inviando
+              ? 'Invio in corso…'
+              : state.ultimoInvio == null
+              ? 'Non ancora mandato.'
+              : 'Ultimo invio ${dataLunga(state.ultimoInvio!)}, '
+                    '${two(state.ultimoInvio!.hour)}:'
+                    '${two(state.ultimoInvio!.minute)} · '
+                    '${state.inviatiIcu.length} sedute in calendario',
+          style: t.bodySmall,
+        ),
+        if (state.erroreInvio != null)
+          Text(
+            state.erroreInvio!,
+            style: t.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: _inCorso || state.inviando
+              ? null
+              : () => _esegui(state.inviaPianoIntervals),
+          icon: const Icon(Icons.send_outlined),
+          label: const Text('Invia ora'),
+        ),
+        const SizedBox(height: 8),
+        ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          title: Text("Per averle sull'orologio Garmin", style: t.titleSmall),
+          children: [
+            Text(
+              'Su intervals.icu: Impostazioni → Garmin Connect → attiva '
+              '"Upload planned workouts". Le sedute passano nel calendario '
+              'di Garmin Connect e da lì all\'orologio. Battito: zone di '
+              'intervals.icu; nuoto: passo per 100 m.',
+              style: t.bodySmall,
+            ),
+          ],
+        ),
+      ],
     ];
   }
 
@@ -185,8 +246,8 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
       ),
       const SizedBox(height: 4),
       Text(
-        'La chiave resta cifrata sul telefono e serve solo a leggere le tue '
-        'attività.',
+        'La chiave resta cifrata sul telefono. Serve a leggere le tue '
+        'attività e, solo se lo accendi, a mandare il piano al tuo calendario.',
         style: t.bodySmall,
       ),
       const SizedBox(height: 10),

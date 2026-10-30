@@ -11,7 +11,7 @@ Funzioni principali:
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
 - **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
-- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni.
+- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin).
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Progressi**: carico, grafici, report per sport.
 - **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
@@ -58,6 +58,7 @@ lib/
   recupero.dart        energia e prontezza dai dati di recupero
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
+  invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
   avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
@@ -78,7 +79,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
 - `ritocchi_sessioni.csv`, `percorso_*.csv`;
-- `intervals_sessioni.csv`, `intervals.csv`;
+- `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`;
 - `serie.csv` (ripetizioni e kg della forza).
 
 I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.

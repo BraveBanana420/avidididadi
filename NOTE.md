@@ -60,9 +60,16 @@
   dalla pagina Coach per tornare a Ollama.
 - [ ] **Da provare**: con Claude Pro, chiedere un piano nuovo di 4 settimane e
   applicarlo dal pannello Coach.
-- [ ] **Invia allo smartwatch** (in pausa dal 25/10/2026: per ora Garmin a
-  mano; riprendere se esce qualcosa di più efficace e ufficiale). Già
-  verificato:
+- [x] **Invio a intervals.icu** (30/10/2026): Dati e collegamenti → "Manda il
+  piano a intervals.icu". Corsa, bici e nuoto dei prossimi 14 giorni, con
+  external_id `avd-<data>-<sport>`; le cambiate si cancellano (per id) e si
+  rimandano. Forza esclusa.
+- [ ] **Da verificare dal vivo**: che le sedute arrivino su Garmin Connect
+  (intervals.icu → Impostazioni → Garmin → "Upload planned workouts"), le
+  pause del nuoto con `intensity=rest`, il passo `1:56/100m Pace`, e se
+  `upsert=true` funziona con la chiave API (senza app OAuth).
+- [ ] **Invia allo smartwatch, resto** (ripreso in parte il 30/10/2026).
+  Già verificato:
   - intervals.icu: API con chiave (Basic, utente `API_KEY`, athlete `0`),
     `POST /api/v1/athlete/0/events/bulk?upsert=true` con `external_id`,
     `PUT .../events/bulk-delete`; testo allenamento in `description`
