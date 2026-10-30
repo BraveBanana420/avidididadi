@@ -235,12 +235,6 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    // Il giro guidato delle funzioni principali.
-                    IconButton.filledTonal(
-                      tooltip: 'Giro guidato',
-                      onPressed: () => avviaTour(context),
-                      icon: const Icon(Icons.question_mark),
-                    ),
                   ],
                 ),
                 const TitoloSezione('Il mio allenamento'),
@@ -365,6 +359,13 @@ class ProfileScreen extends StatelessWidget {
                       'Orologio e app, backup dei dati',
                       DatiCollegamentiScreen(state: state),
                       chiave: ChiaviTour.collegamenti,
+                    ),
+                    // Il giro guidato, vicino agli altri aiuti.
+                    RigaPulse(
+                      segno: const IconaQuadrata(Icons.help_outline),
+                      titolo: "Giro guidato dell'app",
+                      sottotitolo: 'Le 10 funzioni principali, una alla volta',
+                      onTap: () => avviaTour(context),
                     ),
                     voce(
                       Icons.school_outlined,

@@ -129,7 +129,8 @@ final passiTour = [
     titolo: 'Dati e collegamenti',
     testo:
         'Collega l\'orologio (Health Connect o intervals.icu) e fai il backup '
-        'dei tuoi dati. Il giro lo ritrovi sempre dal "?" qui in alto.',
+        'dei tuoi dati. Il giro lo ritrovi sempre qui sotto, in "Giro '
+        "guidato dell'app\".",
     sezione: 3,
     chiave: ChiaviTour.collegamenti,
     ancora: ChiaviTour.prepara,
