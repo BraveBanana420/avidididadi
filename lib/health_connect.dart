@@ -7,6 +7,7 @@ import 'package:health/health.dart';
 import 'dettagli_sessione.dart';
 import 'percorso.dart';
 import 'recupero.dart';
+import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 
 enum DisponibilitaHc { disponibile, daAggiornare, nonInstallata, nonSupportata }
@@ -217,6 +218,35 @@ class HealthConnectService {
     } on MissingPluginException {
       return const {};
     }
+  }
+
+  /// Battito e velocità nel tempo, scritti dall'app [origine] (es. Garmin)
+  /// tra [da] e [a], per i grafici di un'attività.
+  Future<SerieSessione> serie(
+    DateTime da,
+    DateTime a, {
+    String origine = '',
+  }) async {
+    await _configura();
+    final punti = await _h.getHealthDataFromTypes(
+      types: [HealthDataType.HEART_RATE, HealthDataType.SPEED],
+      startTime: da,
+      endTime: a,
+    );
+    List<Campione> di(HealthDataType t) => [
+      for (final p in punti)
+        if (p.type == t &&
+            p.value is NumericHealthValue &&
+            (origine.isEmpty || _pacchetto(p) == origine))
+          Campione(
+            p.dateFrom,
+            (p.value as NumericHealthValue).numericValue.toDouble(),
+          ),
+    ]..sort((x, y) => x.t.compareTo(y.t));
+    return SerieSessione(
+      fc: di(HealthDataType.HEART_RATE),
+      velocita: di(HealthDataType.SPEED),
+    );
   }
 
   /// Segmenti, lap e distanze parziali di una sessione (codice nativo).

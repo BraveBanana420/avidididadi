@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:file_picker/file_picker.dart';
 
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../app_state.dart';
 import '../health_connect.dart';
@@ -15,6 +17,97 @@ import '../widgets.dart';
 
 String _esadecimale(Color c) =>
     '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
+
+/// Il tipo di mappa scelto (Pulse, strade, satellite), salvato in mappa.txt.
+final tipoMappa = ValueNotifier<TipoMappa>(TipoMappa.pulse);
+bool _tipoLetto = false;
+
+Future<File> _fileTipo() async =>
+    File('${(await getApplicationDocumentsDirectory()).path}/mappa.txt');
+
+Future<void> _leggiTipo() async {
+  if (_tipoLetto) return;
+  _tipoLetto = true;
+  try {
+    final f = await _fileTipo();
+    if (!await f.exists()) return;
+    final nome = (await f.readAsString()).trim();
+    tipoMappa.value = TipoMappa.values.firstWhere(
+      (t) => t.name == nome,
+      orElse: () => TipoMappa.pulse,
+    );
+  } catch (_) {
+    // si resta su Pulse
+  }
+}
+
+Future<void> _scegliTipo(TipoMappa t) async {
+  tipoMappa.value = t;
+  try {
+    await (await _fileTipo()).writeAsString(t.name);
+  } catch (_) {
+    // vale solo per questa sessione
+  }
+}
+
+/// Lo stile "Strade" scaricato una volta sola.
+Map<String, dynamic>? _baseStrade;
+
+Future<Map<String, dynamic>?> _scaricaStrade() async {
+  if (_baseStrade != null) return _baseStrade;
+  final client = HttpClient()..connectionTimeout = const Duration(seconds: 8);
+  try {
+    final res = await (await client.getUrl(Uri.parse(fonteStrade))).close();
+    if (res.statusCode != 200) return null;
+    final testo = await res.transform(utf8.decoder).join();
+    return _baseStrade = jsonDecode(testo) as Map<String, dynamic>;
+  } catch (_) {
+    return null;
+  } finally {
+    client.close();
+  }
+}
+
+/// Pulsante con i livelli, in alto a destra: si sceglie il tipo di mappa.
+class PulsanteLivelli extends StatelessWidget {
+  const PulsanteLivelli({super.key});
+
+  static const _icone = {
+    TipoMappa.pulse: Icons.auto_awesome_outlined,
+    TipoMappa.strade: Icons.map_outlined,
+    TipoMappa.satellite: Icons.satellite_alt_outlined,
+  };
+
+  @override
+  Widget build(BuildContext context) => IconButton.filledTonal(
+    tooltip: 'Tipo di mappa',
+    onPressed: () => showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (c) => SafeArea(
+        child: ValueListenableBuilder<TipoMappa>(
+          valueListenable: tipoMappa,
+          builder: (c, attuale, _) => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final t in TipoMappa.values)
+                ListTile(
+                  leading: Icon(_icone[t]),
+                  title: Text(nomiMappe[t]!),
+                  trailing: t == attuale ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    _scegliTipo(t);
+                    Navigator.pop(c);
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    icon: const Icon(Icons.layers_outlined),
+  );
+}
 
 /// La mappa con i colori del tema e il percorso acceso al neon.
 class MappaPercorso extends StatefulWidget {
@@ -34,6 +127,46 @@ class MappaPercorso extends StatefulWidget {
 
 class _MappaPercorsoState extends State<MappaPercorso> {
   MapLibreMapController? _mappa;
+  final _stili = <(TipoMappa, bool), Future<String>>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _leggiTipo();
+  }
+
+  /// Lo stile del tipo scelto, con il percorso sopra.
+  Future<String> _stile(TipoMappa tipo, bool scuro) async {
+    final colore = _esadecimale(coloreSport(widget.sport));
+    final percorso = widget.percorso.geoJson();
+    final estremi = widget.percorso.geoJsonEstremi();
+    switch (tipo) {
+      case TipoMappa.satellite:
+        return stileSatellite(
+          colore: colore,
+          percorso: percorso,
+          estremi: estremi,
+        );
+      case TipoMappa.strade:
+        final base = await _scaricaStrade();
+        if (base != null) {
+          return stileStrade(
+            base,
+            colore: colore,
+            percorso: percorso,
+            estremi: estremi,
+          );
+        }
+      case TipoMappa.pulse:
+    }
+    // Pulse, o Strade senza rete.
+    return stileMappa(
+      scuro: scuro,
+      colore: colore,
+      percorso: percorso,
+      estremi: estremi,
+    );
+  }
 
   LatLngBounds get _limiti {
     final (a, b, c, d) = widget.percorso.limiti;
@@ -74,14 +207,21 @@ class _MappaPercorsoState extends State<MappaPercorso> {
   @override
   Widget build(BuildContext context) {
     final scuro = Theme.of(context).brightness == Brightness.dark;
+    return ValueListenableBuilder<TipoMappa>(
+      valueListenable: tipoMappa,
+      builder: (context, tipo, _) => FutureBuilder<String>(
+        future: _stili.putIfAbsent((tipo, scuro), () => _stile(tipo, scuro)),
+        builder: (context, snap) => snap.hasData
+            ? _mappaCon(snap.data!)
+            : ColoredBox(color: Theme.of(context).colorScheme.surface),
+      ),
+    );
+  }
+
+  Widget _mappaCon(String stile) {
     final g = widget.interattiva;
     return MapLibreMap(
-      styleString: stileMappa(
-        scuro: scuro,
-        colore: _esadecimale(coloreSport(widget.sport)),
-        percorso: widget.percorso.geoJson(),
-        estremi: widget.percorso.geoJsonEstremi(),
-      ),
+      styleString: stile,
       initialCameraPosition: _inizio,
       onMapCreated: (c) => _mappa = c,
       onStyleLoadedCallback: _inquadra,
@@ -239,11 +379,8 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
                   ),
                 ),
               ),
-              const Positioned(
-                top: 10,
-                right: 10,
-                child: PillolaPulse('Apri la mappa'),
-              ),
+              // Tocco sulla mappa: mappa intera. In alto a destra: i livelli.
+              const Positioned(top: 8, right: 8, child: PulsanteLivelli()),
             ],
           ),
         ),
@@ -378,6 +515,7 @@ class MappaPercorsoScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(titoloSessione(s.sport, s.tipo)),
+        actions: const [PulsanteLivelli(), SizedBox(width: 8)],
       ),
       body: Stack(
         children: [

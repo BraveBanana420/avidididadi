@@ -104,7 +104,7 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                       punto(
                         Icons.map_outlined,
                         'Mappe e immagini da internet',
-                        'Scaricate da OpenFreeMap e GitHub: il percorso non '
+                        'Da OpenFreeMap, Esri (satellite) e GitHub: il percorso non '
                             'viene inviato.',
                       ),
                       punto(

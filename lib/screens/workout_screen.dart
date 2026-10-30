@@ -18,6 +18,7 @@ import 'catalogo_screen.dart';
 import 'crea_piano_screen.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
+import 'grafici_screen.dart';
 import 'mappa_percorso.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
@@ -123,7 +124,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     for (final s in svolte) {
       // Il percorso GPS (registrato dall'app o letto da Health Connect).
       // Al chiuso (rulli, Tacx, tapis roulant) non c'è un percorso.
-      if (sportConPercorso(s.sport) && !state.alChiuso(s)) {
+      if (sportConPercorso(s.sport, s.tipo) && !state.alChiuso(s)) {
         children.add(
           AnteprimaPercorso(key: ValueKey(s.id), state: state, sessione: s),
         );
@@ -210,7 +211,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           ),
         );
       }
-    } else {
+    } else if (svolte.isEmpty) {
+      // Il previsto si vede solo finché l'attività non è stata fatta.
       final nome = steps.first.nome;
       final tot = steps.first.durataTot;
       // Modalità allenamento: un esercizio alla volta, con il cronometro.
@@ -577,7 +579,7 @@ class _DatiSessione extends StatelessWidget {
                   helperText: 'Vuoto = quello dell\'orologio',
                 ),
               ),
-              if (sportConPercorso(s.sport))
+              if (sportConPercorso(s.sport, s.tipo))
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(
@@ -723,6 +725,19 @@ class _DatiSessione extends StatelessWidget {
             if (s.note.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(s.note, style: t.bodySmall),
+            ],
+            // Battito, zone e passo nel tempo: in una pagina a parte.
+            if (s.inizio != null && s.fine != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => GraficiScreen(state: state, sessione: s),
+                  ),
+                ),
+                icon: const Icon(Icons.show_chart),
+                label: const Text('Grafici'),
+              ),
             ],
           ],
         ),

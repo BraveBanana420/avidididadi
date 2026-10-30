@@ -94,7 +94,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   );
 
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
-  late final RegistratoreGps? gps = sportConPercorso(widget.sport)
+  late final RegistratoreGps? gps = sportConPercorso(widget.sport, widget.tipo)
       ? RegistratoreGps(widget.sport)
       : null;
 

@@ -1,0 +1,308 @@
+import 'package:flutter/material.dart';
+
+import '../app_state.dart';
+import '../charts.dart';
+import '../health_connect.dart';
+import '../models.dart';
+import '../obiettivo.dart';
+import '../percorso.dart';
+import '../pulse.dart';
+import '../serie_sessione.dart';
+import '../sincronizzazione.dart';
+import '../widgets.dart';
+
+/// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
+class GraficiScreen extends StatefulWidget {
+  final AppState state;
+  final Sessione sessione;
+  const GraficiScreen({super.key, required this.state, required this.sessione});
+
+  @override
+  State<GraficiScreen> createState() => _GraficiScreenState();
+}
+
+class _GraficiScreenState extends State<GraficiScreen> {
+  late final Future<SerieSessione> _serie = _carica();
+
+  Future<SerieSessione> _carica() async {
+    final s = widget.sessione;
+    var serie = const SerieSessione();
+    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
+      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
+      serie = await widget.state.hc.serie(
+        s.inizio!,
+        s.fine!,
+        origine: daFreeletics(s) ? '' : s.origine,
+      );
+    }
+    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
+      final r = await widget.state.percorsoDi(s);
+      if (r.stato == StatoPercorso.dati && r.percorso != null) {
+        serie = SerieSessione(
+          fc: serie.fc,
+          velocita: velocitaDaPercorso(r.percorso!),
+        );
+      }
+    }
+    return serie;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.sessione;
+    return Scaffold(
+      bottomNavigationBar: const MargineBarraSistema(),
+      appBar: AppBar(
+        title: Text('Grafici · ${titoloSessione(s.sport, s.tipo)}'),
+      ),
+      body: FutureBuilder<SerieSessione>(
+        future: _serie,
+        builder: (context, snap) {
+          if (!snap.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final serie = snap.data!;
+          if (serie.vuota) {
+            return const Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'Per questa attività non ci sono dati nel tempo: servono il '
+                'battito o la velocità registrati dall\'orologio.',
+              ),
+            );
+          }
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (serie.fc.isNotEmpty) ...[
+                _Battito(serie: serie.fc, inizio: _inizio(serie)),
+                const SizedBox(height: 12),
+                _Zone(fc: serie.fc, zone: widget.state.zone),
+                const SizedBox(height: 12),
+              ],
+              if (serie.velocita.isNotEmpty)
+                _Velocita(
+                  serie: serie.velocita,
+                  inizio: _inizio(serie),
+                  sport: s.sport,
+                ),
+              const SizedBox(height: 12),
+              Text(
+                'Altitudine e pendenza non ci sono: Garmin non le condivide '
+                'con Health Connect.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  DateTime _inizio(SerieSessione s) =>
+      widget.sessione.inizio ??
+      [
+        ...s.fc,
+        ...s.velocita,
+      ].map((c) => c.t).reduce((a, b) => a.isBefore(b) ? a : b);
+}
+
+/// Minuti dall'inizio, es. "12:30".
+String _dal(DateTime inizio, DateTime t) {
+  final s = t.difference(inizio).inSeconds;
+  if (s >= 3600) return '${s ~/ 3600}:${two((s % 3600) ~/ 60)}:${two(s % 60)}';
+  return '${s ~/ 60}:${two(s % 60)}';
+}
+
+class _Riquadro extends StatelessWidget {
+  final String titolo;
+  final List<(String, String)> numeri;
+  final Widget grafico;
+  const _Riquadro({
+    required this.titolo,
+    required this.numeri,
+    required this.grafico,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(titolo, style: t.titleMedium),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (final (nome, valore) in numeri)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(valore, style: t.titleLarge),
+                      Text(nome, style: t.bodySmall),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          grafico,
+        ],
+      ),
+    );
+  }
+}
+
+class _Battito extends StatelessWidget {
+  final List<Campione> serie;
+  final DateTime inizio;
+  const _Battito({required this.serie, required this.inizio});
+
+  @override
+  Widget build(BuildContext context) {
+    final r = ricampiona(serie);
+    return _Riquadro(
+      titolo: 'Frequenza cardiaca',
+      numeri: [
+        ('Media', '${media(serie).round()} bpm'),
+        ('Massima', '${massimo(serie).round()} bpm'),
+      ],
+      grafico: GraficoLinea(
+        ys: [for (final c in r) c.v],
+        etichette: [for (final c in r) _dal(inizio, c.t)],
+        fmt: (v) => '${v.round()}',
+        colore: const Color(0xFFFF3B47),
+        dettagli: [
+          for (final c in r) '${c.v.round()} bpm\n${_dal(inizio, c.t)}',
+        ],
+      ),
+    );
+  }
+}
+
+/// Tempo in ogni zona, come le barre di Garmin: dalla 5 (in alto) alla 1.
+class _Zone extends StatelessWidget {
+  final List<Campione> fc;
+  final Zone zone;
+  const _Zone({required this.fc, required this.zone});
+
+  static const _colori = [
+    Color(0xFF9A9AA5),
+    Color(0xFF2EA8FF),
+    Color(0xFF22E07A),
+    Color(0xFFFFC233),
+    Color(0xFFFF3B47),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final tempi = tempoNelleZone(fc, zone);
+    final totale = tempi.values.fold(Duration.zero, (a, b) => a + b);
+    if (totale == Duration.zero) return const SizedBox.shrink();
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Tempo nelle zone', style: t.titleMedium),
+          const SizedBox(height: 10),
+          for (var n = 5; n >= 1; n--)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 104,
+                    child: Text('Z$n ${Zone.nomi[n - 1]}', style: t.bodySmall),
+                  ),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: tempi[n]!.inSeconds / totale.inSeconds,
+                        minHeight: 12,
+                        color: _colori[n - 1],
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 64,
+                    child: Text(
+                      '${tempi[n]!.inMinutes} min',
+                      textAlign: TextAlign.right,
+                      style: t.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Text(
+            'Zone calcolate sulla tua FC massima (${zone.fcMax} bpm).',
+            style: t.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Velocita extends StatelessWidget {
+  final List<Campione> serie;
+  final DateTime inizio;
+  final String sport;
+  const _Velocita({
+    required this.serie,
+    required this.inizio,
+    required this.sport,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bici = stessoSport(sport, 'Bici');
+    final inMoto = serie.where((c) => c.v >= 0.5).toList();
+    final r = ricampiona(inMoto.isEmpty ? serie : inMoto);
+    final colore = coloreSport(sport);
+    if (bici) {
+      return _Riquadro(
+        titolo: 'Velocità',
+        numeri: [
+          ('Media', '${(media(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+          ('Massima', '${(massimo(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+        ],
+        grafico: GraficoLinea(
+          ys: [for (final c in r) c.v * 3.6],
+          etichette: [for (final c in r) _dal(inizio, c.t)],
+          fmt: (v) => v.toStringAsFixed(0),
+          colore: colore,
+          dettagli: [
+            for (final c in r)
+              '${(c.v * 3.6).toStringAsFixed(1)} km/h\n${_dal(inizio, c.t)}',
+          ],
+        ),
+      );
+    }
+    // Passo: più in alto = più veloce, come su Garmin.
+    return _Riquadro(
+      titolo: 'Passo',
+      numeri: [
+        ('Medio', '${fmtMinSec(passoDa(media(inMoto)))} /km'),
+        ('Migliore', '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
+      ],
+      grafico: GraficoLinea(
+        ys: [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()],
+        etichette: [for (final c in r) _dal(inizio, c.t)],
+        fmt: (v) => fmtMinSec(-v),
+        colore: colore,
+        dettagli: [
+          for (final c in r)
+            '${fmtMinSec(passoDa(c.v))} /km\n${_dal(inizio, c.t)}',
+        ],
+      ),
+    );
+  }
+}

@@ -15,9 +15,13 @@ class PuntoGps {
 
 const percorsoHeader = ['lat', 'lon', 'tempo_ms', 'precisione_m'];
 
-/// Gli sport all'aperto di cui ha senso il percorso.
-bool sportConPercorso(String sport) =>
-    stessoSport(sport, 'Corsa') || stessoSport(sport, 'Bici');
+/// Gli sport all'aperto di cui ha senso il percorso: corsa, bici e nuoto in
+/// acque libere (che per il piano conta come una nuotata in piscina).
+bool sportConPercorso(String sport, [String tipo = '']) =>
+    stessoSport(sport, 'Corsa') ||
+    stessoSport(sport, 'Bici') ||
+    (stessoSport(sport, 'Nuoto') &&
+        tipo.toLowerCase().contains('acque libere'));
 
 String _pulito(String s) =>
     s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
@@ -358,54 +362,7 @@ String stileMappa({
         'layout': {'line-cap': 'round', 'line-join': 'round'},
         'paint': {'line-color': c.principali, 'line-width': larghezza(1.2, 14)},
       },
-      // Il percorso: tre linee sovrapposte fanno il bagliore al neon.
-      {
-        'id': 'alone',
-        'type': 'line',
-        'source': 'percorso',
-        'layout': {'line-cap': 'round', 'line-join': 'round'},
-        'paint': {
-          'line-color': colore,
-          'line-width': 16,
-          'line-blur': 12,
-          'line-opacity': scuro ? 0.55 : 0.4,
-        },
-      },
-      {
-        'id': 'luce',
-        'type': 'line',
-        'source': 'percorso',
-        'layout': {'line-cap': 'round', 'line-join': 'round'},
-        'paint': {'line-color': colore, 'line-width': 5, 'line-blur': 1.5},
-      },
-      {
-        'id': 'nucleo',
-        'type': 'line',
-        'source': 'percorso',
-        'layout': {'line-cap': 'round', 'line-join': 'round'},
-        'paint': {
-          'line-color': c.nucleo,
-          'line-width': 1.6,
-          'line-opacity': 0.9,
-        },
-      },
-      {
-        'id': 'estremi',
-        'type': 'circle',
-        'source': 'estremi',
-        'paint': {
-          'circle-radius': 6,
-          'circle-color': [
-            'match',
-            ['get', 'ruolo'],
-            'via',
-            '#22E07A',
-            colore,
-          ],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': c.nucleo,
-        },
-      },
+      ...livelliPercorso(colore: colore, nucleo: c.nucleo, scuro: scuro),
     ],
   };
   return jsonEncode(stile);
@@ -463,3 +420,128 @@ Percorso percorsoDaGpx(String testo) {
 /// Giorno del percorso, se il GPX ha gli orari.
 DateTime? giornoDi(Percorso p) =>
     p.vuoto || p.punti.first.t.year < 2000 ? null : soloData(p.punti.first.t);
+
+/// Le linee del percorso (tre sovrapposte fanno il bagliore al neon) e i
+/// pallini di partenza e arrivo: uguali su ogni tipo di mappa.
+List<Map<String, dynamic>> livelliPercorso({
+  required String colore,
+  required String nucleo,
+  required bool scuro,
+}) => [
+  {
+    'id': 'alone',
+    'type': 'line',
+    'source': 'percorso',
+    'layout': {'line-cap': 'round', 'line-join': 'round'},
+    'paint': {
+      'line-color': colore,
+      'line-width': 16,
+      'line-blur': 12,
+      'line-opacity': scuro ? 0.55 : 0.4,
+    },
+  },
+  {
+    'id': 'luce',
+    'type': 'line',
+    'source': 'percorso',
+    'layout': {'line-cap': 'round', 'line-join': 'round'},
+    'paint': {'line-color': colore, 'line-width': 5, 'line-blur': 1.5},
+  },
+  {
+    'id': 'nucleo',
+    'type': 'line',
+    'source': 'percorso',
+    'layout': {'line-cap': 'round', 'line-join': 'round'},
+    'paint': {'line-color': nucleo, 'line-width': 1.6, 'line-opacity': 0.9},
+  },
+  {
+    'id': 'estremi',
+    'type': 'circle',
+    'source': 'estremi',
+    'paint': {
+      'circle-radius': 6,
+      'circle-color': [
+        'match',
+        ['get', 'ruolo'],
+        'via',
+        '#22E07A',
+        colore,
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': nucleo,
+    },
+  },
+];
+
+/// I tipi di mappa: Pulse (colori del tema), strade (OpenFreeMap) e
+/// satellite (Esri World Imagery).
+enum TipoMappa { pulse, strade, satellite }
+
+const nomiMappe = {
+  TipoMappa.pulse: 'Pulse',
+  TipoMappa.strade: 'Strade',
+  TipoMappa.satellite: 'Satellite',
+};
+
+/// Stile "Strade" di OpenFreeMap: si scarica e gli si aggiunge il percorso.
+const fonteStrade = 'https://tiles.openfreemap.org/styles/liberty';
+
+/// Riquadri satellitari di Esri (servono l'attribuzione, già nello stile).
+const fonteSatellite =
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/'
+    'MapServer/tile/{z}/{y}/{x}';
+
+Map<String, dynamic> _sorgentiPercorso(
+  Map<String, dynamic>? percorso,
+  Map<String, dynamic>? estremi,
+) {
+  final vuota = {'type': 'FeatureCollection', 'features': <dynamic>[]};
+  return {
+    'percorso': {'type': 'geojson', 'data': percorso ?? vuota},
+    'estremi': {'type': 'geojson', 'data': estremi ?? vuota},
+  };
+}
+
+/// Foto dal satellite con il percorso al neon sopra.
+String stileSatellite({
+  required String colore,
+  Map<String, dynamic>? percorso,
+  Map<String, dynamic>? estremi,
+}) => jsonEncode({
+  'version': 8,
+  'sources': {
+    'satellite': {
+      'type': 'raster',
+      'tiles': [fonteSatellite],
+      'tileSize': 256,
+      'maxzoom': 19,
+      'attribution':
+          'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, '
+          'and the GIS User Community',
+    },
+    ..._sorgentiPercorso(percorso, estremi),
+  },
+  'layers': [
+    {'id': 'satellite', 'type': 'raster', 'source': 'satellite'},
+    ...livelliPercorso(colore: colore, nucleo: '#FFFFFF', scuro: true),
+  ],
+});
+
+/// Lo stile "Strade" scaricato ([base]) con il percorso aggiunto sopra.
+String stileStrade(
+  Map<String, dynamic> base, {
+  required String colore,
+  Map<String, dynamic>? percorso,
+  Map<String, dynamic>? estremi,
+}) {
+  final stile = Map<String, dynamic>.from(base);
+  stile['sources'] = {
+    ...(base['sources'] as Map? ?? const {}).cast<String, dynamic>(),
+    ..._sorgentiPercorso(percorso, estremi),
+  };
+  stile['layers'] = [
+    ...(base['layers'] as List? ?? const []),
+    ...livelliPercorso(colore: colore, nucleo: '#FFFFFF', scuro: false),
+  ];
+  return jsonEncode(stile);
+}

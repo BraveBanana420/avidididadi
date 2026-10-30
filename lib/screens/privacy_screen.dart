@@ -4,8 +4,8 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-10-24.2';
-const aggiornamentoTermini = '24 ottobre 2026';
+const versioneTermini = '2026-10-30';
+const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
 class PaginaTesto extends StatelessWidget {
@@ -114,12 +114,14 @@ class PrivacyScreen extends StatelessWidget {
       (
         'Mappe',
         "Per disegnare la mappa l'app scarica i riquadri della zona "
-            "mostrata da OpenFreeMap (tiles.openfreemap.org), con dati © "
-            "OpenStreetMap. Come per qualsiasi sito, quel servizio riceve "
-            "l'indirizzo IP del telefono e quali riquadri vengono chiesti, "
-            "quindi può capire quale zona stai guardando. Il percorso, i tempi e "
-            "gli altri dati dell'allenamento non vengono inviati: la linea viene "
-            "disegnata sul telefono.",
+            "mostrata: da OpenFreeMap (tiles.openfreemap.org, dati © "
+            "OpenStreetMap) per le mappe Pulse e Strade, e da Esri "
+            "(server.arcgisonline.com) solo se scegli la vista Satellite. Come "
+            "per qualsiasi sito, quei servizi ricevono l'indirizzo IP del "
+            "telefono e quali riquadri vengono chiesti, quindi possono capire "
+            "quale zona stai guardando. Il percorso, i tempi e gli altri dati "
+            "dell'allenamento non vengono inviati: la linea viene disegnata sul "
+            "telefono.",
       ),
       (
         'Immagini degli esercizi',

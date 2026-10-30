@@ -65,6 +65,7 @@ void main() {
     expect(sportConPercorso('Corsa'), isTrue);
     expect(sportConPercorso('bici'), isTrue);
     expect(sportConPercorso('Nuoto'), isFalse);
+    expect(sportConPercorso('Nuoto', 'Acque libere'), isTrue);
   });
 
   test('lo stile della mappa contiene il percorso al neon', () {
