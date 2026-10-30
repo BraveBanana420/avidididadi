@@ -43,7 +43,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void _apriModifica(DateTime d) {
-    setState(() => selezionato = d);
+    _seleziona(d);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -53,24 +53,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   void _seleziona(DateTime d) => setState(() {
     selezionato = d;
+    settimanaVista = lunediDi(d);
     mese = DateTime(d.year, d.month);
   });
+
+  /// Il lunedì della settimana mostrata nella striscia: scorrendo cambia solo
+  /// questa, il giorno scelto resta finché non se ne tocca un altro.
+  DateTime settimanaVista = lunediDi(soloData(DateTime.now()));
 
   /// Da dove entra la settimana nuova: 1 da destra (successiva), -1 da sinistra.
   int _verso = 0;
 
-  /// Settimana prima o dopo, con lo stesso giorno della settimana; se è
-  /// quella di oggi, si torna su oggi.
-  void _cambiaSettimana(int verso) {
-    final oggi = soloData(DateTime.now());
-    final d = DateTime(
-      selezionato.year,
-      selezionato.month,
-      selezionato.day + 7 * verso,
-    );
+  void _cambiaSettimana(int verso) => setState(() {
     _verso = verso;
-    _seleziona(lunediDi(d) == lunediDi(oggi) ? oggi : d);
-  }
+    settimanaVista = DateTime(
+      settimanaVista.year,
+      settimanaVista.month,
+      settimanaVista.day + 7 * verso,
+    );
+  });
 
   /// Icona dello sport: nel suo colore se la sessione è svolta, grigia se in
   /// programma. Lo sport si riconosce dalla forma, lo stato dal colore.
@@ -180,6 +181,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: _StripSettimana(
                     state: state,
                     selezionato: selezionato,
+                    lunedi: settimanaVista,
                     oggi: oggi,
                     fattiDi: fattiDi,
                     previstiDi: previstiDi,
@@ -471,6 +473,7 @@ class _PillolaEnergia extends StatelessWidget {
 class _StripSettimana extends StatelessWidget {
   final AppState state;
   final DateTime selezionato;
+  final DateTime lunedi; // della settimana mostrata
   final DateTime oggi;
   final List<Sessione> Function(DateTime) fattiDi;
   final List<PianoRiga> Function(DateTime) previstiDi;
@@ -481,6 +484,7 @@ class _StripSettimana extends StatelessWidget {
   const _StripSettimana({
     required this.state,
     required this.selezionato,
+    required this.lunedi,
     required this.oggi,
     required this.fattiDi,
     required this.previstiDi,
@@ -492,7 +496,6 @@ class _StripSettimana extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lunedi = lunediDi(selezionato);
     final c = confrontaSettimana(state.piano, state.sessioni, lunedi, oggi);
     final fatte = c.fatte.length + c.extra.length;
     // Scorrendo sulla settimana si passa alla precedente o alla successiva;
