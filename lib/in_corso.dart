@@ -38,6 +38,7 @@ class AllenamentoInCorso {
   final int fcMax;
   final Duration soste; // in pausa automatica
   final Duration fermo; // fermi a cronometro acceso
+  final bool alChiuso; // tapis roulant o rulli: senza GPS
 
   const AllenamentoInCorso({
     required this.sport,
@@ -62,6 +63,7 @@ class AllenamentoInCorso {
     this.fcMax = 0,
     this.soste = Duration.zero,
     this.fermo = Duration.zero,
+    this.alChiuso = false,
   });
 
   Map<String, Object?> toJson() => {
@@ -100,6 +102,7 @@ class AllenamentoInCorso {
     'fc': [fcSomma, fcN, fcMax],
     'soste_ms': soste.inMilliseconds,
     'fermo_ms': fermo.inMilliseconds,
+    'al_chiuso': alChiuso,
   };
 
   static AllenamentoInCorso? daJson(Map<String, dynamic> j) {
@@ -161,6 +164,7 @@ class AllenamentoInCorso {
         fcMax: fc[2].toInt(),
         soste: Duration(milliseconds: (j['soste_ms'] as num? ?? 0).toInt()),
         fermo: Duration(milliseconds: (j['fermo_ms'] as num? ?? 0).toInt()),
+        alChiuso: j['al_chiuso'] == true,
       );
     } catch (_) {
       return null; // file rovinato (es. scritto a metà): non si propone

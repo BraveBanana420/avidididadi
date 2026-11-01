@@ -172,14 +172,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       );
 
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
-  late final RegistratoreGps? gps = sportConPercorso(widget.sport, widget.tipo)
+  /// Corsa, camminata e bici al chiuso (tapis roulant, rulli): niente GPS,
+  /// i km si scrivono alla fine.
+  late final bool _conPercorso = sportConPercorso(widget.sport, widget.tipo);
+  late bool _alChiuso = _conPercorso && tipoAlChiuso(widget.tipo);
+  final _kmScritti = TextEditingController();
+
+  late RegistratoreGps? gps = _conPercorso && !_alChiuso
       ? RegistratoreGps(widget.sport)
       : null;
 
   /// Giri di 1 km (5 in bici): l'ultimo compare per qualche secondo.
-  late final GiriLive? giri = gps == null
-      ? null
-      : GiriLive(metriGiro(widget.sport));
+  late GiriLive? giri = gps == null ? null : GiriLive(metriGiro(widget.sport));
   Giro? _giroAvviso;
   DateTime? _giroFino;
 
@@ -222,8 +226,32 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
   }
 
+  /// Prima di partire: al chiuso il GPS si spegne, all'aperto si riaccende.
+  void _cambiaAlChiuso(bool chiuso) {
+    if (chiuso == _alChiuso || !preparati) return;
+    setState(() {
+      _alChiuso = chiuso;
+      if (chiuso) {
+        gps?.ferma();
+        gps?.dispose();
+        gps = null;
+        giri = null;
+      } else {
+        gps = RegistratoreGps(widget.sport);
+        giri = GiriLive(metriGiro(widget.sport));
+      }
+    });
+    if (!chiuso) _accendiGps();
+  }
+
   /// Rimette la seduta com'era al salvataggio; si riparte in pausa.
   void _ripristina(AllenamentoInCorso r) {
+    if (r.alChiuso && gps != null) {
+      gps!.dispose();
+      gps = null;
+      giri = null;
+    }
+    _alChiuso = r.alChiuso;
     i = r.indice.clamp(0, blocchi.isEmpty ? 0 : blocchi.length - 1);
     preparati = false;
     pausa = !r.finito;
@@ -273,6 +301,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         fcMax: fc.massimo,
         soste: _soste,
         fermo: _fermo,
+        alChiuso: _alChiuso,
       ),
     );
   }
@@ -343,6 +372,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sensoreBattito.ferma();
     _schermoAcceso(false);
     gps?.dispose();
+    _kmScritti.dispose();
     super.dispose();
   }
 
@@ -679,26 +709,34 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     ]);
     if (registra) {
       final inizio = _partenza ?? DateTime.now().subtract(_tempoTotale);
+      final id = widget.libera
+          ? idLibera(inizio, widget.sport)
+          : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}';
+      // I km del display (tapis roulant, rulli) valgono più del GPS.
+      final scritti = kmScritti(_kmScritti.text);
       await widget.state.registraSvolta(
         Sessione(
-          id: widget.libera
-              ? idLibera(inizio, widget.sport)
-              : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}',
+          id: id,
           data: oggi,
           inizio: inizio,
           fine: inizio.add(_tempoTotale),
           sport: widget.sport,
           tipo: widget.tipo,
           durataMin: (_tempoTotale.inSeconds / 60).round().clamp(1, 600),
-          distanzaKm: percorso == null || percorso.vuoto
-              ? 0
-              : double.parse(gps!.km.toStringAsFixed(2)),
+          distanzaKm:
+              scritti ??
+              (percorso == null || percorso.vuoto
+                  ? 0
+                  : double.parse(gps!.km.toStringAsFixed(2))),
           fcMedia: fc.media,
           fcMax: fc.massimo,
           fonte: fonteApp,
           note: widget.nome,
         ),
       );
+      if (_alChiuso) {
+        await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
+      }
     }
     await cancellaInCorso();
     if (feedback && mounted) {
@@ -919,6 +957,26 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   Text(
                     'Si parte con: ${prossimo.titolo}',
                     style: t.titleMedium,
+                  ),
+                if (_conPercorso)
+                  Material(
+                    type: MaterialType.transparency,
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      secondary: Icon(
+                        stessoSport(widget.sport, 'Bici')
+                            ? Icons.pedal_bike
+                            : Icons.directions_run,
+                      ),
+                      title: Text(
+                        'Al chiuso (${attrezzoAlChiuso(widget.sport)})',
+                      ),
+                      subtitle: const Text(
+                        'Senza GPS: alla fine scrivi i km del display.',
+                      ),
+                      value: _alChiuso,
+                      onChanged: _cambiaAlChiuso,
+                    ),
                   ),
               ] else if (recupero) ...[
                 Text('Recupero', style: t.headlineMedium),
@@ -1194,6 +1252,28 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             ],
           ),
         ),
+        // Al chiuso, o se il GPS non ha misurato niente: i km a mano.
+        if (_conPercorso && (_alChiuso || (gps?.km ?? 0) < 0.1)) ...[
+          const SizedBox(height: 20),
+          TextField(
+            controller: _kmScritti,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: _alChiuso
+                  ? 'Km del ${attrezzoAlChiuso(widget.sport)}'
+                  : 'Km percorsi',
+              suffixText: 'km',
+              helperText: kmScritti(_kmScritti.text) == null
+                  ? 'Facoltativo: senza, la sessione resta senza distanza.'
+                  : ritmoMedio(
+                      widget.sport,
+                      kmScritti(_kmScritti.text)!,
+                      _tempoTotale,
+                    ),
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+        ],
         _PesiScheda(
           state: widget.state,
           nomeWorkout: widget.passi.firstOrNull?.nome ?? '',

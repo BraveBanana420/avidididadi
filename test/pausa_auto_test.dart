@@ -92,6 +92,11 @@ void main() {
     )!;
     expect(con.soste, const Duration(seconds: 45));
     expect(con.fermo, const Duration(seconds: 12));
+    expect(con.alChiuso, isFalse);
+    final rulli = AllenamentoInCorso.daJson(
+      jsonDecode(jsonEncode({...j, 'al_chiuso': true})) as Map<String, dynamic>,
+    )!;
+    expect(rulli.alChiuso, isTrue);
   });
 
   test('soglia scritta bene', () {

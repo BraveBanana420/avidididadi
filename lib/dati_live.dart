@@ -44,6 +44,21 @@ String fmtVelocita(String sport, double? mps) {
   return fmtRitmo(sport, stessoSport(sport, 'Bici') ? kmh : 60 / kmh);
 }
 
+/// Al chiuso si parte già così se la seduta lo dice ("Rulli", "Tapis
+/// roulant", "Indoor").
+bool tipoAlChiuso(String tipo) =>
+    RegExp(r'rull|tapis|indoor|trainer', caseSensitive: false).hasMatch(tipo);
+
+/// "Al chiuso (tapis roulant)" o "(rulli)": come si chiama per lo sport.
+String attrezzoAlChiuso(String sport) =>
+    stessoSport(sport, 'Bici') ? 'rulli' : 'tapis roulant';
+
+/// Km scritti a mano ("5,2" o "5.2"); null se vuoto o non credibile.
+double? kmScritti(String testo) {
+  final v = double.tryParse(testo.trim().replaceAll(',', '.'));
+  return v == null || v <= 0 || v > 500 ? null : v;
+}
+
 /// Pausa automatica: mai, solo da fermi, o sotto una velocità scelta.
 enum ModoPausa { spenta, ferma, sotto }
 

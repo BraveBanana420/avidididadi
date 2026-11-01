@@ -119,4 +119,29 @@ void main() {
       expect(StatisticheBattito().media, 0);
     });
   });
+
+  group('al chiuso', () {
+    test('si parte già al chiuso se la seduta lo dice', () {
+      expect(tipoAlChiuso('Rulli'), isTrue);
+      expect(tipoAlChiuso('Lento su tapis roulant'), isTrue);
+      expect(tipoAlChiuso('Indoor'), isTrue);
+      expect(tipoAlChiuso('Lento'), isFalse);
+      expect(tipoAlChiuso(''), isFalse);
+    });
+
+    test('come si chiama l\'attrezzo', () {
+      expect(attrezzoAlChiuso('Bici'), 'rulli');
+      expect(attrezzoAlChiuso('Corsa'), 'tapis roulant');
+      expect(attrezzoAlChiuso('Camminata'), 'tapis roulant');
+    });
+
+    test('km del display, con la virgola o il punto', () {
+      expect(kmScritti('5,2'), 5.2);
+      expect(kmScritti(' 10.45 '), 10.45);
+      expect(kmScritti(''), isNull);
+      expect(kmScritti('0'), isNull);
+      expect(kmScritti('abc'), isNull);
+      expect(kmScritti('5000'), isNull); // metri scritti per sbaglio
+    });
+  });
 }
