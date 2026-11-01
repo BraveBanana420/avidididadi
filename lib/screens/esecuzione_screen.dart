@@ -667,6 +667,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     totale: aTempo ? _durata : 0,
                     trascorso: blocco.elapsed,
                     pausa: pausa,
+                    // Con i riquadri sopra, più piccolo: entra senza scorrere.
+                    piccolo: gps != null,
                   ),
                 ),
               ),
@@ -1230,6 +1232,7 @@ class _Orologio extends StatelessWidget {
   final int totale;
   final Duration trascorso;
   final bool pausa;
+  final bool piccolo;
   const _Orologio({
     required this.recupero,
     required this.aTempo,
@@ -1237,6 +1240,7 @@ class _Orologio extends StatelessWidget {
     required this.totale,
     required this.trascorso,
     required this.pausa,
+    this.piccolo = false,
   });
 
   @override
@@ -1244,7 +1248,7 @@ class _Orologio extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final cifre = t.displayLarge?.copyWith(
-      fontSize: 68,
+      fontSize: piccolo ? 52 : 68,
       height: 1,
       fontFeatures: const [FontFeature.tabularFigures()],
     );
@@ -1252,17 +1256,24 @@ class _Orologio extends StatelessWidget {
       label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
       child: AnelloPulse(
         valore: aTempo && totale > 0 ? restano / totale : 0,
-        dimensione: 240,
-        spessore: 14,
+        dimensione: piccolo ? 190 : 240,
+        spessore: piccolo ? 12 : 14,
         alone: aTempo,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              aTempo
-                  ? fmtTimer(Duration(seconds: restano))
-                  : fmtTimer(trascorso),
-              style: cifre,
+            // Oltre l'ora le cifre sono di più: si stringono invece di uscire.
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: piccolo ? 150 : 196),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  aTempo
+                      ? fmtTimer(Duration(seconds: restano))
+                      : fmtTimer(trascorso),
+                  style: cifre,
+                ),
+              ),
             ),
             const SizedBox(height: 4),
             Text(
