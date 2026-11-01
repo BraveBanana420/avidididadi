@@ -115,10 +115,20 @@ class AppState extends ChangeNotifier {
               ),
     ];
 
+    // Una riga illeggibile si salta: non deve impedire di aprire l'app.
+    Sessione? riga(Tabella t, List<String> r) {
+      try {
+        return Sessione.da(t, r);
+      } catch (e) {
+        debugPrint('Sessione scartata: $e');
+        return null;
+      }
+    }
+
     List<Sessione> leggiSessioni(Tabella? t) => t == null
         ? []
         : t.righe
-              .map((r) => Sessione.da(t, r))
+              .map((r) => riga(t, r))
               .whereType<Sessione>()
               .where((s) => !sportEsclusi.contains(s.sport))
               .toList();

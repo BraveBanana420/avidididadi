@@ -172,7 +172,12 @@ DateTime? parseData(String s) {
   return null;
 }
 
-double numero(String s) => double.tryParse(s.trim().replaceAll(',', '.')) ?? 0;
+/// Numero da un testo ("5,2" o "5.2"); 0 se non è un numero vero. Anche
+/// "NaN" e "Infinity" valgono 0: arrotondarli bloccherebbe l'app.
+double numero(String s) {
+  final v = double.tryParse(s.trim().replaceAll(',', '.')) ?? 0;
+  return v.isFinite ? v : 0;
+}
 
 String fmtNum(double v) {
   if (v == 0) return '';
@@ -376,33 +381,44 @@ class Sessione {
     cadenzaMedia == 0 ? '' : '$cadenzaMedia',
   ];
 
+  /// Da una riga di CSV (anche importata a mano o da un backup): i numeri
+  /// fuori misura si riportano nei limiti di un allenamento vero e i testi
+  /// lunghissimi si accorciano, così un file sbagliato non rovina grafici e
+  /// carico né gonfia i dati.
   static Sessione? da(Tabella t, List<String> r) {
     final d = parseData(t.v(r, 'data'));
     final sport = normSport(t.v(r, 'sport'));
     if (d == null || sport.isEmpty) return null;
-    final durata = numero(t.v(r, 'durata_min')).round();
-    var id = t.v(r, 'id_sessione');
+    double tra(String col, double max) =>
+        numero(t.v(r, col)).clamp(0, max).toDouble();
+    String corto(String col, int max) {
+      final v = t.v(r, col);
+      return v.length > max ? v.substring(0, max) : v;
+    }
+
+    final durata = tra('durata_min', 2880).round(); // fino a 48 ore
+    var id = corto('id_sessione', 100);
     if (id.isEmpty) id = '${isoData(d)}-${sport.toLowerCase()}-$durata';
     return Sessione(
       id: id,
       data: d,
       sport: sport,
-      tipo: t.v(r, 'tipo_sessione'),
+      tipo: corto('tipo_sessione', 100),
       durataMin: durata,
-      distanzaKm: numero(t.v(r, 'distanza_km')),
-      fcMedia: numero(t.v(r, 'fc_media')).round(),
-      rpe: numero(t.v(r, 'rpe')),
-      fonte: t.v(r, 'fonte'),
-      note: t.v(r, 'note'),
+      distanzaKm: tra('distanza_km', 1000),
+      fcMedia: tra('fc_media', 250).round(),
+      rpe: tra('rpe', 10),
+      fonte: corto('fonte', 100),
+      note: corto('note', 2000),
       inizio: DateTime.tryParse(t.v(r, 'inizio')),
       fine: DateTime.tryParse(t.v(r, 'fine')),
-      fcMax: numero(t.v(r, 'fc_max')).round(),
-      calorieAttive: numero(t.v(r, 'calorie_attive')),
-      calorieTotali: numero(t.v(r, 'calorie_totali')),
-      passi: numero(t.v(r, 'passi')).round(),
-      origine: t.v(r, 'origine'),
-      potenzaMedia: numero(t.v(r, 'potenza_media')).round(),
-      cadenzaMedia: numero(t.v(r, 'cadenza_media')).round(),
+      fcMax: tra('fc_max', 250).round(),
+      calorieAttive: tra('calorie_attive', 20000),
+      calorieTotali: tra('calorie_totali', 20000),
+      passi: tra('passi', 300000).round(),
+      origine: corto('origine', 200),
+      potenzaMedia: tra('potenza_media', 3000).round(),
+      cadenzaMedia: tra('cadenza_media', 250).round(),
     );
   }
 }
