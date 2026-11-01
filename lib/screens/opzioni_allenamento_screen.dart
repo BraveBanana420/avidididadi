@@ -43,6 +43,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
           modoPausa,
           sogliaPausaKmh,
           mediaConSoste,
+          vistaMappa,
         ]),
         builder: (context, _) => ListView(
           padding: const EdgeInsets.all(16),
@@ -171,6 +172,50 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
             nota(
               'Alla fine il riepilogo mostra comunque tutti e due i tempi: '
               'in movimento e totale.',
+            ),
+            const SizedBox(height: 16),
+            Text('Mappa', style: t.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              "Corsa, camminata e bici all'aperto: dove sta la mappa che "
+              'segue la tua posizione (e il percorso, se ne segui uno).',
+              style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 8),
+            Card(
+              child: RadioGroup<VistaMappa>(
+                groupValue: vistaMappa.value,
+                onChanged: (v) => salvaAvvisi(mappa: v),
+                child: const Column(
+                  children: [
+                    RadioListTile(
+                      value: VistaMappa.pagine,
+                      secondary: Icon(Icons.view_carousel_outlined),
+                      title: Text('Due pagine'),
+                      subtitle: Text(
+                        'Scorri di lato: in una timer e dati, nell\'altra la '
+                        'mappa grande.',
+                      ),
+                    ),
+                    RadioListTile(
+                      value: VistaMappa.minimappa,
+                      secondary: Icon(Icons.picture_in_picture_outlined),
+                      title: Text('Minimappa'),
+                      subtitle: Text(
+                        'Una mappa piccola sempre in vista, sopra il timer.',
+                      ),
+                    ),
+                    RadioListTile(
+                      value: VistaMappa.schermo,
+                      secondary: Icon(Icons.fullscreen),
+                      title: Text('Tutto schermo'),
+                      subtitle: Text(
+                        'La mappa occupa tutto, con tempo e dati sopra.',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),

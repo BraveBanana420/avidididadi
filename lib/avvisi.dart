@@ -24,6 +24,17 @@ final sogliaPausaKmh = ValueNotifier<double>(4);
 /// Passo medio con le soste (tempo totale) o solo in movimento.
 final mediaConSoste = ValueNotifier<bool>(false);
 
+/// Dove sta la mappa durante corsa, camminata e bici all'aperto.
+enum VistaMappa { pagine, minimappa, schermo }
+
+const nomiVisteMappa = {
+  VistaMappa.pagine: 'Due pagine',
+  VistaMappa.minimappa: 'Minimappa',
+  VistaMappa.schermo: 'Tutto schermo',
+};
+
+final vistaMappa = ValueNotifier<VistaMappa>(VistaMappa.pagine);
+
 /// Da quanti secondi dalla fine partono i bip.
 const secondiAvviso = 5;
 
@@ -54,6 +65,12 @@ Future<void> caricaAvvisi() async {
         final v = double.tryParse(valore.trim());
         if (v != null) sogliaPausaKmh.value = v.clamp(2, 15).toDouble();
       }
+      if (chiave.trim() == 'mappa') {
+        vistaMappa.value = VistaMappa.values.firstWhere(
+          (m) => m.name == valore.trim(),
+          orElse: () => VistaMappa.pagine,
+        );
+      }
       if (chiave.trim() == 'media') {
         mediaConSoste.value = valore.trim() == 'soste';
       }
@@ -73,6 +90,7 @@ Future<void> salvaAvvisi({
   ModoPausa? pausa,
   double? sogliaKmh,
   bool? conSoste,
+  VistaMappa? mappa,
 }) async {
   if (bip != null) bipAttivo.value = bip;
   if (vibrazione != null) vibrazioneAttiva.value = vibrazione;
@@ -80,6 +98,7 @@ Future<void> salvaAvvisi({
   if (pausa != null) modoPausa.value = pausa;
   if (sogliaKmh != null) sogliaPausaKmh.value = sogliaKmh;
   if (conSoste != null) mediaConSoste.value = conSoste;
+  if (mappa != null) vistaMappa.value = mappa;
   try {
     await (await _file()).writeAsString(
       'bip=${bipAttivo.value ? 'si' : 'no'}\n'
@@ -87,7 +106,8 @@ Future<void> salvaAvvisi({
       'voce=${voceAttiva.value ? 'si' : 'no'}\n'
       'pausa=${modoPausa.value.name}\n'
       'soglia_kmh=${sogliaPausaKmh.value}\n'
-      'media=${mediaConSoste.value ? 'soste' : 'movimento'}\n',
+      'media=${mediaConSoste.value ? 'soste' : 'movimento'}\n'
+      'mappa=${vistaMappa.value.name}\n',
     );
   } catch (_) {
     // vale solo per questa sessione

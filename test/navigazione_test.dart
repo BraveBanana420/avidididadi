@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/navigazione.dart';
+import 'package:allenamenti_app/screens/mappa_live.dart';
 import 'package:allenamenti_app/screens/percorsi_screen.dart';
 import 'package:allenamenti_app/tema.dart';
 import 'package:flutter/material.dart';
@@ -342,5 +343,64 @@ void main() {
         expect(t.takeException(), isNull);
       }
     }
+  });
+
+  group('banner della guida e notifica', () {
+    Guida camminata(List<PuntoTraccia> strada) {
+      final g = Guida(_elle(), bici: false);
+      _cammina(g, strada);
+      return g;
+    }
+
+    test('le righe della notifica', () {
+      expect(testoGuida(null), isNull);
+      final lontano = camminata([_p(-300, 0)]);
+      expect(testoGuida(lontano), 'Percorso a 300 m');
+      final sopra = camminata(_linea([(0, 0), (0, 300)]));
+      expect(testoGuida(sopra), '200 m: gira a destra');
+      final fuori = camminata([
+        ..._linea([(0, 0), (0, 200)]),
+        for (var i = 0; i < 12; i++) _p(-90, 200),
+      ]);
+      expect(testoGuida(fuori), 'Fuori percorso (90 m)');
+    });
+
+    testWidgets('si disegna nei 4 temi, in tutti gli stati', (t) async {
+      final stati = [
+        camminata([_p(-300, 0)]),
+        camminata(_linea([(0, 0), (0, 300)])),
+        camminata([
+          ..._linea([(0, 0), (0, 200)]),
+          for (var i = 0; i < 12; i++) _p(-90, 200),
+        ]),
+        camminata(_elle().punti),
+      ];
+      expect(stati.last.arrivato, isTrue);
+      for (final b in Brightness.values) {
+        for (final neon in [false, true]) {
+          await t.pumpWidget(
+            MaterialApp(
+              theme: creaTema(b, neon: neon),
+              home: Scaffold(
+                body: SizedBox(
+                  width: 360,
+                  child: Column(
+                    children: [
+                      for (final g in stati) ...[
+                        BannerGuida(guida: g),
+                        BannerGuida(guida: g, compatto: true),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+          expect(t.takeException(), isNull);
+        }
+      }
+      expect(find.text('Fuori percorso: torna sulla traccia'), findsWidgets);
+      expect(find.byIcon(Icons.turn_right), findsWidgets);
+    });
   });
 }

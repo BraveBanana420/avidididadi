@@ -15,12 +15,51 @@ import '../percorso.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 
-String _esadecimale(Color c) =>
+String esadecimale(Color c) =>
     '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
 
 /// Il tipo di mappa scelto (Pulse, strade, satellite), salvato in mappa.txt.
 final tipoMappa = ValueNotifier<TipoMappa>(TipoMappa.pulse);
 bool _tipoLetto = false;
+
+/// Lo stile del tipo di mappa scelto, con il percorso sopra. "Strade" senza
+/// rete torna a Pulse.
+Future<String> stileConPercorso({
+  required TipoMappa tipo,
+  required bool scuro,
+  required String colore,
+  Map<String, dynamic>? percorso,
+  Map<String, dynamic>? estremi,
+}) async {
+  switch (tipo) {
+    case TipoMappa.satellite:
+      return stileSatellite(
+        colore: colore,
+        percorso: percorso,
+        estremi: estremi,
+      );
+    case TipoMappa.strade:
+      final base = await _scaricaStrade();
+      if (base != null) {
+        return stileStrade(
+          base,
+          colore: colore,
+          percorso: percorso,
+          estremi: estremi,
+        );
+      }
+    case TipoMappa.pulse:
+  }
+  return stileMappa(
+    scuro: scuro,
+    colore: colore,
+    percorso: percorso,
+    estremi: estremi,
+  );
+}
+
+/// Legge il tipo di mappa salvato (una volta sola).
+Future<void> leggiTipoMappa() => _leggiTipo();
 
 Future<File> _fileTipo() async =>
     File('${(await getApplicationDocumentsDirectory()).path}/mappa.txt');
@@ -136,37 +175,13 @@ class _MappaPercorsoState extends State<MappaPercorso> {
   }
 
   /// Lo stile del tipo scelto, con il percorso sopra.
-  Future<String> _stile(TipoMappa tipo, bool scuro) async {
-    final colore = _esadecimale(coloreSport(widget.sport));
-    final percorso = widget.percorso.geoJson();
-    final estremi = widget.percorso.geoJsonEstremi();
-    switch (tipo) {
-      case TipoMappa.satellite:
-        return stileSatellite(
-          colore: colore,
-          percorso: percorso,
-          estremi: estremi,
-        );
-      case TipoMappa.strade:
-        final base = await _scaricaStrade();
-        if (base != null) {
-          return stileStrade(
-            base,
-            colore: colore,
-            percorso: percorso,
-            estremi: estremi,
-          );
-        }
-      case TipoMappa.pulse:
-    }
-    // Pulse, o Strade senza rete.
-    return stileMappa(
-      scuro: scuro,
-      colore: colore,
-      percorso: percorso,
-      estremi: estremi,
-    );
-  }
+  Future<String> _stile(TipoMappa tipo, bool scuro) => stileConPercorso(
+    tipo: tipo,
+    scuro: scuro,
+    colore: esadecimale(coloreSport(widget.sport)),
+    percorso: widget.percorso.geoJson(),
+    estremi: widget.percorso.geoJsonEstremi(),
+  );
 
   LatLngBounds get _limiti {
     final (a, b, c, d) = widget.percorso.limiti;

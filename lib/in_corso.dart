@@ -42,6 +42,8 @@ class AllenamentoInCorso {
   final List<int> potenza; // somma, quanti, massimo
   final List<int> cadenza;
   final double metriSensore; // dai sensori della bici
+  final String idPercorso; // percorso seguito ('' = nessuno)
+  final double? progressoPercorso; // metri fatti sulla traccia
 
   const AllenamentoInCorso({
     required this.sport,
@@ -70,6 +72,8 @@ class AllenamentoInCorso {
     this.potenza = const [0, 0, 0],
     this.cadenza = const [0, 0, 0],
     this.metriSensore = 0,
+    this.idPercorso = '',
+    this.progressoPercorso,
   });
 
   Map<String, Object?> toJson() => {
@@ -112,6 +116,8 @@ class AllenamentoInCorso {
     'potenza': potenza,
     'cadenza': cadenza,
     'metri_sensore': metriSensore,
+    'percorso': idPercorso,
+    'progresso_percorso': progressoPercorso,
   };
 
   static AllenamentoInCorso? daJson(Map<String, dynamic> j) {
@@ -177,6 +183,8 @@ class AllenamentoInCorso {
         potenza: _tre(j['potenza']),
         cadenza: _tre(j['cadenza']),
         metriSensore: (j['metri_sensore'] as num? ?? 0).toDouble(),
+        idPercorso: j['percorso'] as String? ?? '',
+        progressoPercorso: (j['progresso_percorso'] as num?)?.toDouble(),
       );
     } catch (_) {
       return null; // file rovinato (es. scritto a metà): non si propone

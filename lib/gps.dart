@@ -17,6 +17,14 @@ class RegistratoreGps extends ChangeNotifier {
   double precisione = 0; // ultimo margine di errore in metri
   bool registra = false; // false durante preparazione e pausa
 
+  /// L'ultima posizione buona, anche in pausa e prima di partire: per la
+  /// mappa e per seguire un percorso.
+  PuntoGps? ultimo;
+
+  /// Direzione di marcia in gradi (0 nord), finché ci si muove: da fermi il
+  /// GPS non la sa e resta l'ultima.
+  double? direzione;
+
   /// Velocità degli ultimi secondi, anche in pausa: serve a capire quando ci
   /// si ferma e si riparte.
   final _velocita = <(DateTime, double)>[];
@@ -73,6 +81,8 @@ class RegistratoreGps extends ChangeNotifier {
       // La velocità del servizio di posizione (anche dai sensori di movimento)
       // è più stabile della distanza tra due punti, che da fermi balla.
       final ora = DateTime.now();
+      ultimo = PuntoGps(p.latitude, p.longitude, p.timestamp, p.accuracy);
+      if (p.speed > 1 && p.heading >= 0) direzione = p.heading;
       _velocita
         ..add((ora, p.speed < 0 ? 0 : p.speed))
         ..removeWhere((x) => ora.difference(x.$1) > const Duration(seconds: 5));
