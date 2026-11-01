@@ -23,6 +23,7 @@ import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
 import 'models.dart';
+import 'navigazione.dart';
 import 'obiettivo.dart';
 import 'percorso.dart';
 import 'profilo.dart';
@@ -135,6 +136,7 @@ class AppState extends ChangeNotifier {
           if (tInviate.v(r, 'id_sessione') case final id when id.isNotEmpty)
             id: tInviate.v(r, 'id_intervals'),
     };
+    await _caricaPercorsi();
     final tNascoste = await Storage.readTabella('sessioni_nascoste.csv');
     nascoste = {
       if (tNascoste != null)
@@ -2151,5 +2153,120 @@ class AppState extends ChangeNotifier {
       if (ignorate > 0) '$ignorate ignorate (${sportEsclusi.join(', ')})',
     ].map((e) => ', $e').join();
     return '$nuove sessioni nuove, $aggiornate aggiornate$extra.';
+  }
+
+  // ---------------------------------------------------------------------
+  // Percorsi da seguire ("I miei percorsi")
+
+  List<PercorsoSalvato> percorsiSalvati = [];
+
+  /// Percorso assegnato a una seduta in programma: chiaveSeduta → id.
+  Map<String, String> percorsiPiano = {};
+
+  Future<void> _caricaPercorsi() async {
+    final t = await Storage.readTabella('percorsi_salvati.csv');
+    percorsiSalvati = [
+      if (t != null)
+        for (final r in t.righe) ?PercorsoSalvato.da(t, r),
+    ];
+    final ids = {for (final p in percorsiSalvati) p.id};
+    final tp = await Storage.readTabella('percorsi_piano.csv');
+    // Le sedute passate da più di un mese non servono più.
+    final limite = soloData(DateTime.now()).subtract(const Duration(days: 30));
+    percorsiPiano = {
+      if (tp != null)
+        for (final r in tp.righe)
+          if (DateTime.tryParse(tp.v(r, 'data')) case final d?
+              when !d.isBefore(limite) && ids.contains(tp.v(r, 'id_percorso')))
+            chiaveSeduta(d, tp.v(r, 'sport')): tp.v(r, 'id_percorso'),
+    };
+  }
+
+  Future<void> _salvaPercorsi() => Storage.write(
+    'percorsi_salvati.csv',
+    PercorsoSalvato.header,
+    percorsiSalvati.map((p) => p.toRow()).toList(),
+  );
+
+  Future<void> _salvaPercorsiPiano() =>
+      Storage.write('percorsi_piano.csv', percorsiPianoHeader, [
+        for (final e in percorsiPiano.entries) [...e.key.split('|'), e.value],
+      ]);
+
+  /// Aggiunge una traccia alla raccolta (semplificata: la forma resta entro
+  /// pochi metri, il file pesa molto meno).
+  Future<PercorsoSalvato> aggiungiPercorso(Traccia t) async {
+    final leggera = Traccia(t.nome, semplifica(t.punti, tolleranzaTraccia));
+    final p = PercorsoSalvato(
+      id: 'p${DateTime.now().millisecondsSinceEpoch}',
+      nome: t.nome,
+      km: t.metri / 1000,
+      dislivello: t.dislivello,
+      aggiunto: soloData(DateTime.now()),
+    );
+    await Storage.scriviTesto(p.file, leggera.toCsvText());
+    percorsiSalvati = [p, ...percorsiSalvati];
+    await _salvaPercorsi();
+    notifyListeners();
+    return p;
+  }
+
+  Future<void> rinominaPercorso(String id, String nome) async {
+    final pulito = nome.trim();
+    if (pulito.isEmpty) return;
+    percorsiSalvati = [
+      for (final p in percorsiSalvati)
+        p.id == id ? p.copyWith(nome: pulito) : p,
+    ];
+    await _salvaPercorsi();
+    notifyListeners();
+  }
+
+  /// Toglie il percorso dalla raccolta e dalle sedute a cui era assegnato.
+  Future<void> eliminaPercorso(String id) async {
+    percorsiSalvati = percorsiSalvati.where((p) => p.id != id).toList();
+    percorsiPiano = Map.of(percorsiPiano)..removeWhere((_, v) => v == id);
+    await Storage.cancella(fileTraccia(id));
+    await _salvaPercorsi();
+    await _salvaPercorsiPiano();
+    notifyListeners();
+  }
+
+  PercorsoSalvato? percorsoSalvato(String id) {
+    for (final p in percorsiSalvati) {
+      if (p.id == id) return p;
+    }
+    return null;
+  }
+
+  /// I punti del percorso salvato (null se il file manca o è vuoto).
+  Future<Traccia?> tracciaDi(PercorsoSalvato p) async {
+    final testo = await Storage.leggiTesto(p.file);
+    if (testo == null) return null;
+    final t = Traccia.daCsv(p.nome, testo);
+    return t.vuota ? null : t;
+  }
+
+  /// Il percorso da seguire nella seduta di quel giorno e sport, se c'è.
+  PercorsoSalvato? percorsoDellaSeduta(DateTime giorno, String sport) {
+    final id = percorsiPiano[chiaveSeduta(soloData(giorno), sport)];
+    return id == null ? null : percorsoSalvato(id);
+  }
+
+  /// Assegna (o toglie, con null) il percorso a una seduta in programma.
+  Future<void> assegnaPercorso(
+    DateTime giorno,
+    String sport,
+    String? id,
+  ) async {
+    final chiave = chiaveSeduta(soloData(giorno), sport);
+    percorsiPiano = Map.of(percorsiPiano);
+    if (id == null) {
+      percorsiPiano.remove(chiave);
+    } else {
+      percorsiPiano[chiave] = id;
+    }
+    await _salvaPercorsiPiano();
+    notifyListeners();
   }
 }

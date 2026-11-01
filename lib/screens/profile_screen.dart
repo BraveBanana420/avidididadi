@@ -17,6 +17,7 @@ import 'crea_piano_screen.dart';
 import 'dati_personali_screen.dart';
 import 'obiettivo_screen.dart';
 import 'opzioni_allenamento_screen.dart';
+import 'percorsi_screen.dart';
 import 'schede_screen.dart';
 import 'tour.dart';
 import 'storico_misure_screen.dart';
@@ -359,6 +360,12 @@ class ProfileScreen extends StatelessWidget {
                       "Durante l'allenamento",
                       'Voce, bip, pausa automatica e passo medio',
                       const OpzioniAllenamentoScreen(),
+                    ),
+                    voce(
+                      Icons.route,
+                      'I miei percorsi',
+                      'GPX da seguire con mappa e indicazioni a voce',
+                      PercorsiScreen(state: state),
                     ),
                     voce(
                       Icons.sync,

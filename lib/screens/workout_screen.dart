@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../adattamento.dart';
 import '../app_state.dart';
+import '../dati_live.dart';
 import '../esercizi.dart';
 import '../esporta.dart';
 import '../figura.dart';
@@ -25,6 +26,7 @@ import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
 import 'mappa_percorso.dart';
+import 'percorsi_screen.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -137,6 +139,16 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       children.add(_DatiSessione(state: state, sessione: s));
       children.add(const SizedBox(height: 12));
     }
+    // Da fare, all'aperto: si può scegliere prima il percorso da seguire.
+    if (svolte.isEmpty &&
+        sportConPercorso(sport, tipo) &&
+        !tipoAlChiuso(tipo) &&
+        !data.isBefore(soloData(DateTime.now()))) {
+      children
+        ..add(PercorsoDellaSeduta(state: state, giorno: data, sport: sport))
+        ..add(const SizedBox(height: 12));
+    }
+
     // Fatto un allenamento diverso da quello in programma: lo si dice.
     final previsto = state.piano
         .where((r) => r.data == data && stessoSport(r.sport, sport))

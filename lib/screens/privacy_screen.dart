@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-01.3';
+const versioneTermini = '2026-11-01.4';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -98,7 +98,9 @@ class PrivacyScreen extends StatelessWidget {
             "impostazioni di Health Connect. Puoi anche aggiungere tu un "
             "percorso caricando un file GPX (per esempio esportato da Garmin "
             "Connect). Una copia del percorso resta nell'app per mostrare la "
-            "mappa.",
+            "mappa. I percorsi da seguire che aggiungi a \"I miei percorsi\" "
+            "(file GPX di gare, giri, amici) restano solo sul telefono e nel "
+            "backup; non vanno all'assistente.",
       ),
       (
         'Posizione durante l\'allenamento',

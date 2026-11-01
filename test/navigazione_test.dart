@@ -1,6 +1,10 @@
 import 'dart:math' as math;
 
+import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/navigazione.dart';
+import 'package:allenamenti_app/screens/percorsi_screen.dart';
+import 'package:allenamenti_app/tema.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Punti a x metri verso est e y verso nord da un punto vicino a Milano.
@@ -295,11 +299,48 @@ void main() {
       dislivello: 320,
       aggiunto: DateTime(2026, 11, 1),
     );
-    final r = PercorsoSalvato.da(p.toRow())!;
+    final t = Tabella.da(toCsv([PercorsoSalvato.header, p.toRow()]))!;
+    final r = PercorsoSalvato.da(t, t.righe.single)!;
     expect(r.nome, 'Giro, con virgola');
     expect(r.km, closeTo(42.2, 0.01));
     expect(r.dislivello, 320);
     expect(r.file, 'traccia_p1730450000.csv');
-    expect(PercorsoSalvato.da(['../x', 'a', '1', '0', '2026-01-01']), isNull);
+    // Un id che uscirebbe dalla cartella non si accetta.
+    expect(
+      PercorsoSalvato.da(t, ['../x', 'a', '1', '0', '2026-01-01']),
+      isNull,
+    );
+  });
+
+  testWidgets('sagoma e altimetria si disegnano nei 4 temi', (t) async {
+    final tr = Traccia('Salita', [
+      for (var i = 0; i <= 40; i++) _p(i * 20.0, i * i * 1.0, 100.0 + i * 3),
+    ]);
+    for (final b in Brightness.values) {
+      for (final neon in [false, true]) {
+        await t.pumpWidget(
+          MaterialApp(
+            theme: creaTema(b, neon: neon),
+            home: Scaffold(
+              body: Column(
+                children: [
+                  SizedBox(
+                    width: 72,
+                    height: 72,
+                    child: SagomaTraccia(traccia: tr),
+                  ),
+                  SizedBox(
+                    width: 300,
+                    height: 120,
+                    child: ProfiloAltimetrico(traccia: tr, metri: 500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        expect(t.takeException(), isNull);
+      }
+    }
   });
 }

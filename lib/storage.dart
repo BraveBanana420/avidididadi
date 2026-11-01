@@ -97,6 +97,12 @@ class Storage {
   static Future<void> scriviTesto(String nome, String testo) async =>
       (await _file(nome)).writeAsString(testo);
 
+  /// Toglie un file della cartella dell'app, se c'è.
+  static Future<void> cancella(String nome) async {
+    final f = await _file(nome);
+    if (await f.exists()) await f.delete();
+  }
+
   static Future<void> writePiano(List<PianoRiga> p) =>
       write('piano.csv', pianoHeader, p.map((e) => e.toRow()).toList());
 }

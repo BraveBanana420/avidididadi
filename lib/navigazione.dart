@@ -668,14 +668,16 @@ class PercorsoSalvato {
     isoData(aggiunto),
   ];
 
-  static PercorsoSalvato? da(List<String> r) {
-    if (r.length < 5 || !RegExp(r'^[a-z0-9]+$').hasMatch(r[0])) return null;
+  /// L'id finisce nel nome di un file: solo lettere minuscole e cifre.
+  static PercorsoSalvato? da(Tabella t, List<String> r) {
+    final id = t.v(r, 'id');
+    if (!RegExp(r'^[a-z0-9]+$').hasMatch(id)) return null;
     return PercorsoSalvato(
-      id: r[0],
-      nome: r[1],
-      km: double.tryParse(r[2]) ?? 0,
-      dislivello: int.tryParse(r[3]) ?? 0,
-      aggiunto: DateTime.tryParse(r[4]) ?? DateTime(2000),
+      id: id,
+      nome: t.v(r, 'nome'),
+      km: double.tryParse(t.v(r, 'km')) ?? 0,
+      dislivello: int.tryParse(t.v(r, 'dislivello_m')) ?? 0,
+      aggiunto: DateTime.tryParse(t.v(r, 'aggiunto')) ?? DateTime(2000),
     );
   }
 

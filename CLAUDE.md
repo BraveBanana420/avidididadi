@@ -69,6 +69,7 @@ lib/
   voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
+  navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
@@ -98,7 +99,8 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
-- `schede.csv`, `schede_esercizi.csv` (schede scritte a mano).
+- `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
+- `percorsi_salvati.csv`, `traccia_<id>.csv`, `percorsi_piano.csv` (percorsi da seguire e sedute a cui sono assegnati).
 
 I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
