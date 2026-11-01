@@ -35,8 +35,7 @@ class Storage {
     List<String> header,
     List<List<String>> rows,
   ) async {
-    final f = await _file(nome);
-    await f.writeAsString(toCsv([header, ...rows]));
+    await scriviSicuro(await _file(nome), toCsv([header, ...rows]));
   }
 
   static Future<List<Slot>?> readSettimana() async {
@@ -91,7 +90,18 @@ class Storage {
   }
 
   static Future<void> scriviTesto(String nome, String testo) async =>
-      (await _file(nome)).writeAsString(testo);
+      scriviSicuro(await _file(nome), testo);
+
+  /// Toglie i file temporanei rimasti da una scrittura interrotta.
+  static Future<void> pulisciTemporanei() async {
+    try {
+      for (final f in Directory(await cartella()).listSync()) {
+        if (f is File && f.path.endsWith('.tmp')) await f.delete();
+      }
+    } catch (_) {
+      // non importa: ci si riprova al prossimo avvio
+    }
+  }
 
   /// Toglie un file della cartella dell'app, se c'è.
   static Future<void> cancella(String nome) async {
@@ -154,5 +164,23 @@ Future<void> rimettiIn(Directory d, Map<String, String> prima) async {
   }
   for (final e in prima.entries) {
     await File('${d.path}/${e.key}').writeAsString(e.value, flush: true);
+  }
+}
+
+var _scritture = 0;
+
+/// Scrive [testo] in [f] senza mai lasciarlo a metà: prima su un file
+/// temporaneo (nome unico, anche con due scritture insieme), poi lo
+/// sostituisce. Se Android chiude l'app nel mezzo, resta il file di prima.
+Future<void> scriviSicuro(File f, String testo) async {
+  final tmp = File(
+    '${f.path}.${DateTime.now().microsecondsSinceEpoch}_${_scritture++}.tmp',
+  );
+  try {
+    await tmp.writeAsString(testo, flush: true);
+    await tmp.rename(f.path);
+  } catch (_) {
+    if (await tmp.exists()) await tmp.delete();
+    rethrow;
   }
 }

@@ -98,6 +98,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    await Storage.pulisciTemporanei();
     settimana = await Storage.readSettimana() ?? settimanaIniziale();
     piano = [
       for (final r in await Storage.readPiano())

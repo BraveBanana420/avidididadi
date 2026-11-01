@@ -49,6 +49,35 @@ void main() {
     expect(leggi('sessioni.csv'), contains('vecchia'));
   });
 
+  group('scrittura sicura', () {
+    test('sostituisce il file e non lascia temporanei', () async {
+      final f = File('${d.path}/sessioni.csv');
+      await scriviSicuro(f, 'prima\n');
+      await scriviSicuro(f, 'dopo\n');
+      expect(f.readAsStringSync(), 'dopo\n');
+      expect(d.listSync().where((e) => e.path.endsWith('.tmp')), isEmpty);
+    });
+
+    test('due scritture insieme: il file resta intero', () async {
+      final f = File('${d.path}/sessioni.csv');
+      final a = 'a' * 200000, b = 'b' * 200000;
+      await Future.wait([scriviSicuro(f, a), scriviSicuro(f, b)]);
+      expect(f.readAsStringSync(), anyOf(a, b));
+    });
+
+    test('se la scrittura fallisce resta il file di prima', () async {
+      final f = File('${d.path}/sessioni.csv');
+      await scriviSicuro(f, 'buono\n');
+      // Guasto simulato: la cartella di destinazione non esiste.
+      final altrove = File('${d.path}/manca/sessioni.csv');
+      await expectLater(
+        scriviSicuro(altrove, 'x'),
+        throwsA(isA<FileSystemException>()),
+      );
+      expect(f.readAsStringSync(), 'buono\n');
+    });
+  });
+
   test('se lo spostamento fallisce si torna ai dati di prima', () async {
     await scrivi('sessioni.csv', 'id,data,sport\nvecchia,2026-10-01,Nuoto\n');
     // Una cartella con il nome di un file del backup: non si può sostituire.
