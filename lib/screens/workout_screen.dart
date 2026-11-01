@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
+import '../esporta.dart';
 import '../figura.dart';
 import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
@@ -554,6 +558,50 @@ class _DatiSessione extends StatelessWidget {
   final Sessione sessione;
   const _DatiSessione({required this.state, required this.sessione});
 
+  Future<void> _inviaIntervals(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Invio a intervals.icu…')),
+    );
+    final esito = await state.inviaSessioneIntervals(sessione);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(esito)));
+  }
+
+  /// Il percorso in un file GPX, per Strava, Garmin Connect o altre app.
+  Future<void> _salvaGpx(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final gpx = await state.gpxSessione(sessione);
+    if (gpx == null) {
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text("Per questa sessione l'app non ha un percorso GPS."),
+        ),
+      );
+      return;
+    }
+    try {
+      final uri = await FilePicker.saveFile(
+        fileName: nomeFileGpx(sessione),
+        bytes: utf8.encode(gpx),
+        mimeType: 'application/gpx+xml',
+        dialogTitle: 'Salva il percorso',
+      );
+      if (uri != null) {
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text(
+              'GPX salvato: puoi caricarlo su Strava o Garmin Connect.',
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text('GPX non salvato: $e')));
+    }
+  }
+
   /// Nome e "al chiuso", che l'orologio non manda.
   Future<void> _ritocca(BuildContext context) async {
     final s = sessione;
@@ -812,19 +860,51 @@ class _DatiSessione extends StatelessWidget {
               const SizedBox(height: 12),
               Text(s.note, style: t.bodySmall),
             ],
-            // Battito, zone e passo nel tempo: in una pagina a parte.
-            if (s.inizio != null && s.fine != null) ...[
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => GraficiScreen(state: state, sessione: s),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                // Battito, zone e passo nel tempo: in una pagina a parte.
+                if (s.inizio != null && s.fine != null)
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            GraficiScreen(state: state, sessione: s),
+                      ),
+                    ),
+                    icon: const Icon(Icons.show_chart),
+                    label: const Text('Grafici'),
                   ),
-                ),
-                icon: const Icon(Icons.show_chart),
-                label: const Text('Grafici'),
-              ),
-            ],
+                // Solo quelle registrate dall'app: quelle dell'orologio
+                // sono già su Garmin Connect, intervals.icu e simili.
+                if (s.fonte == fonteApp && state.intervalsCollegato)
+                  OutlinedButton.icon(
+                    onPressed: state.inviate.containsKey(s.id)
+                        ? null
+                        : () => _inviaIntervals(context),
+                    icon: Icon(
+                      state.inviate.containsKey(s.id)
+                          ? Icons.cloud_done_outlined
+                          : Icons.cloud_upload_outlined,
+                    ),
+                    label: Text(
+                      state.inviate.containsKey(s.id)
+                          ? 'Su intervals.icu'
+                          : 'Invia a intervals.icu',
+                    ),
+                  ),
+                if (s.fonte == fonteApp &&
+                    sportConPercorso(s.sport, s.tipo) &&
+                    !state.alChiuso(s))
+                  OutlinedButton.icon(
+                    onPressed: () => _salvaGpx(context),
+                    icon: const Icon(Icons.route_outlined),
+                    label: const Text('Salva GPX'),
+                  ),
+              ],
+            ),
           ],
         ),
       ),

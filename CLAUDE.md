@@ -60,6 +60,7 @@ lib/
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
   invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
+  esporta.dart         sessioni dell'app → GPX o attività di intervals.icu (sessioni_inviate.csv)
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
   scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
@@ -91,7 +92,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
 - `ritocchi_sessioni.csv`, `percorso_*.csv`;
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
-- `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`;
+- `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano).
 

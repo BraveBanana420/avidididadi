@@ -185,6 +185,20 @@ Percorso percorsoDaIcu(Map<String, dynamic> mappa, DateTime inizio) {
   return Percorso(punti);
 }
 
+/// L'id dell'attività creata: nella risposta, o nella prima delle attività
+/// (il caricamento di un file ne restituisce un elenco).
+String? idAttivitaCreata(Object? j) {
+  if (j is! Map) return null;
+  final id = j['id'];
+  if (id != null && '$id'.isNotEmpty) return '$id';
+  final elenco = j['activities'];
+  if (elenco is List && elenco.isNotEmpty && elenco.first is Map) {
+    final primo = (elenco.first as Map)['id'];
+    return primo == null ? null : '$primo';
+  }
+  return null;
+}
+
 /// Le richieste all'API di intervals.icu, con la chiave dell'utente.
 class ClientIntervals {
   final String chiave;
@@ -198,6 +212,7 @@ class ClientIntervals {
     String percorso, [
     Map<String, String>? query,
     Object? dati,
+    (List<int>, String)? grezzo, // corpo già pronto e il suo tipo
   ]) async {
     final client = HttpClient()
       ..connectionTimeout = const Duration(seconds: 15);
@@ -216,6 +231,9 @@ class ClientIntervals {
       if (dati != null) {
         req.headers.contentType = ContentType.json;
         req.add(utf8.encode(jsonEncode(dati)));
+      } else if (grezzo != null) {
+        req.headers.set(HttpHeaders.contentTypeHeader, grezzo.$2);
+        req.add(grezzo.$1);
       }
       final res = await req.close().timeout(const Duration(seconds: 40));
       final corpo = await res.transform(utf8.decoder).join();
@@ -249,6 +267,44 @@ class ClientIntervals {
       client.close();
     }
   }
+
+  /// Carica un file GPX come attività; restituisce l'id su intervals.icu.
+  Future<String?> caricaGpx(
+    String gpx, {
+    required String nomeFile,
+    required String nome,
+    required String idEsterno,
+  }) async {
+    final confine = 'avidididadi${DateTime.now().microsecondsSinceEpoch}';
+    final corpo = [
+      ...utf8.encode(
+        '--$confine\r\n'
+        'Content-Disposition: form-data; name="file"; filename="$nomeFile"\r\n'
+        'Content-Type: application/gpx+xml\r\n\r\n',
+      ),
+      ...utf8.encode(gpx),
+      ...utf8.encode('\r\n--$confine--\r\n'),
+    ];
+    final j = await _richiesta(
+      'POST',
+      '/api/v1/athlete/0/activities',
+      {'name': nome, 'external_id': idEsterno},
+      null,
+      (corpo, 'multipart/form-data; boundary=$confine'),
+    );
+    return idAttivitaCreata(j);
+  }
+
+  /// Crea un'attività senza file (tempo, km, battito); restituisce l'id.
+  Future<String?> creaAttivita(Map<String, Object?> attivita) async =>
+      idAttivitaCreata(
+        await _richiesta(
+          'POST',
+          '/api/v1/athlete/0/activities/manual',
+          null,
+          attivita,
+        ),
+      );
 
   /// Prova la chiave: restituisce il nome dell'atleta (o una stringa vuota).
   Future<String> verifica() async {

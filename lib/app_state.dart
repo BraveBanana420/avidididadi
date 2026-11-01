@@ -11,6 +11,7 @@ import 'benvenuto.dart';
 import 'condivisione.dart';
 import 'csv.dart';
 import 'esercizi.dart';
+import 'esporta.dart';
 import 'feedback.dart';
 import 'generator.dart';
 import 'generatore_endurance.dart';
@@ -125,6 +126,13 @@ class AppState extends ChangeNotifier {
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
+    final tInviate = await Storage.readTabella('sessioni_inviate.csv');
+    inviate = {
+      if (tInviate != null)
+        for (final r in tInviate.righe)
+          if (tInviate.v(r, 'id_sessione') case final id when id.isNotEmpty)
+            id: tInviate.v(r, 'id_intervals'),
+    };
     final tNascoste = await Storage.readTabella('sessioni_nascoste.csv');
     nascoste = {
       if (tNascoste != null)
@@ -1350,6 +1358,74 @@ class AppState extends ChangeNotifier {
   List<Sessione> sessioniIcu = [];
   Set<String> icuAlChiuso = {}; // rulli e tapis roulant, da intervals.icu
   bool intervalsCollegato = false;
+
+  /// Sessioni registrate dall'app già mandate a intervals.icu (id → id là).
+  Map<String, String> inviate = {};
+
+  /// Il percorso registrato dall'app per questa sessione, se c'è e se è suo:
+  /// il file è uno per giorno e sport, quindi l'orario deve combaciare.
+  Future<Percorso?> percorsoApp(Sessione s) async {
+    final t = await Storage.leggiTesto(filePercorsoApp(s.data, s.sport));
+    if (t == null) return null;
+    final p = Percorso.daCsv(t);
+    if (p.vuoto) return null;
+    final a = s.inizio, b = s.fine;
+    if (a != null && b != null) {
+      const margine = Duration(minutes: 5);
+      final primo = p.punti.first.t;
+      if (primo.isBefore(a.subtract(margine)) ||
+          primo.isAfter(b.add(margine))) {
+        return null;
+      }
+    }
+    return p;
+  }
+
+  /// GPX della sessione registrata dall'app, da salvare o condividere.
+  Future<String?> gpxSessione(Sessione s) async {
+    if (alChiuso(s)) return null;
+    final p = await percorsoApp(s);
+    if (p == null) return null;
+    return gpxDa(
+      p,
+      nome: nomeAttivita(s, ritocchi[s.id]?.nome ?? ''),
+      sport: s.sport,
+    );
+  }
+
+  /// Manda a intervals.icu una sessione registrata dall'app: col percorso
+  /// come GPX (c'è la mappa), senza come attività con tempo, km e battito.
+  Future<String> inviaSessioneIntervals(Sessione s) async {
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) {
+      return 'Collega prima intervals.icu da Profilo → Dati e collegamenti.';
+    }
+    if (inviate.containsKey(s.id)) return 'Già inviata a intervals.icu.';
+    final nome = nomeAttivita(s, ritocchi[s.id]?.nome ?? '');
+    try {
+      final client = ClientIntervals(chiave);
+      final gpx = await gpxSessione(s);
+      final id = gpx != null
+          ? await client.caricaGpx(
+              gpx,
+              nomeFile: nomeFileGpx(s),
+              nome: nome,
+              idEsterno: idEsterno(s),
+            )
+          : await client.creaAttivita(
+              attivitaManuale(s, nome: nome, alChiuso: alChiuso(s)),
+            );
+      inviate = {...inviate, s.id: id ?? ''};
+      await Storage.write('sessioni_inviate.csv', inviateHeader, [
+        for (final e in inviate.entries) [e.key, e.value],
+      ]);
+      notifyListeners();
+      return 'Inviata a intervals.icu.';
+    } on ErroreIntervals catch (e) {
+      return e.messaggio;
+    }
+  }
+
   DateTime? ultimaIntervals;
   String? erroreIntervals;
   bool sincronizzandoIntervals = false;

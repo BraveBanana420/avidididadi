@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-01.1';
+const versioneTermini = '2026-11-01.2';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -110,7 +110,9 @@ class PrivacyScreen extends StatelessWidget {
             "GPS si spegne. L'app non usa la posizione in nessun altro momento "
             "e non la raccoglie in background. Il percorso viene salvato solo "
             "sul telefono: non va in Health Connect, non va all'assistente e non "
-            "viene inviato a nessuno. Mentre ti alleni, una copia della seduta "
+            "viene inviato a nessuno, a meno che sia tu a mandarlo a "
+            "intervals.icu o a salvarlo in un file GPX. Mentre ti alleni, una "
+            "copia della seduta "
             "in corso (percorso compreso) resta sul telefono per riprenderla "
             "se l'app si chiude; si cancella quando finisci.",
       ),
@@ -149,7 +151,12 @@ class PrivacyScreen extends StatelessWidget {
             "le sedute di corsa, bici e nuoto dei prossimi 14 giorni (data, "
             "sport, nome, durata, passi con zone di battito o passo): niente "
             "nome, foto, misure, feedback o forza. Spegnendolo, le sedute future "
-            "mandate dall'app vengono tolte. Le attività scaricate "
+            "mandate dall'app vengono tolte. Solo se tocchi \"Invia a "
+            "intervals.icu\" su una sessione registrata dall'app, quella "
+            "sessione va sul tuo account: orario, sport, nome, durata, distanza, "
+            "battito medio e massimo e, se c'è, il percorso GPS. Allo stesso "
+            "modo \"Salva GPX\" crea un file col percorso dove scegli tu. Le "
+            "attività scaricate "
             "restano sul telefono ed entrano nel backup; scollegando, vengono "
             "tolte.",
       ),
