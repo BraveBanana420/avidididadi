@@ -35,9 +35,10 @@ Funzioni principali:
 | `path_drawing` | figura dei muscoli (tracciati SVG) |
 | `package_info_plus` | versione dell'app |
 | `flutter_localizations` | tutta l'app in italiano |
+| `flutter_reactive_ble` | battito live da fascia o orologio (Bluetooth) |
 
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
-  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip e vibrazione, widget;
+  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip e vibrazione, permessi Bluetooth, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
 - **Nessuna libreria di state management**: un solo `AppState` (`ChangeNotifier`). I dati sono CSV nella cartella privata dell'app.
 
@@ -67,6 +68,8 @@ lib/
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
+  dati_live.dart       passo/velocità di adesso e giri (1 km, 5 in bici) durante l'allenamento
+  battito.dart         battito live via Bluetooth (sensore ricordato in sensore_battito.txt)
   backup.dart          backup in .gz (JSON di tutti i CSV)
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
@@ -187,7 +190,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici. Bluetooth del battito solo con la modalità allenamento aperta.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.

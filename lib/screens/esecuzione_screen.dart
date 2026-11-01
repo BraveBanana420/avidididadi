@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import '../app_state.dart';
 import '../attivita_libera.dart';
 import '../avvisi.dart';
+import '../battito.dart';
+import '../dati_live.dart';
 import '../esecuzione.dart';
 import '../figura.dart';
 import '../glossario.dart';
@@ -19,6 +21,7 @@ import '../scheda.dart';
 import '../tema.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
+import 'battito_sheet.dart';
 import 'feedback_sheet.dart';
 import 'mappa_percorso.dart';
 
@@ -117,6 +120,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       ? RegistratoreGps(widget.sport)
       : null;
 
+  /// Giri di 1 km (5 in bici): l'ultimo compare per qualche secondo.
+  late final GiriLive? giri = gps == null
+      ? null
+      : GiriLive(metriGiro(widget.sport));
+  Giro? _giroAvviso;
+  DateTime? _giroFino;
+
+  /// Battito dal sensore Bluetooth, se collegato.
+  final fc = StatisticheBattito();
+  StreamSubscription<int>? _battiti;
+
   Blocco get b => blocchi[i];
 
   @override
@@ -124,6 +138,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     super.initState();
     _schermoAcceso(true);
     caricaAvvisi();
+    sensoreBattito.avvia();
+    _battiti = sensoreBattito.valori.stream.listen((v) {
+      if (!preparati && !pausa && !finito) fc.aggiungi(v);
+    });
     if (gps == null) {
       blocco.start();
     } else {
@@ -151,6 +169,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   @override
   void dispose() {
     _tic?.cancel();
+    _battiti?.cancel();
+    sensoreBattito.ferma();
     _schermoAcceso(false);
     gps?.dispose();
     super.dispose();
@@ -161,6 +181,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _aggiorna() {
     if (!mounted || pausa || finito) return;
+    if (!preparati && giri != null) {
+      final g = giri!.aggiorna(gps!.filtro.metri, totale.elapsed);
+      if (g != null) {
+        _giroAvviso = g;
+        _giroFino = DateTime.now().add(const Duration(seconds: 6));
+        avviso(fine: true);
+      }
+    }
+    if (_giroFino != null && DateTime.now().isAfter(_giroFino!)) {
+      _giroAvviso = null;
+      _giroFino = null;
+    }
     if (preparati || b.aTempo) {
       final r = _restano;
       if (r <= secondiAvviso && r > 0 && r != _ultimoBip) {
@@ -358,6 +390,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           distanzaKm: percorso == null || percorso.vuoto
               ? 0
               : double.parse(gps!.km.toStringAsFixed(2)),
+          fcMedia: fc.media,
+          fcMax: fc.massimo,
           fonte: fonteApp,
           note: widget.nome,
         ),
@@ -394,8 +428,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 
   Widget _esecuzione(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
     final recupero = !preparati && b.tipo == TipoBlocco.recupero;
     final prossimo = blocchi
         .skip(preparati ? 0 : i + 1)
@@ -408,6 +440,47 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final aTempo = preparati || b.aTempo;
     final faseNome = preparati ? '' : maiuscola(b.fase);
 
+    return Stack(
+      children: [
+        _colonnaEsecuzione(
+          context,
+          recupero: recupero,
+          prossimo: prossimo,
+          muscoli: muscoli,
+          aTempo: aTempo,
+          faseNome: faseNome,
+        ),
+        Positioned(
+          top: 64,
+          left: 20,
+          right: 20,
+          child: IgnorePointer(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: _giroAvviso == null
+                  ? const SizedBox.shrink()
+                  : _AvvisoGiro(
+                      key: ValueKey(_giroAvviso!.numero),
+                      giro: _giroAvviso!,
+                      sport: widget.sport,
+                    ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _colonnaEsecuzione(
+    BuildContext context, {
+    required bool recupero,
+    required Blocco? prossimo,
+    required Set<String>? muscoli,
+    required bool aTempo,
+    required String faseNome,
+  }) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       children: [
         // In alto: chiudi, tempo totale, pausa.
@@ -434,6 +507,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ),
                     Text('tempo totale', style: t.labelSmall),
                   ],
+                ),
+              ),
+              ListenableBuilder(
+                listenable: sensoreBattito,
+                builder: (_, _) => IconButton(
+                  tooltip: 'Battito dal sensore',
+                  onPressed: () => mostraBattito(context),
+                  icon: Icon(
+                    sensoreBattito.stato == StatoBattito.collegato
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
                 ),
               ),
               IconButton(
@@ -484,13 +569,28 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
               if (gps != null) ...[
                 const SizedBox(height: 8),
-                _StatoGps(
-                  gps: gps!,
-                  sport: widget.sport,
-                  tempo: totale.elapsed,
-                  riaccendi: _accendiGps,
-                ),
+                _StatoGps(gps: gps!, riaccendi: _accendiGps),
               ],
+              ListenableBuilder(
+                listenable: sensoreBattito,
+                builder: (_, _) => gps != null
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: _GrigliaLive(
+                          sport: widget.sport,
+                          gps: gps!,
+                          tempo: totale.elapsed,
+                          ultimo: giri!.giri.lastOrNull,
+                          zone: widget.state.zone,
+                        ),
+                      )
+                    : sensoreBattito.ricordato
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: _DatoBattito(zone: widget.state.zone),
+                      )
+                    : const SizedBox.shrink(),
+              ),
               const SizedBox(height: 6),
               Text(
                 preparati
@@ -737,6 +837,31 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+        if (fc.massimo > 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Battito medio ${fc.media} bpm · massimo ${fc.massimo}',
+            style: t.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
+        if (giri != null && giri!.giri.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          SuperficiePulse(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Column(
+              children: [
+                for (final (k, g) in giri!.giri.indexed)
+                  RigaPulse(
+                    titolo: 'Km ${g.numero * g.metri ~/ 1000}',
+                    sottotitolo: fmtTimer(g.tempo),
+                    linea: k < giri!.giri.length - 1,
+                    fine: Text(ritmoGiro(widget.sport, g), style: t.titleSmall),
+                  ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 20),
         SuperficiePulse(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -785,18 +910,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 }
 
-/// Riga del GPS: segnale, distanza e ritmo; se è spento, come accenderlo.
+/// Riga del GPS: com'è il segnale; se è spento, come accenderlo.
 class _StatoGps extends StatelessWidget {
   final RegistratoreGps gps;
-  final String sport;
-  final Duration tempo;
   final Future<void> Function() riaccendi;
-  const _StatoGps({
-    required this.gps,
-    required this.sport,
-    required this.tempo,
-    required this.riaccendi,
-  });
+  const _StatoGps({required this.gps, required this.riaccendi});
 
   @override
   Widget build(BuildContext context) {
@@ -806,15 +924,12 @@ class _StatoGps extends StatelessWidget {
       StatoGps.pronto => (
         Icons.gps_fixed,
         const Color(0xFF22E07A),
-        '${fmtKm(gps.km)} · ${ritmoMedio(sport, gps.km, tempo)}'
-            ' · GPS ±${gps.precisione.round()} m',
+        'Segnale GPS buono · ±${gps.precisione.round()} m',
       ),
       StatoGps.cerca || StatoGps.spento => (
         Icons.gps_not_fixed,
         const Color(0xFFFFC233),
-        gps.km > 0
-            ? '${fmtKm(gps.km)} · cerco il segnale GPS…'
-            : "Cerco il segnale GPS… meglio all'aperto",
+        "Cerco il segnale GPS… meglio all'aperto",
       ),
       StatoGps.permessoNegato => (
         Icons.gps_off,
@@ -855,6 +970,252 @@ class _StatoGps extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Corsa, camminata e bici: distanza, passo (o velocità) di adesso e medio,
+/// battito o ultimo giro. Grandi, da leggere mentre ci si muove.
+class _GrigliaLive extends StatelessWidget {
+  final String sport;
+  final RegistratoreGps gps;
+  final Duration tempo;
+  final Giro? ultimo;
+  final Zone zone;
+  const _GrigliaLive({
+    required this.sport,
+    required this.gps,
+    required this.tempo,
+    required this.ultimo,
+    required this.zone,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bici = stessoSport(sport, 'Bici');
+    final unita = unitaRitmo(sport);
+    final adesso = velocitaAttuale(
+      gps.filtro.punti,
+      ora: DateTime.now(),
+      finestra: finestraVelocita(sport),
+    );
+    final s = tempo.inMilliseconds / 1000;
+    final media = gps.filtro.metri < 50 || s == 0 ? null : gps.filtro.metri / s;
+    final giro = metriGiro(sport) ~/ 1000;
+    final ultimo = this.ultimo;
+    final quarto = sensoreBattito.ricordato
+        ? _DatoBattito(zone: zone)
+        : _Dato(
+            etichetta: giro == 1 ? 'Ultimo km' : 'Ultimi $giro km',
+            valore: ultimo == null
+                ? '–'
+                : fmtVelocita(
+                    sport,
+                    ultimo.metri / (ultimo.tempo.inMilliseconds / 1000),
+                  ),
+            unita: unita,
+          );
+    return Column(
+      spacing: 8,
+      children: [
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: _Dato(
+                etichetta: 'Distanza',
+                valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
+                unita: 'km',
+              ),
+            ),
+            Expanded(
+              child: _Dato(
+                etichetta: bici ? 'Velocità' : 'Passo',
+                valore: fmtVelocita(sport, adesso),
+                unita: unita,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: _Dato(
+                etichetta: bici ? 'Velocità media' : 'Passo medio',
+                valore: fmtVelocita(sport, media),
+                unita: unita,
+              ),
+            ),
+            Expanded(child: quarto),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Un riquadro con un numero grande: piatto, senza ombre (è un dato).
+class _Dato extends StatelessWidget {
+  final String etichetta;
+  final String valore;
+  final String unita;
+  final IconData? icona;
+  final VoidCallback? onTap;
+  const _Dato({
+    required this.etichetta,
+    required this.valore,
+    required this.unita,
+    this.icona,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: scheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (icona != null) ...[
+                    Icon(icona, size: 14, color: scheme.primary),
+                    const SizedBox(width: 4),
+                  ],
+                  Expanded(
+                    child: Text(
+                      etichetta.toUpperCase(),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: t.labelSmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                        letterSpacing: 0.8,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: valore,
+                        style: t.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      if (unita.isNotEmpty)
+                        TextSpan(
+                          text: ' $unita',
+                          style: t.bodySmall?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                    ],
+                  ),
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Il battito di adesso con la zona; un tocco apre il foglio del sensore.
+class _DatoBattito extends StatelessWidget {
+  final Zone zone;
+  const _DatoBattito({required this.zone});
+
+  @override
+  Widget build(BuildContext context) {
+    final bpm = sensoreBattito.bpm;
+    final n = bpm == null ? 0 : zone.zonaDi(bpm);
+    return _Dato(
+      icona: Icons.favorite,
+      etichetta: switch (sensoreBattito.stato) {
+        StatoBattito.collegato when n > 0 => 'Battito · Z$n',
+        StatoBattito.collegato => 'Battito',
+        StatoBattito.collega => 'Mi collego…',
+        _ => 'Battito',
+      },
+      valore: bpm?.toString() ?? '–',
+      unita: 'bpm',
+      onTap: () => mostraBattito(context),
+    );
+  }
+}
+
+/// Il giro appena chiuso: numero del km, tempo e passo, per qualche secondo.
+class _AvvisoGiro extends StatelessWidget {
+  final Giro giro;
+  final String sport;
+  const _AvvisoGiro({super.key, required this.giro, required this.sport});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final km = giro.numero * giro.metri ~/ 1000;
+    final colore = scheme.onPrimaryContainer;
+    return Material(
+      color: scheme.primaryContainer,
+      borderRadius: BorderRadius.circular(24),
+      elevation: 4,
+      shadowColor: scheme.shadow.withValues(alpha: 0.4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.flag, size: 18, color: colore),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    // A piedi il tempo del km è già il passo; in bici no.
+                    giro.metri == 1000
+                        ? 'Km $km'
+                        : 'Km $km · ultimi ${giro.metri ~/ 1000} in '
+                              '${fmtTimer(giro.tempo)}',
+                    style: t.titleMedium?.copyWith(color: colore),
+                  ),
+                ),
+              ],
+            ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                ritmoGiro(sport, giro),
+                maxLines: 1,
+                style: t.displaySmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colore,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -937,7 +1298,7 @@ Future<void> mostraAvvisi(BuildContext context) => showModalBottomSheet<void>(
               title: const Text('Bip'),
               subtitle: const Text(
                 'Negli ultimi $secondiAvviso secondi di recuperi ed esercizi '
-                'a tempo. Usa il volume dei media.',
+                'a tempo, e a ogni km (5 km in bici). Usa il volume dei media.',
               ),
               value: bipAttivo.value,
               onChanged: (v) => salvaAvvisi(bip: v),

@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-10-31.1';
+const versioneTermini = '2026-11-01.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -113,6 +113,17 @@ class PrivacyScreen extends StatelessWidget {
             "viene inviato a nessuno.",
       ),
       (
+        'Battito dal sensore Bluetooth',
+        "Solo se lo scegli tu, durante la modalità allenamento l'app si "
+            "collega via Bluetooth a una fascia cardio o a un orologio che "
+            "trasmette il battito, per mostrartelo mentre ti alleni. Alla fine "
+            "salva solo battito medio e massimo nella sessione, sul telefono. "
+            "Nome e indirizzo Bluetooth del sensore restano sul telefono per "
+            "ricollegarsi la volta dopo: li cancelli con \"Dimentica\". Il "
+            "permesso \"Dispositivi nelle vicinanze\" serve solo a trovare il "
+            "sensore, non a sapere dove sei.",
+      ),
+      (
         'Mappe',
         "Per disegnare la mappa l'app scarica i riquadri della zona "
             "mostrata: da OpenFreeMap (tiles.openfreemap.org, dati © "
@@ -196,8 +207,10 @@ class PrivacyScreen extends StatelessWidget {
       (
         'Permessi del telefono',
         "Health Connect (lettura dei dati elencati sopra), posizione precisa "
-            "(solo durante corsa, camminata e bici), internet (mappe, immagini, "
-            "assistente), notifica durante la registrazione del percorso. Puoi "
+            "(solo durante corsa, camminata e bici), dispositivi nelle "
+            "vicinanze (solo per il sensore del battito), internet (mappe, "
+            "immagini, assistente), notifica durante la registrazione del "
+            "percorso. Puoi "
             "negare ognuno di questi permessi: l'app continua a funzionare senza "
             "la parte che ne ha bisogno.",
       ),
@@ -205,7 +218,9 @@ class PrivacyScreen extends StatelessWidget {
         'Come revocare o cancellare',
         "Health Connect: Impostazioni di Health Connect → Permessi delle "
             "app → Avidididadi, oppure dal Profilo con \"Rivedi permessi\". "
-            "Posizione: Impostazioni di Android → App → Avidididadi → Permessi. "
+            "Posizione e dispositivi nelle vicinanze: Impostazioni di Android → "
+            "App → Avidididadi → Permessi. Sensore del battito: \"Dimentica\" "
+            "nel foglio del battito, durante l'allenamento. "
             "Assistente: disattivalo e cancella la chiave nella pagina Coach. "
             "Per cancellare tutto: Impostazioni di Android → App → Avidididadi → "
             "Memoria → Cancella dati, oppure disinstalla l'app. I dati in Health "

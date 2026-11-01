@@ -1,5 +1,6 @@
 package it.avidididadi.app
 
+import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,6 +12,7 @@ import android.os.VibratorManager
 import android.os.Build
 import android.util.Log
 import android.view.WindowManager
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
@@ -51,6 +53,21 @@ class MainActivity : FlutterFragmentActivity() {
     private val richiestaPercorso = registerForActivityResult(ExerciseRouteRequestContract()) { route ->
         attesaPercorso?.success(route?.let { piatto(it) })
         attesaPercorso = null
+    }
+
+    // Permessi per il battito via Bluetooth (fascia o orologio che trasmette).
+    private var attesaBluetooth: MethodChannel.Result? = null
+    private val richiestaBluetooth =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { esiti ->
+            attesaBluetooth?.success(esiti.values.all { it })
+            attesaBluetooth = null
+        }
+
+    /** Da Android 12 bastano quelli del Bluetooth; prima serviva la posizione. */
+    private fun permessiBluetooth() = if (Build.VERSION.SDK_INT >= 31) {
+        arrayOf(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
+    } else {
+        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -100,6 +117,16 @@ class MainActivity : FlutterFragmentActivity() {
                             Log.w("Avidididadi", "Health Connect: consenso percorso non disponibile: $e")
                             attesaPercorso = null
                             result.success(null)
+                        }
+                    }
+                    "permessoBluetooth" -> {
+                        val servono = permessiBluetooth()
+                        if (servono.all { checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }) {
+                            result.success(true)
+                        } else {
+                            attesaBluetooth?.success(false)
+                            attesaBluetooth = result
+                            richiestaBluetooth.launch(servono)
                         }
                     }
                     // Il widget della schermata home: dati preparati dall'app.

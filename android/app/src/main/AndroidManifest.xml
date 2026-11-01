@@ -11,6 +11,13 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
 
+    <!-- Battito live da una fascia o da un orologio che lo trasmette (Bluetooth),
+         solo durante la modalità allenamento. Non serve a capire dove sei. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+
     <!-- Health Connect: solo lettura. Sessioni e metriche scritte da Garmin, Freeletics e altre app. -->
     <uses-permission android:name="android.permission.health.READ_EXERCISE"/>
     <uses-permission android:name="android.permission.health.READ_HEART_RATE"/>
