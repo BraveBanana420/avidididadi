@@ -13,6 +13,7 @@ import '../health_connect.dart';
 import '../models.dart';
 import '../percorso.dart';
 import '../pulse.dart';
+import '../rete.dart';
 import '../widgets.dart';
 
 String esadecimale(Color c) =>
@@ -94,16 +95,16 @@ Map<String, dynamic>? _baseStrade;
 
 Future<Map<String, dynamic>?> _scaricaStrade() async {
   if (_baseStrade != null) return _baseStrade;
-  final client = HttpClient()..connectionTimeout = const Duration(seconds: 8);
+  // Lo stile pesa poche decine di KB: 2 MB bastano e avanzano.
+  final dati = await scaricaLimitato(
+    Uri.parse(fonteStrade),
+    maxByte: 2 * 1024 * 1024,
+  );
+  if (dati == null) return null;
   try {
-    final res = await (await client.getUrl(Uri.parse(fonteStrade))).close();
-    if (res.statusCode != 200) return null;
-    final testo = await res.transform(utf8.decoder).join();
-    return _baseStrade = jsonDecode(testo) as Map<String, dynamic>;
+    return _baseStrade = jsonDecode(utf8.decode(dati)) as Map<String, dynamic>;
   } catch (_) {
     return null;
-  } finally {
-    client.close();
   }
 }
 

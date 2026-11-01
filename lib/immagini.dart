@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'animazioni_esercizi.dart';
+import 'rete.dart';
 import 'storage.dart';
 
 const _base =
@@ -17,16 +17,17 @@ final _inCorso = <String, Future<File?>>{};
 /// Null se non c'è e non si riesce a scaricarla (per esempio senza rete).
 Future<File?> immagineEsercizio(String percorso) =>
     _inCorso.putIfAbsent(percorso, () async {
-      final client = HttpClient()
-        ..connectionTimeout = const Duration(seconds: 10);
       try {
         final dir = Directory('${await Storage.cartella()}/esercizi_img');
         final f = File('${dir.path}/${percorso.replaceAll('/', '_')}');
         if (await f.exists() && await f.length() > 0) return f;
-        final res = await (await client.getUrl(Uri.parse(_base + percorso)))
-            .close();
-        if (res.statusCode != 200) return null;
-        final dati = await consolidateHttpClientResponseBytes(res);
+        // Una foto di esercizio pesa qualche centinaio di KB.
+        final dati = await scaricaLimitato(
+          Uri.parse(_base + percorso),
+          maxByte: 5 * 1024 * 1024,
+          tipo: 'image/',
+        );
+        if (dati == null) return null;
         await dir.create(recursive: true);
         // Prima su un file temporaneo: un download interrotto non lascia immagini rotte.
         final tmp = File('${f.path}.tmp');
@@ -35,7 +36,6 @@ Future<File?> immagineEsercizio(String percorso) =>
       } catch (_) {
         return null;
       } finally {
-        client.close();
         _inCorso.remove(percorso);
       }
     });
