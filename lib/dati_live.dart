@@ -62,6 +62,16 @@ class GiriLive {
 
   GiriLive(this.lunghezza);
 
+  /// Riparte dai giri già fatti (seduta ripresa dopo una chiusura).
+  void ripristina(List<Giro> fatti, double metri, Duration tempo) {
+    giri
+      ..clear()
+      ..addAll(fatti);
+    _metri = metri;
+    _tempo = tempo;
+    _inizioGiro = fatti.fold(Duration.zero, (t, g) => t + g.tempo);
+  }
+
   /// Aggiorna con la distanza e il tempo di adesso; restituisce il giro se
   /// se n'è appena chiuso uno.
   Giro? aggiorna(double metri, Duration tempo) {

@@ -70,6 +70,7 @@ lib/
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso e giri (1 km, 5 in bici) durante l'allenamento
   battito.dart         battito live via Bluetooth (sensore ricordato in sensore_battito.txt)
+  in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
   backup.dart          backup in .gz (JSON di tutti i CSV)
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri

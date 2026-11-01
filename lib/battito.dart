@@ -31,6 +31,16 @@ class StatisticheBattito {
   int _n = 0;
   int massimo = 0;
 
+  int get somma => _somma;
+  int get n => _n;
+
+  /// Riparte dai valori salvati (seduta ripresa dopo una chiusura).
+  void ripristina(int somma, int n, int max) {
+    _somma = somma;
+    _n = n;
+    massimo = max;
+  }
+
   void aggiungi(int bpm) {
     _somma += bpm;
     _n++;

@@ -110,7 +110,9 @@ class PrivacyScreen extends StatelessWidget {
             "GPS si spegne. L'app non usa la posizione in nessun altro momento "
             "e non la raccoglie in background. Il percorso viene salvato solo "
             "sul telefono: non va in Health Connect, non va all'assistente e non "
-            "viene inviato a nessuno.",
+            "viene inviato a nessuno. Mentre ti alleni, una copia della seduta "
+            "in corso (percorso compreso) resta sul telefono per riprenderla "
+            "se l'app si chiude; si cancella quando finisci.",
       ),
       (
         'Battito dal sensore Bluetooth',

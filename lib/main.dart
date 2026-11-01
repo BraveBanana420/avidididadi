@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_state.dart';
 import 'condivisione.dart';
 import 'health_connect.dart';
+import 'in_corso.dart';
 import 'models.dart';
 import 'pulse.dart';
 import 'screens/esecuzione_screen.dart';
@@ -114,6 +115,9 @@ class _HomePageState extends State<HomePage> {
     // Aperta condividendo la risposta dell'assistente collegato.
     final condiviso = await Condivisione.testoAllAvvio();
     if (condiviso != null) _daAgente(condiviso);
+    // Un allenamento interrotto (app chiusa da Android o bloccata).
+    final interrotto = await leggiInCorso();
+    if (interrotto != null && mounted) await _proponiRipresa(interrotto);
     // Prima apertura: domande semplici e il piano è pronto.
     if (state.primaVolta && mounted) {
       Navigator.of(
@@ -124,6 +128,37 @@ class _HomePageState extends State<HomePage> {
     // nessuna richiesta di permessi senza che l'utente lo chieda.
     await state.sincronizzaHc();
     await state.sincronizzaIntervals();
+  }
+
+  /// Chiede se riprendere la seduta rimasta a metà.
+  Future<void> _proponiRipresa(AllenamentoInCorso r) async {
+    final riprendi = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (c) => AlertDialog(
+        icon: const Icon(Icons.restore),
+        title: const Text('Allenamento interrotto'),
+        content: Text(
+          "L'app si era chiusa durante l'allenamento: ${r.riassunto}. "
+          'Riprendi da dove eri? Riparte in pausa.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Scarta'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Riprendi'),
+          ),
+        ],
+      ),
+    );
+    if (riprendi == true && mounted) {
+      riprendiAllenamento(context, state, r);
+    } else {
+      await cancellaInCorso();
+    }
   }
 
   Timer? _attesaWidget;

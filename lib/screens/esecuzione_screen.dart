@@ -11,6 +11,7 @@ import '../dati_live.dart';
 import '../esecuzione.dart';
 import '../figura.dart';
 import '../glossario.dart';
+import '../in_corso.dart';
 import '../gps.dart';
 import '../models.dart';
 import '../obiettivo.dart';
@@ -59,6 +60,28 @@ void avviaAllenamento(
   );
 }
 
+/// Riapre una seduta interrotta (app chiusa da Android o bloccata), in pausa.
+void riprendiAllenamento(
+  BuildContext context,
+  AppState state,
+  AllenamentoInCorso r,
+) {
+  Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      fullscreenDialog: true,
+      builder: (_) => EsecuzioneScreen(
+        state: state,
+        sport: r.sport,
+        tipo: r.tipo,
+        nome: r.nome,
+        passi: r.passi,
+        libera: r.libera,
+        ripresa: r,
+      ),
+    ),
+  );
+}
+
 /// Modalità allenamento: un esercizio alla volta, con cronometro totale,
 /// conto alla rovescia per i blocchi a tempo e i recuperi, e "Fatto" per gli
 /// esercizi a ripetizioni.
@@ -69,6 +92,7 @@ class EsecuzioneScreen extends StatefulWidget {
   final String nome;
   final List<WorkoutStep> passi;
   final bool libera; // fuori dal piano: si aggiunge a quello che c'è
+  final AllenamentoInCorso? ripresa; // seduta interrotta da riprendere
   const EsecuzioneScreen({
     super.key,
     required this.state,
@@ -77,6 +101,7 @@ class EsecuzioneScreen extends StatefulWidget {
     required this.nome,
     required this.passi,
     this.libera = false,
+    this.ripresa,
   });
 
   @override
@@ -90,6 +115,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   late final int nPassi = blocchi.isEmpty ? 0 : blocchi.last.passo + 1;
   final totale = Stopwatch();
   final blocco = Stopwatch();
+
+  // Tempo già fatto prima di una ripresa: i cronometri ripartono da zero.
+  Duration _baseTotale = Duration.zero;
+  Duration _baseBlocco = Duration.zero;
+  Duration get _tempoTotale => _baseTotale + totale.elapsed;
+  Duration get _tempoBlocco => _baseBlocco + blocco.elapsed;
+  DateTime _salvatoIl = DateTime(0);
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
   Timer? _tic;
   int i = 0;
@@ -142,7 +174,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _battiti = sensoreBattito.valori.stream.listen((v) {
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
     });
-    if (gps == null) {
+    final r = widget.ripresa;
+    if (r != null) {
+      _ripristina(r);
+      if (gps != null && !finito) _accendiGps();
+    } else if (gps == null) {
       blocco.start();
     } else {
       // Il conto alla rovescia parte dopo l'eventuale richiesta del permesso.
@@ -151,6 +187,57 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _tic = Timer.periodic(
       const Duration(milliseconds: 200),
       (_) => _aggiorna(),
+    );
+  }
+
+  /// Rimette la seduta com'era al salvataggio; si riparte in pausa.
+  void _ripristina(AllenamentoInCorso r) {
+    i = r.indice.clamp(0, blocchi.isEmpty ? 0 : blocchi.length - 1);
+    preparati = false;
+    pausa = !r.finito;
+    finito = r.finito;
+    _partenza = r.partenza;
+    registra = r.registra;
+    _baseTotale = r.totale;
+    _baseBlocco = r.blocco;
+    tempi.addAll(r.tempi);
+    fatte.addAll(r.fatte);
+    fc.ripristina(r.fcSomma, r.fcN, r.fcMax);
+    if (gps != null) {
+      gps!.filtro.punti.addAll(r.punti);
+      gps!.filtro.metri = r.metri;
+      giri!.ripristina(r.giri, r.metri, r.totale);
+    }
+  }
+
+  /// Fotografia della seduta su in_corso.json, per riprenderla se l'app
+  /// viene chiusa.
+  void _salvaInCorso() {
+    if (preparati || blocchi.isEmpty) return;
+    _salvatoIl = DateTime.now();
+    salvaInCorso(
+      AllenamentoInCorso(
+        sport: widget.sport,
+        tipo: widget.tipo,
+        nome: widget.nome,
+        libera: widget.libera,
+        passi: widget.passi,
+        indice: i,
+        finito: finito,
+        registra: registra,
+        totale: _tempoTotale,
+        blocco: _tempoBlocco,
+        partenza: _partenza ?? DateTime.now(),
+        salvato: _salvatoIl,
+        tempi: Map.of(tempi),
+        fatte: Map.of(fatte),
+        punti: List.of(gps?.filtro.punti ?? const []),
+        metri: gps?.filtro.metri ?? 0,
+        giri: List.of(giri?.giri ?? const []),
+        fcSomma: fc.somma,
+        fcN: fc.n,
+        fcMax: fc.massimo,
+      ),
     );
   }
 
@@ -177,12 +264,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 
   int get _durata => preparati ? _preparazione : (b.secondi ?? 0) + extra;
-  int get _restano => _durata - blocco.elapsed.inSeconds;
+  int get _restano => _durata - _tempoBlocco.inSeconds;
 
   void _aggiorna() {
     if (!mounted || pausa || finito) return;
+    if (!preparati &&
+        DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
+      _salvaInCorso();
+    }
     if (!preparati && giri != null) {
-      final g = giri!.aggiorna(gps!.filtro.metri, totale.elapsed);
+      final g = giri!.aggiorna(gps!.filtro.metri, _tempoTotale);
       if (g != null) {
         _giroAvviso = g;
         _giroFino = DateTime.now().add(const Duration(seconds: 6));
@@ -212,8 +303,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     blocco
       ..reset()
       ..start();
+    _baseBlocco = Duration.zero;
     extra = 0;
     _ultimoBip = -1;
+    _salvaInCorso();
   }
 
   // ---------------------------------------------------------------------
@@ -280,7 +373,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       });
       return;
     }
-    tempi[i] = (tempi[i] ?? Duration.zero) + blocco.elapsed;
+    tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
     if (i >= blocchi.length - 1) {
       _fine();
       return;
@@ -311,6 +404,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         blocco.start();
       }
     });
+    _salvaInCorso();
   }
 
   void _fine() {
@@ -320,6 +414,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _schermoAcceso(false);
     avviso(fine: true);
     setState(() => finito = true);
+    _salvaInCorso(); // anche il riepilogo si ritrova, se l'app si chiude
   }
 
   Future<bool> _confermaUscita() async {
@@ -348,15 +443,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       ),
     );
     if (r == 'termina') {
-      tempi[i] = (tempi[i] ?? Duration.zero) + blocco.elapsed;
+      tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
       _fine();
     }
+    if (r == 'esci') await cancellaInCorso();
     return r == 'esci';
   }
 
   Future<void> _salvaEChiudi({bool feedback = false}) async {
     final navigator = Navigator.of(context);
-    final oggi = soloData(DateTime.now());
+    final oggi = soloData(_partenza ?? DateTime.now());
     final percorso = gps?.percorso;
     // Il percorso si tiene anche se vale la sessione dell'orologio: la mappa
     // lo mostra quando Health Connect non ne ha uno.
@@ -375,7 +471,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
     ]);
     if (registra) {
-      final inizio = _partenza ?? DateTime.now().subtract(totale.elapsed);
+      final inizio = _partenza ?? DateTime.now().subtract(_tempoTotale);
       await widget.state.registraSvolta(
         Sessione(
           id: widget.libera
@@ -383,10 +479,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}',
           data: oggi,
           inizio: inizio,
-          fine: inizio.add(totale.elapsed),
+          fine: inizio.add(_tempoTotale),
           sport: widget.sport,
           tipo: widget.tipo,
-          durataMin: (totale.elapsed.inSeconds / 60).round().clamp(1, 600),
+          durataMin: (_tempoTotale.inSeconds / 60).round().clamp(1, 600),
           distanzaKm: percorso == null || percorso.vuoto
               ? 0
               : double.parse(gps!.km.toStringAsFixed(2)),
@@ -397,6 +493,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
       );
     }
+    await cancellaInCorso();
     if (feedback && mounted) {
       await apriFeedback(context, widget.state, oggi, widget.sport);
     }
@@ -500,7 +597,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 child: Column(
                   children: [
                     Text(
-                      fmtTimer(totale.elapsed),
+                      fmtTimer(_tempoTotale),
                       style: t.titleLarge?.copyWith(
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
@@ -579,7 +676,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         child: _GrigliaLive(
                           sport: widget.sport,
                           gps: gps!,
-                          tempo: totale.elapsed,
+                          tempo: _tempoTotale,
                           ultimo: giri!.giri.lastOrNull,
                           zone: widget.state.zone,
                         ),
@@ -665,7 +762,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     aTempo: aTempo,
                     restano: aTempo ? _restano.clamp(0, 99999).toInt() : 0,
                     totale: aTempo ? _durata : 0,
-                    trascorso: blocco.elapsed,
+                    trascorso: _tempoBlocco,
                     pausa: pausa,
                     // Con i riquadri sopra, più piccolo: entra senza scorrere.
                     piccolo: gps != null,
@@ -813,8 +910,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         const SizedBox(height: 8),
         Text(
           widget.libera
-              ? fmtTimer(totale.elapsed)
-              : '${fmtTimer(totale.elapsed)} · ${perPasso.length} esercizi',
+              ? fmtTimer(_tempoTotale)
+              : '${fmtTimer(_tempoTotale)} · ${perPasso.length} esercizi',
           style: t.titleLarge,
           textAlign: TextAlign.center,
         ),
@@ -834,7 +931,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${fmtKm(gps!.km)} · ${ritmoMedio(widget.sport, gps!.km, totale.elapsed)}',
+            '${fmtKm(gps!.km)} · ${ritmoMedio(widget.sport, gps!.km, _tempoTotale)}',
             style: t.titleMedium,
             textAlign: TextAlign.center,
           ),
