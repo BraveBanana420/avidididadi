@@ -10,6 +10,9 @@ final bipAttivo = ValueNotifier<bool>(true);
 /// Vibrazione insieme ai bip: a gusto personale.
 final vibrazioneAttiva = ValueNotifier<bool>(true);
 
+/// Voce: km, esercizio che inizia, ritmo o zona sbagliati.
+final voceAttiva = ValueNotifier<bool>(true);
+
 /// Da quanti secondi dalla fine partono i bip.
 const secondiAvviso = 5;
 
@@ -29,6 +32,7 @@ Future<void> caricaAvvisi() async {
     for (final riga in (await f.readAsString()).split('\n')) {
       final [chiave, valore] = [...riga.split('='), ''].take(2).toList();
       if (chiave.trim() == 'bip') bipAttivo.value = valore.trim() != 'no';
+      if (chiave.trim() == 'voce') voceAttiva.value = valore.trim() != 'no';
       if (chiave.trim() == 'vibrazione') {
         vibrazioneAttiva.value = valore.trim() != 'no';
       }
@@ -38,13 +42,15 @@ Future<void> caricaAvvisi() async {
   }
 }
 
-Future<void> salvaAvvisi({bool? bip, bool? vibrazione}) async {
+Future<void> salvaAvvisi({bool? bip, bool? vibrazione, bool? voce}) async {
   if (bip != null) bipAttivo.value = bip;
   if (vibrazione != null) vibrazioneAttiva.value = vibrazione;
+  if (voce != null) voceAttiva.value = voce;
   try {
     await (await _file()).writeAsString(
       'bip=${bipAttivo.value ? 'si' : 'no'}\n'
-      'vibrazione=${vibrazioneAttiva.value ? 'si' : 'no'}\n',
+      'vibrazione=${vibrazioneAttiva.value ? 'si' : 'no'}\n'
+      'voce=${voceAttiva.value ? 'si' : 'no'}\n',
     );
   } catch (_) {
     // vale solo per questa sessione

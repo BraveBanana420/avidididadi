@@ -4,12 +4,16 @@ import android.Manifest
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
+import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.os.Build
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +31,7 @@ import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 // FlutterFragmentActivity: il pacchetto health chiede i permessi di Health Connect
 // con registerForActivityResult, che richiede una ComponentActivity.
@@ -36,9 +41,76 @@ class MainActivity : FlutterFragmentActivity() {
     /** Generatore dei bip della modalità allenamento, creato al primo uso. */
     private var tono: ToneGenerator? = null
 
+    /** Sintesi vocale dell'allenamento, creata alla prima frase. */
+    private var tts: TextToSpeech? = null
+    private var ttsPronta = false
+    private val inAttesa = mutableListOf<String>()
+
+    // La musica si abbassa mentre la voce parla, poi torna com'era.
+    private val voceAudio = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_ASSISTANCE_NAVIGATION_GUIDANCE)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+        .build()
+    private val fuocoVoce by lazy {
+        AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK)
+            .setAudioAttributes(voceAudio)
+            .build()
+    }
+
+    private fun inChiamata(): Boolean {
+        val am = getSystemService(AUDIO_SERVICE) as AudioManager
+        return am.mode == AudioManager.MODE_IN_CALL ||
+            am.mode == AudioManager.MODE_IN_COMMUNICATION ||
+            am.mode == AudioManager.MODE_RINGTONE
+    }
+
+    private fun parla(testo: String) {
+        val t = tts
+        if (t == null) {
+            inAttesa.add(testo)
+            tts = TextToSpeech(this) { stato ->
+                ttsPronta = stato == TextToSpeech.SUCCESS
+                val pronta = tts ?: return@TextToSpeech
+                if (!ttsPronta) {
+                    Log.w("Avidididadi", "sintesi vocale non disponibile")
+                    inAttesa.clear()
+                    return@TextToSpeech
+                }
+                pronta.language = Locale.ITALIAN
+                pronta.setAudioAttributes(voceAudio)
+                pronta.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                    override fun onStart(id: String?) {}
+                    override fun onDone(id: String?) = rilascia(pronta)
+                    @Deprecated("Deprecated in Java")
+                    override fun onError(id: String?) = rilascia(pronta)
+                })
+                inAttesa.forEach { di(pronta, it) }
+                inAttesa.clear()
+            }
+        } else if (ttsPronta) {
+            di(t, testo)
+        } else {
+            inAttesa.add(testo)
+        }
+    }
+
+    private fun di(t: TextToSpeech, testo: String) {
+        (getSystemService(AUDIO_SERVICE) as AudioManager).requestAudioFocus(fuocoVoce)
+        t.speak(testo, TextToSpeech.QUEUE_ADD, null, "voce-${System.nanoTime()}")
+    }
+
+    /** Finita l'ultima frase in coda, la musica torna al suo volume. */
+    private fun rilascia(t: TextToSpeech) {
+        if (!t.isSpeaking) {
+            (getSystemService(AUDIO_SERVICE) as AudioManager).abandonAudioFocusRequest(fuocoVoce)
+        }
+    }
+
     override fun onDestroy() {
         tono?.release()
         tono = null
+        tts?.shutdown()
+        tts = null
         super.onDestroy()
     }
 
@@ -158,6 +230,16 @@ class MainActivity : FlutterFragmentActivity() {
                             Log.w("Avidididadi", "bip non riuscito", e)
                         }
                         result.success(null)
+                    }
+                    // Voce dell'allenamento. Durante una chiamata non parla e
+                    // lo dice, così l'app ritenta a chiamata finita.
+                    "parla" -> {
+                        if (inChiamata()) {
+                            result.success("chiamata")
+                        } else {
+                            parla(call.arguments as String)
+                            result.success("parlato")
+                        }
                     }
                     // Vibrazione degli ultimi secondi: diretta, così funziona
                     // anche con la vibrazione al tocco spenta nel telefono.

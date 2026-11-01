@@ -38,7 +38,7 @@ Funzioni principali:
 | `flutter_reactive_ble` | battito live da fascia o orologio (Bluetooth) |
 
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
-  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip e vibrazione, permessi Bluetooth, widget;
+  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, permessi Bluetooth, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
 - **Nessuna libreria di state management**: un solo `AppState` (`ChangeNotifier`). I dati sono CSV nella cartella privata dell'app.
 
@@ -63,7 +63,8 @@ lib/
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
   scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
-  avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
+  avvisi.dart          bip, vibrazione e voce on/off (avvisi.txt)
+  voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI

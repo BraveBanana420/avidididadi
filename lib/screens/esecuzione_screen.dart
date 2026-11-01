@@ -20,6 +20,7 @@ import '../pulse.dart';
 import '../registro_forza.dart';
 import '../scheda.dart';
 import '../tema.dart';
+import '../voce.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'battito_sheet.dart';
@@ -161,6 +162,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   /// Battito dal sensore Bluetooth, se collegato.
   final fc = StatisticheBattito();
+  late final Zone _zone = widget.state.zone;
+
+  /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
+  final voce = Voce();
+  final ritmo = ControlloRitmo();
   StreamSubscription<int>? _battiti;
 
   Blocco get b => blocchi[i];
@@ -257,6 +263,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void dispose() {
     _tic?.cancel();
     _battiti?.cancel();
+    voce.ferma();
     sensoreBattito.ferma();
     _schermoAcceso(false);
     gps?.dispose();
@@ -278,8 +285,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         _giroAvviso = g;
         _giroFino = DateTime.now().add(const Duration(seconds: 6));
         avviso(fine: true);
+        voce.di(fraseGiro(widget.sport, g));
       }
     }
+    if (!preparati && b.tipo == TipoBlocco.lavoro) _controllaRitmo();
     if (_giroFino != null && DateTime.now().isAfter(_giroFino!)) {
       _giroAvviso = null;
       _giroFino = null;
@@ -306,6 +315,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _baseBlocco = Duration.zero;
     extra = 0;
     _ultimoBip = -1;
+    ritmo.azzera();
+    // L'attività libera ha un passo solo: basta il cronometro.
+    if (!widget.libera) {
+      voce.di(fraseBlocco(b), valida: const Duration(seconds: 30));
+    }
     _salvaInCorso();
   }
 
@@ -384,6 +398,43 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     });
   }
 
+  /// Zona (con il battito) o passo (se l'esercizio lo chiede) fuori obiettivo
+  /// da un po': lo dice la voce.
+  void _controllaRitmo() {
+    final ora = DateTime.now();
+    final zona = zonaObiettivo(b.intensita);
+    final bpm = sensoreBattito.bpm;
+    if (zona != null && bpm != null) {
+      final n = _zone.zonaDi(bpm);
+      final verso = versoZona(n, zona);
+      if (ritmo.controlla(verso, ora)) {
+        voce.di(fraseZona(n, verso), valida: const Duration(seconds: 20));
+      }
+      return;
+    }
+    final obiettivo = velocitaObiettivo(
+      '${b.intensita} ${b.dettaglio} ${b.note}',
+    );
+    if (obiettivo == null || gps == null) return;
+    final v = velocitaAttuale(
+      gps!.filtro.punti,
+      ora: ora,
+      finestra: finestraVelocita(widget.sport),
+    );
+    // Fermi (semaforo) o GPS appena partito: niente avvisi.
+    if (v == null || v < 0.28) {
+      ritmo.azzera();
+      return;
+    }
+    final verso = versoVelocita(v, obiettivo);
+    if (ritmo.controlla(verso, ora)) {
+      voce.di(
+        fraseVelocita(widget.sport, v, verso),
+        valida: const Duration(seconds: 20),
+      );
+    }
+  }
+
   void _indietro() {
     if (preparati || i == 0) return;
     setState(() {
@@ -413,6 +464,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     gps?.ferma();
     _schermoAcceso(false);
     avviso(fine: true);
+    voce.di(
+      'Allenamento completato. ${parlaDurata(_tempoTotale)}'
+      '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
+    );
     setState(() => finito = true);
     _salvaInCorso(); // anche il riepilogo si ritrova, se l'app si chiude
   }
@@ -678,13 +733,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           gps: gps!,
                           tempo: _tempoTotale,
                           ultimo: giri!.giri.lastOrNull,
-                          zone: widget.state.zone,
+                          zone: _zone,
                         ),
                       )
                     : sensoreBattito.ricordato
                     ? Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: _DatoBattito(zone: widget.state.zone),
+                        child: _DatoBattito(zone: _zone),
                       )
                     : const SizedBox.shrink(),
               ),
@@ -727,7 +782,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 6),
                     child: Text(
-                      'Intensità: ${conBpm(b.intensita, widget.state.zone)}',
+                      'Intensità: ${conBpm(b.intensita, _zone)}',
                       style: t.bodyLarge,
                     ),
                   ),
@@ -1397,7 +1452,7 @@ Future<void> mostraAvvisi(BuildContext context) => showModalBottomSheet<void>(
     child: Padding(
       padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
       child: ListenableBuilder(
-        listenable: Listenable.merge([bipAttivo, vibrazioneAttiva]),
+        listenable: Listenable.merge([bipAttivo, vibrazioneAttiva, voceAttiva]),
         builder: (c, _) => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1410,6 +1465,16 @@ Future<void> mostraAvvisi(BuildContext context) => showModalBottomSheet<void>(
               ),
               value: bipAttivo.value,
               onChanged: (v) => salvaAvvisi(bip: v),
+            ),
+            SwitchListTile(
+              secondary: const Icon(Icons.record_voice_over_outlined),
+              title: const Text('Voce'),
+              subtitle: const Text(
+                "Dice l'esercizio che inizia, i km e se sei fuori zona o "
+                'fuori passo. Durante le chiamate sta zitta.',
+              ),
+              value: voceAttiva.value,
+              onChanged: (v) => salvaAvvisi(voce: v),
             ),
             SwitchListTile(
               secondary: const Icon(Icons.vibration),
