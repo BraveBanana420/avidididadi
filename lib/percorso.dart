@@ -35,15 +35,19 @@ String filePercorsoApp(DateTime giorno, String sport) =>
 String filePercorsoHc(String uuid) => 'percorso_hc_${_pulito(uuid)}.csv';
 
 /// Distanza in metri tra due punti (formula dell'emisenoverso).
-double distanzaM(PuntoGps a, PuntoGps b) {
+double distanzaM(PuntoGps a, PuntoGps b) =>
+    distanzaGradi(a.lat, a.lon, b.lat, b.lon);
+
+/// Distanza in metri tra due coordinate in gradi.
+double distanzaGradi(double lat1, double lon1, double lat2, double lon2) {
   const r = 6371000.0;
   double rad(double g) => g * math.pi / 180;
-  final dLat = rad(b.lat - a.lat);
-  final dLon = rad(b.lon - a.lon);
+  final dLat = rad(lat2 - lat1);
+  final dLon = rad(lon2 - lon1);
   final h =
       math.pow(math.sin(dLat / 2), 2) +
-      math.cos(rad(a.lat)) *
-          math.cos(rad(b.lat)) *
+      math.cos(rad(lat1)) *
+          math.cos(rad(lat2)) *
           math.pow(math.sin(dLon / 2), 2);
   return 2 * r * math.asin(math.min(1, math.sqrt(h)));
 }
