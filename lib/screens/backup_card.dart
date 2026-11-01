@@ -50,6 +50,9 @@ class _SezioneBackupState extends State<SezioneBackup> {
     try {
       final files = await FilePicker.pickFiles(type: FileType.any);
       if (files.isEmpty) return;
+      if ((await files.first.length() ?? 0) > maxByteBackup) {
+        throw const FormatException('File troppo grande per essere un backup.');
+      }
       b = leggiBackup(await files.first.readAsBytes());
     } on FormatException catch (e) {
       if (mounted) _messaggio(e.message);

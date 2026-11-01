@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../csv.dart';
 import '../models.dart';
 
 /// Opzione avanzata, chiusa di default: import manuale delle sessioni da CSV per
@@ -56,6 +57,10 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
     final out = <String>[];
     for (final f in files) {
       try {
+        if ((await f.length() ?? 0) > maxByteCsv) {
+          out.add('${f.name}: file troppo grande (massimo 20 MB).');
+          continue;
+        }
         final testo = utf8.decode(await f.readAsBytes(), allowMalformed: true);
         out.add('${f.name}: ${await widget.state.importaSessioniCsv(testo)}');
       } catch (e) {

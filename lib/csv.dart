@@ -1,3 +1,7 @@
+/// CSV da importare: oltre non è un elenco di allenamenti (e riempirebbe la
+/// memoria).
+const maxByteCsv = 20 * 1024 * 1024;
+
 String _esc(String s) =>
     (s.contains(',') || s.contains('"') || s.contains('\n') || s.contains('\r'))
     ? '"${s.replaceAll('"', '""')}"'

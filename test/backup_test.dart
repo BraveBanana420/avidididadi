@@ -71,4 +71,35 @@ void main() {
       ),
     );
   });
+
+  test('backup bomba: piccolo da compresso, enorme da aperto, si ferma', () {
+    final pezzi = <List<int>>[];
+    final comprimi = gzip.encoder.startChunkedConversion(
+      ByteConversionSink.withCallback((b) => pezzi.add(b)),
+    );
+    final zeri = List<int>.filled(1024 * 1024, 0);
+    for (var k = 0; k < 210; k++) {
+      comprimi.add(zeri);
+    }
+    comprimi.close();
+    final bomba = pezzi.expand((x) => x).toList();
+    expect(bomba.length, lessThan(maxByteBackup));
+    expect(
+      () => leggiBackup(bomba),
+      throwsA(
+        isA<FormatException>().having(
+          (e) => e.message,
+          'messaggio',
+          contains('troppo grande'),
+        ),
+      ),
+    );
+  });
+
+  test('file oltre i 50 MB: non si apre nemmeno', () {
+    expect(
+      () => leggiBackup(List<int>.filled(maxByteBackup + 1, 0)),
+      throwsA(isA<FormatException>()),
+    );
+  });
 }

@@ -13,6 +13,11 @@ import 'models.dart';
 const _formato = 'avidididadi-backup';
 const _versione = 1;
 
+/// Un backup vero pesa pochi MB: oltre questi limiti (compresso e aperto)
+/// il file non è un backup dell'app, o è costruito per esaurire la memoria.
+const maxByteBackup = 50 * 1024 * 1024;
+const maxByteBackupAperto = 200 * 1024 * 1024;
+
 /// File che non vanno nel backup.
 const esclusiDalBackup = {'health_connect.csv'};
 
@@ -67,9 +72,14 @@ Uint8List creaBackup(
 
 /// Legge un file di backup; FormatException se non è un backup dell'app.
 DatiBackup leggiBackup(List<int> bytes) {
+  if (bytes.length > maxByteBackup) {
+    throw const FormatException('File troppo grande per essere un backup.');
+  }
   final Object? j;
   try {
-    j = jsonDecode(utf8.decode(gzip.decode(bytes)));
+    j = jsonDecode(utf8.decode(_apri(bytes)));
+  } on _TroppoGrande {
+    throw const FormatException('File troppo grande per essere un backup.');
   } catch (_) {
     throw const FormatException('Il file non è un backup di Avidididadi.');
   }
@@ -107,4 +117,40 @@ DatiBackup leggiBackup(List<int> bytes) {
     nomeFoto: nomeFoto,
     foto: foto,
   );
+}
+
+class _TroppoGrande implements Exception {}
+
+/// Raccoglie i pezzi decompressi, ma si ferma oltre [maxByteBackupAperto].
+class _Raccolta implements Sink<List<int>> {
+  final dati = BytesBuilder(copy: false);
+
+  @override
+  void add(List<int> pezzo) {
+    if (dati.length + pezzo.length > maxByteBackupAperto) {
+      throw _TroppoGrande();
+    }
+    dati.add(pezzo);
+  }
+
+  @override
+  void close() {}
+}
+
+/// Decomprime a pezzi: un file piccolo che si gonfia a dismisura si ferma
+/// prima di riempire la memoria.
+List<int> _apri(List<int> compressi) {
+  final raccolta = _Raccolta();
+  final apri = gzip.decoder.startChunkedConversion(raccolta);
+  const pezzo = 64 * 1024;
+  for (var i = 0; i < compressi.length; i += pezzo) {
+    apri.add(
+      compressi.sublist(
+        i,
+        i + pezzo > compressi.length ? compressi.length : i + pezzo,
+      ),
+    );
+  }
+  apri.close();
+  return raccolta.dati.takeBytes();
 }
