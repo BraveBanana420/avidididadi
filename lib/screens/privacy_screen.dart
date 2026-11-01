@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-01.4';
+const versioneTermini = '2026-11-01.5';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -141,7 +141,11 @@ class PrivacyScreen extends StatelessWidget {
             "telefono e quali riquadri vengono chiesti, quindi possono capire "
             "quale zona stai guardando. Il percorso, i tempi e gli altri dati "
             "dell'allenamento non vengono inviati: la linea viene disegnata sul "
-            "telefono.",
+            "telefono. Per i percorsi da seguire l'app scarica in anticipo i "
+            "riquadri della fascia attorno alla traccia, per vederli senza "
+            "rete: OpenFreeMap riceve quei riquadri, e quindi la zona del "
+            "percorso. Restano nella memoria dell'app finché non togli la "
+            "mappa o il percorso.",
       ),
       (
         'intervals.icu (facoltativo)',

@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../mappa_offline.dart';
 import '../navigazione.dart';
 import '../percorso.dart';
 import '../pulse.dart';
@@ -36,6 +37,7 @@ Future<PercorsoSalvato?> aggiungiGpx(
       nomeFile: nomeFile.isEmpty ? 'Percorso' : nomeFile,
     );
     final p = await state.aggiungiPercorso(t);
+    scaricaMappa(state, p);
     messenger.showSnackBar(
       SnackBar(content: Text('Aggiunto: ${p.nome} · ${fmtKm(p.km)}')),
     );
@@ -52,6 +54,13 @@ Future<PercorsoSalvato?> aggiungiGpx(
 
 /// Pallino della partenza, come sulla mappa.
 const verdePartenza = Color(0xFF22E07A);
+
+/// Scarica (se non c'è già) la mappa attorno al percorso, per usarla senza
+/// rete. Va avanti da sola: lo stato si vede nella pagina del percorso.
+Future<void> scaricaMappa(AppState state, PercorsoSalvato p) async {
+  final t = await state.tracciaDi(p);
+  if (t != null) await mappeOffline.scarica(p.id, t);
+}
 
 /// "42,20 km · 320 m di salita".
 String descriviPercorso(PercorsoSalvato p) => [
@@ -226,6 +235,23 @@ class _VocePercorso extends StatelessWidget {
                         color: scheme.onSurfaceVariant,
                       ),
                     ),
+                    ListenableBuilder(
+                      listenable: mappeOffline,
+                      builder: (context, _) =>
+                          mappeOffline.scaricati.contains(percorso.id)
+                          ? Row(
+                              children: [
+                                Icon(
+                                  Icons.offline_pin_outlined,
+                                  size: 14,
+                                  color: scheme.primary,
+                                ),
+                                const SizedBox(width: 4),
+                                Text('Anche senza rete', style: t.labelSmall),
+                              ],
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                   ],
                 ),
               ),
@@ -317,6 +343,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
     );
     if (ok != true) return;
     await widget.state.eliminaPercorso(p.id);
+    await mappeOffline.elimina(p.id);
     if (mounted) Navigator.pop(context);
   }
 
@@ -412,6 +439,8 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+                MappaOfflineCard(state: widget.state, percorso: p, traccia: tr),
                 if (conQuota) ...[
                   const SizedBox(height: 16),
                   Text('Altimetria', style: t.titleMedium),
@@ -677,7 +706,9 @@ class PercorsoDellaSeduta extends StatelessWidget {
         builder: (_) => PercorsiScreen(state: state, scegli: true),
       ),
     );
-    if (id != null) await state.assegnaPercorso(giorno, sport, id);
+    if (id == null) return;
+    await state.assegnaPercorso(giorno, sport, id);
+    if (state.percorsoSalvato(id) case final p?) scaricaMappa(state, p);
   }
 
   @override
@@ -724,6 +755,119 @@ class PercorsoDellaSeduta extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// La mappa del percorso senza rete: scaricata, in download, da scaricare.
+class MappaOfflineCard extends StatefulWidget {
+  final AppState state;
+  final PercorsoSalvato percorso;
+  final Traccia traccia;
+  const MappaOfflineCard({
+    super.key,
+    required this.state,
+    required this.percorso,
+    required this.traccia,
+  });
+
+  @override
+  State<MappaOfflineCard> createState() => _MappaOfflineCardState();
+}
+
+class _MappaOfflineCardState extends State<MappaOfflineCard> {
+  late final String _peso = pesoStimato(widget.traccia);
+
+  @override
+  void initState() {
+    super.initState();
+    mappeOffline.carica();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final id = widget.percorso.id;
+    return ListenableBuilder(
+      listenable: mappeOffline,
+      builder: (context, _) {
+        final avanti = mappeOffline.avanzamento[id];
+        final fatto = mappeOffline.scaricati.contains(id);
+        final errore = mappeOffline.errori[id];
+        final (IconData icona, String titolo, String testo) = avanti != null
+            ? (
+                Icons.downloading,
+                'Scarico la mappa… ${(avanti * 100).round()}%',
+                'Puoi usare l\'app intanto.',
+              )
+            : fatto
+            ? (
+                Icons.offline_pin_outlined,
+                'Mappa scaricata',
+                'Strade e percorso si vedono anche senza rete (non il '
+                    'satellite).',
+              )
+            : (
+                Icons.cloud_download_outlined,
+                'Mappa senza rete',
+                errore ??
+                    'Scarica la zona attorno al percorso ($_peso), per '
+                        'vederla anche dove il telefono non prende.',
+              );
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(icona, color: scheme.primary),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(titolo, style: t.titleSmall),
+                          Text(
+                            testo,
+                            style: t.bodySmall?.copyWith(
+                              color: errore != null && !fatto
+                                  ? scheme.error
+                                  : scheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (avanti == null)
+                      TextButton(
+                        onPressed: fatto
+                            ? () => mappeOffline.elimina(id)
+                            : () => mappeOffline.scarica(id, widget.traccia),
+                        child: Text(
+                          fatto
+                              ? 'Togli'
+                              : errore != null
+                              ? 'Riprova'
+                              : 'Scarica',
+                        ),
+                      ),
+                  ],
+                ),
+                if (avanti != null) ...[
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: LinearProgressIndicator(value: avanti),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

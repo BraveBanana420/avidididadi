@@ -71,6 +71,7 @@ lib/
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
+  mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica

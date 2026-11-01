@@ -302,7 +302,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         builder: (_) => PercorsiScreen(state: widget.state, scegli: true),
       ),
     );
-    if (id != null) await _usaPercorso(widget.state.percorsoSalvato(id));
+    final p = id == null ? null : widget.state.percorsoSalvato(id);
+    if (p == null) return;
+    await _usaPercorso(p);
+    // Se c'è ancora la rete, la mappa si scarica per i tratti senza segnale.
+    scaricaMappa(widget.state, p);
   }
 
   /// Passa alla guida ogni nuovo punto GPS; dopo il via, dice le curve e
