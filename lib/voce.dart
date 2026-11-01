@@ -197,18 +197,24 @@ class Voce {
   DateTime? _scade;
   Timer? _riprova;
 
-  Future<String> _parla(String testo) async {
+  Future<String> _parla(String testo, {bool urgente = false}) async {
     try {
-      return await _canale.invokeMethod<String>('parla', testo) ?? 'errore';
+      return await _canale.invokeMethod<String>('parla', {
+            'testo': testo,
+            'urgente': urgente,
+          }) ??
+          'errore';
     } catch (_) {
       return 'errore';
     }
   }
 
   /// Dice [testo]; se c'è una chiamata, lo ritenta finché vale ([valida]).
+  /// [urgente]: interrompe la frase in corso e quelle in coda (le curve).
   Future<void> di(
     String testo, {
     Duration valida = const Duration(minutes: 2),
+    bool urgente = false,
   }) async {
     if (!voceAttiva.value) return;
     if (_attesa != null) {
@@ -217,7 +223,7 @@ class Voce {
       _scade = DateTime.now().add(valida);
       return;
     }
-    if (await _parla(testo) != 'chiamata') return;
+    if (await _parla(testo, urgente: urgente) != 'chiamata') return;
     _attesa = testo;
     _scade = DateTime.now().add(valida);
     _riprova = Timer.periodic(const Duration(seconds: 3), (_) async {

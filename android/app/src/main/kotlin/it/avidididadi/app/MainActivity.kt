@@ -77,7 +77,8 @@ class MainActivity : FlutterFragmentActivity() {
             am.mode == AudioManager.MODE_RINGTONE
     }
 
-    private fun parla(testo: String) {
+    /** [urgente]: interrompe la frase in corso e la coda (le curve). */
+    private fun parla(testo: String, urgente: Boolean = false) {
         val t = tts
         if (t == null) {
             inAttesa.add(testo)
@@ -101,15 +102,16 @@ class MainActivity : FlutterFragmentActivity() {
                 inAttesa.clear()
             }
         } else if (ttsPronta) {
-            di(t, testo)
+            di(t, testo, urgente)
         } else {
             inAttesa.add(testo)
         }
     }
 
-    private fun di(t: TextToSpeech, testo: String) {
+    private fun di(t: TextToSpeech, testo: String, urgente: Boolean = false) {
         (getSystemService(AUDIO_SERVICE) as AudioManager).requestAudioFocus(fuocoVoce)
-        t.speak(testo, TextToSpeech.QUEUE_ADD, null, "voce-${System.nanoTime()}")
+        val coda = if (urgente) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+        t.speak(testo, coda, null, "voce-${System.nanoTime()}")
     }
 
     /** Finita l'ultima frase in coda, la musica torna al suo volume. */
@@ -436,7 +438,12 @@ class MainActivity : FlutterFragmentActivity() {
                         if (inChiamata()) {
                             result.success("chiamata")
                         } else {
-                            parla(call.arguments as String)
+                            // Testo solo, o testo e urgenza.
+                            when (val a = call.arguments) {
+                                is Map<*, *> ->
+                                    parla(a["testo"] as String, a["urgente"] == true)
+                                else -> parla(a as String)
+                            }
                             result.success("parlato")
                         }
                     }

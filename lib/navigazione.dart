@@ -320,6 +320,12 @@ class Curva {
       TipoCurva.inversione => 'torna indietro',
     };
   }
+
+  /// La stessa curva detta subito dopo un'altra: "poi subito a sinistra",
+  /// "poi tieni la destra".
+  String get fraseDopo => tipo == TipoCurva.normale
+      ? 'poi subito ${destra ? 'a destra' : 'a sinistra'}'
+      : 'poi $frase';
 }
 
 /// Curve sotto questo angolo non si annunciano: sono la strada che piega.
@@ -372,7 +378,15 @@ enum TipoAvvisoGuida { curva, fuori, rientro, contrario, arrivo }
 class AvvisoGuida {
   final TipoAvvisoGuida tipo;
   final String frase;
-  const AvvisoGuida(this.tipo, this.frase);
+
+  /// Il preavviso di una curva ("Tra 250 metri…"): può aspettare che finisca
+  /// un'altra frase. Tutto il resto va detto subito.
+  final bool preavviso;
+  const AvvisoGuida(this.tipo, this.frase, {this.preavviso = false});
+
+  /// Da dire interrompendo le altre frasi (km, ritmo): a 30 km/h cinque
+  /// secondi di ritardo sono 40 metri, e la curva è passata.
+  bool get urgente => !preavviso;
   @override
   String toString() => frase;
 }
@@ -417,9 +431,24 @@ class Guida {
   /// e chi l'ha registrata pure).
   double get sogliaSopra => bici ? 40 : 35;
 
-  /// Distanze degli annunci di una curva: il preavviso e "adesso".
-  double get preavviso => bici ? 250 : 100;
-  double get adesso => bici ? 60 : 25;
+  /// Distanze degli annunci di una curva: il preavviso e "adesso". Più si va
+  /// veloci, prima si avvisa: il preavviso circa 25 secondi prima (in bici),
+  /// "adesso" circa 7 secondi prima, il tempo di dirlo e di frenare.
+  double preavvisoA(double? mps) {
+    final v = mps ?? 0;
+    return bici ? (v * 25).clamp(250, 500).toDouble() : 100;
+  }
+
+  double adessoA(double? mps) {
+    final v = mps ?? 0;
+    return bici ? math.max(60, v * 7) : math.max(25, v * 6);
+  }
+
+  double get preavviso => preavvisoA(null);
+  double get adesso => adessoA(null);
+
+  /// Velocità dell'ultimo punto (m/s), per le distanze degli annunci.
+  double? _velocita;
 
   static const _attesaFuori = Duration(seconds: 10);
   static const _attesaRientro = Duration(seconds: 3);
@@ -494,8 +523,15 @@ class Guida {
   }
 
   /// Nuova posizione. Restituisce gli avvisi da dare adesso (anche nessuno).
-  List<AvvisoGuida> aggiorna(double lat, double lon, DateTime ora) {
+  /// [velocita] in m/s, se si sa: in bici sposta gli annunci delle curve.
+  List<AvvisoGuida> aggiorna(
+    double lat,
+    double lon,
+    DateTime ora, {
+    double? velocita,
+  }) {
     if (traccia.vuota) return const [];
+    _velocita = velocita;
     final pos = PuntoTraccia(lat, lon);
     final avvisi = <AvvisoGuida>[];
     _aggiornaMoto(pos);
@@ -581,15 +617,18 @@ class Guida {
       m < 1000 ? (m / 10).round() * 10.0 : (m / 100).round() * 100.0;
 
   AvvisoGuida? _avvisoCurva(double p) {
+    final preavviso = preavvisoA(_velocita);
+    final adesso = adessoA(_velocita);
+    // Due curve più vicine di così (circa 8 secondi) si dicono insieme.
+    final legate = math.max(80, adesso * 1.2);
     for (var i = 0; i < curve.length; i++) {
       final c = curve[i];
       final manca = c.metri - p;
       if (manca <= 0) continue;
       if (manca > preavviso) return null;
       final fatto = _annunci[i] ?? 0;
-      // Subito dopo un'altra curva: si dice insieme ("poi subito a sinistra").
-      final dopo = i + 1 < curve.length && curve[i + 1].metri - c.metri < 80
-          ? ', poi subito ${curve[i + 1].frase.replaceFirst('gira ', '')}'
+      final dopo = i + 1 < curve.length && curve[i + 1].metri - c.metri < legate
+          ? ', ${curve[i + 1].fraseDopo}'
           : '';
       if (manca <= adesso) {
         if (fatto >= 2) return null;
@@ -609,6 +648,7 @@ class Guida {
       return AvvisoGuida(
         TipoAvvisoGuida.curva,
         'Tra ${parlaMetri(tra)}, ${c.frase}$dopo.',
+        preavviso: true,
       );
     }
     return null;

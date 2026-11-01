@@ -316,14 +316,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final pos = gps?.ultimo;
     if (g == null || pos == null || pos.t == _posizioneGuida) return;
     _posizioneGuida = pos.t;
-    final avvisi = g.aggiorna(pos.lat, pos.lon, DateTime.now());
+    final avvisi = g.aggiorna(
+      pos.lat,
+      pos.lon,
+      DateTime.now(),
+      velocita: gps?.velocitaRecente,
+    );
     if (preparati) return;
     for (final a in avvisi) {
-      final preavviso =
-          a.tipo == TipoAvvisoGuida.curva && a.frase.startsWith('Tra ');
-      avviso(fine: !preavviso);
+      avviso(fine: a.urgente);
       voce.di(
         a.frase,
+        urgente: a.urgente,
         valida: a.tipo == TipoAvvisoGuida.curva
             ? const Duration(seconds: 15)
             : const Duration(minutes: 1),

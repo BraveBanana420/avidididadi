@@ -199,6 +199,42 @@ void main() {
       expect(avvisi.single.frase, 'Tra 250 metri, gira a destra.');
     });
 
+    test('in discesa veloce (50 km/h) gli avvisi arrivano prima', () {
+      final t = _elle();
+      final g = Guida(t, bici: true);
+      const v = 50 / 3.6;
+      final avvisi = <(double, AvvisoGuida)>[];
+      var tempo = DateTime(2026, 11, 1, 9);
+      for (final p in t.punti.take(100)) {
+        for (final a in g.aggiorna(p.lat, p.lon, tempo, velocita: v)) {
+          avvisi.add((g.progresso!, a));
+        }
+        tempo = tempo.add(const Duration(seconds: 1));
+      }
+      expect(avvisi.map((x) => x.$2.frase), [
+        'Tra 350 metri, gira a destra.',
+        'Gira a destra.',
+      ]);
+      // "Gira" circa 7 secondi prima: a 50 km/h quasi 100 metri.
+      expect(500 - avvisi[1].$1, closeTo(97, 6));
+      expect(avvisi[0].$2.urgente, isFalse);
+      expect(avvisi[1].$2.urgente, isTrue);
+    });
+
+    test('a piedi la velocità non cambia quasi niente', () {
+      final g = Guida(_elle(), bici: false);
+      expect(g.preavvisoA(3), 100);
+      expect(g.adessoA(3), 25);
+      expect(g.adessoA(5.5), closeTo(33, 0.1)); // uno sprint
+    });
+
+    test('la seconda curva detta insieme suona naturale', () {
+      expect(const Curva(0, 90).fraseDopo, 'poi subito a destra');
+      expect(const Curva(0, -55).fraseDopo, 'poi tieni la sinistra');
+      expect(const Curva(0, 140).fraseDopo, 'poi curva stretta a destra');
+      expect(const Curva(0, 175).fraseDopo, 'poi torna indietro');
+    });
+
     test('due curve vicine si dicono insieme', () {
       final t = Traccia(
         'Esse',
