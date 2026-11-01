@@ -302,6 +302,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         builder: (_) => PercorsiScreen(state: widget.state, scegli: true),
       ),
     );
+    // Scelto o no, il conto alla rovescia riparte da capo: 5 secondi interi
+    // per mettere via il telefono.
+    if (preparati && mounted) {
+      blocco.reset();
+      _ultimoBip = -1;
+      if (!pausa) blocco.start();
+    }
     final p = id == null ? null : widget.state.percorsoSalvato(id);
     if (p == null) return;
     await _usaPercorso(p);
@@ -536,6 +543,19 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     // Anche in pausa: la mappa dice quanto è lontano il percorso.
     _seguiPercorso();
     if (pausa) return;
+    // Prima del via il conto alla rovescia aspetta: non corre mentre si
+    // sceglie il percorso, si cambiano le opzioni o Android chiede un
+    // permesso.
+    if (preparati) {
+      final davanti = ModalRoute.of(context)?.isCurrent ?? true;
+      final stato = WidgetsBinding.instance.lifecycleState;
+      final attiva = stato == null || stato == AppLifecycleState.resumed;
+      if (!davanti || !attiva) {
+        blocco.stop();
+        return;
+      }
+      if (!blocco.isRunning) blocco.start();
+    }
     if (!preparati && gps != null) _controllaSoste();
     if (_pausaAuto) {
       // Fermi: si aspetta solo di ripartire.

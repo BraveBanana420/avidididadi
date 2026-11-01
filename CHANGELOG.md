@@ -2,6 +2,26 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.3.0
+
+- Percorsi da seguire: carica un GPX in "I miei percorsi" (Profilo) o assegnalo a una seduta, e scegli "Segui un percorso" nel Preparati.
+- Mappa durante corsa, camminata e bici che gira nella direzione di marcia: due pagine, minimappa o tutto schermo (Profilo → Durante l'allenamento).
+- Indicazioni a voce: curve, fuori percorso, senso contrario, arrivo e km che mancano; in bici gli avvisi arrivano prima se vai veloce.
+- Mappa dei percorsi scaricata da sola per usarla anche senza rete.
+- Dati live in allenamento: distanza, passo o velocità di adesso e medio, ultimo km in sovraimpressione con bip e vibrazione.
+- Battito live da fascia Bluetooth o orologio che trasmette il battito.
+- Sensori della bici via Bluetooth: rulli smart, potenza, velocità e cadenza.
+- Voce durante l'allenamento (esercizi, km, zona e passo sbagliati), zitta durante le chiamate.
+- Notifica con tempo e dati, anche a schermo bloccato, con il tasto Pausa.
+- Pausa automatica a scelta (spenta, solo da fermo, sotto una velocità) e passo medio con o senza soste.
+- Al chiuso (tapis roulant, rulli): senza GPS, alla fine scrivi i km del display.
+- Se Android chiude l'app durante un allenamento, alla riapertura riprendi da dove eri.
+- Sessioni dell'app inviabili a intervals.icu o salvabili come file GPX.
+- Backup automatico ogni giorno o settimana in una cartella che scegli tu.
+- Calorie stimate per le sessioni registrate con l'app.
+- Una sessione svolta si elimina dal tasto Modifica.
+- All'apertura riaccetta l'informativa (sensori Bluetooth, notifiche, percorsi e mappe).
+
 ## 1.2.0
 
 - Nuovo pulsante "+" in Oggi: avvii subito un'attività libera (corsa, camminata, bici, nuoto, forza, mobilità) che si aggiunge al calendario.
