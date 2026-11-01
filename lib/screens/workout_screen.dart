@@ -595,22 +595,39 @@ class _DatiSessione extends StatelessWidget {
             ],
           ),
           actions: [
-            // Lontano da "Salva", nel colore degli errori: non si tocca per sbaglio.
-            TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(c).colorScheme.error,
-              ),
-              onPressed: () => Navigator.pop(c, 'elimina'),
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('Elimina'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(c),
-              child: const Text('Annulla'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(c, 'salva'),
-              child: const Text('Salva'),
+            // Una riga sola: il cestino a sinistra, lontano da "Salva" e nel
+            // colore degli errori, così non si tocca per sbaglio.
+            Row(
+              children: [
+                IconButton(
+                  tooltip: 'Elimina la sessione',
+                  color: Theme.of(c).colorScheme.error,
+                  onPressed: () => Navigator.pop(c, 'elimina'),
+                  icon: const Icon(Icons.delete_outline),
+                ),
+                // Con il testo grande si rimpiccioliscono invece di andare a capo.
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        children: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(c),
+                            child: const Text('Annulla'),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(c, 'salva'),
+                            child: const Text('Salva'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
