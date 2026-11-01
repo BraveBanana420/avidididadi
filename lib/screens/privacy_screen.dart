@@ -211,7 +211,10 @@ class PrivacyScreen extends StatelessWidget {
         "Il file di backup che crei contiene tutti i dati dell'app, "
             "compresi dati sulla salute, foto e percorsi GPS (non la chiave "
             "API). Lo salvi dove scegli tu: tienilo in un posto sicuro e non "
-            "condividerlo.",
+            "condividerlo. Se accendi il backup automatico, l'app scrive lo "
+            "stesso file da sola nella cartella che hai scelto e tiene gli "
+            "ultimi 5; le altre app che leggono quella cartella possono "
+            "vederlo.",
       ),
       (
         'Permessi del telefono',

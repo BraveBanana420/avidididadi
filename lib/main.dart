@@ -128,6 +128,8 @@ class _HomePageState extends State<HomePage> {
     // nessuna richiesta di permessi senza che l'utente lo chieda.
     await state.sincronizzaHc();
     await state.sincronizzaIntervals();
+    // Dopo la sincronizzazione, così il backup ha anche le sessioni nuove.
+    await state.backupAutomatico();
   }
 
   /// Chiede se riprendere la seduta rimasta a metà.

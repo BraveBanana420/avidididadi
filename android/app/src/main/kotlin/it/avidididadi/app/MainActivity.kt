@@ -17,7 +17,9 @@ import android.media.ToneGenerator
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.net.Uri
 import android.os.Build
+import android.provider.DocumentsContract
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
@@ -39,7 +41,9 @@ import androidx.lifecycle.lifecycleScope
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 // FlutterFragmentActivity: il pacchetto health chiede i permessi di Health Connect
@@ -112,6 +116,70 @@ class MainActivity : FlutterFragmentActivity() {
     private fun rilascia(t: TextToSpeech) {
         if (!t.isSpeaking) {
             (getSystemService(AUDIO_SERVICE) as AudioManager).abandonAudioFocusRequest(fuocoVoce)
+        }
+    }
+
+    // Backup automatico: la cartella si sceglie una volta e il permesso resta.
+    private var attesaCartella: MethodChannel.Result? = null
+    private val richiestaCartella =
+        registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+            if (uri != null) {
+                contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+                )
+            }
+            attesaCartella?.success(uri?.let { listOf(it.toString(), nomeCartella(it)) })
+            attesaCartella = null
+        }
+
+    private fun cartellaDi(albero: Uri): Uri =
+        DocumentsContract.buildDocumentUriUsingTree(albero, DocumentsContract.getTreeDocumentId(albero))
+
+    private fun nomeCartella(albero: Uri): String = try {
+        contentResolver.query(
+            cartellaDi(albero),
+            arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+            null, null, null,
+        )?.use { c -> if (c.moveToFirst()) c.getString(0) else "" } ?: ""
+    } catch (e: Exception) {
+        ""
+    }
+
+    /** I file della cartella: id e nome, uno dopo l'altro. */
+    private fun fileInCartella(albero: Uri): List<String> {
+        val figli = DocumentsContract.buildChildDocumentsUriUsingTree(
+            albero, DocumentsContract.getTreeDocumentId(albero),
+        )
+        val out = mutableListOf<String>()
+        contentResolver.query(
+            figli,
+            arrayOf(
+                DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            ),
+            null, null, null,
+        )?.use { c ->
+            while (c.moveToNext()) {
+                out.add(c.getString(0))
+                out.add(c.getString(1) ?: "")
+            }
+        }
+        return out
+    }
+
+    /** Lavori sui file fuori dal thread dell'interfaccia; errori → null. */
+    private fun suiFile(result: MethodChannel.Result, lavoro: () -> Any?) {
+        lifecycleScope.launch {
+            val esito = withContext(Dispatchers.IO) {
+                try {
+                    lavoro()
+                } catch (e: Exception) {
+                    Log.w("Avidididadi", "cartella del backup: $e")
+                    null
+                }
+            }
+            result.success(esito)
         }
     }
 
@@ -269,6 +337,37 @@ class MainActivity : FlutterFragmentActivity() {
                             Log.w("Avidididadi", "Health Connect: consenso percorso non disponibile: $e")
                             attesaPercorso = null
                             result.success(null)
+                        }
+                    }
+                    "scegliCartella" -> {
+                        attesaCartella?.success(null)
+                        attesaCartella = result
+                        richiestaCartella.launch(null)
+                    }
+                    "scriviInCartella" -> {
+                        val albero = Uri.parse(call.argument<String>("cartella"))
+                        val nome = call.argument<String>("nome")!!
+                        val dati = call.argument<ByteArray>("dati")!!
+                        suiFile(result) {
+                            val doc = DocumentsContract.createDocument(
+                                contentResolver, cartellaDi(albero), "application/gzip", nome,
+                            ) ?: return@suiFile false
+                            contentResolver.openOutputStream(doc)?.use { it.write(dati) }
+                                ?: return@suiFile false
+                            true
+                        }
+                    }
+                    "fileInCartella" -> {
+                        val albero = Uri.parse(call.arguments as String)
+                        suiFile(result) { fileInCartella(albero) }
+                    }
+                    "cancellaInCartella" -> {
+                        val albero = Uri.parse(call.argument<String>("cartella"))
+                        val id = call.argument<String>("id")!!
+                        suiFile(result) {
+                            DocumentsContract.deleteDocument(
+                                contentResolver, DocumentsContract.buildDocumentUriUsingTree(albero, id),
+                            )
                         }
                     }
                     "permessoNotifiche" -> {

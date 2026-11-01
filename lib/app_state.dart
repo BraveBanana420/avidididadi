@@ -7,6 +7,7 @@ import 'adattamento.dart';
 import 'agente_esterno.dart';
 import 'assistente.dart';
 import 'backup.dart';
+import 'backup_auto.dart';
 import 'benvenuto.dart';
 import 'condivisione.dart';
 import 'csv.dart';
@@ -126,6 +127,7 @@ class AppState extends ChangeNotifier {
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
+    backupAuto = await leggiImpostazioniBackup();
     final tInviate = await Storage.readTabella('sessioni_inviate.csv');
     inviate = {
       if (tInviate != null)
@@ -891,6 +893,24 @@ class AppState extends ChangeNotifier {
   }
 
   /// File di backup con tutti i dati e la foto.
+  /// Backup automatico in una cartella scelta dall'utente (spento all'inizio).
+  ImpostazioniBackup backupAuto = const ImpostazioniBackup();
+
+  Future<void> impostaBackupAuto(ImpostazioniBackup b) async {
+    backupAuto = b;
+    await salvaImpostazioniBackup(b);
+    notifyListeners();
+  }
+
+  /// All'apertura: scrive il backup se è ora. Con [subito], comunque.
+  Future<void> backupAutomatico({bool subito = false}) async {
+    if (!backupAuto.attivo) return;
+    if (!subito && !backupDovuto(backupAuto, DateTime.now())) return;
+    await impostaBackupAuto(
+      await scriviBackupAuto(backupAuto, await creaFileBackup()),
+    );
+  }
+
   Future<Uint8List> creaFileBackup() async {
     final f = fileFoto;
     final foto = f != null && await f.exists() ? await f.readAsBytes() : null;
