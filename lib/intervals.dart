@@ -104,6 +104,10 @@ AttivitaIcu? attivitaDaIcu(Map<String, dynamic> j) {
       fcMedia: (_numero(j['average_heartrate']) ?? 0).round(),
       fcMax: (_numero(j['max_heartrate']) ?? 0).round(),
       calorieAttive: (_numero(j['calories']) ?? 0).toDouble(),
+      potenzaMedia:
+          (_numero(j['icu_average_watts']) ?? _numero(j['average_watts']) ?? 0)
+              .round(),
+      cadenzaMedia: (_numero(j['average_cadence']) ?? 0).round(),
       fonte: '$sorgente (intervals.icu)',
       origine: 'intervals.icu',
       inizio: inizio,

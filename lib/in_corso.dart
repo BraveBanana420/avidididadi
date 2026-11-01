@@ -39,6 +39,9 @@ class AllenamentoInCorso {
   final Duration soste; // in pausa automatica
   final Duration fermo; // fermi a cronometro acceso
   final bool alChiuso; // tapis roulant o rulli: senza GPS
+  final List<int> potenza; // somma, quanti, massimo
+  final List<int> cadenza;
+  final double metriSensore; // dai sensori della bici
 
   const AllenamentoInCorso({
     required this.sport,
@@ -64,6 +67,9 @@ class AllenamentoInCorso {
     this.soste = Duration.zero,
     this.fermo = Duration.zero,
     this.alChiuso = false,
+    this.potenza = const [0, 0, 0],
+    this.cadenza = const [0, 0, 0],
+    this.metriSensore = 0,
   });
 
   Map<String, Object?> toJson() => {
@@ -103,6 +109,9 @@ class AllenamentoInCorso {
     'soste_ms': soste.inMilliseconds,
     'fermo_ms': fermo.inMilliseconds,
     'al_chiuso': alChiuso,
+    'potenza': potenza,
+    'cadenza': cadenza,
+    'metri_sensore': metriSensore,
   };
 
   static AllenamentoInCorso? daJson(Map<String, dynamic> j) {
@@ -165,11 +174,18 @@ class AllenamentoInCorso {
         soste: Duration(milliseconds: (j['soste_ms'] as num? ?? 0).toInt()),
         fermo: Duration(milliseconds: (j['fermo_ms'] as num? ?? 0).toInt()),
         alChiuso: j['al_chiuso'] == true,
+        potenza: _tre(j['potenza']),
+        cadenza: _tre(j['cadenza']),
+        metriSensore: (j['metri_sensore'] as num? ?? 0).toDouble(),
       );
     } catch (_) {
       return null; // file rovinato (es. scritto a metà): non si propone
     }
   }
+
+  static List<int> _tre(Object? v) => v is List && v.length == 3
+      ? [for (final x in v) (x as num).toInt()]
+      : const [0, 0, 0];
 
   /// "Corsa · 32 min · 5,20 km" per la domanda alla riapertura.
   String get riassunto => [

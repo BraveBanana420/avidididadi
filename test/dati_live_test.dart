@@ -110,13 +110,13 @@ void main() {
     });
 
     test('media e massimo', () {
-      final f = StatisticheBattito();
+      final f = Statistiche();
       for (final v in [120, 130, 141, 150]) {
         f.aggiungi(v);
       }
       expect(f.media, 135);
       expect(f.massimo, 150);
-      expect(StatisticheBattito().media, 0);
+      expect(Statistiche().media, 0);
     });
   });
 

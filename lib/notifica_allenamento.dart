@@ -72,9 +72,11 @@ String testoNotifica({
   double? mps,
   int? bpm,
   int zona = 0,
+  int? watt,
 }) => [
   if (km != null) fmtKm(km),
   if (km != null && fmtVelocita(sport, mps) != '–')
     '${fmtVelocita(sport, mps)} ${unitaRitmo(sport)}',
+  if (watt != null) '$watt W',
   if (bpm != null) '♥ $bpm${zona > 0 ? ' Z$zona' : ''}',
 ].join(' · ');

@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-01.2';
+const versioneTermini = '2026-11-01.3';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -117,12 +117,14 @@ class PrivacyScreen extends StatelessWidget {
             "se l'app si chiude; si cancella quando finisci.",
       ),
       (
-        'Battito dal sensore Bluetooth',
+        'Sensori Bluetooth (battito e bici)',
         "Solo se lo scegli tu, durante la modalità allenamento l'app si "
-            "collega via Bluetooth a una fascia cardio o a un orologio che "
-            "trasmette il battito, per mostrartelo mentre ti alleni. Alla fine "
-            "salva solo battito medio e massimo nella sessione, sul telefono. "
-            "Nome e indirizzo Bluetooth del sensore restano sul telefono per "
+            "collega via Bluetooth a una fascia cardio, a un orologio che "
+            "trasmette il battito o ai sensori della bici (rulli, potenza, "
+            "velocità e cadenza), per mostrarteli mentre ti alleni. Alla fine "
+            "salva solo battito medio e massimo, potenza e cadenza medie nella "
+            "sessione, sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
+            "la circonferenza della ruota) restano sul telefono per "
             "ricollegarsi la volta dopo: li cancelli con \"Dimentica\". Il "
             "permesso \"Dispositivi nelle vicinanze\" serve solo a trovare il "
             "sensore, non a sapere dove sei.",

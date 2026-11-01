@@ -20,6 +20,7 @@ import '../percorso.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../scheda.dart';
+import '../sensori_bici.dart';
 import '../tema.dart';
 import '../voce.dart';
 import '../sincronizzazione.dart';
@@ -188,8 +189,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   DateTime? _giroFino;
 
   /// Battito dal sensore Bluetooth, se collegato.
-  final fc = StatisticheBattito();
+  final fc = Statistiche();
   late final Zone _zone = widget.state.zone;
+
+  /// Bici: potenza, cadenza e (al chiuso) distanza dai sensori collegati.
+  late final bool _bici = stessoSport(widget.sport, 'Bici');
+  final potenza = Statistiche();
+  final cadenza = Statistiche();
+  double _metriSensore = 0;
+  DateTime? _ultimoCampione;
+  DateTime _statisticheIl = DateTime(0);
 
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
@@ -206,6 +215,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     permessoNotifiche();
     pausaDaNotifica = _pausaDaNotifica;
     sensoreBattito.avvia();
+    if (_bici) sensoreBici.avvia();
     _battiti = sensoreBattito.valori.stream.listen((v) {
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
     });
@@ -265,6 +275,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     fc.ripristina(r.fcSomma, r.fcN, r.fcMax);
     _soste = r.soste;
     _fermo = r.fermo;
+    potenza.ripristina(r.potenza[0], r.potenza[1], r.potenza[2]);
+    cadenza.ripristina(r.cadenza[0], r.cadenza[1], r.cadenza[2]);
+    _metriSensore = r.metriSensore;
     if (gps != null) {
       gps!.filtro.punti.addAll(r.punti);
       gps!.filtro.metri = r.metri;
@@ -302,6 +315,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         soste: _soste,
         fermo: _fermo,
         alChiuso: _alChiuso,
+        potenza: potenza.comeLista,
+        cadenza: cadenza.comeLista,
+        metriSensore: _metriSensore,
       ),
     );
   }
@@ -325,9 +341,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       ),
       testo: testoNotifica(
         sport: widget.sport,
-        km: gps?.km,
+        km: gps?.km ?? (_metriSensore > 0 ? _metriSensore / 1000 : null),
         mps: gps == null
-            ? null
+            ? (_bici ? sensoreBici.velocita : null)
             : velocitaAttuale(
                 gps!.filtro.punti,
                 ora: ora,
@@ -335,6 +351,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
         bpm: bpm,
         zona: bpm == null ? 0 : _zone.zonaDi(bpm),
+        watt: _bici ? sensoreBici.potenza : null,
       ),
       // Nei blocchi a tempo il conto alla rovescia, negli altri il totale.
       base: b.aTempo
@@ -343,6 +360,27 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       contoAllaRovescia: b.aTempo,
       inPausa: _inPausa,
     );
+  }
+
+  /// Bici: distanza dalla velocità del sensore (utile ai rulli) e un
+  /// campione al secondo di potenza e cadenza.
+  void _campionaBici() {
+    final ora = DateTime.now();
+    final prima = _ultimoCampione;
+    _ultimoCampione = ora;
+    final dt = prima == null
+        ? 0.0
+        : ora.difference(prima).inMilliseconds / 1000;
+    final v = sensoreBici.velocita;
+    // Dopo una pausa il primo intervallo è lungo: non conta.
+    if (v != null && dt <= 1) _metriSensore += v * dt;
+    if (ora.difference(_statisticheIl) < const Duration(seconds: 1)) return;
+    _statisticheIl = ora;
+    if (sensoreBici.potenza case final w?) potenza.aggiungi(w);
+    // La cadenza media si fa sulle pedalate: smettere di pedalare non conta.
+    if (sensoreBici.cadenza case final c? when c > 0) {
+      cadenza.aggiungi(c.round());
+    }
   }
 
   /// Il tasto Pausa/Riprendi della notifica.
@@ -370,6 +408,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (pausaDaNotifica == _pausaDaNotifica) pausaDaNotifica = null;
     togliNotifica();
     sensoreBattito.ferma();
+    if (_bici) sensoreBici.ferma();
     _schermoAcceso(false);
     gps?.dispose();
     _kmScritti.dispose();
@@ -387,6 +426,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       setState(() {});
       return;
     }
+    if (!preparati && _bici) _campionaBici();
     if (!preparati &&
         DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
       _salvaInCorso();
@@ -646,6 +686,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     (gps?.ferma() ?? Future<void>.value()).then((_) => togliNotifica());
     _schermoAcceso(false);
     avviso(fine: true);
+    // Rulli con sensore di velocità: i km sono già lì, si possono correggere.
+    if (_alChiuso && _metriSensore >= 100 && _kmScritti.text.isEmpty) {
+      _kmScritti.text = (_metriSensore / 1000)
+          .toStringAsFixed(2)
+          .replaceAll('.', ',');
+    }
     voce.di(
       'Allenamento completato. ${parlaDurata(_tempoTotale)}'
       '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
@@ -730,6 +776,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   : double.parse(gps!.km.toStringAsFixed(2))),
           fcMedia: fc.media,
           fcMax: fc.massimo,
+          potenzaMedia: potenza.media,
+          cadenzaMedia: cadenza.media,
           fonte: fonteApp,
           note: widget.nome,
         ),
@@ -851,13 +899,26 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   ],
                 ),
               ),
+              if (_bici)
+                ListenableBuilder(
+                  listenable: sensoreBici,
+                  builder: (_, _) => IconButton(
+                    tooltip: 'Sensori della bici',
+                    onPressed: () => mostraSensoreBici(context),
+                    icon: Icon(
+                      sensoreBici.stato == StatoSensore.collegato
+                          ? Icons.pedal_bike
+                          : Icons.pedal_bike_outlined,
+                    ),
+                  ),
+                ),
               ListenableBuilder(
                 listenable: sensoreBattito,
                 builder: (_, _) => IconButton(
                   tooltip: 'Battito dal sensore',
                   onPressed: () => mostraBattito(context),
                   icon: Icon(
-                    sensoreBattito.stato == StatoBattito.collegato
+                    sensoreBattito.stato == StatoSensore.collegato
                         ? Icons.favorite
                         : Icons.favorite_border,
                   ),
@@ -914,24 +975,76 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 _StatoGps(gps: gps!, riaccendi: _accendiGps),
               ],
               ListenableBuilder(
-                listenable: sensoreBattito,
-                builder: (_, _) => gps != null
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: _GrigliaLive(
+                listenable: Listenable.merge([sensoreBattito, sensoreBici]),
+                builder: (_, _) {
+                  final bici = _bici && sensoreBici.ricordato;
+                  return Column(
+                    spacing: 8,
+                    children: [
+                      const SizedBox.shrink(),
+                      if (gps != null)
+                        _GrigliaLive(
                           sport: widget.sport,
                           gps: gps!,
                           tempo: _tempoMedia,
                           ultimo: giri!.giri.lastOrNull,
                           zone: _zone,
+                        )
+                      else if (bici)
+                        // Rulli: velocità e km dal sensore.
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Expanded(
+                              child: _Dato(
+                                etichetta: 'Velocità',
+                                valore: fmtVelocita(
+                                  widget.sport,
+                                  sensoreBici.velocita,
+                                ),
+                                unita: 'km/h',
+                              ),
+                            ),
+                            Expanded(
+                              child: _Dato(
+                                etichetta: 'Distanza',
+                                valore: (_metriSensore / 1000)
+                                    .toStringAsFixed(2)
+                                    .replaceAll('.', ','),
+                                unita: 'km',
+                              ),
+                            ),
+                          ],
                         ),
-                      )
-                    : sensoreBattito.ricordato
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: _DatoBattito(zone: _zone),
-                      )
-                    : const SizedBox.shrink(),
+                      if (bici)
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Expanded(
+                              child: _Dato(
+                                etichetta: 'Potenza',
+                                valore: '${sensoreBici.potenza ?? '–'}',
+                                unita: 'W',
+                                onTap: () => mostraSensoreBici(context),
+                              ),
+                            ),
+                            Expanded(
+                              child: _Dato(
+                                etichetta: 'Cadenza',
+                                valore:
+                                    sensoreBici.cadenza?.round().toString() ??
+                                    '–',
+                                unita: 'rpm',
+                                onTap: () => mostraSensoreBici(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (gps == null && sensoreBattito.ricordato)
+                        _DatoBattito(zone: _zone),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 6),
               Text(
@@ -1545,9 +1658,9 @@ class _DatoBattito extends StatelessWidget {
     return _Dato(
       icona: Icons.favorite,
       etichetta: switch (sensoreBattito.stato) {
-        StatoBattito.collegato when n > 0 => 'Battito · Z$n',
-        StatoBattito.collegato => 'Battito',
-        StatoBattito.collega => 'Mi collego…',
+        StatoSensore.collegato when n > 0 => 'Battito · Z$n',
+        StatoSensore.collegato => 'Battito',
+        StatoSensore.collega => 'Mi collego…',
         _ => 'Battito',
       },
       valore: bpm?.toString() ?? '–',

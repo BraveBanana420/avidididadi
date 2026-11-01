@@ -63,6 +63,9 @@ const sessioniHeader = [
   'calorie_totali',
   'passi',
   'origine',
+  // Bici: dai sensori collegati all'app o da intervals.icu.
+  'potenza_media',
+  'cadenza_media',
 ];
 const workoutHeader = [
   'id_workout',
@@ -288,6 +291,8 @@ class Sessione {
   final double calorieTotali;
   final int passi;
   final String origine; // pacchetto dell'app che ha scritto la sessione
+  final int potenzaMedia; // watt
+  final int cadenzaMedia; // pedalate al minuto
   /// Pezzi da cui è stata ricomposta (es. i blocchi di Freeletics o due
   /// registrazioni dopo un crash). Non si salva: si ricalcola a ogni avvio.
   final List<Sessione> parti;
@@ -310,6 +315,8 @@ class Sessione {
     this.calorieTotali = 0,
     this.passi = 0,
     this.origine = '',
+    this.potenzaMedia = 0,
+    this.cadenzaMedia = 0,
     this.parti = const [],
   });
 
@@ -342,6 +349,8 @@ class Sessione {
     calorieTotali: calorieTotali ?? this.calorieTotali,
     passi: passi ?? this.passi,
     origine: origine ?? this.origine,
+    potenzaMedia: potenzaMedia,
+    cadenzaMedia: cadenzaMedia,
     parti: parti,
   );
 
@@ -363,6 +372,8 @@ class Sessione {
     fmtNum(calorieTotali),
     passi == 0 ? '' : '$passi',
     origine,
+    potenzaMedia == 0 ? '' : '$potenzaMedia',
+    cadenzaMedia == 0 ? '' : '$cadenzaMedia',
   ];
 
   static Sessione? da(Tabella t, List<String> r) {
@@ -390,6 +401,8 @@ class Sessione {
       calorieTotali: numero(t.v(r, 'calorie_totali')),
       passi: numero(t.v(r, 'passi')).round(),
       origine: t.v(r, 'origine'),
+      potenzaMedia: numero(t.v(r, 'potenza_media')).round(),
+      cadenzaMedia: numero(t.v(r, 'cadenza_media')).round(),
     );
   }
 }

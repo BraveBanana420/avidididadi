@@ -35,7 +35,7 @@ Funzioni principali:
 | `path_drawing` | figura dei muscoli (tracciati SVG) |
 | `package_info_plus` | versione dell'app |
 | `flutter_localizations` | tutta l'app in italiano |
-| `flutter_reactive_ble` | battito live da fascia o orologio (Bluetooth) |
+| `flutter_reactive_ble` | battito e sensori bici live (Bluetooth) |
 
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
   - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
@@ -71,7 +71,9 @@ lib/
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
-  battito.dart         battito live via Bluetooth (sensore ricordato in sensore_battito.txt)
+  sensore_ble.dart     base dei sensori Bluetooth: ricerca, ricollegamento, sensore ricordato
+  battito.dart         battito live (sensore_battito.txt)
+  sensori_bici.dart    rulli FTMS, potenza, velocità/cadenza (sensore_bici.txt, circonferenza ruota)
   in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
   notifica_allenamento.dart  notifica dell'allenamento (anche a schermo bloccato), tasto Pausa
   backup.dart          backup in .gz (JSON di tutti i CSV)
