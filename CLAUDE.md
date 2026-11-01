@@ -64,6 +64,7 @@ lib/
   scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
   avvisi.dart          bip e vibrazione degli ultimi 5 secondi (avvisi.txt)
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
+  sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   backup.dart          backup in .gz (JSON di tutti i CSV)
@@ -83,6 +84,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
 - `ritocchi_sessioni.csv`, `percorso_*.csv`;
+- `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano).
@@ -108,7 +110,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
   - Il numero di build (`+N`) sale sempre di 1. Più modifiche nella stessa sessione, prima di un nuovo APK distribuito, possono stare nella stessa versione.
-  - Attuale: `1.2.0+5`.
+  - Attuale: `1.3.0+6`.
 - **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.

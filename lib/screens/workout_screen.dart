@@ -560,7 +560,7 @@ class _DatiSessione extends StatelessWidget {
     final prima = state.ritocchi[s.id];
     final nome = TextEditingController(text: prima?.nome ?? '');
     var chiuso = prima?.alChiuso ?? false;
-    final ok = await showDialog<bool>(
+    final scelta = await showDialog<String>(
       context: context,
       builder: (c) => StatefulBuilder(
         builder: (c, aggiorna) => AlertDialog(
@@ -595,24 +595,79 @@ class _DatiSessione extends StatelessWidget {
             ],
           ),
           actions: [
+            // Lontano da "Salva", nel colore degli errori: non si tocca per sbaglio.
+            TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(c).colorScheme.error,
+              ),
+              onPressed: () => Navigator.pop(c, 'elimina'),
+              icon: const Icon(Icons.delete_outline),
+              label: const Text('Elimina'),
+            ),
             TextButton(
-              onPressed: () => Navigator.pop(c, false),
+              onPressed: () => Navigator.pop(c),
               child: const Text('Annulla'),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(c, true),
+              onPressed: () => Navigator.pop(c, 'salva'),
               child: const Text('Salva'),
             ),
           ],
         ),
       ),
     );
-    if (ok == true) {
-      await state.ritoccaSessione(
-        RitoccoSessione(s.id, nome: nome.text.trim(), alChiuso: chiuso),
-      );
-    }
+    final testo = nome.text.trim();
     nome.dispose();
+    if (scelta == 'salva') {
+      await state.ritoccaSessione(
+        RitoccoSessione(s.id, nome: testo, alChiuso: chiuso),
+      );
+    } else if (scelta == 'elimina' && context.mounted) {
+      await _elimina(context);
+    }
+  }
+
+  /// Toglie la sessione dallo storico, dopo aver chiesto conferma.
+  Future<void> _elimina(BuildContext context) async {
+    final s = sessione;
+    // Quelle dell'app si cancellano; quelle dell'orologio si nascondono.
+    final orologio = !state.storicoCsv.any((x) => x.id == s.id);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        icon: Icon(Icons.delete_outline, color: Theme.of(c).colorScheme.error),
+        title: const Text('Eliminare la sessione?'),
+        content: Text(
+          'Sparisce dal calendario, dai Progressi e dal carico, insieme al '
+          'suo "Com\'è andata?".'
+          '${orologio ? ' Non tornerà con la sincronizzazione; nell\'app '
+                    'dell\'orologio resta com\'è.' : ''}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Annulla'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(c).colorScheme.error,
+              foregroundColor: Theme.of(c).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    final ripristina = await state.eliminaSessione(s);
+    messenger.showSnackBar(
+      SnackBar(
+        content: const Text('Sessione eliminata'),
+        action: SnackBarAction(label: 'Annulla', onPressed: ripristina),
+      ),
+    );
   }
 
   String _ora(DateTime d) => '${two(d.hour)}:${two(d.minute)}';

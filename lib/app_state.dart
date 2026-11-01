@@ -27,6 +27,7 @@ import 'profilo.dart';
 import 'recupero.dart';
 import 'registro_forza.dart';
 import 'scheda.dart';
+import 'sessioni_eliminate.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
@@ -124,6 +125,13 @@ class AppState extends ChangeNotifier {
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
+    final tNascoste = await Storage.readTabella('sessioni_nascoste.csv');
+    nascoste = {
+      if (tNascoste != null)
+        for (final r in tNascoste.righe)
+          if (tNascoste.v(r, 'id_sessione') case final id when id.isNotEmpty)
+            id,
+    };
     final tRitocchi = await Storage.readTabella('ritocchi_sessioni.csv');
     ritocchi = {
       if (tRitocchi != null)
@@ -1266,13 +1274,18 @@ class AppState extends ChangeNotifier {
   }
 
   void _ricombina() {
+    // Le tolte si filtrano dopo aver unito i doppioni: così non spunta al loro
+    // posto la copia della stessa attività arrivata da un'altra fonte.
     sessioni = [
-      for (final s in combina(
-        storicoCsv,
-        conTipoDalPiano([
-          ...senzaDoppioniIcu(sessioniHc, sessioniIcu),
-          ...sessioniIcu,
-        ], piano),
+      for (final s in senzaNascoste(
+        combina(
+          storicoCsv,
+          conTipoDalPiano([
+            ...senzaDoppioniIcu(sessioniHc, sessioniIcu),
+            ...sessioniIcu,
+          ], piano),
+        ),
+        nascoste,
       ).where((s) => !sportEsclusi.contains(s.sport)))
         // Il nome scritto a mano vince su quello dell'orologio.
         (ritocchi[s.id]?.nome ?? '').isEmpty
@@ -1283,6 +1296,50 @@ class AppState extends ChangeNotifier {
 
   /// Nome e "al chiuso" scritti a mano sulle sessioni, per id.
   Map<String, RitoccoSessione> ritocchi = {};
+
+  /// Sessioni dell'orologio tolte dallo storico (id): non tornano più.
+  Set<String> nascoste = {};
+
+  /// Toglie una sessione dallo storico, con il suo feedback. Restituisce la
+  /// funzione che la rimette com'era (per "Annulla").
+  Future<Future<void> Function()> eliminaSessione(Sessione s) async {
+    final prima = (storico: storicoCsv, nascoste: nascoste, feedback: feedback);
+    final dopo = togliSessione(
+      s,
+      storico: storicoCsv,
+      nascoste: nascoste,
+      feedback: feedback,
+    );
+    await _salvaStorico(dopo.storico, dopo.nascoste, dopo.feedback);
+    return () => _salvaStorico(prima.storico, prima.nascoste, prima.feedback);
+  }
+
+  Future<void> _salvaStorico(
+    List<Sessione> storico,
+    Set<String> tolte,
+    List<FeedbackSessione> fb,
+  ) async {
+    storicoCsv = storico;
+    nascoste = tolte;
+    feedback = fb;
+    await Storage.write(
+      'sessioni.csv',
+      sessioniHeader,
+      storicoCsv.map((x) => x.toRow()).toList(),
+    );
+    await Storage.write('sessioni_nascoste.csv', nascosteHeader, [
+      for (final id in nascoste) [id],
+    ]);
+    await Storage.write(
+      'feedback.csv',
+      feedbackHeader,
+      feedback.map((x) => x.toRow()).toList(),
+    );
+    _ricombina();
+    await _aggiornaForza();
+    await _aggiornaEndurance();
+    notifyListeners();
+  }
 
   bool alChiuso(Sessione s) =>
       ritocchi[s.id]?.alChiuso ?? icuAlChiuso.contains(s.id);
