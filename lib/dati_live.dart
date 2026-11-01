@@ -44,6 +44,47 @@ String fmtVelocita(String sport, double? mps) {
   return fmtRitmo(sport, stessoSport(sport, 'Bici') ? kmh : 60 / kmh);
 }
 
+/// Pausa automatica: mai, solo da fermi, o sotto una velocità scelta.
+enum ModoPausa { spenta, ferma, sotto }
+
+/// Sotto questa velocità si è fermi (circa 1,5 km/h): il GPS da fermo balla
+/// un po', camminare piano in salita resta sopra.
+const sogliaFermo = 0.4; // m/s
+
+/// La soglia (m/s) della pausa automatica.
+double sogliaDi(ModoPausa m, double kmh) =>
+    m == ModoPausa.ferma ? sogliaFermo : kmh / 3.6;
+
+/// Capisce quando ci si ferma e quando si riparte, senza scattare per un
+/// attimo: fermi dopo [perFermarsi] sotto la soglia, di nuovo in moto dopo
+/// [perRipartire] sopra la soglia (più un 20%, così non va avanti e indietro).
+class RilevaSosta {
+  final double soglia; // m/s
+  static const perFermarsi = Duration(seconds: 8);
+  static const perRipartire = Duration(seconds: 3);
+  bool fermo = false;
+  DateTime? _da;
+
+  RilevaSosta(this.soglia);
+
+  /// True se lo stato è appena cambiato.
+  bool aggiorna(double? mps, DateTime ora) {
+    if (mps == null) return false;
+    final sotto = fermo ? mps < soglia * 1.2 : mps < soglia;
+    if (sotto == fermo) {
+      _da = null;
+      return false;
+    }
+    _da ??= ora;
+    if (ora.difference(_da!) < (fermo ? perRipartire : perFermarsi)) {
+      return false;
+    }
+    fermo = sotto;
+    _da = null;
+    return true;
+  }
+}
+
 /// Lunghezza di un giro: 1 km a piedi, 5 km in bici (a 1 km suonerebbe ogni
 /// due minuti).
 int metriGiro(String sport) => stessoSport(sport, 'Bici') ? 5000 : 1000;

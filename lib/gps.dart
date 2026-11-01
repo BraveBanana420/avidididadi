@@ -17,6 +17,10 @@ class RegistratoreGps extends ChangeNotifier {
   double precisione = 0; // ultimo margine di errore in metri
   bool registra = false; // false durante preparazione e pausa
 
+  /// Velocità degli ultimi secondi, anche in pausa: serve a capire quando ci
+  /// si ferma e si riparte.
+  final _velocita = <(DateTime, double)>[];
+
   RegistratoreGps(String sport) : filtro = FiltroGps.per(sport);
 
   double get km => filtro.metri / 1000;
@@ -65,12 +69,30 @@ class RegistratoreGps extends ChangeNotifier {
     precisione = p.accuracy;
     final buono = p.accuracy <= FiltroGps.precisioneMassima;
     stato = buono ? StatoGps.pronto : StatoGps.cerca;
+    if (buono) {
+      // La velocità del servizio di posizione (anche dai sensori di movimento)
+      // è più stabile della distanza tra due punti, che da fermi balla.
+      final ora = DateTime.now();
+      _velocita
+        ..add((ora, p.speed < 0 ? 0 : p.speed))
+        ..removeWhere((x) => ora.difference(x.$1) > const Duration(seconds: 5));
+    }
     if (registra) {
       filtro.aggiungi(
         PuntoGps(p.latitude, p.longitude, p.timestamp, p.accuracy),
       );
     }
     notifyListeners();
+  }
+
+  /// Media della velocità degli ultimi 5 secondi; null senza punti buoni.
+  double? get velocitaRecente {
+    final ora = DateTime.now();
+    final v = [
+      for (final x in _velocita)
+        if (ora.difference(x.$1) <= const Duration(seconds: 5)) x.$2,
+    ];
+    return v.isEmpty ? null : v.reduce((a, b) => a + b) / v.length;
   }
 
   /// Ferma o riprende la raccolta dei punti (pausa dell'allenamento).

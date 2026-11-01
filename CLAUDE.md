@@ -63,13 +63,13 @@ lib/
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
   registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
   scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
-  avvisi.dart          bip, vibrazione e voce on/off (avvisi.txt)
+  avvisi.dart          bip, vibrazione, voce, pausa automatica e passo medio (avvisi.txt)
   voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
-  dati_live.dart       passo/velocità di adesso e giri (1 km, 5 in bici) durante l'allenamento
+  dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
   battito.dart         battito live via Bluetooth (sensore ricordato in sensore_battito.txt)
   in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
   notifica_allenamento.dart  notifica dell'allenamento (anche a schermo bloccato), tasto Pausa

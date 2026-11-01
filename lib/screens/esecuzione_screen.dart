@@ -27,6 +27,7 @@ import '../widgets.dart';
 import 'battito_sheet.dart';
 import 'feedback_sheet.dart';
 import 'mappa_percorso.dart';
+import 'opzioni_allenamento_screen.dart';
 
 const _canale = MethodChannel('avidididadi/avvio');
 
@@ -125,6 +126,26 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   Duration get _tempoBlocco => _baseBlocco + blocco.elapsed;
   DateTime _salvatoIl = DateTime(0);
   DateTime _notificataIl = DateTime(0);
+
+  // Soste: la pausa automatica (se scelta) ferma il cronometro; [_movimento]
+  // capisce sempre quando si è fermi, per il passo medio "in movimento".
+  bool _pausaAuto = false;
+  late RilevaSosta _autoPausa = RilevaSosta(
+    sogliaDi(modoPausa.value, sogliaPausaKmh.value),
+  );
+  final _movimento = RilevaSosta(sogliaFermo);
+  Duration _soste = Duration.zero; // in pausa automatica
+  Duration _fermo = Duration.zero; // fermi a cronometro acceso
+  DateTime? _ultimoControllo;
+
+  /// Il tempo su cui si calcola il passo medio, come scelto nelle impostazioni.
+  Duration get _tempoMedia {
+    if (mediaConSoste.value) return _tempoTotale + _soste;
+    final t = _tempoTotale - _fermo;
+    return t.isNegative ? Duration.zero : t;
+  }
+
+  bool get _inPausa => pausa || _pausaAuto;
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
   Timer? _tic;
   int i = 0;
@@ -214,6 +235,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     tempi.addAll(r.tempi);
     fatte.addAll(r.fatte);
     fc.ripristina(r.fcSomma, r.fcN, r.fcMax);
+    _soste = r.soste;
+    _fermo = r.fermo;
     if (gps != null) {
       gps!.filtro.punti.addAll(r.punti);
       gps!.filtro.metri = r.metri;
@@ -248,6 +271,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         fcSomma: fc.somma,
         fcN: fc.n,
         fcMax: fc.massimo,
+        soste: _soste,
+        fermo: _fermo,
       ),
     );
   }
@@ -263,7 +288,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         b,
         nome: widget.nome,
         libera: widget.libera,
-        inPausa: pausa,
+        inPausa: _inPausa,
         prossimo: blocchi
             .skip(i + 1)
             .where((x) => x.tipo == TipoBlocco.lavoro)
@@ -287,7 +312,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ? ora.add(Duration(seconds: _restano.clamp(0, 99999).toInt()))
           : ora.subtract(_tempoTotale),
       contoAllaRovescia: b.aTempo,
-      inPausa: pausa,
+      inPausa: _inPausa,
     );
   }
 
@@ -326,6 +351,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _aggiorna() {
     if (!mounted || pausa || finito) return;
+    if (!preparati && gps != null) _controllaSoste();
+    if (_pausaAuto) {
+      // Fermi: si aspetta solo di ripartire.
+      setState(() {});
+      return;
+    }
     if (!preparati &&
         DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
       _salvaInCorso();
@@ -499,7 +530,70 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     });
   }
 
+  /// Tiene il conto delle soste e, se scelta, mette e toglie la pausa
+  /// automatica. Mai nei recuperi: lì stare fermi è normale.
+  void _controllaSoste() {
+    final ora = DateTime.now();
+    final dt = _ultimoControllo == null
+        ? Duration.zero
+        : ora.difference(_ultimoControllo!);
+    _ultimoControllo = ora;
+    final v = gps!.velocitaRecente;
+    _movimento.aggiorna(v, ora);
+    if (_pausaAuto) {
+      _soste += dt;
+    } else if (_movimento.fermo) {
+      _fermo += dt;
+    }
+    if (modoPausa.value == ModoPausa.spenta ||
+        b.tipo == TipoBlocco.recupero ||
+        !_autoPausa.aggiorna(v, ora)) {
+      return;
+    }
+    _pausaAuto = _autoPausa.fermo;
+    gps!.imposta(!_pausaAuto);
+    if (_pausaAuto) {
+      totale.stop();
+      blocco.stop();
+      voce.di('In pausa.', valida: const Duration(seconds: 10));
+    } else {
+      totale.start();
+      blocco.start();
+      voce.di('Si riparte.', valida: const Duration(seconds: 10));
+    }
+    avviso();
+    _salvaInCorso();
+    _notifica();
+  }
+
+  /// Voce, bip e pausa automatica: le scelte nuove valgono subito.
+  Future<void> _apriOpzioni() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const OpzioniAllenamentoScreen()),
+    );
+    if (!mounted) return;
+    setState(() {
+      if (_pausaAuto) {
+        // Si riparte; se si è ancora fermi la pausa torna con la scelta nuova.
+        _pausaAuto = false;
+        gps?.imposta(true);
+        if (!pausa) {
+          totale.start();
+          blocco.start();
+        }
+      }
+      _autoPausa = RilevaSosta(sogliaDi(modoPausa.value, sogliaPausaKmh.value));
+    });
+  }
+
   void _pausa() {
+    // La pausa a mano comanda: quella automatica riparte da capo.
+    if (_pausaAuto) {
+      _pausaAuto = false;
+      if (!pausa) gps?.imposta(true);
+    }
+    _autoPausa = RilevaSosta(sogliaDi(modoPausa.value, sogliaPausaKmh.value));
+    _ultimoControllo = null;
     setState(() {
       pausa = !pausa;
       if (!preparati) gps?.imposta(!pausa);
@@ -733,7 +827,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
               IconButton(
                 tooltip: 'Bip e vibrazione',
-                onPressed: () => mostraAvvisi(context),
+                onPressed: _apriOpzioni,
                 icon: ValueListenableBuilder(
                   valueListenable: bipAttivo,
                   builder: (_, bip, _) =>
@@ -789,7 +883,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         child: _GrigliaLive(
                           sport: widget.sport,
                           gps: gps!,
-                          tempo: _tempoTotale,
+                          tempo: _tempoMedia,
                           ultimo: giri!.giri.lastOrNull,
                           zone: _zone,
                         ),
@@ -876,7 +970,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     restano: aTempo ? _restano.clamp(0, 99999).toInt() : 0,
                     totale: aTempo ? _durata : 0,
                     trascorso: _tempoBlocco,
-                    pausa: pausa,
+                    pausa: _inPausa,
                     // Con i riquadri sopra, più piccolo: entra senza scorrere.
                     piccolo: gps != null,
                   ),
@@ -1044,10 +1138,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            '${fmtKm(gps!.km)} · ${ritmoMedio(widget.sport, gps!.km, _tempoTotale)}',
+            '${fmtKm(gps!.km)} · ${ritmoMedio(widget.sport, gps!.km, _tempoMedia)}',
             style: t.titleMedium,
             textAlign: TextAlign.center,
           ),
+          // Tutti e due i tempi, qualunque media si sia scelta.
+          if (_soste + _fermo > const Duration(seconds: 30))
+            Text(
+              'In movimento ${fmtTimer(_tempoTotale - _fermo)} · '
+              'totale ${fmtTimer(_tempoTotale + _soste)}',
+              style: t.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
         ],
         if (fc.massimo > 0) ...[
           const SizedBox(height: 8),
@@ -1501,52 +1603,6 @@ class _Orologio extends StatelessWidget {
     );
   }
 }
-
-/// Foglio con le scelte di bip e vibrazione degli ultimi secondi.
-Future<void> mostraAvvisi(BuildContext context) => showModalBottomSheet<void>(
-  context: context,
-  showDragHandle: true,
-  builder: (c) => SafeArea(
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(8, 0, 8, 16),
-      child: ListenableBuilder(
-        listenable: Listenable.merge([bipAttivo, vibrazioneAttiva, voceAttiva]),
-        builder: (c, _) => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SwitchListTile(
-              secondary: const Icon(Icons.volume_up),
-              title: const Text('Bip'),
-              subtitle: const Text(
-                'Negli ultimi $secondiAvviso secondi di recuperi ed esercizi '
-                'a tempo, e a ogni km (5 km in bici). Usa il volume dei media.',
-              ),
-              value: bipAttivo.value,
-              onChanged: (v) => salvaAvvisi(bip: v),
-            ),
-            SwitchListTile(
-              secondary: const Icon(Icons.record_voice_over_outlined),
-              title: const Text('Voce'),
-              subtitle: const Text(
-                "Dice l'esercizio che inizia, i km e se sei fuori zona o "
-                'fuori passo. Durante le chiamate sta zitta.',
-              ),
-              value: voceAttiva.value,
-              onChanged: (v) => salvaAvvisi(voce: v),
-            ),
-            SwitchListTile(
-              secondary: const Icon(Icons.vibration),
-              title: const Text('Vibrazione'),
-              subtitle: const Text('Insieme ai bip.'),
-              value: vibrazioneAttiva.value,
-              onChanged: (v) => salvaAvvisi(vibrazione: v),
-            ),
-          ],
-        ),
-      ),
-    ),
-  ),
-);
 
 /// Ripetizioni e kg della serie in corso, con l'ultima volta sotto.
 class RegistroSerie extends StatelessWidget {

@@ -16,6 +16,7 @@ import 'catalogo_screen.dart';
 import 'crea_piano_screen.dart';
 import 'dati_personali_screen.dart';
 import 'obiettivo_screen.dart';
+import 'opzioni_allenamento_screen.dart';
 import 'schede_screen.dart';
 import 'tour.dart';
 import 'storico_misure_screen.dart';
@@ -352,6 +353,12 @@ class ProfileScreen extends StatelessWidget {
                         value: neon.value,
                         onChanged: (_) => cambiaNeon(),
                       ),
+                    ),
+                    voce(
+                      Icons.directions_run,
+                      "Durante l'allenamento",
+                      'Voce, bip, pausa automatica e passo medio',
+                      const OpzioniAllenamentoScreen(),
                     ),
                     voce(
                       Icons.sync,

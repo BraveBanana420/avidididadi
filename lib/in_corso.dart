@@ -36,6 +36,8 @@ class AllenamentoInCorso {
   final int fcSomma;
   final int fcN;
   final int fcMax;
+  final Duration soste; // in pausa automatica
+  final Duration fermo; // fermi a cronometro acceso
 
   const AllenamentoInCorso({
     required this.sport,
@@ -58,6 +60,8 @@ class AllenamentoInCorso {
     this.fcSomma = 0,
     this.fcN = 0,
     this.fcMax = 0,
+    this.soste = Duration.zero,
+    this.fermo = Duration.zero,
   });
 
   Map<String, Object?> toJson() => {
@@ -94,6 +98,8 @@ class AllenamentoInCorso {
       for (final g in giri) [g.numero, g.metri, g.tempo.inMilliseconds],
     ],
     'fc': [fcSomma, fcN, fcMax],
+    'soste_ms': soste.inMilliseconds,
+    'fermo_ms': fermo.inMilliseconds,
   };
 
   static AllenamentoInCorso? daJson(Map<String, dynamic> j) {
@@ -153,6 +159,8 @@ class AllenamentoInCorso {
         fcSomma: fc[0].toInt(),
         fcN: fc[1].toInt(),
         fcMax: fc[2].toInt(),
+        soste: Duration(milliseconds: (j['soste_ms'] as num? ?? 0).toInt()),
+        fermo: Duration(milliseconds: (j['fermo_ms'] as num? ?? 0).toInt()),
       );
     } catch (_) {
       return null; // file rovinato (es. scritto a metà): non si propone
