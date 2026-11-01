@@ -14,6 +14,7 @@ import '../glossario.dart';
 import '../in_corso.dart';
 import '../gps.dart';
 import '../models.dart';
+import '../notifica_allenamento.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../pulse.dart';
@@ -123,6 +124,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   Duration get _tempoTotale => _baseTotale + totale.elapsed;
   Duration get _tempoBlocco => _baseBlocco + blocco.elapsed;
   DateTime _salvatoIl = DateTime(0);
+  DateTime _notificataIl = DateTime(0);
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
   Timer? _tic;
   int i = 0;
@@ -176,6 +178,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     super.initState();
     _schermoAcceso(true);
     caricaAvvisi();
+    permessoNotifiche();
+    pausaDaNotifica = _pausaDaNotifica;
     sensoreBattito.avvia();
     _battiti = sensoreBattito.valori.stream.listen((v) {
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
@@ -184,6 +188,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (r != null) {
       _ripristina(r);
       if (gps != null && !finito) _accendiGps();
+      _notifica();
     } else if (gps == null) {
       blocco.start();
     } else {
@@ -247,6 +252,50 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
   }
 
+  /// Notifica con esercizio, tempo e dati: si vede anche a schermo bloccato.
+  void _notifica() {
+    if (preparati || finito || blocchi.isEmpty) return;
+    final ora = DateTime.now();
+    _notificataIl = ora;
+    final bpm = sensoreBattito.bpm;
+    mostraNotifica(
+      titolo: titoloNotifica(
+        b,
+        nome: widget.nome,
+        libera: widget.libera,
+        inPausa: pausa,
+        prossimo: blocchi
+            .skip(i + 1)
+            .where((x) => x.tipo == TipoBlocco.lavoro)
+            .firstOrNull,
+      ),
+      testo: testoNotifica(
+        sport: widget.sport,
+        km: gps?.km,
+        mps: gps == null
+            ? null
+            : velocitaAttuale(
+                gps!.filtro.punti,
+                ora: ora,
+                finestra: finestraVelocita(widget.sport),
+              ),
+        bpm: bpm,
+        zona: bpm == null ? 0 : _zone.zonaDi(bpm),
+      ),
+      // Nei blocchi a tempo il conto alla rovescia, negli altri il totale.
+      base: b.aTempo
+          ? ora.add(Duration(seconds: _restano.clamp(0, 99999).toInt()))
+          : ora.subtract(_tempoTotale),
+      contoAllaRovescia: b.aTempo,
+      inPausa: pausa,
+    );
+  }
+
+  /// Il tasto Pausa/Riprendi della notifica.
+  void _pausaDaNotifica() {
+    if (mounted && !preparati && !finito) _pausa();
+  }
+
   Future<void> _accendiGps() async {
     await gps!.avvia();
     if (!mounted) return;
@@ -264,6 +313,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _tic?.cancel();
     _battiti?.cancel();
     voce.ferma();
+    if (pausaDaNotifica == _pausaDaNotifica) pausaDaNotifica = null;
+    togliNotifica();
     sensoreBattito.ferma();
     _schermoAcceso(false);
     gps?.dispose();
@@ -278,6 +329,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (!preparati &&
         DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
       _salvaInCorso();
+    }
+    if (!preparati &&
+        DateTime.now().difference(_notificataIl) > const Duration(seconds: 5)) {
+      _notifica();
     }
     if (!preparati && giri != null) {
       final g = giri!.aggiorna(gps!.filtro.metri, _tempoTotale);
@@ -321,6 +376,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       voce.di(fraseBlocco(b), valida: const Duration(seconds: 30));
     }
     _salvaInCorso();
+    _notifica();
   }
 
   // ---------------------------------------------------------------------
@@ -456,12 +512,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       }
     });
     _salvaInCorso();
+    _notifica();
   }
 
   void _fine() {
     totale.stop();
     blocco.stop();
-    gps?.ferma();
+    // Spento il GPS se ne va anche la sua notifica; poi si toglie la nostra.
+    (gps?.ferma() ?? Future<void>.value()).then((_) => togliNotifica());
     _schermoAcceso(false);
     avviso(fine: true);
     voce.di(

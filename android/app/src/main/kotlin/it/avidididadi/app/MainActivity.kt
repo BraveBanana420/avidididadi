@@ -1,7 +1,13 @@
 package it.avidididadi.app
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.ComponentName
+import android.content.Context
+import android.content.IntentFilter
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
@@ -17,6 +23,9 @@ import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
@@ -106,7 +115,75 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+    // Permesso delle notifiche (Android 13+), chiesto all'inizio dell'allenamento.
+    private var attesaNotifiche: MethodChannel.Result? = null
+    private val richiestaNotifiche =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+            attesaNotifiche?.success(ok)
+            attesaNotifiche = null
+        }
+
+    // Il tasto Pausa/Riprendi della notifica: arriva qui e passa all'app.
+    // Il ricevitore non è esportato: solo la notifica dell'app lo raggiunge.
+    private val ricevitorePausa = object : BroadcastReceiver() {
+        override fun onReceive(c: Context?, i: Intent?) {
+            canale?.invokeMethod("pausaDaNotifica", null)
+        }
+    }
+
+    /** Notifica dell'allenamento: stesso numero di quella del GPS, che sostituisce. */
+    private fun notificaAllenamento(dati: Map<*, *>) {
+        val gestore = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        gestore.createNotificationChannel(
+            NotificationChannel(CANALE_ALLENAMENTO, "Allenamento in corso", NotificationManager.IMPORTANCE_LOW)
+                .apply { setShowBadge(false) },
+        )
+        val inPausa = dati["pausa"] == true
+        val apri = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val pausa = PendingIntent.getBroadcast(
+            this, 1,
+            Intent(AZIONE_PAUSA).setPackage(packageName),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+        )
+        val testo = dati["testo"] as? String ?: ""
+        val n = NotificationCompat.Builder(this, CANALE_ALLENAMENTO)
+            .setSmallIcon(R.drawable.ic_notifica)
+            .setContentTitle(dati["titolo"] as? String ?: "Allenamento")
+            .setContentText(testo.ifEmpty { null })
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setSilent(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setCategory(NotificationCompat.CATEGORY_WORKOUT)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
+            .setContentIntent(apri)
+            .addAction(0, if (inPausa) "Riprendi" else "Pausa", pausa)
+        if (inPausa) {
+            n.setShowWhen(false)
+        } else {
+            // Il tempo lo fa scorrere Android: niente aggiornamenti ogni secondo.
+            n.setShowWhen(true)
+                .setUsesChronometer(true)
+                .setWhen((dati["base"] as Number).toLong())
+                .setChronometerCountDown(dati["indietro"] == true)
+        }
+        try {
+            NotificationManagerCompat.from(this).notify(ID_NOTIFICA, n.build())
+        } catch (e: SecurityException) {
+            Log.w("Avidididadi", "notifiche non permesse", e)
+        }
+    }
+
     override fun onDestroy() {
+        try {
+            unregisterReceiver(ricevitorePausa)
+        } catch (_: IllegalArgumentException) {
+        }
+        NotificationManagerCompat.from(this).cancel(ID_NOTIFICA)
         tono?.release()
         tono = null
         tts?.shutdown()
@@ -146,6 +223,9 @@ class MainActivity : FlutterFragmentActivity() {
         super.configureFlutterEngine(flutterEngine)
         azioneAvvio = azioneDi(intent)
         testoAvvio = testoDi(intent)
+        ContextCompat.registerReceiver(
+            this, ricevitorePausa, IntentFilter(AZIONE_PAUSA), ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
         canale = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "avidididadi/avvio").apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
@@ -190,6 +270,26 @@ class MainActivity : FlutterFragmentActivity() {
                             attesaPercorso = null
                             result.success(null)
                         }
+                    }
+                    "permessoNotifiche" -> {
+                        if (Build.VERSION.SDK_INT < 33 ||
+                            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            result.success(true)
+                        } else {
+                            attesaNotifiche?.success(false)
+                            attesaNotifiche = result
+                            richiestaNotifiche.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }
+                    "notificaAllenamento" -> {
+                        notificaAllenamento(call.arguments as Map<*, *>)
+                        result.success(null)
+                    }
+                    "togliNotifica" -> {
+                        NotificationManagerCompat.from(this@MainActivity).cancel(ID_NOTIFICA)
+                        result.success(null)
                     }
                     "permessoBluetooth" -> {
                         val servono = permessiBluetooth()
@@ -424,6 +524,10 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     companion object {
+        // Lo stesso numero della notifica del GPS (geolocator): una notifica sola.
+        private const val ID_NOTIFICA = 75415
+        private const val CANALE_ALLENAMENTO = "allenamento"
+        private const val AZIONE_PAUSA = "it.avidididadi.app.PAUSA"
         private val AZIONI_PRIVACY = setOf(
             "androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE",
             "android.intent.action.VIEW_PERMISSION_USAGE",

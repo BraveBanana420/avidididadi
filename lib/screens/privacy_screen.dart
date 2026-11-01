@@ -211,8 +211,8 @@ class PrivacyScreen extends StatelessWidget {
         "Health Connect (lettura dei dati elencati sopra), posizione precisa "
             "(solo durante corsa, camminata e bici), dispositivi nelle "
             "vicinanze (solo per il sensore del battito), internet (mappe, "
-            "immagini, assistente), notifica durante la registrazione del "
-            "percorso. Puoi "
+            "immagini, assistente), notifiche (solo quella dell'allenamento in "
+            "corso, con tempo e dati, visibile anche a schermo bloccato). Puoi "
             "negare ognuno di questi permessi: l'app continua a funzionare senza "
             "la parte che ne ha bisogno.",
       ),
