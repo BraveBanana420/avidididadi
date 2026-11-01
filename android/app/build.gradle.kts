@@ -49,13 +49,21 @@ android {
 
     buildTypes {
         release {
-            // Senza key.properties si firma con la chiave di debug.
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            // Sempre la chiave vera: un APK firmato con quella di debug non si
+            // installa sopra quello distribuito (senza key.properties la build
+            // di rilascio si ferma, vedi sotto).
+            signingConfig = signingConfigs.getByName("release")
         }
+    }
+}
+
+gradle.taskGraph.whenReady {
+    val rilascio = allTasks.any { it.path.startsWith(":app:") && it.name.contains("Release") }
+    if (rilascio && !keystorePropertiesFile.exists()) {
+        throw GradleException(
+            "Manca android/key.properties con la chiave di firma " +
+                "(modello in key.properties.example): l'APK di rilascio non si firma.",
+        )
     }
 }
 
