@@ -75,18 +75,14 @@ class Storage {
 
   /// Sostituisce tutti i CSV con quelli del backup (anche il token di Health
   /// Connect si cancella) e salva la foto. I file non nel backup spariscono.
-  static Future<void> ripristina(DatiBackup b) async {
-    final d = Directory(await cartella());
-    for (final f in d.listSync().whereType<File>()) {
-      if (f.path.endsWith('.csv')) await f.delete();
-    }
-    for (final e in b.csv.entries) {
-      await File('${d.path}/${e.key}').writeAsString(e.value);
-    }
-    if (b.nomeFoto != null && b.foto != null) {
-      await File('${d.path}/${b.nomeFoto}').writeAsBytes(b.foto!);
-    }
-  }
+  /// Restituisce i CSV di prima, per tornare indietro con [rimetti] se i dati
+  /// nuovi non si caricano.
+  static Future<Map<String, String>> ripristina(DatiBackup b) async =>
+      ripristinaIn(Directory(await cartella()), b);
+
+  /// Rimette i CSV di prima del ripristino.
+  static Future<void> rimetti(Map<String, String> prima) async =>
+      rimettiIn(Directory(await cartella()), prima);
 
   /// Testo di un file della cartella dell'app (null se non c'è).
   static Future<String?> leggiTesto(String nome) async {
@@ -105,4 +101,58 @@ class Storage {
 
   static Future<void> writePiano(List<PianoRiga> p) =>
       write('piano.csv', pianoHeader, p.map((e) => e.toRow()).toList());
+}
+
+/// Copia dei dati di prima dell'ultimo ripristino, nella cartella privata
+/// (non è un CSV: non entra nei backup). Serve se qualcosa va storto.
+const fileCopiaRipristino = 'ripristino_precedente.gz';
+
+Map<String, String> _csvIn(Directory d) => {
+  for (final f in d.listSync().whereType<File>())
+    if (f.path.endsWith('.csv')) f.uri.pathSegments.last: f.readAsStringSync(),
+};
+
+/// Ripristino in [d] senza rischiare i dati: i file nuovi si scrivono prima
+/// in una cartella a parte, i vecchi restano in memoria e in
+/// [fileCopiaRipristino]. Se una scrittura fallisce si rimette tutto com'era.
+Future<Map<String, String>> ripristinaIn(Directory d, DatiBackup b) async {
+  final prima = _csvIn(d);
+  await File('${d.path}/$fileCopiaRipristino')
+      .writeAsBytes(creaBackup(prima, creato: DateTime.now()), flush: true);
+  final nuova = Directory('${d.path}/ripristino_tmp');
+  if (await nuova.exists()) await nuova.delete(recursive: true);
+  await nuova.create();
+  try {
+    for (final e in b.csv.entries) {
+      await File('${nuova.path}/${e.key}').writeAsString(e.value, flush: true);
+    }
+    // Pronti tutti: solo adesso si tolgono i vecchi e si spostano i nuovi.
+    try {
+      for (final nome in prima.keys) {
+        await File('${d.path}/$nome').delete();
+      }
+      for (final nome in b.csv.keys) {
+        await File('${nuova.path}/$nome').rename('${d.path}/$nome');
+      }
+    } catch (_) {
+      await rimettiIn(d, prima);
+      rethrow;
+    }
+  } finally {
+    if (await nuova.exists()) await nuova.delete(recursive: true);
+  }
+  if (b.nomeFoto != null && b.foto != null) {
+    await File('${d.path}/${b.nomeFoto}').writeAsBytes(b.foto!, flush: true);
+  }
+  return prima;
+}
+
+/// Toglie i CSV di adesso e rimette quelli di [prima].
+Future<void> rimettiIn(Directory d, Map<String, String> prima) async {
+  for (final f in d.listSync().whereType<File>()) {
+    if (f.path.endsWith('.csv')) await f.delete();
+  }
+  for (final e in prima.entries) {
+    await File('${d.path}/${e.key}').writeAsString(e.value, flush: true);
+  }
 }

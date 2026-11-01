@@ -925,9 +925,21 @@ class AppState extends ChangeNotifier {
   }
 
   /// Sostituisce tutti i dati con quelli del backup e li ricarica.
+  /// Ripristina il backup. Se i dati nuovi non si caricano (backup rovinato)
+  /// torna ai dati di prima e lancia [FormatException].
   Future<void> ripristinaBackup(DatiBackup b) async {
     final fotoPrima = fileFoto;
-    await Storage.ripristina(b);
+    final prima = await Storage.ripristina(b);
+    try {
+      await load();
+    } catch (e) {
+      debugPrint('Ripristino: dati non caricabili ($e), torno a prima');
+      await Storage.rimetti(prima);
+      await load();
+      throw const FormatException(
+        'Il backup è rovinato: i tuoi dati sono rimasti quelli di prima.',
+      );
+    }
     if (fotoPrima != null &&
         b.nomeFoto != profilo.foto &&
         await fotoPrima.exists()) {
@@ -936,7 +948,7 @@ class AppState extends ChangeNotifier {
     chat = [];
     promemoriaChiuso = false;
     fcRiposoMisurata = 0;
-    await load();
+    notifyListeners();
   }
 
   Future<void> salvaAssistente() async {

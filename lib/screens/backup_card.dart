@@ -89,6 +89,8 @@ class _SezioneBackupState extends State<SezioneBackup> {
           'rilegge lo storico.',
         );
       }
+    } on FormatException catch (e) {
+      if (mounted) _messaggio(e.message);
     } catch (e) {
       if (mounted) _messaggio('Ripristino non riuscito: $e');
     } finally {
