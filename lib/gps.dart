@@ -82,10 +82,14 @@ class RegistratoreGps extends ChangeNotifier {
       // è più stabile della distanza tra due punti, che da fermi balla.
       final ora = DateTime.now();
       ultimo = PuntoGps(p.latitude, p.longitude, p.timestamp, p.accuracy);
-      if (p.speed > 1 && p.heading >= 0) direzione = p.heading;
       _velocita
         ..add((ora, p.speed < 0 ? 0 : p.speed))
         ..removeWhere((x) => ora.difference(x.$1) > const Duration(seconds: 5));
+      // Da fermi il GPS "salta" e darebbe direzioni a caso: la mappa gira
+      // solo se ci si muove davvero (da qualche secondo, non per un salto).
+      if (p.heading >= 0 && p.speed > 1.2 && (velocitaRecente ?? 0) > 1.2) {
+        direzione = p.heading;
+      }
     }
     if (registra) {
       filtro.aggiungi(

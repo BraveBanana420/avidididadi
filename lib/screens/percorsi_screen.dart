@@ -199,6 +199,8 @@ class _VocePercorso extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+    // Quali mappe sono già scaricate (si legge una volta sola).
+    mappeOffline.carica();
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -577,7 +579,9 @@ class ProfiloAltimetrico extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final t = Theme.of(context).textTheme;
+    // Tutto lo spazio che c'è: in una colonna senza larghezza sarebbe zero.
     return CustomPaint(
+      size: Size.infinite,
       painter: _PittoreProfilo(
         traccia,
         metri: metri,

@@ -322,7 +322,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       DateTime.now(),
       velocita: gps?.velocitaRecente,
     );
-    if (preparati) return;
+    if (preparati || pausa) return;
     for (final a in avvisi) {
       avviso(fine: a.urgente);
       voce.di(
@@ -532,8 +532,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   int get _restano => _durata - _tempoBlocco.inSeconds;
 
   void _aggiorna() {
-    if (!mounted || pausa || finito) return;
+    if (!mounted || finito) return;
+    // Anche in pausa: la mappa dice quanto è lontano il percorso.
     _seguiPercorso();
+    if (pausa) return;
     if (!preparati && gps != null) _controllaSoste();
     if (_pausaAuto) {
       // Fermi: si aspetta solo di ripartire.
@@ -1476,6 +1478,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         if (_conQuota) ...[
           const SizedBox(height: 8),
           SizedBox(
+            width: double.infinity,
             height: 56,
             child: ProfiloAltimetrico(
               traccia: _traccia!,
