@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../app_state.dart';
 import '../attivita_libera.dart';
 import '../avvisi.dart';
+import '../calorie.dart';
 import '../battito.dart';
 import '../dati_live.dart';
 import '../esecuzione.dart';
@@ -147,6 +148,26 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 
   bool get _inPausa => pausa || _pausaAuto;
+
+  /// Km della seduta: quelli scritti a mano (tapis roulant, rulli) prima del
+  /// GPS.
+  double get _km =>
+      kmScritti(_kmScritti.text) ??
+      (gps == null || gps!.percorso.vuoto
+          ? 0
+          : double.parse(gps!.km.toStringAsFixed(2)));
+
+  /// Calorie stimate con quello che si sa: potenza, battito o velocità.
+  Calorie? get _calorie => stimaCalorie(
+    sport: widget.sport,
+    tempo: _tempoTotale,
+    km: _km,
+    potenzaMedia: potenza.media,
+    fcMedia: fc.media,
+    pesoKg: widget.state.ultimaMisura('peso_kg')?.$1,
+    eta: widget.state.profilo.eta,
+    sesso: widget.state.profilo.sesso,
+  );
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
   Timer? _tic;
   int i = 0;
@@ -758,8 +779,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       final id = widget.libera
           ? idLibera(inizio, widget.sport)
           : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}';
-      // I km del display (tapis roulant, rulli) valgono più del GPS.
-      final scritti = kmScritti(_kmScritti.text);
+      final calorie = _calorie;
       await widget.state.registraSvolta(
         Sessione(
           id: id,
@@ -769,11 +789,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           sport: widget.sport,
           tipo: widget.tipo,
           durataMin: (_tempoTotale.inSeconds / 60).round().clamp(1, 600),
-          distanzaKm:
-              scritti ??
-              (percorso == null || percorso.vuoto
-                  ? 0
-                  : double.parse(gps!.km.toStringAsFixed(2))),
+          // I km del display (tapis roulant, rulli) valgono più del GPS.
+          distanzaKm: _km,
+          calorieAttive: calorie?.attive.roundToDouble() ?? 0,
+          calorieTotali: calorie?.totali.roundToDouble() ?? 0,
           fcMedia: fc.media,
           fcMax: fc.massimo,
           potenzaMedia: potenza.media,
@@ -1330,6 +1349,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             textAlign: TextAlign.center,
           ),
         ],
+        if (potenza.n > 0)
+          Text(
+            [
+              'Potenza media ${potenza.media} W',
+              if (cadenza.n > 0) 'cadenza ${cadenza.media} rpm',
+            ].join(' · '),
+            style: t.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+        if (_calorie case final c? when c.attive >= 1)
+          Text(
+            'Circa ${c.attive.round()} kcal',
+            style: t.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         if (giri != null && giri!.giri.isNotEmpty) ...[
           const SizedBox(height: 20),
           SuperficiePulse(

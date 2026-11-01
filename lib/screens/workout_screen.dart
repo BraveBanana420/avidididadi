@@ -761,10 +761,17 @@ class _DatiSessione extends StatelessWidget {
         ),
       if (s.fcMedia > 0) ('FC media', '${s.fcMedia} bpm'),
       if (s.fcMax > 0) ('FC massima', '${s.fcMax} bpm'),
+      // Quelle delle sessioni dell'app sono calcolate, non misurate.
       if (s.calorieAttive > 0)
-        ('Calorie attive', '${s.calorieAttive.round()} kcal'),
+        (
+          s.fonte == fonteApp ? 'Calorie attive (stima)' : 'Calorie attive',
+          '${s.calorieAttive.round()} kcal',
+        ),
       if (s.calorieTotali > 0)
-        ('Calorie totali', '${s.calorieTotali.round()} kcal'),
+        (
+          s.fonte == fonteApp ? 'Calorie totali (stima)' : 'Calorie totali',
+          '${s.calorieTotali.round()} kcal',
+        ),
       if (s.passi > 0) ('Passi', '${s.passi}'),
       if (s.potenzaMedia > 0) ('Potenza media', '${s.potenzaMedia} W'),
       if (s.cadenzaMedia > 0) ('Cadenza media', '${s.cadenzaMedia} rpm'),

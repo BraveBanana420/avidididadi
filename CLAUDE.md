@@ -57,6 +57,7 @@ lib/
   adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
   feedback.dart        feedback e regole di carico
   recupero.dart        energia e prontezza dai dati di recupero
+  calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
   invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu

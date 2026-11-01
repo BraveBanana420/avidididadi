@@ -82,6 +82,7 @@ Map<String, Object?> attivitaManuale(
     if (s.distanzaKm > 0) 'distance': (s.distanzaKm * 1000).round(),
     if (s.fcMedia > 0) 'average_heartrate': s.fcMedia,
     if (s.fcMax > 0) 'max_heartrate': s.fcMax,
+    if (s.calorieAttive > 0) 'calories': s.calorieAttive.round(),
     if (alChiuso) 'trainer': true,
     'external_id': idEsterno(s),
   };
