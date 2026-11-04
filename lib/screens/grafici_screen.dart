@@ -6,6 +6,7 @@ import '../health_connect.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
+import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
@@ -38,12 +39,25 @@ class _GraficiScreenState extends State<GraficiScreen> {
         origine: daFreeletics(s) ? '' : s.origine,
       );
     }
+    // Battito, potenza e cadenza dai sensori collegati all'app (rulli,
+    // misuratore di potenza, fascia cardio).
+    final app = await widget.state.serieApp(s);
+    if (!app.vuota) {
+      serie = SerieSessione(
+        fc: serie.fc.isEmpty ? app.fc : serie.fc,
+        velocita: serie.velocita,
+        potenza: app.potenza,
+        cadenza: app.cadenza,
+      );
+    }
     if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
       final r = await widget.state.percorsoDi(s);
       if (r.stato == StatoPercorso.dati && r.percorso != null) {
         serie = SerieSessione(
           fc: serie.fc,
           velocita: velocitaDaPercorso(r.percorso!),
+          potenza: serie.potenza,
+          cadenza: serie.cadenza,
         );
       }
     }
@@ -120,16 +134,11 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 const SizedBox(height: 12),
               ],
               if (serie.potenza.isNotEmpty) ...[
-                _Semplice(
-                  titolo: 'Potenza',
+                GraficoPotenza(serie: serie.potenza, inizio: _inizio(serie)),
+                const SizedBox(height: 12),
+                ZonePotenzaCard(
                   serie: serie.potenza,
-                  inizio: _inizio(serie),
-                  unita: 'W',
-                  colore: const Color(0xFFB566FF),
-                  numeri: [
-                    ('Media', '${media(serie.potenza).round()} W'),
-                    ('Massima', '${massimo(serie.potenza).round()} W'),
-                  ],
+                  zone: widget.state.zonePotenza,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -152,9 +161,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
               ],
               if (serie.altitudine.isEmpty)
                 Text(
-                  'Altitudine, pendenza e potenza non ci sono: Health Connect '
-                  'non le riceve. Collega intervals.icu (Profilo → Dati e '
-                  'collegamenti) per averle.',
+                  '${serie.potenza.isEmpty ? 'Altitudine, pendenza e potenza' : 'Altitudine e pendenza'} '
+                  'non ci sono: Health Connect non le riceve. Collega '
+                  'intervals.icu (Profilo → Dati e collegamenti) per averle.',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
             ],
@@ -169,6 +178,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
       [
         ...s.fc,
         ...s.velocita,
+        ...s.potenza,
       ].map((c) => c.t).reduce((a, b) => a.isBefore(b) ? a : b);
 }
 
@@ -366,6 +376,116 @@ class _Velocita extends StatelessWidget {
         dettagli: [
           for (final c in r)
             '${fmtMinSec(passoDa(c.v))} /km\n${_dal(inizio, c.t)}',
+        ],
+      ),
+    );
+  }
+}
+
+/// La potenza nel tempo, con media, normalizzata e massima.
+class GraficoPotenza extends StatelessWidget {
+  final List<Campione> serie;
+  final DateTime inizio;
+  const GraficoPotenza({super.key, required this.serie, required this.inizio});
+
+  @override
+  Widget build(BuildContext context) {
+    final r = ricampiona(serie);
+    final np = potenzaNormalizzata(serie);
+    return _Riquadro(
+      titolo: 'Potenza',
+      numeri: [
+        ('Media', '${media(serie).round()} W'),
+        if (np != null) ('Normalizzata', '$np W'),
+        ('Massima', '${massimo(serie).round()} W'),
+      ],
+      grafico: GraficoLinea(
+        ys: [for (final c in r) c.v],
+        etichette: [for (final c in r) _dal(inizio, c.t)],
+        fmt: (v) => v.toStringAsFixed(0),
+        colore: const Color(0xFFB566FF),
+        dettagli: [for (final c in r) '${c.v.round()} W\n${_dal(inizio, c.t)}'],
+      ),
+    );
+  }
+}
+
+/// Tempo in ogni zona di potenza, dalla 7 (in alto) alla 1. Senza FTP
+/// spiega dove scriverlo.
+class ZonePotenzaCard extends StatelessWidget {
+  final List<Campione> serie;
+  final ZonePotenza? zone;
+  const ZonePotenzaCard({super.key, required this.serie, required this.zone});
+
+  static const _colori = [
+    Color(0xFF9A9AA5),
+    Color(0xFF2EA8FF),
+    Color(0xFF22E07A),
+    Color(0xFFFFC233),
+    Color(0xFFFF8A3D),
+    Color(0xFFFF3B47),
+    Color(0xFFB566FF),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final z = zone;
+    if (z == null) {
+      return SuperficiePulse(
+        child: Text(
+          'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → '
+          'Zone, oppure impostalo su intervals.icu.',
+          style: t.bodySmall,
+        ),
+      );
+    }
+    final tempi = tempoNelleZonePotenza(serie, z);
+    final totale = tempi.values.fold(Duration.zero, (a, b) => a + b);
+    if (totale == Duration.zero) return const SizedBox.shrink();
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Tempo nelle zone di potenza', style: t.titleMedium),
+          const SizedBox(height: 10),
+          for (var n = 7; n >= 1; n--)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 112,
+                    child: Text(
+                      'Z$n ${ZonePotenza.nomi[n - 1]}',
+                      style: t.bodySmall,
+                    ),
+                  ),
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: tempi[n]!.inSeconds / totale.inSeconds,
+                        minHeight: 12,
+                        color: _colori[n - 1],
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 64,
+                    child: Text(
+                      '${tempi[n]!.inMinutes} min',
+                      textAlign: TextAlign.right,
+                      style: t.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Text('Zone calcolate sul tuo FTP (${z.ftp} W).', style: t.bodySmall),
         ],
       ),
     );

@@ -13,7 +13,7 @@ import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
 import '../models.dart';
-import '../obiettivo.dart';
+import '../potenza.dart';
 import '../percorso.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
@@ -284,7 +284,15 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             if (s.descrizione.isNotEmpty)
               Text(s.descrizione, style: t.titleSmall),
             // "zona 2" diventa anche bpm, con le zone personali.
-            if (s.riepilogo.isNotEmpty) Text(conBpm(s.riepilogo, state.zone)),
+            if (s.riepilogo.isNotEmpty)
+              Text(
+                intensitaCon(
+                  s.riepilogo,
+                  s.sport,
+                  state.zonePotenza,
+                  state.zone,
+                ),
+              ),
             // ...e come la si riconosce, anche senza orologio.
             if (sensazioneDi(s.riepilogo) != null)
               Text(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../models.dart';
 import '../obiettivo.dart';
+import '../potenza.dart';
 import '../widgets.dart';
 
 String _dataBreve(DateTime d) => '${two(d.day)}/${two(d.month)}/${d.year}';
@@ -207,11 +208,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
         ? '${p.passoCriticoManuale ~/ 60}:${two(p.passoCriticoManuale % 60)}'
         : '',
   );
+  late final ftp = TextEditingController(
+    text: p.ftpManuale > 0 ? '${p.ftpManuale}' : '',
+  );
   String? errore;
 
   @override
   void dispose() {
-    for (final c in [fcMax, fcRiposo, passo]) {
+    for (final c in [fcMax, fcRiposo, passo, ftp]) {
       c.dispose();
     }
     super.dispose();
@@ -228,10 +232,16 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final mx = _intero(fcMax, 120, 230);
     final rp = _intero(fcRiposo, 30, 100);
     final ps = _leggiTempo(passo.text); // m:ss letto come ore:minuti -> secondi
-    if (mx == null || rp == null || ps == null || (ps > 0 && ps < 50)) {
+    final fw = _intero(ftp, 50, 600);
+    if (mx == null ||
+        rp == null ||
+        ps == null ||
+        (ps > 0 && ps < 50) ||
+        fw == null) {
       setState(
         () => errore =
-            'Controlla i valori: FC max 120-230, FC riposo 30-100, passo m:ss.',
+            'Controlla i valori: FC max 120-230, FC riposo 30-100, passo m:ss, '
+            'FTP 50-600 W.',
       );
       return;
     }
@@ -239,7 +249,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
     p
       ..fcMaxManuale = mx
       ..fcRiposoManuale = rp
-      ..passoCriticoManuale = ps;
+      ..passoCriticoManuale = ps
+      ..ftpManuale = fw;
     await widget.state.salvaProfilo();
     navigator.pop();
   }
@@ -328,6 +339,44 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   ? 'Vuoto = stima dalle sessioni in piscina (non ancora disponibile).'
                   : 'Vuoto = stima dalle sessioni in piscina: ${fmtPasso100(passoStimato)}.',
               helperMaxLines: 2,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Text('Le tue zone di potenza (bici)', style: t.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            'Partono dall\'FTP, la potenza che riesci a tenere per circa '
+            'un\'ora. Le sedute di bici ti danno il range di watt da tenere.',
+            style: t.bodySmall,
+          ),
+          if (widget.state.zonePotenza case final zp?) ...[
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  for (var n = 1; n <= 7; n++)
+                    ListTile(
+                      dense: true,
+                      leading: CircleAvatar(radius: 14, child: Text('$n')),
+                      title: Text(ZonePotenza.nomi[n - 1]),
+                      trailing: Text(zp.testo(n), style: t.titleSmall),
+                    ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          TextField(
+            controller: ftp,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'FTP',
+              suffixText: 'W',
+              helperText: widget.state.ftpIcu > 0
+                  ? 'Vuoto = quello di intervals.icu: ${widget.state.ftpIcu} W.'
+                  : 'Se non lo sai: pedala 20 minuti più forte che puoi, '
+                        'l\'FTP è circa il 95% della potenza media.',
+              helperMaxLines: 3,
             ),
           ),
           if (errore != null) ...[

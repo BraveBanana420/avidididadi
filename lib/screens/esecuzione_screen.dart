@@ -21,16 +21,19 @@ import '../models.dart';
 import '../notifica_allenamento.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
+import '../potenza.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../scheda.dart';
 import '../sensori_bici.dart';
 import '../tema.dart';
 import '../voce.dart';
+import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'battito_sheet.dart';
 import 'feedback_sheet.dart';
+import 'grafici_screen.dart';
 import 'mappa_live.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
@@ -225,6 +228,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   double _metriSensore = 0;
   DateTime? _ultimoCampione;
   DateTime _statisticheIl = DateTime(0);
+  late final ZonePotenza? _zonePotenza = widget.state.zonePotenza;
+
+  /// Un campione al secondo dei sensori, per i grafici della sessione.
+  final _serieFc = <Campione>[];
+  final _seriePotenza = <Campione>[];
+  final _serieCadenza = <Campione>[];
 
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
@@ -497,12 +506,38 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (v != null && dt <= 1) _metriSensore += v * dt;
     if (ora.difference(_statisticheIl) < const Duration(seconds: 1)) return;
     _statisticheIl = ora;
-    if (sensoreBici.potenza case final w?) potenza.aggiungi(w);
-    // La cadenza media si fa sulle pedalate: smettere di pedalare non conta.
-    if (sensoreBici.cadenza case final c? when c > 0) {
-      cadenza.aggiungi(c.round());
+    if (sensoreBici.potenza case final w?) {
+      potenza.aggiungi(w);
+      _seriePotenza.add(Campione(ora, w.toDouble()));
+    }
+    if (sensoreBici.cadenza case final c?) {
+      _serieCadenza.add(Campione(ora, c));
+      // La cadenza media si fa sulle pedalate: smettere di pedalare non conta.
+      if (c > 0) cadenza.aggiungi(c.round());
     }
   }
+
+  /// Il battito dal sensore, un campione al secondo, per il grafico.
+  void _campionaBattito() {
+    final ora = DateTime.now();
+    final bpm = sensoreBattito.bpm;
+    if (bpm == null) return;
+    if (_serieFc.isNotEmpty &&
+        ora.difference(_serieFc.last.t) < const Duration(seconds: 1)) {
+      return;
+    }
+    _serieFc.add(Campione(ora, bpm.toDouble()));
+  }
+
+  /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
+  int? get _watt =>
+      mediaRecente(_seriePotenza, DateTime.now()) ?? sensoreBici.potenza;
+
+  /// La zona di potenza chiesta dal blocco di bici in corso, se c'è l'FTP.
+  int? get _zonaWatt =>
+      _zonePotenza == null || !_bici || preparati || b.tipo != TipoBlocco.lavoro
+      ? null
+      : zonaObiettivo(b.intensita);
 
   /// Il tasto Pausa/Riprendi della notifica.
   void _pausaDaNotifica() {
@@ -565,6 +600,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       return;
     }
     if (!preparati && _bici) _campionaBici();
+    if (!preparati) _campionaBattito();
     if (!preparati &&
         DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
       _salvaInCorso();
@@ -698,6 +734,23 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void _controllaRitmo() {
     final ora = DateTime.now();
     final zona = zonaObiettivo(b.intensita);
+    final zw = _zonaWatt;
+    final w = _watt;
+    if (zw != null && w != null && _zonePotenza != null) {
+      // Ruota libera (discesa, semaforo): niente avvisi.
+      if (w == 0) {
+        ritmo.azzera();
+        return;
+      }
+      final verso = versoPotenza(w, zw, _zonePotenza);
+      if (ritmo.controlla(verso, ora)) {
+        voce.di(
+          frasePotenza(w, zw, verso, _zonePotenza),
+          valida: const Duration(seconds: 20),
+        );
+      }
+      return;
+    }
     final bpm = sensoreBattito.bpm;
     if (zona != null && bpm != null) {
       final n = _zone.zonaDi(bpm);
@@ -879,6 +932,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     // lo mostra quando Health Connect non ne ha uno.
     if (percorso != null && !percorso.vuoto) {
       await widget.state.salvaPercorsoApp(oggi, widget.sport, percorso);
+    }
+    if (_serieFc.isNotEmpty || _seriePotenza.isNotEmpty) {
+      await widget.state.salvaSerieApp(
+        oggi,
+        widget.sport,
+        SerieSessione(
+          fc: _serieFc,
+          potenza: _seriePotenza,
+          cadenza: _serieCadenza,
+        ),
+      );
     }
     await widget.state.salvaSerie(oggi, [
       for (final e in fatte.entries)
@@ -1189,11 +1253,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                         spacing: 8,
                                         children: [
                                           Expanded(
-                                            child: _Dato(
-                                              etichetta: 'Potenza',
-                                              valore:
-                                                  '${sensoreBici.potenza ?? '–'}',
-                                              unita: 'W',
+                                            child: _DatoPotenza(
+                                              watt: _watt,
+                                              zone: _zonePotenza,
+                                              obiettivo: _zonaWatt,
                                               onTap: () =>
                                                   mostraSensoreBici(context),
                                             ),
@@ -1276,7 +1339,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 6),
                                   child: Text(
-                                    'Intensità: ${conBpm(b.intensita, _zone)}',
+                                    'Intensità: ${intensitaCon(b.intensita, widget.sport, _zonePotenza, _zone)}',
                                     style: t.bodyLarge,
                                   ),
                                 ),
@@ -1744,7 +1807,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             textAlign: TextAlign.center,
           ),
         ],
-        if (potenza.n > 0)
+        if (potenza.n > 0 && _seriePotenza.length < 60)
           Text(
             [
               'Potenza media ${potenza.media} W',
@@ -1753,6 +1816,22 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),
+        // Almeno un minuto di potenza: grafico e tempo nelle zone.
+        if (_seriePotenza.length >= 60) ...[
+          const SizedBox(height: 20),
+          GraficoPotenza(serie: _seriePotenza, inizio: _seriePotenza.first.t),
+          const SizedBox(height: 12),
+          ZonePotenzaCard(serie: _seriePotenza, zone: _zonePotenza),
+          if (cadenza.n > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Cadenza media ${cadenza.media} rpm',
+                style: t.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+        ],
         if (_calorie case final c? when c.attive >= 1)
           Text(
             'Circa ${c.attive.round()} kcal',
@@ -2092,12 +2171,16 @@ class _Dato extends StatelessWidget {
   final String unita;
   final IconData? icona;
   final VoidCallback? onTap;
+  final String? nota; // sotto il valore, es. il range da tenere
+  final bool notaFuori; // fuori dal range: la nota si colora
   const _Dato({
     required this.etichetta,
     required this.valore,
     required this.unita,
     this.icona,
     this.onTap,
+    this.nota,
+    this.notaFuori = false,
   });
 
   @override
@@ -2160,10 +2243,59 @@ class _Dato extends StatelessWidget {
                   maxLines: 1,
                 ),
               ),
+              if (nota != null)
+                Text(
+                  nota!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.labelMedium?.copyWith(
+                    color: notaFuori ? scheme.error : scheme.onSurfaceVariant,
+                    fontWeight: notaFuori ? FontWeight.w700 : null,
+                  ),
+                ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+/// La potenza (media di 3 secondi) con la zona; nei blocchi con una zona
+/// chiesta, sotto il range di watt da tenere.
+class _DatoPotenza extends StatelessWidget {
+  final int? watt;
+  final ZonePotenza? zone;
+  final int? obiettivo;
+  final VoidCallback onTap;
+  const _DatoPotenza({
+    required this.watt,
+    required this.zone,
+    required this.obiettivo,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final z = zone, w = watt, o = obiettivo;
+    final n = z == null || w == null ? 0 : z.zonaDi(w);
+    final verso = z == null || w == null || o == null || w == 0
+        ? 0
+        : versoPotenza(w, o, z);
+    return _Dato(
+      icona: Icons.bolt,
+      etichetta: n > 0 ? 'Potenza · Z$n' : 'Potenza',
+      valore: w?.toString() ?? '–',
+      unita: 'W',
+      nota: z == null || o == null
+          ? null
+          : switch (verso) {
+              1 => '▼ Z$o ${z.testo(o)}',
+              -1 => '▲ Z$o ${z.testo(o)}',
+              _ => 'Z$o ${z.testo(o)}',
+            },
+      notaFuori: verso != 0,
+      onTap: onTap,
     );
   }
 }

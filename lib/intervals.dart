@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'models.dart';
 import 'percorso.dart';
+import 'potenza.dart';
 import 'serie_sessione.dart';
 
 /// Collegamento a intervals.icu, che riceve le attività da Garmin, Polar,
@@ -316,6 +317,9 @@ class ClientIntervals {
     if (j is! Map) throw const ErroreIntervals('Chiave API non valida.');
     return '${j['name'] ?? ''}'.trim();
   }
+
+  /// L'FTP della bici impostato su intervals.icu (null se non c'è).
+  Future<int?> ftp() async => ftpDaAtletaIcu(await _get('/api/v1/athlete/0'));
 
   /// Le attività tra [da] e [a] (date locali).
   Future<List<AttivitaIcu>> attivita(DateTime da, DateTime a) async {

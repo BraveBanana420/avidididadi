@@ -36,6 +36,7 @@ class Profilo {
   int fcMaxManuale = 0;
   int fcRiposoManuale = 0;
   int passoCriticoManuale = 0; // secondi per 100 m
+  int ftpManuale = 0; // watt; 0 = quello di intervals.icu, se c'è
 
   Obiettivo? get obiettivoGara => garaSport.isEmpty || garaData == null
       ? null
@@ -98,6 +99,7 @@ class Profilo {
     ['fc_max', fcMaxManuale == 0 ? '' : '$fcMaxManuale'],
     ['fc_riposo', fcRiposoManuale == 0 ? '' : '$fcRiposoManuale'],
     ['passo_critico_s', passoCriticoManuale == 0 ? '' : '$passoCriticoManuale'],
+    ['ftp', ftpManuale == 0 ? '' : '$ftpManuale'],
   ];
 
   static Profilo da(Tabella? t) {
@@ -141,6 +143,7 @@ class Profilo {
     p.fcMaxManuale = int.tryParse(m['fc_max'] ?? '') ?? 0;
     p.fcRiposoManuale = int.tryParse(m['fc_riposo'] ?? '') ?? 0;
     p.passoCriticoManuale = int.tryParse(m['passo_critico_s'] ?? '') ?? 0;
+    p.ftpManuale = int.tryParse(m['ftp'] ?? '') ?? 0;
     return p;
   }
 }

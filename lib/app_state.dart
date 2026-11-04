@@ -26,6 +26,7 @@ import 'models.dart';
 import 'navigazione.dart';
 import 'obiettivo.dart';
 import 'percorso.dart';
+import 'potenza.dart';
 import 'profilo.dart';
 import 'recupero.dart';
 import 'registro_forza.dart';
@@ -572,6 +573,17 @@ class AppState extends ChangeNotifier {
     _ricombina();
     await _aggiornaEndurance();
     notifyListeners();
+  }
+
+  /// Salva battito, potenza e cadenza registrati dai sensori durante
+  /// l'allenamento, per i grafici.
+  Future<void> salvaSerieApp(DateTime giorno, String sport, SerieSessione s) =>
+      Storage.scriviTesto(fileSerieApp(giorno, sport), serieAppCsv(s));
+
+  /// Le serie registrate dall'app per una sessione (vuote se non ci sono).
+  Future<SerieSessione> serieApp(Sessione s) async {
+    final t = await Storage.leggiTesto(fileSerieApp(s.data, s.sport));
+    return t == null ? const SerieSessione() : serieAppDa(t);
   }
 
   /// Salva il percorso GPS registrato dall'app durante l'allenamento.
@@ -1201,6 +1213,13 @@ class AppState extends ChangeNotifier {
     );
   }
 
+  /// Zone di potenza della bici: dall'FTP scritto a mano o da quello di
+  /// intervals.icu. Null se non si conosce l'FTP.
+  ZonePotenza? get zonePotenza {
+    final ftp = profilo.ftpManuale > 0 ? profilo.ftpManuale : ftpIcu;
+    return ftp > 0 ? ZonePotenza(ftp) : null;
+  }
+
   /// Passo critico del nuoto in secondi per 100 m (null se non stimabile).
   int? get passoCritico => profilo.passoCriticoManuale > 0
       ? profilo.passoCriticoManuale
@@ -1477,8 +1496,11 @@ class AppState extends ChangeNotifier {
 
   /// Invio del piano (corsa, bici, nuoto) al calendario di intervals.icu.
   bool invioIntervals = false;
-  List<EventoInviato> inviatiIcu = [];
   DateTime? ultimoInvio;
+
+  /// FTP della bici letto da intervals.icu (0 = non arrivato).
+  int ftpIcu = 0;
+  List<EventoInviato> inviatiIcu = [];
   String? erroreInvio;
   bool inviando = false;
   static const _fileInviati = 'intervals_inviati.csv';
@@ -1508,6 +1530,7 @@ class AppState extends ChangeNotifier {
     ultimaIntervals = DateTime.tryParse(m['ultima'] ?? '');
     invioIntervals = m['invio'] == 'si';
     ultimoInvio = DateTime.tryParse(m['ultimo_invio'] ?? '');
+    ftpIcu = int.tryParse(m['ftp'] ?? '') ?? 0;
     final ti = await Storage.readTabella(_fileInviati);
     inviatiIcu = ti == null
         ? []
@@ -1536,6 +1559,7 @@ class AppState extends ChangeNotifier {
         ['ultima', ultimaIntervals?.toIso8601String() ?? ''],
         ['invio', invioIntervals ? 'si' : ''],
         ['ultimo_invio', ultimoInvio?.toIso8601String() ?? ''],
+        ['ftp', ftpIcu == 0 ? '' : '$ftpIcu'],
       ],
     );
   }
@@ -1574,6 +1598,12 @@ class AppState extends ChangeNotifier {
           ? oggi.subtract(const Duration(days: 90))
           : soloData(ultimaIntervals!).subtract(const Duration(days: 3));
       final nuove = await ClientIntervals(chiave).attivita(da, oggi);
+      try {
+        // L'FTP serve alle zone di potenza; se non arriva si tiene il vecchio.
+        ftpIcu = await ClientIntervals(chiave).ftp() ?? ftpIcu;
+      } on ErroreIntervals {
+        // Le attività sono arrivate: va bene lo stesso.
+      }
       final perId = {
         for (final s in sessioniIcu)
           if (s.data.isBefore(da)) s.id: s,
@@ -1635,6 +1665,7 @@ class AppState extends ChangeNotifier {
           indice: indice,
           // I passi dettagliati valgono per la prima seduta del giorno.
           passi: indice == 0 ? passiSeduta(r.data, r.sport, r.tipo) : const [],
+          potenza: zonePotenza != null,
         ),
       );
     }
@@ -1736,6 +1767,7 @@ class AppState extends ChangeNotifier {
     erroreIntervals = null;
     sessioniIcu = [];
     icuAlChiuso = {};
+    ftpIcu = 0;
     await _salvaIntervals();
     _ricombina();
     await _aggiornaEndurance();

@@ -295,8 +295,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     voce(
                       Icons.monitor_heart_outlined,
-                      'Le mie zone del cuore',
-                      'Quanto spingere, in battiti al minuto',
+                      'Le mie zone',
+                      'Quanto spingere: battiti al minuto e watt in bici',
                       ZoneScreen(state: state),
                       linea: false,
                     ),

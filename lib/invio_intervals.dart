@@ -1,5 +1,6 @@
 import 'csv.dart';
 import 'models.dart';
+import 'potenza.dart';
 
 // Invio del piano a intervals.icu: corsa, bici e nuoto dei prossimi giorni
 // diventano allenamenti strutturati nel calendario di intervals.icu, che li
@@ -77,17 +78,22 @@ String _etichetta(WorkoutStep s) {
 
 /// Il testo dell'allenamento per intervals.icu, una riga per passo.
 /// Le ripetizioni diventano un blocco "Nx" con lavoro e recupero.
-String testoIcu(String sport, List<WorkoutStep> passi) {
+/// Con [potenza] (FTP noto) le zone della bici diventano % dell'FTP, che
+/// Garmin mostra come obiettivo in watt.
+String testoIcu(String sport, List<WorkoutStep> passi, {bool potenza = false}) {
   final nuoto = stessoSport(sport, 'Nuoto');
+  final watt = potenza && stessoSport(sport, 'Bici');
   final righe = <String>[];
   String riga(WorkoutStep s) => [
     '-',
     _etichetta(s),
     quantitaIcu(s),
-    obiettivoIcu(s.intensita),
+    (watt ? obiettivoPotenzaIcu(s.intensita) : null) ??
+        obiettivoIcu(s.intensita),
   ].where((x) => x.isNotEmpty).join(' ');
-  String recupero(int sec) =>
-      nuoto ? '- ${sec}s intensity=rest' : '- Recupero ${sec}s Z1 HR';
+  String recupero(int sec) => nuoto
+      ? '- ${sec}s intensity=rest'
+      : '- Recupero ${sec}s ${watt ? obiettivoPotenzaIcu('zona 1') : 'Z1 HR'}';
 
   final ordinati = [...passi]..sort((a, b) => a.ordine.compareTo(b.ordine));
   for (final s in ordinati) {
@@ -123,6 +129,7 @@ class SedutaDaInviare {
   final int durataMin;
   final int indice; // seconda corsa dello stesso giorno: 1
   final List<WorkoutStep> passi;
+  final bool potenza; // FTP noto: obiettivi della bici in watt
   const SedutaDaInviare({
     required this.data,
     required this.sport,
@@ -130,6 +137,7 @@ class SedutaDaInviare {
     required this.durataMin,
     required this.passi,
     this.indice = 0,
+    this.potenza = false,
   });
 
   String get externalId =>
@@ -142,7 +150,7 @@ class SedutaDaInviare {
     if (tipoIcu == null) return null;
     final testo = passi.isEmpty
         ? '- ${durataMin > 0 ? '${durataMin}m' : 'Press lap'}'
-        : testoIcu(sport, passi);
+        : testoIcu(sport, passi, potenza: potenza);
     return {
       'category': 'WORKOUT',
       'start_date_local': '${isoData(data)}T00:00:00',

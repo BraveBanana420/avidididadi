@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-01.5';
+const versioneTermini = '2026-11-04.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -124,8 +124,9 @@ class PrivacyScreen extends StatelessWidget {
             "collega via Bluetooth a una fascia cardio, a un orologio che "
             "trasmette il battito o ai sensori della bici (rulli, potenza, "
             "velocità e cadenza), per mostrarteli mentre ti alleni. Alla fine "
-            "salva solo battito medio e massimo, potenza e cadenza medie nella "
-            "sessione, sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
+            "salva nella sessione battito medio e massimo, potenza e cadenza "
+            "medie e, per i grafici, un valore al secondo di battito, potenza "
+            "e cadenza: tutto sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
             "la circonferenza della ruota) restano sul telefono per "
             "ricollegarsi la volta dopo: li cancelli con \"Dimentica\". Il "
             "permesso \"Dispositivi nelle vicinanze\" serve solo a trovare il "
@@ -151,13 +152,14 @@ class PrivacyScreen extends StatelessWidget {
         'intervals.icu (facoltativo)',
         "Se colleghi intervals.icu con la tua chiave API, l'app scarica da lì "
             "le tue attività di corsa, bici e nuoto (nome, orari, distanza, "
-            "battito, velocità, altitudine, potenza, percorso GPS). intervals.icu "
+            "battito, velocità, altitudine, potenza, percorso GPS) e il tuo "
+            "FTP della bici, per le zone di potenza. intervals.icu "
             "le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai "
             "collegato tu, con le sue condizioni sulla privacy. La chiave resta "
             "cifrata sul telefono. Solo se accendi \"Manda il piano a "
             "intervals.icu\", l'app scrive nel tuo calendario di intervals.icu "
             "le sedute di corsa, bici e nuoto dei prossimi 14 giorni (data, "
-            "sport, nome, durata, passi con zone di battito o passo): niente "
+            "sport, nome, durata, passi con zone di battito, potenza o passo): niente "
             "nome, foto, misure, feedback o forza. Spegnendolo, le sedute future "
             "mandate dall'app vengono tolte. Solo se tocchi \"Invia a "
             "intervals.icu\" su una sessione registrata dall'app, quella "

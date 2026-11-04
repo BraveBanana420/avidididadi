@@ -58,6 +58,7 @@ lib/
   adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
   feedback.dart        feedback e regole di carico
   recupero.dart        energia e prontezza dai dati di recupero
+  potenza.dart         zone di potenza dall'FTP, watt nelle sedute di bici, avvisi, serie dei sensori
   calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
@@ -97,7 +98,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`;
+- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza e cadenza al secondo dai sensori);
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
@@ -125,7 +126,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
   - Il numero di build (`+N`) sale sempre di 1. Più modifiche nella stessa sessione, prima di un nuovo APK distribuito, possono stare nella stessa versione.
-  - Attuale: `1.3.2+8`.
+  - Attuale: `1.4.0+9`.
 - **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
