@@ -226,6 +226,35 @@ void main() {
       expect(a.passi.every((s) => s.durataTot == 55), isTrue);
     });
 
+    test('la durata scritta vale se i passi non hanno tempo', () {
+      final r = leggiRispostaAgente(
+        blocco({
+          'allenamenti': [
+            {
+              'data': '2026-11-07',
+              'sport': 'Corsa',
+              'durata_min': 50,
+              'passi': [
+                {'metri': 10000, 'intensita': 'zona 2'},
+              ],
+            },
+          ],
+        }),
+        codice,
+      );
+      final a = r.allenamenti!.single;
+      expect(a.durataMin, 50);
+      expect(a.passi.single.durataTot, 50);
+      // Senza durata scritta: 0, perché i metri non dicono i minuti.
+      expect(
+        leggiRispostaAgente(
+          blocco(json),
+          codice,
+        ).allenamenti!.single.durataIndicata,
+        isNull,
+      );
+    });
+
     test('il blocco con i passi diventa blocchi per il player', () {
       final a = leggiRispostaAgente(blocco(json), codice).allenamenti!.single;
       final b = blocchiDa(a.passi);

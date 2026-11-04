@@ -24,6 +24,7 @@ class AllenamentoAgente {
   final String nome; // es. "VO2max 5×4"
   final String fascia;
   final List<WorkoutStep> passi;
+  final int? durataIndicata; // scritta dall'assistente (passi senza tempo)
   const AllenamentoAgente({
     required this.data,
     required this.sport,
@@ -31,10 +32,11 @@ class AllenamentoAgente {
     required this.nome,
     required this.fascia,
     required this.passi,
+    this.durataIndicata,
   });
 
-  /// Minuti in tutto: lavoro e recuperi di ogni ripetizione.
-  int get durataMin => durataPassi(passi);
+  /// Minuti in tutto: quelli indicati, altrimenti lavoro e recuperi dei passi.
+  int get durataMin => durataIndicata ?? durataPassi(passi);
 }
 
 /// Minuti totali dei blocchi a tempo, recuperi compresi, come li fa il
@@ -126,8 +128,14 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
       ),
     );
   }
-  final durata = durataPassi(passi);
-  if (durata > 300) {
+  // Con passi a distanza o "finché hai finito" i minuti non si calcolano:
+  // vale la durata scritta dall'assistente, se è credibile.
+  final indicata = _numero(m['durata_min'])?.round();
+  final durataIndicata = indicata != null && indicata >= 5 && indicata <= 300
+      ? indicata
+      : null;
+  final durata = durataIndicata ?? durataPassi(passi);
+  if (durataPassi(passi) > 300) {
     throw FormatException(
       'Allenamento del ${isoData(data)}: dura più di 5 ore.',
     );
@@ -158,6 +166,7 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
     nome: nome,
     fascia: _testo(m['fascia'], 20),
     passi: conTotale,
+    durataIndicata: durataIndicata,
   );
 }
 
