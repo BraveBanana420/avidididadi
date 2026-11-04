@@ -405,4 +405,61 @@ void main() {
     expect(() => base('ftp://192.168.1.10'), throwsA(isA<ErroreLlm>()));
     expect(() => base('192.168.1.10:11434'), throwsA(isA<ErroreLlm>()));
   });
+
+  group('il coach con la chiave API propone come l\'assistente esterno', () {
+    test('le istruzioni spiegano piano nuovo e allenamenti', () {
+      final i = istruzioniAssistente('DATI');
+      expect(i, contains('<proposta>'));
+      expect(i, contains('"allenamenti"'));
+      expect(i, contains('"piano"'));
+      expect(i, isNot(contains('avidididadi')));
+    });
+
+    test('un allenamento in watt nella risposta', () {
+      final r = leggiProposta('''Ecco le ripetute per giovedì.
+<proposta>
+{"allenamenti": [{"data": "2026-11-06", "sport": "Bici", "nome": "5x4", "motivo": "VO2max",
+  "passi": [
+    {"fase": "riscaldamento", "minuti": 10, "intensita": "55-65%"},
+    {"fase": "principale", "ripeti": 5, "minuti": 4, "intensita": "110%", "recupero_s": 180}
+  ]}]}
+</proposta>''');
+      expect(r.testo, 'Ecco le ripetute per giovedì.');
+      expect(r.errore, isNull);
+      final a = r.proposta!.allenamenti!.single;
+      expect(a.passi, hasLength(2));
+      expect(r.proposta!.motivo, 'VO2max');
+    });
+
+    test('anche un piano nuovo, pure dentro un blocco di codice', () {
+      final r = leggiProposta('''Ti propongo questo.
+```json
+{"piano": {"da": "2026-11-09", "sedute": [{"data": "2026-11-09", "sport": "Corsa", "durata_min": 40}]}}
+```''');
+      expect(r.proposta!.piano!.da, DateTime(2026, 11, 9));
+      expect(r.proposta!.piano!.sedute, hasLength(1));
+    });
+
+    test('blocco rotto o passi sbagliati: si dice perché', () {
+      final rotto = leggiProposta(
+        'Ok.\n<proposta>{"allenamenti": [</proposta>',
+      );
+      expect(rotto.testo, 'Ok.');
+      expect(rotto.proposta, isNull);
+      expect(rotto.errore, contains('non è leggibile'));
+      final sbagliato = leggiProposta(
+        '<proposta>{"allenamenti": [{"data": "2026-11-06", "sport": "Bici", '
+        '"passi": [{"nome": "senza durata"}]}]}</proposta>',
+      );
+      expect(sbagliato.errore, contains('minuti'));
+    });
+
+    test('le modifiche di prima funzionano come sempre', () {
+      final (_, m) = estraiProposta(
+        '<proposta>{"modifiche": [{"azione": "rimuovi", "data": "2026-11-06", '
+        '"sport": "Bici"}]}</proposta>',
+      );
+      expect(m, hasLength(1));
+    });
+  });
 }

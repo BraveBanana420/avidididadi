@@ -6,6 +6,7 @@ import '../llm.dart';
 import '../widgets.dart';
 import 'agente_screen.dart';
 import 'privacy_screen.dart';
+import 'schede_proposte.dart';
 import 'testo_formattato.dart';
 
 const _suggerimenti = [
@@ -318,6 +319,30 @@ class _Fumetto extends StatelessWidget {
                   : TestoFormattato(m.testo, colore: scheme.onSurface),
             ),
             if (m.proposta != null) SchedaProposta(state: state, messaggio: m),
+            if (m.allenamenti case final a?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaAllenamenti(
+                  state: state,
+                  allenamenti: a,
+                  motivo: m.motivo,
+                  messaggio: m,
+                ),
+              ),
+            if (m.piano case final p?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaPiano(state: state, piano: p, messaggio: m),
+              ),
+            if (m.errore case final e?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4, bottom: 8),
+                child: Text(
+                  e,
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: scheme.error),
+                ),
+              ),
           ],
         ),
       ),

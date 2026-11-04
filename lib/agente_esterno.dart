@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'allenamento_agente.dart';
 import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
@@ -37,47 +36,11 @@ String nuovoCodiceAgente([Random? r]) {
   return 'AVD-${List.generate(6, (_) => _lettere[g.nextInt(_lettere.length)]).join()}';
 }
 
-/// Settimane massime di un piano nuovo.
-const settimaneMaxPiano = 16;
-
 const _sport = {'Corsa', 'Nuoto', 'Bici', 'Forza', 'Mobilità'};
 
 String _formato(String codice) =>
     '''Quando vuoi cambiare il piano, metti IN FONDO alla risposta un blocco di codice con dentro solo questo (JSON valido), che io copio nell'app:
-```
-<avidididadi codice="$codice">
-{"modifiche": [
-  {"azione": "cambia", "data": "AAAA-MM-GG", "sport": "Corsa", "durata_min": 40, "tipo": "Lento", "motivo": "..."},
-  {"azione": "sposta", "data": "AAAA-MM-GG", "sport": "Forza", "nuova_data": "AAAA-MM-GG", "motivo": "..."},
-  {"azione": "rimuovi", "data": "AAAA-MM-GG", "sport": "Bici", "motivo": "..."},
-  {"azione": "aggiungi", "data": "AAAA-MM-GG", "sport": "Nuoto", "durata_min": 45, "tipo": "Tecnica", "fascia": "Mattina", "motivo": "..."}
-]}
-</avidididadi>
-```
-Per un piano nuovo, che sostituisce il calendario da quella data in poi (al massimo $settimaneMaxPiano settimane), usa invece:
-```
-<avidididadi codice="$codice">
-{"piano": {"da": "AAAA-MM-GG", "motivo": "...", "sedute": [
-  {"data": "AAAA-MM-GG", "sport": "Corsa", "tipo": "Lento", "durata_min": 40, "fascia": "Mattina"},
-  {"data": "AAAA-MM-GG", "sport": "Forza", "durata_min": 45, "fascia": "Sera"}
-]}}
-</avidididadi>
-```
-Per un allenamento preciso di corsa, bici o nuoto con i passi scelti da te (per esempio delle ripetute in watt per il rullo), usa:
-```
-<avidididadi codice="$codice">
-{"allenamenti": [
-  {"data": "AAAA-MM-GG", "sport": "Bici", "tipo": "Intervalli", "nome": "VO2max 5x4", "fascia": "Sera", "motivo": "...", "passi": [
-    {"fase": "riscaldamento", "nome": "Pedalata agile", "minuti": 10, "intensita": "55-65%"},
-    {"fase": "principale", "nome": "Ripetute", "ripeti": 5, "minuti": 4, "intensita": "106-112%", "recupero_s": 180},
-    {"fase": "defaticamento", "nome": "Sciolto", "minuti": 10, "intensita": "zona 1"}
-  ]}
-]}
-</avidididadi>
-```
-Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
-Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi; nuoto: Tecnica, Soglia; bici: Uscita, Intervalli, Uscita lunga; fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
-Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Gli esercizi delle sedute li prepara l'app: tu scegli giorno, sport, tipo e durata.
+${formatoProposte('<avidididadi codice="$codice">', '</avidididadi>')}
 Usa sempre esattamente il codice $codice. Se non serve cambiare il piano, non aggiungere il blocco.''';
 
 /// Primo messaggio: il ruolo, il formato delle risposte e i dati.
@@ -104,28 +67,6 @@ String datiAgente({
 }) =>
     '''I MIEI DATI, aggiornati a ${dataLunga(oggi)} (codice $codice). Usa questi al posto di quelli mandati prima.
 $contesto''';
-
-/// Quello che l'app ha trovato nella risposta dell'agente.
-class RispostaAgente {
-  final List<Modifica>? modifiche;
-  final PianoAgente? piano;
-  final List<AllenamentoAgente>? allenamenti;
-  final String motivo; // perché l'assistente propone gli allenamenti
-  const RispostaAgente({
-    this.modifiche,
-    this.piano,
-    this.allenamenti,
-    this.motivo = '',
-  });
-}
-
-/// Un piano nuovo proposto dall'agente, ancora da controllare.
-class PianoAgente {
-  final DateTime da;
-  final String motivo;
-  final List<Map<String, dynamic>> sedute;
-  const PianoAgente(this.da, this.motivo, this.sedute);
-}
 
 final _blocco = RegExp(
   r'''<avidididadi\s+codice\s*=\s*["']?([A-Za-z0-9-]+)["']?\s*>(.*?)</avidididadi\s*>''',
@@ -167,48 +108,7 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
       "Il blocco non è leggibile. Chiedi all'assistente di riscriverlo.",
     );
   }
-  final allenamenti = j['allenamenti'];
-  if (allenamenti is List) {
-    final lista = [
-      for (final a in allenamenti)
-        if (a is Map) allenamentoDa(Map<String, dynamic>.from(a)),
-    ];
-    if (lista.isEmpty) {
-      throw const FormatException('Nel blocco non ci sono allenamenti.');
-    }
-    final motivi = {
-      for (final a in allenamenti)
-        if (a is Map && '${a['motivo'] ?? ''}'.trim().isNotEmpty)
-          '${a['motivo']}'.trim(),
-    };
-    return RispostaAgente(allenamenti: lista, motivo: motivi.join(' '));
-  }
-  final piano = j['piano'];
-  if (piano is Map) {
-    final da = parseData('${piano['da'] ?? ''}');
-    final sedute = piano['sedute'];
-    if (da == null || sedute is! List) {
-      throw const FormatException(
-        'Nel piano mancano la data di inizio o le sedute.',
-      );
-    }
-    return RispostaAgente(
-      piano: PianoAgente(da, '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(), [
-        for (final s in sedute)
-          if (s is Map) Map<String, dynamic>.from(s),
-      ]),
-    );
-  }
-  final lista = j['modifiche'];
-  final modifiche = [
-    if (lista is List)
-      for (final x in lista)
-        if (x is Map) ?Modifica.da(Map<String, dynamic>.from(x)),
-  ];
-  if (modifiche.isEmpty) {
-    throw const FormatException('Nel blocco non ci sono modifiche valide.');
-  }
-  return RispostaAgente(modifiche: modifiche);
+  return rispostaDaJson(j);
 }
 
 /// Esito dei controlli su un piano nuovo: se ci sono problemi non si applica.

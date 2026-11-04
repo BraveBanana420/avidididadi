@@ -94,7 +94,8 @@ RichiestaLlm richiestaPer(
         {'x-api-key': k, 'anthropic-version': '2023-06-01'},
         {
           'model': c.modello,
-          'max_tokens': 2048,
+          // Un piano di più settimane o un allenamento lungo occupano spazio.
+          'max_tokens': 4096,
           'system': sistema,
           'messages': [
             for (final m in storia)

@@ -1091,8 +1091,20 @@ class AppState extends ChangeNotifier {
         istruzioniAssistente(contestoAssistente),
         storia,
       );
-      final (testoRisposta, proposta) = estraiProposta(risposta);
-      chat = [...chat, MessaggioChat(false, testoRisposta, proposta: proposta)];
+      final r = leggiProposta(risposta);
+      final p = r.proposta;
+      chat = [
+        ...chat,
+        MessaggioChat(
+          false,
+          r.testo,
+          proposta: p?.modifiche,
+          piano: p?.piano,
+          allenamenti: p?.allenamenti,
+          motivo: p?.motivo ?? '',
+          errore: r.errore,
+        ),
+      ];
       connessione = StatoConnessione.connesso;
       erroreConnessione = null;
       return null;
@@ -1188,7 +1200,10 @@ class AppState extends ChangeNotifier {
   /// Mette nel calendario gli allenamenti dell'assistente (da oggi in poi),
   /// al posto della seduta dello stesso sport in quel giorno. Restituisce
   /// quanti ne ha messi.
-  Future<int> applicaAllenamentiAgente(List<AllenamentoAgente> lista) async {
+  Future<int> applicaAllenamentiAgente(
+    List<AllenamentoAgente> lista, {
+    MessaggioChat? da,
+  }) async {
     final oggi = soloData(DateTime.now());
     final validi = lista.where((a) => !a.data.isBefore(oggi)).toList();
     if (validi.isEmpty) return 0;
@@ -1208,11 +1223,21 @@ class AppState extends ChangeNotifier {
     await Storage.writePiano(piano);
     _ricombina();
     await _aggiornaEndurance();
-    rispostaApplicata = true;
+    _segnaApplicata(da);
     notifyListeners();
     // Subito anche nel calendario di intervals.icu (e da lì a Garmin).
     if (invioIntervals) await inviaPianoIntervals();
     return validi.length;
+  }
+
+  /// Proposta applicata: nel messaggio della chat del coach, oppure nella
+  /// risposta dell'assistente esterno.
+  void _segnaApplicata(MessaggioChat? da) {
+    if (da != null) {
+      da.applicata = true;
+    } else {
+      rispostaApplicata = true;
+    }
   }
 
   bool _haAllenamentoAgente(DateTime d, String sport) {
@@ -1233,7 +1258,7 @@ class AppState extends ChangeNotifier {
   );
 
   /// Sostituisce il calendario dalla data del piano nuovo (ricontrollato).
-  Future<int> applicaPianoAgente(PianoAgente p) async {
+  Future<int> applicaPianoAgente(PianoAgente p, {MessaggioChat? da}) async {
     final esito = valutaPianoDa(p);
     if (!esito.applicabile) return 0;
     piano = esito.piano;
@@ -1241,7 +1266,7 @@ class AppState extends ChangeNotifier {
     _ricombina();
     await _aggiornaForza();
     await _aggiornaEndurance();
-    rispostaApplicata = true;
+    _segnaApplicata(da);
     notifyListeners();
     return esito.sedute.length;
   }

@@ -86,6 +86,7 @@ lib/
   backup.dart          backup in .gz (JSON di tutti i CSV)
   backup_auto.dart     backup automatico in una cartella scelta (backup_auto.txt, fuori dal backup)
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
+  screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
 assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
 test/                  un file *_test.dart per area
