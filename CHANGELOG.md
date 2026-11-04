@@ -2,6 +2,22 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.5.1
+
+- Bici: zone di potenza dall'FTP (da intervals.icu o scritto in Profilo → Le mie zone), sedute con il range di watt da tenere.
+- Durante l'allenamento: potenza con la zona e il range, avviso a voce se esci; grafico della potenza e tempo nelle zone a fine seduta.
+- Rullo smart (es. Tacx): l'app gli manda i watt di ogni passo in ERG, con i tasti −5% / +5%.
+- Diagramma dell'allenamento di bici a barre colorate, con il blocco che viene dopo e quanto manca.
+- Coach in chat (Claude, GPT, Gemini, Ollama): prepara piani nuovi e allenamenti passo per passo, da mettere nel calendario con un tocco.
+- Allenamenti dall'assistente collegato col codice: anteprima e "Metti nel calendario"; con l'invio acceso vanno subito su intervals.icu e Garmin.
+- Condividi una sessione o la settimana come immagine su WhatsApp o Instagram.
+- Prima del via vedi solo il timer e le scelte (al chiuso, percorso).
+- Forza: timer più piccolo e mini anteprima del movimento accanto all'esercizio.
+- Obiettivo: icone degli sport al posto dei nomi.
+- Primo avvio: domanda sull'orologio, con cosa funziona anche col solo telefono.
+- Correzioni di sicurezza: ripristino del backup più sicuro, file che non si rovinano, limiti sulle dimensioni.
+- All'apertura riaccetta l'informativa (potenza e FTP).
+
 ## 1.3.0
 
 - Percorsi da seguire: carica un GPX in "I miei percorsi" (Profilo) o assegnalo a una seduta, e scegli "Segui un percorso" nel Preparati.
