@@ -125,6 +125,7 @@ String contestoAllenamento({
   String? personali,
   Obiettivo? gara,
   required Zone zone,
+  int? ftp,
   int? passoCritico,
   required List<Sessione> sessioni,
   required List<PianoRiga> piano,
@@ -150,6 +151,9 @@ String contestoAllenamento({
     '${zone.fcRiposo > 0 ? ', FC a riposo ${zone.fcRiposo}' : ''}. Zone: '
     '${[for (var z = 1; z <= 5; z++) 'Z$z ${zone.zona(z).$1}-${zone.zona(z).$2}'].join(', ')}',
   );
+  if (ftp != null) {
+    b.writeln('FTP bici: $ftp W (zone di potenza di Coggan in % dell\'FTP)');
+  }
   if (passoCritico != null) {
     b.writeln('Passo critico nuoto: ${fmtPasso100(passoCritico)}');
   }

@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../agente_esterno.dart';
+import '../allenamento_agente.dart';
 import '../app_state.dart';
 import '../condivisione.dart';
+import '../esecuzione.dart';
 import '../models.dart';
+import '../potenza.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'assistente_screen.dart';
 import 'privacy_screen.dart';
+import 'profilo_allenamento.dart';
 
 /// Collegamento dell'assistente nell'app dell'utente: quale app, cosa viene
 /// inviato e consenso.
@@ -243,6 +247,12 @@ class PannelloAgente extends StatelessWidget {
           SchedaProposta(state: state, messaggio: state.propostaAgente!),
         if (state.rispostaAgente?.piano case final p?)
           _SchedaPiano(state: state, piano: p),
+        if (state.rispostaAgente?.allenamenti case final a?)
+          _SchedaAllenamenti(
+            state: state,
+            allenamenti: a,
+            motivo: state.rispostaAgente!.motivo,
+          ),
         SuperficiePulse(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,6 +354,109 @@ class PannelloAgente extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Anteprima degli allenamenti scritti dall'agente: giorno, durata, passi (in
+/// bici con il diagramma dei watt) e conferma.
+class _SchedaAllenamenti extends StatelessWidget {
+  final AppState state;
+  final List<AllenamentoAgente> allenamenti;
+  final String motivo;
+  const _SchedaAllenamenti({
+    required this.state,
+    required this.allenamenti,
+    required this.motivo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final oggi = soloData(DateTime.now());
+    final zp = state.zonePotenza;
+    final passati = allenamenti.where((a) => a.data.isBefore(oggi)).length;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              allenamenti.length == 1
+                  ? 'Allenamento nuovo'
+                  : '${allenamenti.length} allenamenti nuovi',
+              style: t.titleSmall,
+            ),
+            if (motivo.isNotEmpty) Text(motivo, style: t.bodySmall),
+            for (final a in allenamenti) ...[
+              Text(
+                '${titoloSessione(a.sport, a.tipo)} · ${dataLunga(a.data)}'
+                '${a.durataMin > 0 ? ' · ${a.durataMin} min' : ''}',
+                style: t.titleSmall,
+              ),
+              Text(a.nome, style: t.bodySmall),
+              if (zp != null && stessoSport(a.sport, 'Bici'))
+                ProfiloAllenamento(
+                  barre: barreDa(blocchiDa(a.passi), zp),
+                  zone: zp,
+                  altezza: 48,
+                ),
+              for (final s in a.passi)
+                Text(
+                  '• ${s.descrizione}: ${intensitaCon(s.riepilogo, a.sport, zp, state.zone)}',
+                  style: t.bodySmall,
+                ),
+              if (state.piano.any(
+                (r) =>
+                    r.data == a.data &&
+                    stessoSport(r.sport, a.sport) &&
+                    !a.data.isBefore(oggi),
+              ))
+                Text(
+                  'Prende il posto della seduta di ${a.sport.toLowerCase()} '
+                  'di quel giorno.',
+                  style: t.bodySmall,
+                ),
+            ],
+            if (passati > 0)
+              Text(
+                passati == 1
+                    ? 'Uno è in un giorno passato: non si mette.'
+                    : '$passati sono in giorni passati: non si mettono.',
+                style: t.bodySmall,
+              ),
+            if (state.rispostaApplicata)
+              const Text('Messo nel calendario.')
+            else
+              FilledButton.icon(
+                onPressed: passati == allenamenti.length
+                    ? null
+                    : () async {
+                        final messenger = ScaffoldMessenger.of(context);
+                        final n = await state.applicaAllenamentiAgente(
+                          allenamenti,
+                        );
+                        messenger.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              n == 0
+                                  ? 'Niente da mettere: le date sono passate.'
+                                  : n == 1
+                                  ? 'Allenamento messo nel calendario.'
+                                  : '$n allenamenti messi nel calendario.',
+                            ),
+                          ),
+                        );
+                      },
+                icon: const Icon(Icons.event_available),
+                label: const Text('Metti nel calendario'),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

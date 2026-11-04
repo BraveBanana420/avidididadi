@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:allenamenti_app/agente_esterno.dart';
+import 'package:allenamenti_app/allenamento_agente.dart';
 import 'package:allenamenti_app/assistente.dart';
+import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -174,5 +176,130 @@ void main() {
       oggi: oggi,
     );
     expect(e.problemi, isEmpty);
+  });
+
+  group('allenamenti scritti dall\'agente', () {
+    final json = {
+      'allenamenti': [
+        {
+          'data': '2026-11-06',
+          'sport': 'bici',
+          'tipo': 'Intervalli',
+          'nome': 'VO2max 5x4',
+          'motivo': 'Per alzare il VO2max.',
+          'passi': [
+            {
+              'fase': 'riscaldamento',
+              'nome': 'Pedalata agile',
+              'minuti': 10,
+              'intensita': '55-65%',
+            },
+            {
+              'fase': 'principale',
+              'nome': 'Ripetute',
+              'ripeti': 5,
+              'minuti': 4,
+              'intensita': '106-112%',
+              'recupero_s': 180,
+            },
+            {'fase': 'defaticamento', 'minuti': 10, 'intensita': 'zona 1'},
+          ],
+        },
+      ],
+    };
+
+    test('si leggono con i passi, le ripetizioni e la durata', () {
+      final r = leggiRispostaAgente(blocco(json), codice);
+      final a = r.allenamenti!.single;
+      expect(r.motivo, 'Per alzare il VO2max.');
+      expect(a.sport, 'Bici');
+      expect(a.data, DateTime(2026, 11, 6));
+      expect(a.nome, 'VO2max 5x4');
+      expect(a.passi, hasLength(3));
+      expect(a.passi[1].serie, '5');
+      expect(a.passi[1].intensita, '106-112%');
+      expect(a.passi[1].recuperoS, '180');
+      expect(a.passi[2].descrizione, 'Defaticamento');
+      // 10 + 5×4 + 5 recuperi da 3 min (anche prima del defaticamento) + 10
+      expect(a.durataMin, 55);
+      expect(a.passi.every((s) => s.id == 'agente-2026-11-06-bici'), isTrue);
+      expect(a.passi.every((s) => s.durataTot == 55), isTrue);
+    });
+
+    test('il blocco con i passi diventa blocchi per il player', () {
+      final a = leggiRispostaAgente(blocco(json), codice).allenamenti!.single;
+      final b = blocchiDa(a.passi);
+      // riscaldamento + 5 ripetute + 5 recuperi + defaticamento
+      expect(b, hasLength(12));
+      expect(b.where((x) => x.tipo == TipoBlocco.recupero), hasLength(5));
+      expect(b[1].secondi, 240);
+    });
+
+    test('passi sbagliati: un messaggio chiaro', () {
+      Map<String, dynamic> con(
+        Map<String, dynamic> passo, [
+        String sport = 'Bici',
+      ]) => {
+        'allenamenti': [
+          {
+            'data': '2026-11-06',
+            'sport': sport,
+            'passi': [passo],
+          },
+        ],
+      };
+      expect(
+        () => leggiRispostaAgente(blocco(con({'nome': 'x'})), codice),
+        throwsA(isA<FormatException>()),
+      );
+      expect(
+        () => leggiRispostaAgente(
+          blocco(con({'minuti': 10, 'ripeti': 99})),
+          codice,
+        ),
+        throwsA(isA<FormatException>()),
+      );
+      expect(
+        () => leggiRispostaAgente(blocco(con({'minuti': 10}, 'Forza')), codice),
+        throwsA(isA<FormatException>()),
+      );
+      expect(
+        () => leggiRispostaAgente(blocco(con({'minuti': 301})), codice),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('nel piano prende il posto della seduta di quel giorno', () {
+      final a = leggiRispostaAgente(blocco(json), codice).allenamenti!.single;
+      final piano = [
+        PianoRiga(
+          data: DateTime(2026, 11, 6),
+          fascia: 'Mattina',
+          sport: 'Bici',
+          tipo: 'Uscita',
+          durataMin: 60,
+        ),
+        PianoRiga(
+          data: DateTime(2026, 11, 6),
+          fascia: 'Sera',
+          sport: 'Forza',
+          durataMin: 45,
+        ),
+      ];
+      final nuovo = pianoCon(piano, a);
+      expect(nuovo, hasLength(2));
+      final bici = nuovo.firstWhere((r) => r.sport == 'Bici');
+      expect(bici.tipo, 'Intervalli');
+      expect(bici.durataMin, 55);
+      expect(bici.fascia, 'Mattina'); // l'orario resta quello di prima
+      // In un giorno senza bici si aggiunge.
+      expect(pianoCon([piano.last], a), hasLength(2));
+    });
+
+    test('le istruzioni spiegano il formato degli allenamenti', () {
+      final m = istruzioniAgente(codice);
+      expect(m, contains('"allenamenti"'));
+      expect(m, contains('recupero_s'));
+    });
   });
 }

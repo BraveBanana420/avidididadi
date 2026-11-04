@@ -15,6 +15,7 @@ Funzioni principali:
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
 - **Progressi**: carico, grafici, report per sport.
+- **Rullo smart**: in ERG l'app manda al rullo (FTMS, es. Tacx Flux S) i watt di ogni blocco; diagramma dell'allenamento a barre colorate per zona.
 - **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
 - **Altro**: catalogo esercizi con animazioni, figura dei muscoli, widget per la schermata home, backup e ripristino su file.
 
@@ -74,11 +75,12 @@ lib/
   navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
   mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
+  allenamento_agente.dart  allenamenti passo per passo scritti dall'assistente, nel calendario al posto della seduta
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
   sensore_ble.dart     base dei sensori Bluetooth: ricerca, ricollegamento, sensore ricordato
   battito.dart         battito live (sensore_battito.txt)
-  sensori_bici.dart    rulli FTMS, potenza, velocità/cadenza (sensore_bici.txt, circonferenza ruota)
+  sensori_bici.dart    rulli FTMS (anche comandati in ERG), potenza, velocità/cadenza (sensore_bici.txt, circonferenza ruota)
   in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
   notifica_allenamento.dart  notifica dell'allenamento (anche a schermo bloccato), tasto Pausa
   backup.dart          backup in .gz (JSON di tutti i CSV)
@@ -102,6 +104,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
+- `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
 - `percorsi_salvati.csv`, `traccia_<id>.csv`, `percorsi_piano.csv` (percorsi da seguire e sedute a cui sono assegnati).
 

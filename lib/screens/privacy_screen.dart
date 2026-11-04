@@ -181,7 +181,8 @@ class PrivacyScreen extends StatelessWidget {
         'Assistente (facoltativo)',
         "Solo se lo attivi tu, l'assistente invia un riassunto dei tuoi "
             "allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, "
-            "zone e piano dei prossimi 14 giorni) al servizio che scegli: "
+            "zone di battito e FTP della bici, piano dei prossimi 14 giorni) al "
+            "servizio che scegli: "
             "Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e "
             "percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo "
             "permetti. Prima di attivarlo puoi vedere esattamente cosa viene "

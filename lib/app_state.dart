@@ -5,6 +5,7 @@ import 'package:health/health.dart' show HealthDataType;
 
 import 'adattamento.dart';
 import 'agente_esterno.dart';
+import 'allenamento_agente.dart';
 import 'assistente.dart';
 import 'backup.dart';
 import 'backup_auto.dart';
@@ -62,6 +63,10 @@ class AppState extends ChangeNotifier {
   final hc = HealthConnectService();
   bool sincronizzando = false;
   List<WorkoutStep> workout = [];
+
+  /// Passi degli allenamenti scritti dall'assistente (allenamenti_agente.csv):
+  /// valgono al posto di quelli preparati dall'app in quel giorno.
+  List<WorkoutStep> allenamentiAgente = [];
   List<ProgrammaRiga> programma = [];
   Profilo profilo = Profilo();
   List<Misura> misure = []; // in ordine di data
@@ -170,6 +175,17 @@ class AppState extends ChangeNotifier {
               .map((r) => WorkoutStep.da(tw, r))
               .whereType<WorkoutStep>()
               .toList();
+
+    final ta = await Storage.readTabella(fileAllenamentiAgente);
+    // Quelli di più di due mesi fa non servono più.
+    final daTenere = soloData(DateTime.now())
+        .subtract(const Duration(days: 60));
+    allenamentiAgente = [
+      if (ta != null)
+        for (final r in ta.righe)
+          if (WorkoutStep.da(ta, r) case final w?)
+            if (!(_dataAgente(w.id)?.isBefore(daTenere) ?? true)) w,
+    ];
 
     final tp = await Storage.readTabella('programma.csv');
     programma = tp == null
@@ -549,15 +565,22 @@ class AppState extends ChangeNotifier {
   /// importato in programma, altrimenti il workout fisso predefinito.
   List<WorkoutStep> passiSeduta(DateTime data, String sport, String tipo) {
     final d = soloData(data);
+    final id = idAllenamentoAgente(d, sport);
+    final suMisura = allenamentiAgente.where((w) => w.id == id).toList();
+    if (suMisura.isNotEmpty) {
+      return suMisura..sort((a, b) => a.ordine.compareTo(b.ordine));
+    }
     final prog = programma
         .where((p) => p.data == d && stessoSport(p.sport, sport))
         .toList();
-    final id = prog.isEmpty
+    final idApp = prog.isEmpty
         ? workoutPredefinito(d, sport, tipo)
         : prog.first.idWorkout;
-    if (id == null) return const [];
-    var passi = workout.where((w) => w.id == id).toList();
-    if (passi.isEmpty) passi = workoutBase.where((w) => w.id == id).toList();
+    if (idApp == null) return const [];
+    var passi = workout.where((w) => w.id == idApp).toList();
+    if (passi.isEmpty) {
+      passi = workoutBase.where((w) => w.id == idApp).toList();
+    }
     return passi..sort((a, b) => a.ordine.compareTo(b.ordine));
   }
 
@@ -899,6 +922,8 @@ class AppState extends ChangeNotifier {
         () {
           final t = nuovo.tipi[(r.data, normSport(r.sport))];
           if (t == null || t == r.tipo || !daRifare(r.data, r.sport)) return r;
+          // L'allenamento dell'assistente tiene il suo nome.
+          if (_haAllenamentoAgente(r.data, r.sport)) return r;
           cambiato = true;
           return _conTipo(r, t);
         }(),
@@ -1002,6 +1027,7 @@ class AppState extends ChangeNotifier {
     personali: _datiPersonali,
     gara: profilo.obiettivoGara,
     zone: zone,
+    ftp: zonePotenza?.ftp,
     passoCritico: passoCritico,
     sessioni: sessioni,
     piano: piano,
@@ -1158,6 +1184,43 @@ class AppState extends ChangeNotifier {
     rispostaApplicata = false;
     notifyListeners();
   }
+
+  /// Mette nel calendario gli allenamenti dell'assistente (da oggi in poi),
+  /// al posto della seduta dello stesso sport in quel giorno. Restituisce
+  /// quanti ne ha messi.
+  Future<int> applicaAllenamentiAgente(List<AllenamentoAgente> lista) async {
+    final oggi = soloData(DateTime.now());
+    final validi = lista.where((a) => !a.data.isBefore(oggi)).toList();
+    if (validi.isEmpty) return 0;
+    for (final a in validi) {
+      final id = idAllenamentoAgente(a.data, a.sport);
+      allenamentiAgente = [
+        ...allenamentiAgente.where((w) => w.id != id),
+        ...a.passi,
+      ];
+      piano = pianoCon(piano, a);
+    }
+    await Storage.write(
+      fileAllenamentiAgente,
+      workoutHeader,
+      allenamentiAgente.map((w) => w.toRow()).toList(),
+    );
+    await Storage.writePiano(piano);
+    _ricombina();
+    await _aggiornaEndurance();
+    rispostaApplicata = true;
+    notifyListeners();
+    return validi.length;
+  }
+
+  bool _haAllenamentoAgente(DateTime d, String sport) {
+    final id = idAllenamentoAgente(d, sport);
+    return allenamentiAgente.any((w) => w.id == id);
+  }
+
+  /// La data nell'id "agente-AAAA-MM-GG-sport".
+  static DateTime? _dataAgente(String id) =>
+      id.length >= 17 ? parseData(id.substring(7, 17)) : null;
 
   /// Controlli sul piano nuovo dell'agente, sul piano e le sessioni di adesso.
   EsitoPiano valutaPianoDa(PianoAgente p) => valutaPianoAgente(

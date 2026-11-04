@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'allenamento_agente.dart';
 import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
@@ -62,6 +63,19 @@ Per un piano nuovo, che sostituisce il calendario da quella data in poi (al mass
 ]}}
 </avidididadi>
 ```
+Per un allenamento preciso di corsa, bici o nuoto con i passi scelti da te (per esempio delle ripetute in watt per il rullo), usa:
+```
+<avidididadi codice="$codice">
+{"allenamenti": [
+  {"data": "AAAA-MM-GG", "sport": "Bici", "tipo": "Intervalli", "nome": "VO2max 5x4", "fascia": "Sera", "motivo": "...", "passi": [
+    {"fase": "riscaldamento", "nome": "Pedalata agile", "minuti": 10, "intensita": "55-65%"},
+    {"fase": "principale", "nome": "Ripetute", "ripeti": 5, "minuti": 4, "intensita": "106-112%", "recupero_s": 180},
+    {"fase": "defaticamento", "nome": "Sciolto", "minuti": 10, "intensita": "zona 1"}
+  ]}
+]}
+</avidididadi>
+```
+Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
 Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi; nuoto: Tecnica, Soglia; bici: Uscita, Intervalli, Uscita lunga; fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
 Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Gli esercizi delle sedute li prepara l'app: tu scegli giorno, sport, tipo e durata.
 Usa sempre esattamente il codice $codice. Se non serve cambiare il piano, non aggiungere il blocco.''';
@@ -95,7 +109,14 @@ $contesto''';
 class RispostaAgente {
   final List<Modifica>? modifiche;
   final PianoAgente? piano;
-  const RispostaAgente({this.modifiche, this.piano});
+  final List<AllenamentoAgente>? allenamenti;
+  final String motivo; // perché l'assistente propone gli allenamenti
+  const RispostaAgente({
+    this.modifiche,
+    this.piano,
+    this.allenamenti,
+    this.motivo = '',
+  });
 }
 
 /// Un piano nuovo proposto dall'agente, ancora da controllare.
@@ -145,6 +166,22 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
     throw const FormatException(
       "Il blocco non è leggibile. Chiedi all'assistente di riscriverlo.",
     );
+  }
+  final allenamenti = j['allenamenti'];
+  if (allenamenti is List) {
+    final lista = [
+      for (final a in allenamenti)
+        if (a is Map) allenamentoDa(Map<String, dynamic>.from(a)),
+    ];
+    if (lista.isEmpty) {
+      throw const FormatException('Nel blocco non ci sono allenamenti.');
+    }
+    final motivi = {
+      for (final a in allenamenti)
+        if (a is Map && '${a['motivo'] ?? ''}'.trim().isNotEmpty)
+          '${a['motivo']}'.trim(),
+    };
+    return RispostaAgente(allenamenti: lista, motivo: motivi.join(' '));
   }
   final piano = j['piano'];
   if (piano is Map) {
