@@ -1,5 +1,7 @@
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
+import 'package:allenamenti_app/screens/obiettivo_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -98,5 +100,18 @@ void main() {
       expect(fmtPasso100(125), '2:05/100 m');
       expect(stimaPassoCritico([], oggi), isNull);
     });
+  });
+
+  testWidgets('icona del triathlon: nuoto, bici e corsa piccoli', (t) async {
+    await t.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: Center(child: IconaTriathlon())),
+      ),
+    );
+    for (final i in [Icons.pool, Icons.directions_bike, Icons.directions_run]) {
+      expect(find.byIcon(i), findsOneWidget);
+    }
+    // Sta nello spazio di un'icona normale, senza andare a capo.
+    expect(t.getSize(find.byType(IconaTriathlon)).width, lessThan(40));
   });
 }

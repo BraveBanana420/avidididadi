@@ -107,10 +107,18 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Icone al posto dei nomi: "Triathlon" non ci stava in una riga.
           SegmentedButton<String>(
+            showSelectedIcon: false,
             segments: [
               for (final s in gare.keys)
-                ButtonSegment(value: s, label: Text(s)),
+                ButtonSegment(
+                  value: s,
+                  tooltip: s,
+                  icon: s == 'Triathlon'
+                      ? const IconaTriathlon()
+                      : Icon(iconaSport(s)),
+                ),
             ],
             selected: {sport},
             onSelectionChanged: (v) => setState(() {
@@ -118,7 +126,9 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
               gara = gare[sport]!.keys.first;
             }),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          Text(sport, style: t.titleMedium, textAlign: TextAlign.center),
+          const SizedBox(height: 8),
           Card(
             child: RadioGroup<String>(
               groupValue: gara,
@@ -180,6 +190,37 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
               label: const Text('Rimuovi obiettivo'),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Nuoto, bici e corsa piccoli, a triangolo: l'icona del triathlon.
+class IconaTriathlon extends StatelessWidget {
+  const IconaTriathlon({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final dim = IconTheme.of(context).size ?? 18;
+    final piccola = dim * 0.62;
+    return SizedBox(
+      width: dim * 1.35,
+      height: dim * 1.2,
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: Icon(Icons.pool, size: piccola),
+          ),
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Icon(Icons.directions_bike, size: piccola),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Icon(Icons.directions_run, size: piccola),
+          ),
         ],
       ),
     );
