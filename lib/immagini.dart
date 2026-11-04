@@ -59,7 +59,13 @@ class AnimazioneEsercizio extends StatelessWidget {
     final webp = animazioneDi(id);
     return webp != null
         ? AnimazioneWebp(webp)
-        : _DueFotogrammi(immagini: immagini, mini: mini);
+        // La chiave cambia con l'esercizio: si ricaricano le sue foto, non
+        // restano quelle di prima (es. l'anteprima durante la seduta).
+        : _DueFotogrammi(
+            key: ValueKey(immagini.join('|')),
+            immagini: immagini,
+            mini: mini,
+          );
   }
 }
 
@@ -67,7 +73,7 @@ class AnimazioneEsercizio extends StatelessWidget {
 class _DueFotogrammi extends StatefulWidget {
   final List<String> immagini;
   final bool mini;
-  const _DueFotogrammi({required this.immagini, required this.mini});
+  const _DueFotogrammi({super.key, required this.immagini, required this.mini});
 
   @override
   State<_DueFotogrammi> createState() => _DueFotogrammiState();
