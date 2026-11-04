@@ -9,10 +9,12 @@ import '../avvisi.dart';
 import '../navigazione.dart';
 import '../calorie.dart';
 import '../battito.dart';
+import '../animazioni_esercizi.dart';
 import '../dati_live.dart';
 import '../esecuzione.dart';
-import '../figura.dart';
+import '../esercizi.dart';
 import '../glossario.dart';
+import '../immagini.dart';
 import '../in_corso.dart';
 import '../gps.dart';
 import '../models.dart';
@@ -958,9 +960,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         .where((x) => x.tipo == TipoBlocco.lavoro)
         .firstOrNull;
     final perId = {for (final e in widget.state.esercizi) e.id: e};
-    final muscoli = preparati || recupero
-        ? null
-        : perId[b.esercizio]?.muscoli.toSet();
+    final esercizio = preparati || recupero ? null : perId[b.esercizio];
+    final esercizioPoi = recupero ? perId[prossimo?.esercizio] : null;
     final aTempo = preparati || b.aTempo;
     final faseNome = preparati ? '' : maiuscola(b.fase);
 
@@ -970,7 +971,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           context,
           recupero: recupero,
           prossimo: prossimo,
-          muscoli: muscoli,
+          esercizio: esercizio,
+          esercizioPoi: esercizioPoi,
           aTempo: aTempo,
           faseNome: faseNome,
         ),
@@ -999,7 +1001,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     BuildContext context, {
     required bool recupero,
     required Blocco? prossimo,
-    required Set<String>? muscoli,
+    required Esercizio? esercizio,
+    required Esercizio? esercizioPoi,
     required bool aTempo,
     required String faseNome,
   }) {
@@ -1238,12 +1241,37 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                               if (b.note.isNotEmpty)
                                 Text(b.note, style: t.bodyLarge),
                             ] else ...[
-                              Text(b.titolo, style: t.headlineMedium),
-                              if (b.dettaglio.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(b.dettaglio, style: t.titleLarge),
-                                ),
+                              // A sinistra l'anteprima del movimento, se c'è.
+                              Row(
+                                children: [
+                                  if (_conAnteprima(esercizio)) ...[
+                                    _AnteprimaEsercizio(
+                                      esercizio: esercizio!,
+                                      larghezza: 112,
+                                    ),
+                                    const SizedBox(width: 14),
+                                  ],
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(b.titolo, style: t.titleLarge),
+                                        if (b.dettaglio.isNotEmpty)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              top: 2,
+                                            ),
+                                            child: Text(
+                                              b.dettaglio,
+                                              style: t.titleMedium,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                               if (b.intensita.isNotEmpty)
                                 Padding(
                                   padding: const EdgeInsets.only(top: 6),
@@ -1290,8 +1318,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                   totale: aTempo ? _durata : 0,
                                   trascorso: _tempoBlocco,
                                   pausa: _inPausa,
-                                  // Con i riquadri sopra, più piccolo: entra senza scorrere.
-                                  piccolo: gps != null,
+                                  // Piccolo: entra sotto il testo senza scorrere.
+                                  piccolo: true,
                                 ),
                               ),
                             ),
@@ -1300,10 +1328,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                               SuperficiePulse(
                                 child: Row(
                                   children: [
-                                    const IconaQuadrata(
-                                      Icons.skip_next,
-                                      evidenza: true,
-                                    ),
+                                    if (_conAnteprima(esercizioPoi))
+                                      _AnteprimaEsercizio(
+                                        esercizio: esercizioPoi!,
+                                        larghezza: 84,
+                                      )
+                                    else
+                                      const IconaQuadrata(
+                                        Icons.skip_next,
+                                        evidenza: true,
+                                      ),
                                     const SizedBox(width: 14),
                                     Expanded(
                                       child: Column(
@@ -1325,14 +1359,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
-                            if (muscoli != null && muscoli.isNotEmpty) ...[
-                              const SizedBox(height: 16),
-                              FiguraMuscoliFissa(
-                                sesso: widget.state.profilo.sesso,
-                                evidenziati: muscoli,
-                                didascalia: '',
                               ),
                             ],
                           ],
@@ -2294,6 +2320,52 @@ class _Orologio extends StatelessWidget {
 }
 
 /// Ripetizioni e kg della serie in corso, con l'ultima volta sotto.
+/// Se l'esercizio ha un'animazione o delle foto da mostrare.
+bool _conAnteprima(Esercizio? e) =>
+    e != null && (animazioneDi(e.id) != null || e.immagini.isNotEmpty);
+
+/// Il movimento dell'esercizio in piccolo; un tocco lo apre in grande.
+class _AnteprimaEsercizio extends StatelessWidget {
+  final Esercizio esercizio;
+  final double larghezza;
+  const _AnteprimaEsercizio({required this.esercizio, required this.larghezza});
+
+  @override
+  Widget build(BuildContext context) {
+    final e = esercizio;
+    return Semantics(
+      button: true,
+      label: 'Guarda il movimento di ${e.nome}',
+      child: GestureDetector(
+        onTap: () => showDialog<void>(
+          context: context,
+          builder: (d) => AlertDialog(
+            title: Text(e.nome),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: AnimazioneEsercizio(id: e.id, immagini: e.immagini),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(d),
+                child: const Text('Chiudi'),
+              ),
+            ],
+          ),
+        ),
+        child: SizedBox(
+          width: larghezza,
+          child: AnimazioneEsercizio(
+            id: e.id,
+            immagini: e.immagini,
+            mini: true,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class RegistroSerie extends StatelessWidget {
   final (int, double) valori;
   final int massimo; // ripetizioni massime previste

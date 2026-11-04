@@ -42,24 +42,32 @@ Future<File?> immagineEsercizio(String percorso) =>
 
 /// Il movimento di un esercizio: il WebP animato se c'è (vedi
 /// animazioni_esercizi.dart), altrimenti le sue foto alternate ogni secondo.
+/// [mini]: anteprima piccola, senza la scritta quando manca la rete.
 class AnimazioneEsercizio extends StatelessWidget {
   final String id;
   final List<String> immagini;
-  const AnimazioneEsercizio({super.key, this.id = '', required this.immagini});
+  final bool mini;
+  const AnimazioneEsercizio({
+    super.key,
+    this.id = '',
+    required this.immagini,
+    this.mini = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final webp = animazioneDi(id);
     return webp != null
         ? AnimazioneWebp(webp)
-        : _DueFotogrammi(immagini: immagini);
+        : _DueFotogrammi(immagini: immagini, mini: mini);
   }
 }
 
 /// Le foto di un esercizio alternate ogni secondo, per mostrare il movimento.
 class _DueFotogrammi extends StatefulWidget {
   final List<String> immagini;
-  const _DueFotogrammi({required this.immagini});
+  final bool mini;
+  const _DueFotogrammi({required this.immagini, required this.mini});
 
   @override
   State<_DueFotogrammi> createState() => _DueFotogrammiState();
@@ -95,6 +103,14 @@ class _DueFotogrammiState extends State<_DueFotogrammi> {
                 return const Center(child: CircularProgressIndicator());
               }
               final file = snap.data!.whereType<File>().toList();
+              if (file.isEmpty && widget.mini) {
+                return ColoredBox(
+                  color: scheme.surfaceContainerHighest,
+                  child: Center(
+                    child: Icon(Icons.wifi_off, color: scheme.onSurfaceVariant),
+                  ),
+                );
+              }
               if (file.isEmpty) {
                 return ColoredBox(
                   color: scheme.surfaceContainerHighest,
