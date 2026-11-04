@@ -1210,6 +1210,8 @@ class AppState extends ChangeNotifier {
     await _aggiornaEndurance();
     rispostaApplicata = true;
     notifyListeners();
+    // Subito anche nel calendario di intervals.icu (e da lì a Garmin).
+    if (invioIntervals) await inviaPianoIntervals();
     return validi.length;
   }
 
