@@ -18,7 +18,7 @@ class BenvenutoScreen extends StatefulWidget {
 }
 
 class _BenvenutoScreenState extends State<BenvenutoScreen> {
-  static const _passi = 6;
+  static const _passi = 7;
   final _pagine = PageController();
   late final _nome = TextEditingController(text: widget.state.profilo.nome);
   int passo = 0;
@@ -26,6 +26,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
   int giorni = 3;
   int minuti = 30;
   String livello = 'principiante';
+  bool? orologio; // ha un orologio o una fascia? null = non ancora detto
   bool inCorso = false;
 
   @override
@@ -221,6 +222,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                       ],
                     ),
                   ),
+                  _orologio(t),
                   _riepilogo(t),
                 ],
               ),
@@ -291,7 +293,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Bastano 4 domande.',
+            'Bastano 5 domande.',
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -302,6 +304,83 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
             onPressed: _salta,
             child: const Text('Salta, preferisco fare da solo'),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// Con o senza orologio: cosa cambia, così chi ha solo il telefono sa
+  /// cosa aspettarsi e come far adattare il piano.
+  Widget _orologio(TextTheme t) {
+    final scheme = Theme.of(context).colorScheme;
+    Widget punto(IconData icona, String testo) => Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icona, size: 20, color: scheme.primary),
+          const SizedBox(width: 10),
+          Expanded(child: Text(testo, style: t.bodyMedium)),
+        ],
+      ),
+    );
+    return _domanda(
+      t,
+      'Hai un orologio sportivo?',
+      'Va bene anche senza: l\'app funziona con il solo telefono.',
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Scelta(
+            titolo: 'No, solo il telefono',
+            testo: 'Niente orologio, fascia cardio o altre app.',
+            scelta: orologio == false,
+            onTap: () => setState(() => orologio = false),
+          ),
+          _Scelta(
+            titolo: 'Sì, un orologio o una fascia',
+            testo: 'Garmin, Polar, Suunto, Coros, Wahoo…',
+            scelta: orologio == true,
+            onTap: () => setState(() => orologio = true),
+          ),
+          const SizedBox(height: 8),
+          if (orologio == false) ...[
+            punto(
+              Icons.gps_fixed,
+              'Corsa, camminata e bici le registra il telefono con il GPS, e '
+              'ti guida a voce passo passo.',
+            ),
+            punto(
+              Icons.sentiment_satisfied_alt,
+              'Le zone (per esempio "zona 2") seguile a sensazione: in zona 2 '
+              'riesci ancora a parlare.',
+            ),
+            punto(
+              Icons.rate_review_outlined,
+              'Dopo ogni seduta rispondi a "Com\'è andata?": è così che il '
+              'piano capisce la fatica e si adatta.',
+            ),
+            punto(
+              Icons.pool,
+              'Il nuoto, senza orologio, lo segni a mano dopo la vasca.',
+            ),
+            punto(
+              Icons.bedtime_outlined,
+              'Energia e sonno restano vuoti: servono i dati di un orologio.',
+            ),
+          ] else if (orologio == true) ...[
+            punto(
+              Icons.link,
+              'Dopo collegalo da Profilo → Dati e collegamenti: con Health '
+              'Connect, o con intervals.icu per Garmin e gli altri. Le '
+              'attività arrivano da sole, con battito e sonno.',
+            ),
+            punto(
+              Icons.bolt,
+              'Hai un rullo smart? Collegalo durante l\'allenamento: l\'app '
+              'gli manda i watt di ogni passo.',
+            ),
+          ],
         ],
       ),
     );

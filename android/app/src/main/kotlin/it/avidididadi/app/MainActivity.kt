@@ -28,6 +28,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.contracts.ExerciseRouteRequestContract
 import androidx.health.connect.client.records.ExerciseRoute
@@ -318,6 +319,27 @@ class MainActivity : FlutterFragmentActivity() {
                             .putExtra(Intent.EXTRA_TEXT, call.argument<String>("testo"))
                         startActivity(Intent.createChooser(invio, call.argument<String>("titolo")))
                         result.success(null)
+                    }
+                    "condividiImmagine" -> {
+                        // Solo file della cartella cache/condivisi.
+                        val cartella = java.io.File(cacheDir, "condivisi").canonicalFile
+                        val file = java.io.File(call.argument<String>("percorso").orEmpty()).canonicalFile
+                        if (file.parentFile != cartella || !file.exists()) {
+                            result.error("file", "Immagine non trovata", null)
+                        } else {
+                            val uri = FileProvider.getUriForFile(this@MainActivity, "$packageName.condivisi", file)
+                            val invio = Intent(Intent.ACTION_SEND)
+                                .setType("image/png")
+                                .putExtra(Intent.EXTRA_STREAM, uri)
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            call.argument<String>("testo")?.takeIf { it.isNotEmpty() }?.let {
+                                invio.putExtra(Intent.EXTRA_TEXT, it)
+                            }
+                            val scelta = Intent.createChooser(invio, call.argument<String>("titolo"))
+                            scelta.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            startActivity(scelta)
+                            result.success(null)
+                        }
                     }
                     "ricezioneAgente" -> {
                         packageManager.setComponentEnabledSetting(

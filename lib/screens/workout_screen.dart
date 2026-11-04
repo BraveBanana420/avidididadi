@@ -21,6 +21,7 @@ import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
 import 'catalogo_screen.dart';
+import 'condividi_screen.dart';
 import 'crea_piano_screen.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
@@ -894,6 +895,12 @@ class _DatiSessione extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
+                // Un'immagine della sessione per WhatsApp, Instagram…
+                OutlinedButton.icon(
+                  onPressed: () => apriCondividiSessione(context, state, s),
+                  icon: const Icon(Icons.share_outlined),
+                  label: const Text('Condividi'),
+                ),
                 // Battito, zone e passo nel tempo: in una pagina a parte.
                 if (s.inizio != null && s.fine != null)
                   OutlinedButton.icon(

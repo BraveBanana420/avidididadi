@@ -109,6 +109,18 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- Immagini da condividere (sessione, settimana): solo cache/condivisi,
+             e solo all'app scelta nel menu Condividi, per il tempo dell'invio. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.condivisi"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_condivisi" />
+        </provider>
+
         <!-- Widget per la schermata home: la seduta di oggi (piccolo) e la settimana (largo). -->
         <receiver
             android:name=".WidgetPiccolo"

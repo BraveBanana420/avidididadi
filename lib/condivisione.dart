@@ -17,6 +17,24 @@ class Condivisione {
     }
   }
 
+  /// Apre il menu "Condividi" con un'immagine (PNG in cache/condivisi) e,
+  /// se c'è, un testo di accompagnamento.
+  static Future<void> condividiImmagine(
+    String percorso, {
+    String testo = '',
+    required String titolo,
+  }) async {
+    try {
+      await _canale.invokeMethod('condividiImmagine', {
+        'percorso': percorso,
+        'testo': testo,
+        'titolo': titolo,
+      });
+    } on MissingPluginException {
+      // fuori da Android: niente menu
+    }
+  }
+
   /// Accende o spegne Avidididadi tra le app a cui condividere un testo.
   static Future<void> ricevi(bool attiva) async {
     try {

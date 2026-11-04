@@ -8,6 +8,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../recupero.dart';
 import '../widgets.dart';
+import 'condividi_screen.dart';
 import 'energia.dart';
 import 'health_connect_card.dart';
 import 'sport_screen.dart';
@@ -92,6 +93,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
         perGiorno: perGiorno,
         oggi: oggi,
         pronto: state.prontezza,
+        condividi: () => apriCondividiSettimana(context, state),
       ),
     );
 
@@ -359,6 +361,7 @@ class _Riassunto extends StatefulWidget {
   final Map<DateTime, double> perGiorno;
   final DateTime oggi;
   final Prontezza? pronto;
+  final VoidCallback condividi; // l'immagine della settimana
   const _Riassunto({
     required this.questa,
     required this.scorsa,
@@ -366,6 +369,7 @@ class _Riassunto extends StatefulWidget {
     required this.perGiorno,
     required this.oggi,
     required this.pronto,
+    required this.condividi,
   });
 
   @override
@@ -439,9 +443,20 @@ class _RiassuntoState extends State<_Riassunto> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Progressi',
-          style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Progressi',
+                style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Condividi la settimana',
+              onPressed: w.condividi,
+              icon: const Icon(Icons.share_outlined),
+            ),
+          ],
         ),
         Text(
           stato == null ? 'Ti sto conoscendo' : _titoliCarico[stato]!,
