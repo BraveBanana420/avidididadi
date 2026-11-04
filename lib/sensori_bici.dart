@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import 'sensore_ble.dart';
@@ -14,6 +15,26 @@ final servizioPotenza = Uuid.parse('1818');
 final _misuraPotenza = Uuid.parse('2a63');
 final servizioRulli = Uuid.parse('1826');
 final _datiRulli = Uuid.parse('2ad2');
+final _comandiRulli = Uuid.parse('2ad9'); // Fitness Machine Control Point
+
+// Comandi FTMS al rullo (tutti con risposta: 0x80, comando, esito).
+const _chiediControllo = 0x00;
+const _potenzaObiettivo = 0x05; // ERG: watt da tenere
+const _parti = 0x07;
+const _fermaPausa = 0x08; // 1 = ferma, 2 = pausa
+
+/// Il comando ERG: "tieni [watt]" (sint16, little endian).
+List<int> comandoWatt(int watt) {
+  final w = watt.clamp(0, 2000);
+  return [_potenzaObiettivo, w & 0xFF, (w >> 8) & 0xFF];
+}
+
+/// La risposta del rullo a un comando: true se riuscito, false se rifiutato,
+/// null se il pacchetto non è una risposta a [comando].
+bool? esitoComando(List<int> d, int comando) {
+  if (d.length < 3 || d[0] != 0x80 || d[1] != comando) return null;
+  return d[2] == 0x01;
+}
 
 /// Circonferenza della ruota se non si sa: 700×25C, la più comune su strada.
 const circonferenzaDiBase = 2105; // mm
@@ -157,6 +178,12 @@ class SensoreBici extends SensoreBle {
   final _pedaliCsc = Contagiri();
   final _pedaliPotenza = Contagiri();
 
+  /// Il rullo manda i dati FTMS: si può comandare in ERG.
+  bool comandabile = false;
+  bool _controllo = false; // il rullo ha accettato i comandi da noi
+  int? _wattMandati;
+  DateTime _mandatiIl = DateTime(0);
+
   double? get velocita => _velocita.valore;
   double? get cadenza => _cadenza.valore;
   int? get potenza => _potenza.valore;
@@ -185,18 +212,71 @@ class SensoreBici extends SensoreBle {
       );
 
   // Si chiede tutto: quello che il sensore non ha dà errore e si ignora.
+  // L'ultimo è il punto dei comandi del rullo: le sue risposte arrivano lì
+  // (e il rullo accetta i comandi solo se lo si ascolta).
   @override
   List<Stream<List<int>>> flussi(String id) => [
     _flusso(servizioRulli, _datiRulli, id),
     _flusso(servizioPotenza, _misuraPotenza, id),
     _flusso(servizioCsc, _misuraCsc, id),
+    _flusso(servizioRulli, _comandiRulli, id),
   ];
+
+  Future<bool> _scrivi(List<int> comando) async {
+    if (id.isEmpty || stato != StatoSensore.collegato) return false;
+    try {
+      await ble.writeCharacteristicWithResponse(
+        QualifiedCharacteristic(
+          serviceId: servizioRulli,
+          characteristicId: _comandiRulli,
+          deviceId: id,
+        ),
+        value: comando,
+      );
+      return true;
+    } catch (e) {
+      debugPrint('Rullo: comando non riuscito $e');
+      _controllo = false;
+      return false;
+    }
+  }
+
+  /// ERG: il rullo tiene [watt] qualunque rapporto e cadenza. Lo stesso
+  /// valore si rimanda ogni 10 secondi, se il rullo se lo fosse perso.
+  Future<void> impostaWatt(int watt) async {
+    if (!comandabile) return;
+    final ora = DateTime.now();
+    if (watt == _wattMandati &&
+        ora.difference(_mandatiIl) < const Duration(seconds: 10)) {
+      return;
+    }
+    _wattMandati = watt;
+    _mandatiIl = ora;
+    if (!_controllo) {
+      if (!await _scrivi(const [_chiediControllo])) return;
+      _controllo = true;
+      await _scrivi(const [_parti]);
+    }
+    await _scrivi(comandoWatt(watt));
+  }
+
+  /// Rullo libero (pausa, ERG spento, fine): niente più watt imposti.
+  Future<void> libera() async {
+    if (!comandabile || _wattMandati == null) return;
+    _wattMandati = null;
+    if (_controllo) await _scrivi(const [_fermaPausa, 0x01]);
+    _controllo = false;
+  }
+
+  /// I watt chiesti al rullo adesso (null se è libero).
+  int? get wattImposti => _wattMandati;
 
   @override
   void leggi(int k, List<int> pacchetto) {
     final ora = DateTime.now();
     switch (k) {
       case 0:
+        comandabile = true;
         final r = rulliDa(pacchetto);
         if (r.kmh != null) _velocita.imposta(r.kmh! / 3.6);
         if (r.rpm != null) _cadenza.imposta(r.rpm!);
@@ -217,6 +297,14 @@ class SensoreBici extends SensoreBle {
         if (c.pedali != null) {
           _cadenza.imposta(_pedaliCsc.aggiorna(c.pedali!, ora) * 60);
         }
+      case 3:
+        // Rifiutato (un'altra app ha il controllo): si richiede la volta dopo.
+        if (esitoComando(pacchetto, _chiediControllo) == false ||
+            esitoComando(pacchetto, _potenzaObiettivo) == false) {
+          debugPrint('Rullo: comando rifiutato');
+          _controllo = false;
+          _mandatiIl = DateTime(0);
+        }
     }
   }
 
@@ -228,6 +316,10 @@ class SensoreBici extends SensoreBle {
     _ruota.azzera();
     _pedaliCsc.azzera();
     _pedaliPotenza.azzera();
+    // Ricollegato: il rullo ha dimenticato tutto, si richiede il controllo.
+    _controllo = false;
+    _wattMandati = null;
+    _mandatiIl = DateTime(0);
   }
 }
 

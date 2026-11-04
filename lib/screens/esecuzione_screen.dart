@@ -37,6 +37,7 @@ import 'grafici_screen.dart';
 import 'mappa_live.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
+import 'profilo_allenamento.dart';
 import 'opzioni_allenamento_screen.dart';
 
 const _canale = MethodChannel('avidididadi/avvio');
@@ -534,10 +535,44 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       mediaRecente(_seriePotenza, DateTime.now()) ?? sensoreBici.potenza;
 
   /// La zona di potenza chiesta dal blocco di bici in corso, se c'è l'FTP.
-  int? get _zonaWatt =>
-      _zonePotenza == null || !_bici || preparati || b.tipo != TipoBlocco.lavoro
+  (int, int)? get _rangeBlocco => _zonePotenza == null || !_bici || preparati
       ? null
-      : zonaObiettivo(b.intensita);
+      : rangeWatt(
+          b.intensita,
+          _zonePotenza,
+          recupero: b.tipo == TipoBlocco.recupero,
+        );
+
+  /// ERG: il rullo tiene i watt del blocco. Acceso di base; i tasti −5% e
+  /// +5% spostano tutti i blocchi.
+  bool _ergAcceso = true;
+  double _ergScala = 1;
+
+  /// Il diagramma dell'allenamento (bici con FTP e passi con un obiettivo).
+  late final List<BarraAllenamento>? _barre = () {
+    final zp = _zonePotenza;
+    if (zp == null || !_bici || widget.libera) return null;
+    final barre = barreDa(blocchi, zp);
+    return barre.any((x) => x.range != null) ? barre : null;
+  }();
+
+  /// I watt che il rullo deve tenere adesso (null: rullo libero).
+  int? get _wattErg {
+    final r = _rangeBlocco;
+    if (!_ergAcceso || pausa || finito || r == null) return null;
+    return wattErg(r, scala: _ergScala);
+  }
+
+  /// Manda al rullo i watt del blocco, o lo libera.
+  void _comandaRullo() {
+    if (!sensoreBici.comandabile) return;
+    final w = _wattErg;
+    if (w != null) {
+      sensoreBici.impostaWatt(w);
+    } else if (sensoreBici.wattImposti != null) {
+      sensoreBici.libera();
+    }
+  }
 
   /// Il tasto Pausa/Riprendi della notifica.
   void _pausaDaNotifica() {
@@ -564,7 +599,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (pausaDaNotifica == _pausaDaNotifica) pausaDaNotifica = null;
     togliNotifica();
     sensoreBattito.ferma();
-    if (_bici) sensoreBici.ferma();
+    if (_bici) sensoreBici.libera().whenComplete(sensoreBici.ferma);
     _schermoAcceso(false);
     gps?.dispose();
     _kmScritti.dispose();
@@ -599,7 +634,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       setState(() {});
       return;
     }
-    if (!preparati && _bici) _campionaBici();
+    if (!preparati && _bici) {
+      _campionaBici();
+      _comandaRullo();
+    }
     if (!preparati) _campionaBattito();
     if (!preparati &&
         DateTime.now().difference(_salvatoIl) > const Duration(seconds: 15)) {
@@ -734,20 +772,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void _controllaRitmo() {
     final ora = DateTime.now();
     final zona = zonaObiettivo(b.intensita);
-    final zw = _zonaWatt;
+    final r = _rangeBlocco;
     final w = _watt;
-    if (zw != null && w != null && _zonePotenza != null) {
-      // Ruota libera (discesa, semaforo): niente avvisi.
-      if (w == 0) {
+    if (r != null && w != null && _zonePotenza != null) {
+      // In ERG i watt li tiene il rullo; in ruota libera niente avvisi.
+      if (w == 0 || sensoreBici.wattImposti != null) {
         ritmo.azzera();
         return;
       }
-      final verso = versoPotenza(w, zw, _zonePotenza);
+      final verso = versoRange(w, r, _zonePotenza);
       if (ritmo.controlla(verso, ora)) {
-        voce.di(
-          frasePotenza(w, zw, verso, _zonePotenza),
-          valida: const Duration(seconds: 20),
-        );
+        voce.di(fraseRange(w, r, verso), valida: const Duration(seconds: 20));
       }
       return;
     }
@@ -861,6 +896,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       if (pausa) {
         totale.stop();
         blocco.stop();
+        if (_bici) sensoreBici.libera();
       } else {
         if (!preparati) totale.start();
         blocco.start();
@@ -873,6 +909,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void _fine() {
     totale.stop();
     blocco.stop();
+    if (_bici) sensoreBici.libera();
     // Spento il GPS se ne va anche la sua notifica; poi si toglie la nostra.
     (gps?.ferma() ?? Future<void>.value()).then((_) => togliNotifica());
     _schermoAcceso(false);
@@ -1256,7 +1293,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                             child: _DatoPotenza(
                                               watt: _watt,
                                               zone: _zonePotenza,
-                                              obiettivo: _zonaWatt,
+                                              obiettivo: _rangeBlocco,
                                               onTap: () =>
                                                   mostraSensoreBici(context),
                                             ),
@@ -1278,10 +1315,34 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       ),
                                     if (gps == null && sensoreBattito.ricordato)
                                       _DatoBattito(zone: _zone),
+                                    if (bici && sensoreBici.comandabile)
+                                      _ControlloErg(
+                                        acceso: _ergAcceso,
+                                        watt: _ergAcceso ? _wattErg : null,
+                                        scala: _ergScala,
+                                        cambia: (acceso) => setState(() {
+                                          _ergAcceso = acceso;
+                                          _comandaRullo();
+                                        }),
+                                        scalaCambia: (s) => setState(() {
+                                          _ergScala = s;
+                                          _comandaRullo();
+                                        }),
+                                      ),
                                   ],
                                 );
                               },
                             ),
+                            if (_barre case final barre?) ...[
+                              const SizedBox(height: 8),
+                              _DiagrammaInCorso(
+                                barre: barre,
+                                zone: _zonePotenza!,
+                                corrente: i,
+                                trascorso: _tempoBlocco.inSeconds,
+                                durata: _durata,
+                              ),
+                            ],
                             const SizedBox(height: 6),
                             Text(
                               preparati
@@ -1529,6 +1590,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   pausa: _inPausa,
                 ),
               ),
+              if (_barre case final barre?) ...[
+                const SizedBox(height: 20),
+                _DiagrammaInCorso(
+                  barre: barre,
+                  zone: _zonePotenza!,
+                  corrente: -1,
+                  trascorso: 0,
+                  durata: 0,
+                ),
+              ],
               const SizedBox(height: 24),
               if (_conPercorso)
                 Material(
@@ -2266,7 +2337,7 @@ class _Dato extends StatelessWidget {
 class _DatoPotenza extends StatelessWidget {
   final int? watt;
   final ZonePotenza? zone;
-  final int? obiettivo;
+  final (int, int)? obiettivo; // watt da tenere nel blocco
   final VoidCallback onTap;
   const _DatoPotenza({
     required this.watt,
@@ -2281,21 +2352,161 @@ class _DatoPotenza extends StatelessWidget {
     final n = z == null || w == null ? 0 : z.zonaDi(w);
     final verso = z == null || w == null || o == null || w == 0
         ? 0
-        : versoPotenza(w, o, z);
+        : versoRange(w, o, z);
+    final zo = z == null || o == null ? 0 : z.zonaDi((o.$1 + o.$2) ~/ 2);
     return _Dato(
       icona: Icons.bolt,
       etichetta: n > 0 ? 'Potenza · Z$n' : 'Potenza',
       valore: w?.toString() ?? '–',
       unita: 'W',
-      nota: z == null || o == null
+      nota: o == null
           ? null
           : switch (verso) {
-              1 => '▼ Z$o ${z.testo(o)}',
-              -1 => '▲ Z$o ${z.testo(o)}',
-              _ => 'Z$o ${z.testo(o)}',
+              1 => '▼ Z$zo ${fmtRange(o)}',
+              -1 => '▲ Z$zo ${fmtRange(o)}',
+              _ => 'Z$zo ${fmtRange(o)}',
             },
       notaFuori: verso != 0,
       onTap: onTap,
+    );
+  }
+}
+
+/// Il diagramma con sotto il blocco che viene dopo e quanto manca alla fine.
+class _DiagrammaInCorso extends StatelessWidget {
+  final List<BarraAllenamento> barre;
+  final ZonePotenza zone;
+  final int corrente; // -1 prima del via
+  final int trascorso; // secondi nel blocco in corso
+  final int durata; // secondi del blocco in corso (0 se a "Fatto")
+  const _DiagrammaInCorso({
+    required this.barre,
+    required this.zone,
+    required this.corrente,
+    required this.trascorso,
+    required this.durata,
+  });
+
+  String _descrivi(BarraAllenamento b) {
+    final r = b.range;
+    final quanto = fmtTimer(Duration(seconds: b.secondi));
+    if (r == null) return quanto;
+    return 'Z${zone.zonaDi((r.$1 + r.$2) ~/ 2)} · ${fmtRange(r)} · $quanto';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final restoBlocco = corrente < 0 ? 0 : (durata - trascorso).clamp(0, 99999);
+    final dopo = [
+      for (var k = corrente + 1; k < barre.length; k++) barre[k].secondi,
+    ].fold(0, (a, b) => a + b);
+    final poi = corrente + 1 < barre.length ? barre[corrente + 1] : null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ProfiloAllenamento(
+          barre: barre,
+          zone: zone,
+          corrente: corrente,
+          avanzamento: durata > 0 ? trascorso / durata : 0.5,
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                poi == null
+                    ? 'Ultimo blocco'
+                    : '${corrente < 0 ? 'Si parte' : 'Poi'}: ${_descrivi(poi)}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: t.labelMedium,
+              ),
+            ),
+            Text(
+              'Fine tra ${fmtTimer(Duration(seconds: restoBlocco + dopo))}',
+              style: t.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// ERG del rullo: acceso o spento, i watt imposti e i tasti −5% / +5%.
+class _ControlloErg extends StatelessWidget {
+  final bool acceso;
+  final int? watt;
+  final double scala;
+  final ValueChanged<bool> cambia;
+  final ValueChanged<double> scalaCambia;
+  const _ControlloErg({
+    required this.acceso,
+    required this.watt,
+    required this.scala,
+    required this.cambia,
+    required this.scalaCambia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final percento = ((scala - 1) * 100).round();
+    return Material(
+      color: scheme.surfaceContainer,
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 4, 6, 4),
+        child: Row(
+          children: [
+            Icon(Icons.tune, size: 18, color: scheme.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    acceso ? 'Rullo in ERG' : 'Rullo libero',
+                    style: t.labelLarge,
+                  ),
+                  Text(
+                    acceso
+                        ? [
+                            watt == null ? 'senza obiettivo' : 'tiene $watt W',
+                            if (percento != 0)
+                              '${percento > 0 ? '+' : ''}$percento%',
+                          ].join(' · ')
+                        : 'i watt li decidi tu',
+                    style: t.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            if (acceso) ...[
+              IconButton(
+                tooltip: '5% in meno',
+                onPressed: scala > 0.71
+                    ? () => scalaCambia(((scala - 0.05) * 100).round() / 100)
+                    : null,
+                icon: const Icon(Icons.remove),
+              ),
+              IconButton(
+                tooltip: '5% in più',
+                onPressed: scala < 1.29
+                    ? () => scalaCambia(((scala + 0.05) * 100).round() / 100)
+                    : null,
+                icon: const Icon(Icons.add),
+              ),
+            ],
+            Switch(value: acceso, onChanged: cambia),
+          ],
+        ),
+      ),
     );
   }
 }

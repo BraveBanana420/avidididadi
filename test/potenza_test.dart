@@ -1,7 +1,10 @@
+import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/invio_intervals.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
 import 'package:allenamenti_app/potenza.dart';
+import 'package:allenamenti_app/screens/profilo_allenamento.dart';
+import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:allenamenti_app/serie_sessione.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -247,6 +250,80 @@ void main() {
         ], potenza: true),
         contains('Z2 HR'),
       );
+    });
+
+    test('watt e % scritti a mano vanno così come sono', () {
+      expect(obiettivoPotenzaIcu('200-220 W'), '200-220w');
+      expect(obiettivoPotenzaIcu('110-115%'), '110-115%');
+      expect(obiettivoPotenzaIcu('niente'), isNull);
+    });
+  });
+
+  group('ERG', () {
+    test('i watt di un passo: watt, % dell\'FTP, zona, recupero', () {
+      expect(rangeWatt('200-220 W', zp), (200, 220));
+      expect(rangeWatt('250w', zp), (250, 250));
+      expect(rangeWatt('105-110%', zp), (210, 220));
+      expect(rangeWatt('75% FTP', zp), (150, 150));
+      expect(rangeWatt('zona 4', zp), (181, 210));
+      expect(rangeWatt('Z2', zp), (111, 150));
+      expect(rangeWatt('zona 1', zp), (90, 110));
+      expect(rangeWatt('', zp, recupero: true), (90, 110));
+      expect(rangeWatt('Pedalata libera', zp), isNull);
+    });
+
+    test('il rullo tiene il centro del range, a passi di 5 W', () {
+      expect(wattErg((181, 210)), 195);
+      expect(wattErg((181, 210), scala: 0.95), 185);
+      expect(wattErg((200, 200), scala: 1.05), 210);
+    });
+
+    test('fuori dal range: avviso sopra; sotto solo nei passi duri', () {
+      expect(versoRange(230, (181, 210), zp), 1);
+      expect(versoRange(170, (181, 210), zp), -1);
+      expect(versoRange(80, (111, 150), zp), 0);
+      expect(fraseRange(230, (181, 210), 1), '230 watt, scendi sotto 210.');
+    });
+
+    test('le % del piano mostrano anche i watt', () {
+      expect(conWatt('88-94%', zp, fc), '88-94% (176-188 W)');
+      expect(conWatt('Ripetute al 105% FTP', zp, fc), contains('(210 W)'));
+    });
+
+    test('comandi per il rullo (FTMS)', () {
+      expect(comandoWatt(195), [0x05, 195, 0]);
+      expect(comandoWatt(300), [0x05, 0x2C, 0x01]);
+      expect(comandoWatt(-10), [0x05, 0, 0]);
+      expect(esitoComando([0x80, 0x05, 0x01], 0x05), isTrue);
+      expect(esitoComando([0x80, 0x00, 0x05], 0x00), isFalse); // rifiutato
+      expect(esitoComando([0x80, 0x07, 0x01], 0x05), isNull);
+      expect(esitoComando([0x01], 0x05), isNull);
+    });
+
+    test('diagramma: una barra per blocco, recuperi compresi', () {
+      final blocchi = blocchiDa([
+        passoBici(
+          1,
+          'riscaldamento',
+          'Agile',
+          minuti: '10',
+          intensita: 'zona 2',
+        ),
+        passoBici(
+          2,
+          'principale',
+          'Ripetute',
+          serie: '3',
+          minuti: '4',
+          intensita: '105-110%',
+          recupero: '120',
+        ),
+      ]);
+      final barre = barreDa(blocchi, zp);
+      expect(barre.map((b) => b.secondi), [600, 240, 120, 240, 120, 240]);
+      expect(barre.first.range, (111, 150));
+      expect(barre[1].range, (210, 220));
+      expect(barre[2].range, (90, 110)); // recupero facile
     });
   });
 }

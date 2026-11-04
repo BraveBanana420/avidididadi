@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show Color;
 
 import 'csv.dart';
 import 'models.dart';
@@ -50,18 +51,100 @@ class ZonePotenza {
   }
 }
 
+/// Colori delle sette zone di potenza, come le barre di Garmin.
+const coloriZonePotenza = [
+  Color(0xFF9A9AA5),
+  Color(0xFF2EA8FF),
+  Color(0xFF22E07A),
+  Color(0xFFFFC233),
+  Color(0xFFFF8A3D),
+  Color(0xFFFF3B47),
+  Color(0xFFB566FF),
+];
+
+final _wattScritti = RegExp(
+  r'(\d{2,4})\s*(?:-|–|a)\s*(\d{2,4})\s*w\b|(\d{2,4})\s*w\b',
+  caseSensitive: false,
+);
+final _percentuale = RegExp(
+  r'(\d{2,3})\s*(?:-|–)\s*(\d{2,3})\s*%|(\d{2,3})\s*%',
+);
+final _zona = RegExp(r'\b(?:zona\s*|Z)([1-7])\b', caseSensitive: false);
+
+/// I watt da tenere in un passo di bici: watt scritti ("200-220 W"), % dell'FTP
+/// ("88-94%", "75% FTP") o zona ("zona 4"). Un recupero senza obiettivo va
+/// piano (45-55%). Null se il passo non dice niente.
+(int, int)? rangeWatt(
+  String intensita,
+  ZonePotenza p, {
+  bool recupero = false,
+}) {
+  final w = _wattScritti.firstMatch(intensita);
+  if (w != null) {
+    if (w[3] != null) {
+      final v = int.parse(w[3]!);
+      return (v, v);
+    }
+    final da = int.parse(w[1]!), a = int.parse(w[2]!);
+    return da <= a ? (da, a) : (a, da);
+  }
+  final q = _percentuale.firstMatch(intensita);
+  if (q != null) {
+    int watt(String x) => (p.ftp * int.parse(x) / 100).round();
+    if (q[3] != null) {
+      final v = watt(q[3]!);
+      return (v, v);
+    }
+    final da = watt(q[1]!), a = watt(q[2]!);
+    return da <= a ? (da, a) : (a, da);
+  }
+  final z = _zona.firstMatch(intensita);
+  if (z != null) {
+    final n = int.parse(z[1]!);
+    final (da, a) = p.zona(n);
+    // Z1 da 45% (non da zero), Z7 fino al 180%: servono a ERG e diagramma.
+    return (n == 1 ? (p.ftp * 0.45).round() : da, a ?? (p.ftp * 1.8).round());
+  }
+  if (recupero) {
+    return ((p.ftp * 0.45).round(), (p.ftp * 0.55).round());
+  }
+  return null;
+}
+
+/// I watt che il rullo tiene in ERG: il centro del range, a passi di 5 W,
+/// corretto da [scala] (i tasti −5% e +5%).
+int wattErg((int, int) range, {double scala = 1}) {
+  final centro = (range.$1 + range.$2) / 2 * scala;
+  return ((centro / 5).round() * 5).clamp(0, 2000);
+}
+
+/// Il range in parole: "181-210 W" o "200 W".
+String fmtRange((int, int) r) =>
+    r.$1 == r.$2 ? '${r.$1} W' : '${r.$1}-${r.$2} W';
+
 /// "zona 2" in un testo di bici diventa "zona 2 (150-200 W · 125-137 bpm)":
 /// i watt per chi ha il rullo o il misuratore, il battito per chi no.
 String conWatt(String testo, ZonePotenza? p, Zone z) {
   if (p == null) return conBpm(testo, z);
-  return testo.replaceAllMapped(
-    RegExp(r'zona ([1-5])(?! \()', caseSensitive: false),
-    (m) {
-      final n = int.parse(m[1]!);
-      final (da, a) = z.zona(n);
-      return '${m[0]} (${p.testo(n)} · $da-$a bpm)';
-    },
-  );
+  return testo
+      .replaceAllMapped(RegExp(r'zona ([1-5])(?! \()', caseSensitive: false), (
+        m,
+      ) {
+        final n = int.parse(m[1]!);
+        final (da, a) = z.zona(n);
+        return '${m[0]} (${p.testo(n)} · $da-$a bpm)';
+      })
+      // "88-94%" dell'FTP: anche in watt.
+      .replaceAllMapped(
+        RegExp(r'(\d{2,3})(?:\s*-\s*(\d{2,3}))?\s*%(?:\s*FTP)?(?! \()'),
+        (m) {
+          int w(String x) => (p.ftp * int.parse(x) / 100).round();
+          final da = w(m[1]!);
+          return m[2] == null
+              ? '${m[0]} ($da W)'
+              : '${m[0]} ($da-${w(m[2]!)} W)';
+        },
+      );
 }
 
 /// L'intensità con watt e battito in bici, solo battito negli altri sport.
@@ -80,6 +163,19 @@ int versoPotenza(int watt, int obiettivo, ZonePotenza p) {
   if (obiettivo >= 3 && watt < da * (1 - marginePotenza)) return -1;
   return 0;
 }
+
+/// Fuori dal range di watt di un passo: 1 sopra, -1 sotto (solo se il
+/// passo chiede almeno il 75% dell'FTP), 0 dentro.
+int versoRange(int watt, (int, int) r, ZonePotenza p) {
+  if (watt > r.$2 * (1 + marginePotenza)) return 1;
+  if (r.$1 > p.ftp * 0.75 && watt < r.$1 * (1 - marginePotenza)) return -1;
+  return 0;
+}
+
+/// La frase a voce per un range: "260 watt, scendi sotto 230."
+String fraseRange(int watt, (int, int) r, int verso) => verso > 0
+    ? '$watt watt, scendi sotto ${r.$2}.'
+    : '$watt watt, sali sopra ${r.$1}.';
 
 /// La frase a voce: "260 watt, scendi sotto 230." Sopra si dice il tetto,
 /// sotto il minimo della zona.
@@ -150,8 +246,15 @@ int? potenzaNormalizzata(List<Campione> w) {
 }
 
 /// "zona 2" in un passo di bici → "56-75%" (dell'FTP) per intervals.icu, che
-/// lo passa a Garmin come obiettivo di potenza. Null se non c'è una zona.
+/// lo passa a Garmin come obiettivo di potenza; anche watt ("200-220w") e %
+/// scritti. Null se non c'è niente.
 String? obiettivoPotenzaIcu(String intensita) {
+  final w = _wattScritti.firstMatch(intensita);
+  if (w != null) {
+    return w[3] != null ? '${w[3]}w' : '${w[1]}-${w[2]}w';
+  }
+  final q = _percentuale.firstMatch(intensita);
+  if (q != null) return q[3] != null ? '${q[3]}%' : '${q[1]}-${q[2]}%';
   final m = RegExp(r'zona ([1-5])', caseSensitive: false).firstMatch(intensita);
   if (m == null) return null;
   final n = int.parse(m[1]!);

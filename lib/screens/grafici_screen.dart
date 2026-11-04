@@ -417,16 +417,6 @@ class ZonePotenzaCard extends StatelessWidget {
   final ZonePotenza? zone;
   const ZonePotenzaCard({super.key, required this.serie, required this.zone});
 
-  static const _colori = [
-    Color(0xFF9A9AA5),
-    Color(0xFF2EA8FF),
-    Color(0xFF22E07A),
-    Color(0xFFFFC233),
-    Color(0xFFFF8A3D),
-    Color(0xFFFF3B47),
-    Color(0xFFB566FF),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
@@ -467,7 +457,7 @@ class ZonePotenzaCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: tempi[n]!.inSeconds / totale.inSeconds,
                         minHeight: 12,
-                        color: _colori[n - 1],
+                        color: coloriZonePotenza[n - 1],
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .surfaceContainerHighest,
