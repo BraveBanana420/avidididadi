@@ -223,8 +223,13 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ## 7. Regola Git (obbligatoria)
 
-Repository: `https://github.com/BraveBanana420/avidididadi`, branch `main`. Identità dei commit: `BraveBanana420 <347462779+BraveBanana420@users.noreply.github.com>`.
+Repository: `https://github.com/BraveBanana420/avidididadi`, branch principale `main`. Identità dei commit: `BraveBanana420 <347462779+BraveBanana420@users.noreply.github.com>`.
 
+- **Dove si lavora** (niente branch `staging`: la prova è l'installazione sul telefono):
+  - **piccoli ritocchi** (un colore, un testo, una correzione semplice): direttamente su `main`;
+  - **funzioni nuove o modifiche grosse**: su un branch `funzione/<nome-breve>` creato da `main`. Si installa sul telefono da lì e si unisce a `main` **solo quando l'utente dà l'ok** dopo le prove (`git merge --no-ff`, poi push). Dopo l'unione il branch si cancella, anche su GitHub. Se l'utente la scarta, si cancella solo su sua conferma;
+  - in dubbio tra i due casi: branch. `main` deve contenere solo cose già provate;
+  - **APK per gli amici**: da `main`, con l'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`). Mai spostare un'etichetta già caricata.
 - **Al termine di ogni modifica completata e funzionante esegui sempre**:
   1. `git add` dei file della modifica;
   2. `git commit` con un **messaggio chiaro in italiano** che descriva la modifica;
