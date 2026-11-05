@@ -304,8 +304,14 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
 class _CalibraRullo extends StatelessWidget {
   const _CalibraRullo();
 
+  // È un widget costante: il foglio non lo ridisegna, deve ascoltare da sé.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: sensoreBici,
+    builder: (context, _) => _riquadro(context),
+  );
+
+  Widget _riquadro(BuildContext context) {
     final b = sensoreBici;
     final t = Theme.of(context).textTheme;
     // Mentre l'ERG comanda il rullo non si calibra: si fa prima di partire.

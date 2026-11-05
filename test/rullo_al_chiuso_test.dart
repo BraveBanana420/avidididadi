@@ -1,5 +1,6 @@
 import 'package:allenamenti_app/app_state.dart';
 import 'package:allenamenti_app/models.dart';
+import 'package:allenamenti_app/screens/battito_sheet.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/screens/vista_bici.dart';
 import 'package:allenamenti_app/sensore_ble.dart';
@@ -164,6 +165,50 @@ void main() {
       s.leggi(2, _ruota(100, 0));
       s.leggi(2, _ruota(102, 1024));
       expect(s.velocita, closeTo(2 * circonferenzaDiBase / 1000, 0.01));
+    });
+  });
+
+  group('foglio dei sensori', () {
+    testWidgets('la calibrazione mostra i passi man mano che arrivano', (
+      tester,
+    ) async {
+      sensoreBici.comandabile = true;
+      sensoreBici.stato = StatoSensore.collegato;
+      sensoreBici.sapeCalibrare = true;
+      addTearDown(() {
+        sensoreBici.sapeCalibrare = false;
+        sensoreBici.faseCalibrazione = FaseCalibrazione.nessuna;
+      });
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => mostraSensoreBici(context),
+                child: const Text('apri'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('apri'));
+      await tester.pumpAndSettle();
+      expect(find.text('Inizia la calibrazione'), findsOneWidget);
+
+      // Il rullo risponde con i dati veri del Flux S: da 32 a 37 km/h.
+      sensoreBici.faseCalibrazione = FaseCalibrazione.avvio;
+      sensoreBici.leggi(3, [0x80, 0x13, 0x01, 0x80, 0x0C, 0x74, 0x0E]);
+      await tester.pump();
+      expect(find.textContaining('superare 37 km/h'), findsOneWidget);
+      expect(find.text('Annulla'), findsOneWidget);
+
+      sensoreBici.leggi(4, [0x14, 0x04]);
+      await tester.pump();
+      expect(find.textContaining('Smetti di pedalare'), findsOneWidget);
+
+      sensoreBici.leggi(4, [0x14, 0x02]);
+      await tester.pump();
+      expect(find.text('Calibrazione riuscita.'), findsOneWidget);
     });
   });
 
