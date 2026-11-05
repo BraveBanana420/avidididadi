@@ -148,7 +148,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
 - **Ogni modifica grafica va controllata nelle 4 combinazioni.**
 
-**Colori degli sport** (uguali nel chiaro e nello scuro):
+**Colori degli sport** (uguali nel chiaro e nello scuro, tranne la camminata):
 
 | Sport | Standard | Neon |
 |---|---|---|
@@ -157,7 +157,8 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 | Nuoto | `#FF8A3D` | `#00B2FF` |
 | Bici | `#B3123A` | `#00E0B8` |
 | Mobilità | `#F48FB1` | `#FF7A00` |
-| Camminata | `#E0A33A` | `#C6FF3D` |
+| Camminata (fondo scuro) | `#E0A33A` | `#C6FF3D` |
+| Camminata (fondo chiaro) | `#B87A0F` | `#5F9400` |
 
 - Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
 - **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).

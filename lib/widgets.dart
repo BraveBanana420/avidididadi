@@ -44,8 +44,58 @@ IconData iconaSport(String sport) {
   }
 }
 
+/// Quanto stringere un testo largo [larghezza] per farlo stare in [disponibile]:
+/// 1 se ci sta già, mai sotto [minima] perché resti leggibile.
+double scalaTesto(double larghezza, double disponibile, {double minima = 0.7}) {
+  if (larghezza <= disponibile || larghezza <= 0) return 1;
+  // Un soffio di margine: gli arrotondamenti non devono far comparire i "…".
+  return (disponibile * 0.995 / larghezza).clamp(minima, 1.0);
+}
+
+/// Un nome che resta su una riga su ogni telefono: se non ci sta il carattere
+/// si rimpicciolisce quanto serve; solo i nomi lunghissimi finiscono con "…".
+/// Tiene conto della larghezza dello schermo e della dimensione del testo
+/// scelta nelle impostazioni del telefono.
+class TestoUnaRiga extends StatelessWidget {
+  final String testo;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+  const TestoUnaRiga(this.testo, {super.key, this.style, this.textAlign});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, box) {
+        final base = DefaultTextStyle.of(context).style.merge(style);
+        final misura = TextPainter(
+          text: TextSpan(text: testo, style: base),
+          maxLines: 1,
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+        )..layout();
+        final scala = scalaTesto(misura.width, box.maxWidth);
+        misura.dispose();
+        return Text(
+          testo,
+          maxLines: 1,
+          softWrap: false,
+          overflow: TextOverflow.ellipsis,
+          textAlign: textAlign,
+          style: base.copyWith(
+            fontSize: (base.fontSize ?? 14) * scala,
+            letterSpacing: base.letterSpacing == null
+                ? null
+                : base.letterSpacing! * scala,
+          ),
+        );
+      },
+    );
+  }
+}
+
 // Colori degli sport: standard nei toni del rosso (ben distinti per tinta e
-// luminosità) oppure neon, uguali nel tema chiaro e nello scuro.
+// luminosità) oppure neon, uguali nel tema chiaro e nello scuro. Fa eccezione
+// la camminata: i suoi colori chiari sul fondo chiaro non si vedrebbero.
 const _palette = [
   Color(0xFFE57373),
   Color(0xFFFFA270),
@@ -69,6 +119,9 @@ Color coloreSport(String sport) {
     case 'mobilità':
       return n ? const Color(0xFFFF7A00) : const Color(0xFFF48FB1);
     case 'camminata':
+      if (!temaScuroAttivo) {
+        return n ? const Color(0xFF5F9400) : const Color(0xFFB87A0F);
+      }
       return n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A);
     case 'riposo':
       return temaScuroAttivo

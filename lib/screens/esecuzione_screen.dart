@@ -1398,7 +1398,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       children: [
                                         // Solo il nome, piccolo: titolo e durata
                                         // della seduta sono già stati scelti.
-                                        Text(b.titolo, style: t.titleSmall),
+                                        TestoUnaRiga(
+                                          b.titolo,
+                                          style: t.titleSmall,
+                                        ),
                                         if (dettaglioBreve(b).isNotEmpty)
                                           Text(
                                             dettaglioBreve(b),
@@ -1489,7 +1492,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text('Poi', style: t.bodySmall),
-                                          Text(
+                                          TestoUnaRiga(
                                             prossimo.titolo,
                                             style: t.titleMedium,
                                           ),
@@ -1584,7 +1587,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             children: [
               Text('Preparati', style: t.headlineMedium),
               const SizedBox(height: 4),
-              Text(
+              TestoUnaRiga(
                 widget.libera
                     ? widget.nome
                     : '${widget.nome} · $nPassi esercizi',
@@ -1592,7 +1595,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 textAlign: TextAlign.center,
               ),
               if (prossimo != null)
-                Text(
+                TestoUnaRiga(
                   'Si parte con: ${prossimo.titolo}',
                   style: t.titleMedium,
                   textAlign: TextAlign.center,
@@ -1828,10 +1831,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
+                        child: TestoUnaRiga(
                           recupero ? 'Recupero' : b.titolo,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: t.titleSmall,
                         ),
                       ),

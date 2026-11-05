@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:allenamenti_app/pulse.dart';
 import 'package:allenamenti_app/tema.dart';
 import 'package:allenamenti_app/widgets.dart';
@@ -56,5 +58,35 @@ void main() {
     }
     neonAttivo = false;
     expect(coloreSport('Forza'), const Color(0xFF8E8E96));
+  });
+
+  test('camminata: si vede sul fondo chiaro, resta luminosa sullo scuro', () {
+    double contrasto(Color a, Color b) {
+      final x = a.computeLuminance(), y = b.computeLuminance();
+      return (math.max(x, y) + 0.05) / (math.min(x, y) + 0.05);
+    }
+
+    final primaScuro = temaScuroAttivo;
+    addTearDown(() {
+      temaScuroAttivo = primaScuro;
+      neonAttivo = false;
+    });
+    for (final n in [false, true]) {
+      neonAttivo = n;
+      temaScuroAttivo = false;
+      expect(
+        contrasto(coloreSport('Camminata'), const Color(0xFFF6F6FA)),
+        greaterThanOrEqualTo(3),
+      );
+      temaScuroAttivo = true;
+      expect(
+        contrasto(coloreSport('Camminata'), const Color(0xFF0B0B0D)),
+        greaterThanOrEqualTo(3),
+      );
+      expect(
+        coloreSport('Camminata'),
+        n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A),
+      );
+    }
   });
 }

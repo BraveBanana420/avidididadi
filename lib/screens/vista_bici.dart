@@ -5,6 +5,7 @@ import '../obiettivo.dart';
 import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
+import '../widgets.dart';
 import 'profilo_allenamento.dart';
 
 // La schermata della bici al chiuso durante l'allenamento: tutti i dati in
@@ -456,12 +457,7 @@ class _BloccoInCorso extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      d.titolo,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: t.titleSmall,
-                    ),
+                    TestoUnaRiga(d.titolo, style: t.titleSmall),
                     if (principale.isNotEmpty || d.obiettivo2.isNotEmpty)
                       // Primario grande, secondario accanto: "200 W · 85-90 rpm".
                       FittedBox(
