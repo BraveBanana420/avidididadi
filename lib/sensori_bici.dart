@@ -75,8 +75,17 @@ FaseCalibrazione? faseDaStato(List<int> d) {
   };
 }
 
-String _esadecimale(List<int> d) =>
-    d.map((x) => x.toRadixString(16).padLeft(2, '0')).join(' ');
+/// Ogni quanto ricordare la calibrazione: non c'è una regola ufficiale, due
+/// settimane sono una via di mezzo.
+const giorniTraCalibrazioni = 14;
+
+/// È ora di calibrare: mai fatta dall'app, o fatta da due settimane o più.
+bool calibrazioneDaFare(DateTime? ultima, DateTime oggi) {
+  if (ultima == null) return true;
+  final da = DateTime.utc(ultima.year, ultima.month, ultima.day);
+  final a = DateTime.utc(oggi.year, oggi.month, oggi.day);
+  return a.difference(da).inDays >= giorniTraCalibrazioni;
+}
 
 /// Circonferenza della ruota se non si sa: 700×25C, la più comune su strada.
 const circonferenzaDiBase = 2105; // mm
@@ -229,6 +238,15 @@ class SensoreBici extends SensoreBle {
 
   /// Il rullo ha dichiarato di saper fare la calibrazione.
   bool sapeCalibrare = false;
+
+  /// Quando è riuscita l'ultima calibrazione (ricordata in sensore_bici.txt).
+  DateTime? ultimaCalibrazione;
+
+  /// Rullo collegato e calibrazione da rifare: si dice prima di partire.
+  bool get daCalibrare =>
+      rulloInUso &&
+      sapeCalibrare &&
+      calibrazioneDaFare(ultimaCalibrazione, DateTime.now());
   FaseCalibrazione faseCalibrazione = FaseCalibrazione.nessuna;
   double? calibraKmhDa;
   double? calibraKmhA;
@@ -249,11 +267,30 @@ class SensoreBici extends SensoreBle {
   int? get potenza => _potenza.valore;
 
   @override
-  List<String> get altreRighe => ['$circonferenza'];
+  List<String> get altreRighe => [
+    '$circonferenza',
+    if (ultimaCalibrazione case final u?) u.toIso8601String().substring(0, 10),
+  ];
   @override
   set altreRighe(List<String> righe) {
     final v = righe.isEmpty ? null : int.tryParse(righe.first.trim());
     if (v != null && v >= 1000 && v <= 2400) circonferenza = v;
+    ultimaCalibrazione = righe.length > 1
+        ? DateTime.tryParse(righe[1].trim())
+        : null;
+  }
+
+  // La data vale per quel rullo: con un altro si ricomincia.
+  @override
+  Future<void> scegli(DiscoveredDevice d) {
+    if (d.id != id) ultimaCalibrazione = null;
+    return super.scegli(d);
+  }
+
+  @override
+  Future<void> dimentica() {
+    ultimaCalibrazione = null;
+    return super.dimentica();
   }
 
   Future<void> impostaCirconferenza(int mm) async {
@@ -296,15 +333,18 @@ class SensoreBici extends SensoreBle {
         ),
       );
       sapeCalibrare = calibrazioneSupportata(funzioni);
-      debugPrint('RulloCalibra funzioni=${_esadecimale(funzioni)}');
       notifyListeners();
     } catch (e) {
-      debugPrint('RulloCalibra funzioni non lette: $e');
+      debugPrint('Rullo: funzioni non lette $e');
     }
   }
 
   void _fase(FaseCalibrazione f) {
     faseCalibrazione = f;
+    if (f == FaseCalibrazione.riuscita) {
+      ultimaCalibrazione = DateTime.now();
+      ricorda();
+    }
     if (!calibrando) {
       _scadenzaCalibrazione?.cancel();
       // Finita: per i prossimi watt il controllo si richiede da capo.
@@ -417,7 +457,6 @@ class SensoreBici extends SensoreBle {
         }
       case 3:
         if (calibrando) {
-          debugPrint('RulloCalibra risposta=${_esadecimale(pacchetto)}');
           if (esitoComando(pacchetto, _chiediControllo) == false) {
             _fase(FaseCalibrazione.errore);
           }
@@ -438,7 +477,6 @@ class SensoreBici extends SensoreBle {
         }
       case 4:
         if (!calibrando) return;
-        debugPrint('RulloCalibra stato=${_esadecimale(pacchetto)}');
         if (faseDaStato(pacchetto) case final f?) _fase(f);
     }
   }

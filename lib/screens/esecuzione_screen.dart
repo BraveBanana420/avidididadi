@@ -1729,7 +1729,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     rullo ? Icons.pedal_bike : Icons.pedal_bike_outlined,
                   ),
                   title: Text(_alChiuso ? 'Rullo e sensori' : 'Sensori bici'),
-                  subtitle: Text(rullo ? 'Collegato' : 'Tocca per collegare'),
+                  subtitle: Text(
+                    sensoreBici.daCalibrare
+                        ? 'Collegato · è ora di calibrarlo'
+                        : rullo
+                        ? 'Collegato'
+                        : 'Tocca per collegare',
+                  ),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => mostraSensoreBici(context),
                 ),

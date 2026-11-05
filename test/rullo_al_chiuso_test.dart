@@ -154,6 +154,44 @@ void main() {
       expect(errore.faseCalibrazione, FaseCalibrazione.errore);
     });
 
+    test('promemoria: mai fatta o dopo due settimane, non prima', () {
+      final oggi = DateTime(2026, 11, 20, 8);
+      expect(calibrazioneDaFare(null, oggi), isTrue);
+      expect(calibrazioneDaFare(DateTime(2026, 11, 7, 22), oggi), isFalse);
+      expect(calibrazioneDaFare(DateTime(2026, 11, 6, 22), oggi), isTrue);
+      expect(calibrazioneDaFare(DateTime(2026, 10, 1), oggi), isTrue);
+    });
+
+    test('la data dell\'ultima calibrazione si ricorda', () {
+      final s = SensoreBici()..faseCalibrazione = FaseCalibrazione.smetti;
+      s.leggi(4, [0x14, 0x02, 0x0C, 0x00]);
+      expect(s.ultimaCalibrazione, isNotNull);
+
+      final righe = s.altreRighe;
+      final dopo = SensoreBici()..altreRighe = righe;
+      expect(dopo.ultimaCalibrazione, isNotNull);
+      expect(
+        calibrazioneDaFare(dopo.ultimaCalibrazione, DateTime.now()),
+        isFalse,
+      );
+    });
+
+    test('il file di prima, con la sola circonferenza, resta leggibile', () {
+      final s = SensoreBici()..altreRighe = ['2096'];
+      expect(s.circonferenza, 2096);
+      expect(s.ultimaCalibrazione, isNull);
+    });
+
+    test('il promemoria compare solo col rullo collegato', () {
+      final s = SensoreBici()..sapeCalibrare = true;
+      expect(s.daCalibrare, isFalse);
+      s.comandabile = true;
+      s.stato = StatoSensore.collegato;
+      expect(s.daCalibrare, isTrue);
+      s.ultimaCalibrazione = DateTime.now();
+      expect(s.daCalibrare, isFalse);
+    });
+
     test('fuori dalla calibrazione gli stati del rullo non contano', () {
       final s = SensoreBici();
       s.leggi(4, [0x14, 0x02]);

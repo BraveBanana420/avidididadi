@@ -5,6 +5,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import '../battito.dart';
 import '../gps.dart';
+import '../models.dart';
 import '../sensore_ble.dart';
 import '../pulse.dart';
 import '../sensori_bici.dart';
@@ -323,8 +324,9 @@ class _CalibraRullo extends StatelessWidget {
         : ' Adesso: ${(b.velocita! * 3.6).toStringAsFixed(1)} km/h.';
     final testo = switch (b.faseCalibrazione) {
       FaseCalibrazione.nessuna =>
-        'Facoltativa: tiene precisi i watt. Falla ogni due settimane circa e '
-            'quando sposti il rullo, meglio dopo 10 minuti di pedalata.',
+        '${b.ultimaCalibrazione == null ? 'Mai fatta da qui.' : 'Ultima: ${dataLunga(b.ultimaCalibrazione!)}.'} '
+            'Tiene precisi i watt: falla ogni due settimane circa e quando '
+            'sposti il rullo, meglio dopo 10 minuti di pedalata.',
       FaseCalibrazione.avvio => 'Chiedo al rullo di iniziare…',
       FaseCalibrazione.accelera =>
         b.calibraKmhA == null
