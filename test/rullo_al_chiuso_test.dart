@@ -97,17 +97,66 @@ void main() {
       expect(s.velocita, closeTo(10, 0.01));
     });
 
-    test('calibrazione: dice sì solo se il rullo la dichiara', () {
-      // Un rullo tipico: ERG e simulazione, con o senza il bit 14.
+    test('calibrazione: si legge il bit giusto (dati veri del Flux S)', () {
       expect(
-        calibrazioneSupportata([0x83, 0x14, 0, 0, 0x0C, 0xE0, 0, 0]),
+        calibrazioneSupportata([0x82, 0x40, 0, 0, 0x0C, 0xA0, 0, 0]),
         isTrue,
       );
       expect(
-        calibrazioneSupportata([0x83, 0x14, 0, 0, 0x0C, 0xA0, 0, 0]),
+        calibrazioneSupportata([0x82, 0x40, 0, 0, 0x0C, 0x20, 0, 0]),
         isFalse,
       );
-      expect(calibrazioneSupportata([0x83, 0x14]), isFalse);
+      expect(calibrazioneSupportata([0x82, 0x40]), isFalse);
+    });
+
+    test('calibrazione: la risposta del rullo dà le velocità da superare', () {
+      final r = rispostaCalibrazione([
+        0x80,
+        0x13,
+        0x01,
+        0xB8,
+        0x0B,
+        0x10,
+        0x0E,
+      ])!;
+      expect(r.riuscito, isTrue);
+      expect(r.kmhDa, 30);
+      expect(r.kmhA, 36);
+      expect(rispostaCalibrazione([0x80, 0x13, 0x04])!.riuscito, isFalse);
+      expect(rispostaCalibrazione([0x80, 0x05, 0x01]), isNull);
+    });
+
+    test('calibrazione: segue i passi che detta il rullo', () {
+      final s = SensoreBici()..faseCalibrazione = FaseCalibrazione.avvio;
+      s.leggi(3, [0x80, 0x13, 0x01, 0xB8, 0x0B, 0x10, 0x0E]);
+      expect(s.faseCalibrazione, FaseCalibrazione.accelera);
+      expect(s.calibraKmhA, 36);
+      s.leggi(4, [0x14, 0x04]);
+      expect(s.faseCalibrazione, FaseCalibrazione.smetti);
+      expect(s.calibrando, isTrue);
+      s.leggi(4, [0x14, 0x02]);
+      expect(s.faseCalibrazione, FaseCalibrazione.riuscita);
+      expect(s.calibrando, isFalse);
+    });
+
+    test('calibrazione: rifiuto ed errore del rullo la chiudono', () {
+      final rifiuto = SensoreBici()..faseCalibrazione = FaseCalibrazione.avvio;
+      rifiuto.leggi(3, [0x80, 0x13, 0x04]);
+      expect(rifiuto.faseCalibrazione, FaseCalibrazione.errore);
+
+      final senza = SensoreBici()..faseCalibrazione = FaseCalibrazione.avvio;
+      senza.leggi(3, [0x80, 0x00, 0x05]);
+      expect(senza.faseCalibrazione, FaseCalibrazione.errore);
+
+      final errore = SensoreBici()..faseCalibrazione = FaseCalibrazione.smetti;
+      errore.leggi(4, [0x14, 0x03]);
+      expect(errore.faseCalibrazione, FaseCalibrazione.errore);
+    });
+
+    test('fuori dalla calibrazione gli stati del rullo non contano', () {
+      final s = SensoreBici();
+      s.leggi(4, [0x14, 0x02]);
+      expect(s.faseCalibrazione, FaseCalibrazione.nessuna);
     });
 
     test('senza rullo la velocità viene dai giri della ruota', () {
