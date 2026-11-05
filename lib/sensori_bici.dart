@@ -180,6 +180,9 @@ class SensoreBici extends SensoreBle {
 
   /// Il rullo manda i dati FTMS: si può comandare in ERG.
   bool comandabile = false;
+
+  /// Un rullo smart collegato adesso: vuol dire che si pedala al chiuso.
+  bool get rulloInUso => comandabile && stato == StatoSensore.collegato;
   bool _controllo = false; // il rullo ha accettato i comandi da noi
   int? _wattMandati;
   DateTime _mandatiIl = DateTime(0);
@@ -289,7 +292,8 @@ class SensoreBici extends SensoreBle {
         }
       case 2:
         final c = cscDa(pacchetto);
-        if (c.ruota != null) {
+        // Col rullo la velocità buona è la sua: i giri non la sovrascrivono.
+        if (c.ruota != null && !comandabile) {
           _velocita.imposta(
             _ruota.aggiorna(c.ruota!, ora) * circonferenza / 1000,
           );
@@ -316,6 +320,8 @@ class SensoreBici extends SensoreBle {
     _ruota.azzera();
     _pedaliCsc.azzera();
     _pedaliPotenza.azzera();
+    // Staccato: la prossima uscita può essere su strada, con un altro sensore.
+    comandabile = false;
     // Ricollegato: il rullo ha dimenticato tutto, si richiede il controllo.
     _controllo = false;
     _wattMandati = null;

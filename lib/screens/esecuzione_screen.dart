@@ -212,6 +212,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
   /// si parte col tasto Inizia, senza conto alla rovescia.
   bool get _aspettaIlVia => preparati && _conPercorso;
+  bool _sceltoAllAperto = false; // l'interruttore spento a mano
   final _kmScritti = TextEditingController();
 
   late RegistratoreGps? gps = _conPercorso && !_alChiuso
@@ -367,16 +368,34 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     setState(() {
       _alChiuso = chiuso;
       if (chiuso) {
-        gps?.ferma();
-        gps?.dispose();
-        gps = null;
-        giri = null;
+        _spegniGps();
       } else {
         gps = RegistratoreGps(widget.sport);
         giri = GiriLive(metriGiro(widget.sport));
       }
     });
     if (!chiuso) _accendiGps();
+  }
+
+  void _spegniGps() {
+    gps?.ferma();
+    gps?.dispose();
+    gps = null;
+    giri = null;
+  }
+
+  /// Rullo collegato: si è al chiuso, senza doverlo dire. Vale anche se si
+  /// collega dopo il via, ma non se si è già fatta strada col GPS o se si è
+  /// scelto a mano "all'aperto".
+  void _rulloVuolDireAlChiuso() {
+    if (!_bici || !_conPercorso || _alChiuso || _sceltoAllAperto) return;
+    if (!sensoreBici.rulloInUso) return;
+    if (!preparati && (gps?.km ?? 0) >= 0.1) return;
+    setState(() {
+      _alChiuso = true;
+      _spegniGps();
+    });
+    _salvaInCorso();
   }
 
   /// Rimette la seduta com'era al salvataggio; si riparte in pausa.
@@ -615,6 +634,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _aggiorna() {
     if (!mounted || finito) return;
+    _rulloVuolDireAlChiuso();
     // Anche in pausa: la mappa dice quanto è lontano il percorso.
     _seguiPercorso();
     if (pausa) return;
@@ -1645,11 +1665,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     title: Text(
                       'Al chiuso (${attrezzoAlChiuso(widget.sport)})',
                     ),
-                    subtitle: const Text(
-                      'Senza GPS: alla fine scrivi i km del display.',
+                    subtitle: Text(
+                      _bici && sensoreBici.rulloInUso
+                          ? 'Senza GPS: velocità e km arrivano dal rullo.'
+                          : 'Senza GPS: alla fine scrivi i km del display.',
                     ),
                     value: _alChiuso,
-                    onChanged: _cambiaAlChiuso,
+                    onChanged: (chiuso) {
+                      _sceltoAllAperto = !chiuso;
+                      _cambiaAlChiuso(chiuso);
+                    },
                   ),
                 ),
               if (gps != null) ...[
