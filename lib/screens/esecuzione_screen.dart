@@ -208,6 +208,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// i km si scrivono alla fine.
   late final bool _conPercorso = sportConPercorso(widget.sport, widget.tipo);
   late bool _alChiuso = _conPercorso && tipoAlChiuso(widget.tipo);
+
+  /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
+  /// si parte col tasto Inizia, senza conto alla rovescia.
+  bool get _aspettaIlVia => preparati && _conPercorso;
   final _kmScritti = TextEditingController();
 
   late RegistratoreGps? gps = _conPercorso && !_alChiuso
@@ -316,13 +320,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         builder: (_) => PercorsiScreen(state: widget.state, scegli: true),
       ),
     );
-    // Scelto o no, il conto alla rovescia riparte da capo: 5 secondi interi
-    // per mettere via il telefono.
-    if (preparati && mounted) {
-      blocco.reset();
-      _ultimoBip = -1;
-      if (!pausa) blocco.start();
-    }
     final p = id == null ? null : widget.state.percorsoSalvato(id);
     if (p == null) return;
     await _usaPercorso(p);
@@ -594,14 +591,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   Future<void> _accendiGps() async {
     await gps!.avvia();
-    if (!mounted) return;
-    setState(() {
-      if (preparati) {
-        blocco
-          ..reset()
-          ..start();
-      }
-    });
+    if (mounted) setState(() {});
   }
 
   @override
@@ -628,6 +618,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     // Anche in pausa: la mappa dice quanto è lontano il percorso.
     _seguiPercorso();
     if (pausa) return;
+    // Si aspetta il tasto Inizia: solo lo stato di GPS e sensori si aggiorna.
+    if (_aspettaIlVia) {
+      setState(() {});
+      return;
+    }
     // Prima del via il conto alla rovescia aspetta: non corre mentre si
     // sceglie il percorso, si cambiano le opzioni o Android chiede un
     // permesso.
@@ -1192,11 +1187,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       Icon(bip ? Icons.volume_up : Icons.volume_off),
                 ),
               ),
-              IconButton(
-                tooltip: pausa ? 'Riprendi' : 'Pausa',
-                onPressed: _pausa,
-                icon: Icon(pausa ? Icons.play_arrow : Icons.pause),
-              ),
+              if (!_aspettaIlVia)
+                IconButton(
+                  tooltip: pausa ? 'Riprendi' : 'Pausa',
+                  onPressed: _pausa,
+                  icon: Icon(pausa ? Icons.play_arrow : Icons.pause),
+                ),
             ],
           ),
         ),
@@ -1520,13 +1516,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
           child: Row(
             children: [
-              IconButton.filledTonal(
-                tooltip: 'Esercizio precedente',
-                iconSize: 28,
-                onPressed: preparati || i == 0 ? null : _indietro,
-                icon: const Icon(Icons.skip_previous),
-              ),
-              const SizedBox(width: 12),
+              if (!_aspettaIlVia) ...[
+                IconButton.filledTonal(
+                  tooltip: 'Esercizio precedente',
+                  iconSize: 28,
+                  onPressed: preparati || i == 0 ? null : _indietro,
+                  icon: const Icon(Icons.skip_previous),
+                ),
+                const SizedBox(width: 12),
+              ],
               Expanded(
                 child: PulsantePrincipale(
                   altezza: 64,
@@ -1538,7 +1536,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       : b.aTempo
                       ? Icons.skip_next
                       : Icons.check,
-                  testo: preparati
+                  testo: _aspettaIlVia
+                      ? 'Inizia'
+                      : preparati
                       ? 'Inizia subito'
                       : recupero
                       ? 'Salta recupero'
@@ -1547,25 +1547,27 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       : 'Fatto',
                 ),
               ),
-              const SizedBox(width: 12),
-              IconButton.filledTonal(
-                tooltip: recupero ? '15 secondi in più' : 'Salta',
-                iconSize: 28,
-                onPressed: pausa
-                    ? null
-                    : recupero
-                    ? () => setState(() => extra += 15)
-                    : () => _avanti(saltato: true),
-                icon: recupero
-                    ? Text(
-                        '+15',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: scheme.onSecondaryContainer,
-                        ),
-                      )
-                    : const Icon(Icons.skip_next),
-              ),
+              if (!_aspettaIlVia) ...[
+                const SizedBox(width: 12),
+                IconButton.filledTonal(
+                  tooltip: recupero ? '15 secondi in più' : 'Salta',
+                  iconSize: 28,
+                  onPressed: pausa
+                      ? null
+                      : recupero
+                      ? () => setState(() => extra += 15)
+                      : () => _avanti(saltato: true),
+                  icon: recupero
+                      ? Text(
+                          '+15',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: scheme.onSecondaryContainer,
+                          ),
+                        )
+                      : const Icon(Icons.skip_next),
+                ),
+              ],
             ],
           ),
         ),
@@ -1573,8 +1575,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
   }
 
-  /// Il conto alla rovescia: timer grande al centro, sotto le due scelte
-  /// (al chiuso, percorso da seguire) e lo stato del GPS.
+  /// Prima del via: le scelte (al chiuso, percorso, sensori) e lo stato del
+  /// GPS. La forza e le altre sedute senza preparativi hanno anche il timer
+  /// grande al centro; corsa, bici e camminata aspettano il tasto Inizia.
   Widget _preparati(BuildContext context, Blocco? prossimo) {
     final t = Theme.of(context).textTheme;
     return LayoutBuilder(
@@ -1585,7 +1588,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Preparati', style: t.headlineMedium),
+              Text(
+                _aspettaIlVia ? 'Parti quando vuoi' : 'Preparati',
+                style: t.headlineMedium,
+              ),
               const SizedBox(height: 4),
               TestoUnaRiga(
                 widget.libera
@@ -1600,19 +1606,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   style: t.titleMedium,
                   textAlign: TextAlign.center,
                 ),
-              const SizedBox(height: 24),
-              // Un tocco sul timer fa partire subito.
-              GestureDetector(
-                onTap: pausa ? null : _avanti,
-                child: _Orologio(
-                  recupero: false,
-                  aTempo: true,
-                  restano: _restano.clamp(0, 99999).toInt(),
-                  totale: _durata,
-                  trascorso: _tempoBlocco,
-                  pausa: _inPausa,
+              if (!_aspettaIlVia) ...[
+                const SizedBox(height: 24),
+                // Un tocco sul timer fa partire subito.
+                GestureDetector(
+                  onTap: pausa ? null : _avanti,
+                  child: _Orologio(
+                    recupero: false,
+                    aTempo: true,
+                    restano: _restano.clamp(0, 99999).toInt(),
+                    totale: _durata,
+                    trascorso: _tempoBlocco,
+                    pausa: _inPausa,
+                  ),
                 ),
-              ),
+              ],
               if (_barre case final barre?) ...[
                 const SizedBox(height: 20),
                 DiagrammaInCorso(
@@ -1670,10 +1678,48 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 const SizedBox(height: 8),
                 _StatoGps(gps: gps!, riaccendi: _accendiGps),
               ],
+              if (_aspettaIlVia) _sensoriPrimaDelVia(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  /// Rullo e battito si collegano qui, con calma, prima di partire.
+  Widget _sensoriPrimaDelVia() {
+    return ListenableBuilder(
+      listenable: Listenable.merge([sensoreBici, sensoreBattito]),
+      builder: (context, _) {
+        final rullo = sensoreBici.stato == StatoSensore.collegato;
+        final battito = sensoreBattito.stato == StatoSensore.collegato;
+        return Material(
+          type: MaterialType.transparency,
+          child: Column(
+            children: [
+              if (_bici)
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    rullo ? Icons.pedal_bike : Icons.pedal_bike_outlined,
+                  ),
+                  title: Text(_alChiuso ? 'Rullo e sensori' : 'Sensori bici'),
+                  subtitle: Text(rullo ? 'Collegato' : 'Tocca per collegare'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => mostraSensoreBici(context),
+                ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(battito ? Icons.favorite : Icons.favorite_border),
+                title: const Text('Battito'),
+                subtitle: Text(battito ? 'Collegato' : 'Tocca per collegare'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => mostraBattito(context),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
