@@ -5,7 +5,9 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import '../battito.dart';
 import '../gps.dart';
+import '../models.dart';
 import '../sensore_ble.dart';
+import '../pulse.dart';
 import '../sensori_bici.dart';
 
 /// Foglio del battito: il sensore ricordato, oppure la ricerca di quelli vicini.
@@ -59,7 +61,11 @@ Future<void> mostraSensoreBici(BuildContext context) => _mostra(
         'pedali.\n'
         'La circonferenza della ruota serve solo al sensore di velocità: la '
         'trovi scritta sul copertone (es. 700×25C = 2105 mm).',
-    extra: const _Circonferenza(),
+    extra: const Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 12,
+      children: [_CalibraRullo(), _Circonferenza()],
+    ),
   ),
 );
 
@@ -293,6 +299,73 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
       : rssi >= -80
       ? 'Segnale medio'
       : 'Segnale debole';
+}
+
+/// La calibrazione del rullo, passo per passo: i passi li detta il rullo.
+class _CalibraRullo extends StatelessWidget {
+  const _CalibraRullo();
+
+  // È un widget costante: il foglio non lo ridisegna, deve ascoltare da sé.
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: sensoreBici,
+    builder: (context, _) => _riquadro(context),
+  );
+
+  Widget _riquadro(BuildContext context) {
+    final b = sensoreBici;
+    final t = Theme.of(context).textTheme;
+    // Mentre l'ERG comanda il rullo non si calibra: si fa prima di partire.
+    if (!b.rulloInUso || !b.sapeCalibrare || b.wattImposti != null) {
+      return const SizedBox.shrink();
+    }
+    final kmh = b.velocita == null
+        ? ''
+        : ' Adesso: ${(b.velocita! * 3.6).toStringAsFixed(1)} km/h.';
+    final testo = switch (b.faseCalibrazione) {
+      FaseCalibrazione.nessuna =>
+        '${b.ultimaCalibrazione == null ? 'Mai fatta da qui.' : 'Ultima: ${dataLunga(b.ultimaCalibrazione!)}.'} '
+            'Tiene precisi i watt: falla ogni due settimane circa e quando '
+            'sposti il rullo, meglio dopo 10 minuti di pedalata.',
+      FaseCalibrazione.avvio => 'Chiedo al rullo di iniziare…',
+      FaseCalibrazione.accelera =>
+        b.calibraKmhA == null
+            ? 'Pedala e accelera finché il rullo non ti dice di smettere.$kmh'
+            : 'Accelera fino a superare '
+                  '${b.calibraKmhA!.toStringAsFixed(0)} km/h.$kmh',
+      FaseCalibrazione.smetti =>
+        'Smetti di pedalare e aspetta che il rullo si fermi.$kmh',
+      FaseCalibrazione.riuscita => 'Calibrazione riuscita.',
+      FaseCalibrazione.errore =>
+        'Non è riuscita. Controlla che nessun\'altra app usi il rullo e '
+            'riprova.',
+    };
+    return SuperficiePulse(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 8,
+        children: [
+          Text('Calibra il rullo', style: t.titleSmall),
+          Text(testo, style: t.bodyMedium),
+          if (b.calibrando)
+            OutlinedButton(
+              onPressed: b.annullaCalibrazione,
+              child: const Text('Annulla'),
+            )
+          else if (b.faseCalibrazione != FaseCalibrazione.riuscita)
+            OutlinedButton.icon(
+              onPressed: b.calibra,
+              icon: const Icon(Icons.tune),
+              label: Text(
+                b.faseCalibrazione == FaseCalibrazione.errore
+                    ? 'Riprova'
+                    : 'Inizia la calibrazione',
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Circonferenza della ruota, per la velocità dal sensore sulla ruota.

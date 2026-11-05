@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
@@ -16,12 +18,16 @@ final _misuraPotenza = Uuid.parse('2a63');
 final servizioRulli = Uuid.parse('1826');
 final _datiRulli = Uuid.parse('2ad2');
 final _comandiRulli = Uuid.parse('2ad9'); // Fitness Machine Control Point
+final _funzioniRulli = Uuid.parse('2acc'); // Fitness Machine Feature
+final _statoRulli = Uuid.parse('2ada'); // Fitness Machine Status
 
 // Comandi FTMS al rullo (tutti con risposta: 0x80, comando, esito).
 const _chiediControllo = 0x00;
 const _potenzaObiettivo = 0x05; // ERG: watt da tenere
 const _parti = 0x07;
 const _fermaPausa = 0x08; // 1 = ferma, 2 = pausa
+const _calibrazione = 0x13; // Spin Down Control: 1 = inizia, 2 = lascia stare
+const _statoCalibrazione = 0x14; // nel Fitness Machine Status
 
 /// Il comando ERG: "tieni [watt]" (sint16, little endian).
 List<int> comandoWatt(int watt) {
@@ -34,6 +40,51 @@ List<int> comandoWatt(int watt) {
 bool? esitoComando(List<int> d, int comando) {
   if (d.length < 3 || d[0] != 0x80 || d[1] != comando) return null;
   return d[2] == 0x01;
+}
+
+/// Il rullo dichiara di saper fare la calibrazione via Bluetooth: bit 15 delle
+/// "Target Setting Features" (i secondi 4 byte di Fitness Machine Feature).
+bool calibrazioneSupportata(List<int> funzioni) =>
+    funzioni.length >= 6 && funzioni[5] & 0x80 != 0;
+
+/// A che punto è la calibrazione del rullo.
+enum FaseCalibrazione { nessuna, avvio, accelera, smetti, riuscita, errore }
+
+/// La risposta al comando di calibrazione: l'esito e, se c'è, tra quali
+/// velocità bisogna arrivare (uint16 in centesimi di km/h). Null se il
+/// pacchetto è la risposta a un altro comando.
+({bool riuscito, double? kmhDa, double? kmhA})? rispostaCalibrazione(
+  List<int> d,
+) {
+  final esito = esitoComando(d, _calibrazione);
+  if (esito == null) return null;
+  if (!esito || d.length < 7) return (riuscito: esito, kmhDa: null, kmhA: null);
+  return (riuscito: true, kmhDa: _u16(d, 3) / 100, kmhA: _u16(d, 5) / 100);
+}
+
+/// Il passo successivo da un messaggio di stato del rullo; null se il
+/// messaggio parla d'altro.
+FaseCalibrazione? faseDaStato(List<int> d) {
+  if (d.length < 2 || d[0] != _statoCalibrazione) return null;
+  return switch (d[1]) {
+    0x01 => FaseCalibrazione.accelera,
+    0x02 => FaseCalibrazione.riuscita,
+    0x03 => FaseCalibrazione.errore,
+    0x04 => FaseCalibrazione.smetti,
+    _ => null,
+  };
+}
+
+/// Ogni quanto ricordare la calibrazione: non c'è una regola ufficiale, due
+/// settimane sono una via di mezzo.
+const giorniTraCalibrazioni = 14;
+
+/// È ora di calibrare: mai fatta dall'app, o fatta da due settimane o più.
+bool calibrazioneDaFare(DateTime? ultima, DateTime oggi) {
+  if (ultima == null) return true;
+  final da = DateTime.utc(ultima.year, ultima.month, ultima.day);
+  final a = DateTime.utc(oggi.year, oggi.month, oggi.day);
+  return a.difference(da).inDays >= giorniTraCalibrazioni;
 }
 
 /// Circonferenza della ruota se non si sa: 700×25C, la più comune su strada.
@@ -180,6 +231,33 @@ class SensoreBici extends SensoreBle {
 
   /// Il rullo manda i dati FTMS: si può comandare in ERG.
   bool comandabile = false;
+
+  /// Un rullo smart collegato adesso: vuol dire che si pedala al chiuso.
+  bool get rulloInUso => comandabile && stato == StatoSensore.collegato;
+  bool _funzioniLette = false;
+
+  /// Il rullo ha dichiarato di saper fare la calibrazione.
+  bool sapeCalibrare = false;
+
+  /// Quando è riuscita l'ultima calibrazione (ricordata in sensore_bici.txt).
+  DateTime? ultimaCalibrazione;
+
+  /// Rullo collegato e calibrazione da rifare: si dice prima di partire.
+  bool get daCalibrare =>
+      rulloInUso &&
+      sapeCalibrare &&
+      calibrazioneDaFare(ultimaCalibrazione, DateTime.now());
+  FaseCalibrazione faseCalibrazione = FaseCalibrazione.nessuna;
+  double? calibraKmhDa;
+  double? calibraKmhA;
+  Timer? _scadenzaCalibrazione;
+
+  /// Durante la calibrazione il rullo non riceve watt.
+  bool get calibrando => const {
+    FaseCalibrazione.avvio,
+    FaseCalibrazione.accelera,
+    FaseCalibrazione.smetti,
+  }.contains(faseCalibrazione);
   bool _controllo = false; // il rullo ha accettato i comandi da noi
   int? _wattMandati;
   DateTime _mandatiIl = DateTime(0);
@@ -189,11 +267,30 @@ class SensoreBici extends SensoreBle {
   int? get potenza => _potenza.valore;
 
   @override
-  List<String> get altreRighe => ['$circonferenza'];
+  List<String> get altreRighe => [
+    '$circonferenza',
+    if (ultimaCalibrazione case final u?) u.toIso8601String().substring(0, 10),
+  ];
   @override
   set altreRighe(List<String> righe) {
     final v = righe.isEmpty ? null : int.tryParse(righe.first.trim());
     if (v != null && v >= 1000 && v <= 2400) circonferenza = v;
+    ultimaCalibrazione = righe.length > 1
+        ? DateTime.tryParse(righe[1].trim())
+        : null;
+  }
+
+  // La data vale per quel rullo: con un altro si ricomincia.
+  @override
+  Future<void> scegli(DiscoveredDevice d) {
+    if (d.id != id) ultimaCalibrazione = null;
+    return super.scegli(d);
+  }
+
+  @override
+  Future<void> dimentica() {
+    ultimaCalibrazione = null;
+    return super.dimentica();
   }
 
   Future<void> impostaCirconferenza(int mm) async {
@@ -220,7 +317,66 @@ class SensoreBici extends SensoreBle {
     _flusso(servizioPotenza, _misuraPotenza, id),
     _flusso(servizioCsc, _misuraCsc, id),
     _flusso(servizioRulli, _comandiRulli, id),
+    _flusso(servizioRulli, _statoRulli, id),
   ];
+
+  /// Una volta per collegamento: che cosa dichiara di saper fare il rullo.
+  Future<void> _leggiFunzioni() async {
+    if (_funzioniLette || id.isEmpty) return;
+    _funzioniLette = true;
+    try {
+      final funzioni = await ble.readCharacteristic(
+        QualifiedCharacteristic(
+          serviceId: servizioRulli,
+          characteristicId: _funzioniRulli,
+          deviceId: id,
+        ),
+      );
+      sapeCalibrare = calibrazioneSupportata(funzioni);
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Rullo: funzioni non lette $e');
+    }
+  }
+
+  void _fase(FaseCalibrazione f) {
+    faseCalibrazione = f;
+    if (f == FaseCalibrazione.riuscita) {
+      ultimaCalibrazione = DateTime.now();
+      ricorda();
+    }
+    if (!calibrando) {
+      _scadenzaCalibrazione?.cancel();
+      // Finita: per i prossimi watt il controllo si richiede da capo.
+      _controllo = false;
+    }
+    notifyListeners();
+  }
+
+  /// Chiede al rullo la calibrazione: poi lui dice cosa fare (accelerare,
+  /// smettere di pedalare) e come è andata. Se tace per 3 minuti, è fallita.
+  Future<void> calibra() async {
+    if (!rulloInUso || calibrando) return;
+    _wattMandati = null;
+    calibraKmhDa = null;
+    calibraKmhA = null;
+    _fase(FaseCalibrazione.avvio);
+    _scadenzaCalibrazione = Timer(const Duration(minutes: 3), () {
+      if (calibrando) _fase(FaseCalibrazione.errore);
+    });
+    if (!await _scrivi(const [_chiediControllo]) ||
+        !await _scrivi(const [_calibrazione, 0x01])) {
+      if (calibrando) _fase(FaseCalibrazione.errore);
+      return;
+    }
+    _controllo = true;
+  }
+
+  /// Lascia perdere la calibrazione in corso.
+  Future<void> annullaCalibrazione() async {
+    if (calibrando) await _scrivi(const [_calibrazione, 0x02]);
+    _fase(FaseCalibrazione.nessuna);
+  }
 
   Future<bool> _scrivi(List<int> comando) async {
     if (id.isEmpty || stato != StatoSensore.collegato) return false;
@@ -244,7 +400,7 @@ class SensoreBici extends SensoreBle {
   /// ERG: il rullo tiene [watt] qualunque rapporto e cadenza. Lo stesso
   /// valore si rimanda ogni 10 secondi, se il rullo se lo fosse perso.
   Future<void> impostaWatt(int watt) async {
-    if (!comandabile) return;
+    if (!comandabile || calibrando) return;
     final ora = DateTime.now();
     if (watt == _wattMandati &&
         ora.difference(_mandatiIl) < const Duration(seconds: 10)) {
@@ -277,6 +433,7 @@ class SensoreBici extends SensoreBle {
     switch (k) {
       case 0:
         comandabile = true;
+        _leggiFunzioni();
         final r = rulliDa(pacchetto);
         if (r.kmh != null) _velocita.imposta(r.kmh! / 3.6);
         if (r.rpm != null) _cadenza.imposta(r.rpm!);
@@ -289,7 +446,8 @@ class SensoreBici extends SensoreBle {
         }
       case 2:
         final c = cscDa(pacchetto);
-        if (c.ruota != null) {
+        // Col rullo la velocità buona è la sua: i giri non la sovrascrivono.
+        if (c.ruota != null && !comandabile) {
           _velocita.imposta(
             _ruota.aggiorna(c.ruota!, ora) * circonferenza / 1000,
           );
@@ -298,6 +456,18 @@ class SensoreBici extends SensoreBle {
           _cadenza.imposta(_pedaliCsc.aggiorna(c.pedali!, ora) * 60);
         }
       case 3:
+        if (calibrando) {
+          if (esitoComando(pacchetto, _chiediControllo) == false) {
+            _fase(FaseCalibrazione.errore);
+          }
+          if (rispostaCalibrazione(pacchetto) case final r?) {
+            calibraKmhDa = r.kmhDa;
+            calibraKmhA = r.kmhA;
+            _fase(
+              r.riuscito ? FaseCalibrazione.accelera : FaseCalibrazione.errore,
+            );
+          }
+        }
         // Rifiutato (un'altra app ha il controllo): si richiede la volta dopo.
         if (esitoComando(pacchetto, _chiediControllo) == false ||
             esitoComando(pacchetto, _potenzaObiettivo) == false) {
@@ -305,6 +475,9 @@ class SensoreBici extends SensoreBle {
           _controllo = false;
           _mandatiIl = DateTime(0);
         }
+      case 4:
+        if (!calibrando) return;
+        if (faseDaStato(pacchetto) case final f?) _fase(f);
     }
   }
 
@@ -316,6 +489,12 @@ class SensoreBici extends SensoreBle {
     _ruota.azzera();
     _pedaliCsc.azzera();
     _pedaliPotenza.azzera();
+    // Staccato: la prossima uscita può essere su strada, con un altro sensore.
+    comandabile = false;
+    _funzioniLette = false;
+    sapeCalibrare = false;
+    _scadenzaCalibrazione?.cancel();
+    faseCalibrazione = FaseCalibrazione.nessuna;
     // Ricollegato: il rullo ha dimenticato tutto, si richiede il controllo.
     _controllo = false;
     _wattMandati = null;

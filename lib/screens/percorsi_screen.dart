@@ -459,7 +459,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Per seguirlo: nel "Preparati" di corsa, camminata o bici '
+                  'Per seguirlo: prima di partire con corsa, camminata o bici '
                   'tocca "Segui un percorso", oppure assegnalo prima a una '
                   'seduta in programma.',
                   style: t.bodySmall,
