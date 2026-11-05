@@ -1,3 +1,4 @@
+import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/invio_intervals.dart';
 import 'package:allenamenti_app/models.dart';
@@ -324,6 +325,89 @@ void main() {
       expect(barre.first.range, (111, 150));
       expect(barre[1].range, (210, 220));
       expect(barre[2].range, (90, 110)); // recupero facile
+    });
+  });
+
+  group('obiettivo secondario', () {
+    test('quello che si scrive nel builder', () {
+      expect(obiettivoWatt('200'), '200 W');
+      expect(obiettivoWatt('190 - 210'), '190-210 W');
+      expect(obiettivoWatt('200w'), '200 W');
+      expect(obiettivoWatt('88-94%'), '88-94%');
+      expect(obiettivoWatt('tanto'), '');
+      expect(normalizzaSecondario('85-90', 'Bici'), '85-90 rpm');
+      expect(normalizzaSecondario('85–90 rpm', 'Bici'), '85-90 rpm');
+      expect(normalizzaSecondario('175', 'Corsa'), '175 ppm');
+      expect(normalizzaSecondario('140-150 bpm', 'Bici'), '140-150 bpm');
+      expect(normalizzaSecondario('', 'Bici'), '');
+    });
+
+    test('i watt scritti non hanno bisogno dell\'FTP', () {
+      expect(rangeWattScritti('200 W'), (200, 200));
+      expect(rangeWattScritti('190-210 W'), (190, 210));
+      expect(rangeWattScritti('zona 2'), isNull);
+      expect(rangeWattScritti('88-94%'), isNull);
+      expect(intensitaInWatt('200 W'), isTrue);
+      expect(intensitaInWatt('88-94%'), isTrue);
+      expect(intensitaInWatt('zona 2'), isFalse);
+    });
+
+    test('cadenza: dentro, fuori e ruota libera', () {
+      const r = (85, 90);
+      expect(rangeCadenza('85-90 rpm'), r);
+      expect(rangeCadenza('90 rpm'), (90, 90));
+      expect(rangeCadenza('140-150 bpm'), isNull);
+      expect(versoCadenza(88, r), 0);
+      expect(versoCadenza(83, r), 0); // dentro il margine
+      expect(versoCadenza(80, r), -1);
+      expect(versoCadenza(95, r), 1);
+      expect(versoCadenza(0, r), 0);
+      expect(fraseCadenza(80, r, -1), 'Cadenza 80, sali sopra 85.');
+    });
+
+    test('200 W e 85-90 rpm arrivano a intervals.icu, anche senza FTP', () {
+      final p = WorkoutStep(
+        id: 'w',
+        sport: 'Bici',
+        nome: 'Prova',
+        durataTot: 10,
+        ordine: 1,
+        fase: 'principale',
+        descrizione: 'Costante',
+        serie: '',
+        ripetizioni: '',
+        distanzaM: '',
+        durataMin: '10',
+        intensita: '200 W',
+        recuperoS: '',
+        note: '',
+        obiettivo2: '85-90 rpm',
+      );
+      expect(testoIcu('Bici', [p]), contains('10m 200w 85-90rpm'));
+      // Un secondario che non è una cadenza non si manda.
+      expect(obiettivo2Icu('140-150 bpm'), '');
+      // E nel CSV resta.
+      expect(
+        WorkoutStep.da(
+          Tabella({for (final (k, c) in workoutHeader.indexed) c: k}, const []),
+          p.toRow(),
+        )!.obiettivo2,
+        '85-90 rpm',
+      );
+    });
+
+    test('righe vecchie senza la colonna nuova: restano leggibili', () {
+      final vecchia = [...workoutHeader]..remove('obiettivo_2');
+      final t = Tabella.da(
+        toCsv([
+          vecchia,
+          [
+            for (final c in vecchia)
+              c == 'id_workout' ? 'w' : (c == 'ordine' ? '1' : ''),
+          ],
+        ]),
+      )!;
+      expect(WorkoutStep.da(t, t.righe.single)!.obiettivo2, '');
     });
   });
 }

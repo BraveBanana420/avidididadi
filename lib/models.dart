@@ -84,6 +84,7 @@ const workoutHeader = [
   'note',
   'id_esercizio',
   'kg', // aggiunta: pesi per serie dalla scheda del personal trainer
+  'obiettivo_2', // aggiunta: obiettivo secondario, es. "85-90 rpm"
 ];
 const programmaHeader = ['data', 'sport', 'id_workout'];
 
@@ -441,6 +442,7 @@ class WorkoutStep {
   final String note;
   final String esercizio; // id nel catalogo esercizi, se c'è
   final String kg; // pesi per serie, es. "20;22,5;25" (vuoto se non detti)
+  final String obiettivo2; // obiettivo secondario, es. "85-90 rpm"
 
   const WorkoutStep({
     required this.id,
@@ -459,6 +461,7 @@ class WorkoutStep {
     required this.note,
     this.esercizio = '',
     this.kg = '',
+    this.obiettivo2 = '',
   });
 
   List<String> toRow() => [
@@ -478,6 +481,7 @@ class WorkoutStep {
     note,
     esercizio,
     kg,
+    obiettivo2,
   ];
 
   static WorkoutStep? da(Tabella t, List<String> r) {
@@ -500,6 +504,7 @@ class WorkoutStep {
       note: t.v(r, 'note'),
       esercizio: t.v(r, 'id_esercizio'),
       kg: t.v(r, 'kg'),
+      obiettivo2: t.v(r, 'obiettivo_2'),
     );
   }
 
@@ -522,6 +527,7 @@ class WorkoutStep {
     }
     if (durataMin.isNotEmpty) p.add('$durataMin min');
     if (intensita.isNotEmpty) p.add('intensità $intensita');
+    if (obiettivo2.isNotEmpty) p.add('poi $obiettivo2');
     if (recuperoS.isNotEmpty) p.add('recupero $recuperoS s');
     return p.join(', ');
   }

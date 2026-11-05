@@ -82,14 +82,19 @@ String _etichetta(WorkoutStep s) {
 /// Garmin mostra come obiettivo in watt.
 String testoIcu(String sport, List<WorkoutStep> passi, {bool potenza = false}) {
   final nuoto = stessoSport(sport, 'Nuoto');
-  final watt = potenza && stessoSport(sport, 'Bici');
+  final bici = stessoSport(sport, 'Bici');
+  final watt = potenza && bici;
   final righe = <String>[];
   String riga(WorkoutStep s) => [
     '-',
     _etichetta(s),
     quantitaIcu(s),
-    (watt ? obiettivoPotenzaIcu(s.intensita) : null) ??
+    // I watt scritti non hanno bisogno dell'FTP; le zone in watt sì.
+    (watt || (bici && intensitaInWatt(s.intensita))
+            ? obiettivoPotenzaIcu(s.intensita)
+            : null) ??
         obiettivoIcu(s.intensita),
+    if (bici) obiettivo2Icu(s.obiettivo2),
   ].where((x) => x.isNotEmpty).join(' ');
   String recupero(int sec) => nuoto
       ? '- ${sec}s intensity=rest'

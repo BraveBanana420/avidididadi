@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../models.dart';
+import '../potenza.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../scheda.dart';
@@ -1003,7 +1004,11 @@ Future<EsercizioScheda?> modificaPasso(
       ? 'zona ${zona.group(1)}'
       : e.intensita.startsWith('passo')
       ? 'passo'
+      : intensitaInWatt(e.intensita)
+      ? 'watt'
       : '';
+  final watt = TextEditingController(text: scelta == 'watt' ? e.intensita : '');
+  final secondario = TextEditingController(text: e.obiettivo2);
   final passo = TextEditingController(
     text: e.intensita.startsWith('passo')
         ? e.intensita.substring(5).trim()
@@ -1111,7 +1116,7 @@ Future<EsercizioScheda?> modificaPasso(
                     hintText: aDistanza ? 'Es. 400' : 'Es. 10, oppure 1,5',
                   ),
                 ),
-                Text('Intensità', style: t.titleSmall),
+                Text('Obiettivo principale', style: t.titleSmall),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
@@ -1126,6 +1131,12 @@ Future<EsercizioScheda?> modificaPasso(
                         label: Text('Zona $z'),
                         selected: scelta == 'zona $z',
                         onSelected: (_) => aggiorna(() => scelta = 'zona $z'),
+                      ),
+                    if (stessoSport(sport, 'Bici'))
+                      ChoiceChip(
+                        label: const Text('Watt'),
+                        selected: scelta == 'watt',
+                        onSelected: (_) => aggiorna(() => scelta = 'watt'),
                       ),
                     if (!stessoSport(sport, 'Bici'))
                       ChoiceChip(
@@ -1143,6 +1154,25 @@ Future<EsercizioScheda?> modificaPasso(
                       hintText: nuoto ? 'Es. 1:50/100 m' : 'Es. 5:00/km',
                     ),
                   ),
+                if (scelta == 'watt')
+                  TextField(
+                    controller: watt,
+                    decoration: const InputDecoration(
+                      labelText: 'Watt',
+                      hintText: 'Es. 200, oppure 190-210, oppure 88-94%',
+                    ),
+                  ),
+                TextField(
+                  controller: secondario,
+                  decoration: InputDecoration(
+                    labelText: 'Obiettivo secondario (facoltativo)',
+                    hintText: stessoSport(sport, 'Bici')
+                        ? 'Es. 85-90 rpm'
+                        : stessoSport(sport, 'Corsa')
+                        ? 'Es. 170-180 ppm'
+                        : 'Es. 40 bracciate al minuto',
+                  ),
+                ),
                 TextField(
                   controller: rec,
                   keyboardType: TextInputType.number,
@@ -1171,6 +1201,17 @@ Future<EsercizioScheda?> modificaPasso(
                       );
                       return;
                     }
+                    final wattScritti = obiettivoWatt(watt.text);
+                    if (scelta == 'watt' && wattScritti.isEmpty) {
+                      ScaffoldMessenger.of(c).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Scrivi i watt: per esempio 200, 190-210 o 88-94%.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
                     final testo = nome.text.trim();
                     Navigator.pop(
                       c,
@@ -1188,7 +1229,13 @@ Future<EsercizioScheda?> modificaPasso(
                             ? (passo.text.trim().isEmpty
                                   ? ''
                                   : 'passo ${passo.text.trim()}')
+                            : scelta == 'watt'
+                            ? wattScritti
                             : scelta,
+                        obiettivo2: normalizzaSecondario(
+                          secondario.text,
+                          sport,
+                        ),
                         recuperoS: int.tryParse(rec.text.trim()) ?? 0,
                         note: note.text.trim(),
                       ),

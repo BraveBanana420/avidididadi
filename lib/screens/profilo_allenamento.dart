@@ -7,7 +7,8 @@ import '../potenza.dart';
 class BarraAllenamento {
   final int secondi;
   final (int, int)? range; // null: passo senza obiettivo di potenza
-  const BarraAllenamento(this.secondi, this.range);
+  final String obiettivo2; // obiettivo secondario, es. "85-90 rpm"
+  const BarraAllenamento(this.secondi, this.range, [this.obiettivo2 = '']);
 }
 
 /// Le barre dai blocchi: i passi senza tempo (a "Fatto") contano un minuto.
@@ -16,6 +17,7 @@ List<BarraAllenamento> barreDa(List<Blocco> blocchi, ZonePotenza p) => [
     BarraAllenamento(
       b.secondi ?? 60,
       rangeWatt(b.intensita, p, recupero: b.tipo == TipoBlocco.recupero),
+      b.obiettivo2,
     ),
 ];
 

@@ -301,13 +301,13 @@ $apri
 {"allenamenti": [
   {"data": "AAAA-MM-GG", "sport": "Bici", "tipo": "Intervalli", "nome": "VO2max 5x4", "fascia": "Sera", "motivo": "...", "passi": [
     {"fase": "riscaldamento", "nome": "Pedalata agile", "minuti": 10, "intensita": "55-65%"},
-    {"fase": "principale", "nome": "Ripetute", "ripeti": 5, "minuti": 4, "intensita": "106-112%", "recupero_s": 180},
+    {"fase": "principale", "nome": "Ripetute", "ripeti": 5, "minuti": 4, "intensita": "106-112%", "secondario": "85-90 rpm", "recupero_s": 180},
     {"fase": "defaticamento", "nome": "Sciolto", "minuti": 10, "intensita": "zona 1"}
   ]}
 ]}
 $chiudi
 ```
-"durata_min" (facoltativa) è la durata totale, utile se ci sono passi a distanza. Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
+"durata_min" (facoltativa) è la durata totale, utile se ci sono passi a distanza. Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). "secondario" (facoltativo) è il secondo obiettivo del passo: in bici la cadenza ("85-90 rpm"), altrimenti quello che serve. L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
 Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi; nuoto: Tecnica, Soglia; bici: Uscita, Intervalli, Uscita lunga; fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
 Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Gli esercizi delle sedute li prepara l'app: tu scegli giorno, sport, tipo e durata.''';
 

@@ -84,6 +84,8 @@ String parlato(String testo) {
     (m) => '${m[1]} chili',
   );
   t = t.replaceAll('/10', ' su 10');
+  t = t.replaceAll(RegExp(r'\brpm\b', caseSensitive: false), 'giri al minuto');
+  t = t.replaceAllMapped(RegExp(r'\b(\d+) ?W\b'), (m) => '${m[1]} watt');
   return t;
 }
 
@@ -98,6 +100,7 @@ String fraseBlocco(Blocco b) {
     'Ora: ${b.titolo}',
     if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
     if (b.intensita.isNotEmpty) parlato(b.intensita),
+    if (b.obiettivo2.isNotEmpty) parlato(b.obiettivo2),
   ];
   return '${pezzi.map((p) => p.trim().replaceAll(RegExp(r'[.\s]+$'), '')).join('. ')}.';
 }

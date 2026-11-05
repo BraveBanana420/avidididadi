@@ -80,6 +80,89 @@ final _percentuale = RegExp(
 );
 final _zona = RegExp(r'\b(?:zona\s*|Z)([1-7])\b', caseSensitive: false);
 
+/// I watt scritti in un passo ("200 W", "190-210 W"): valgono anche senza FTP.
+(int, int)? rangeWattScritti(String intensita) {
+  final w = _wattScritti.firstMatch(intensita);
+  if (w == null) return null;
+  if (w[3] != null) {
+    final v = int.parse(w[3]!);
+    return (v, v);
+  }
+  final da = int.parse(w[1]!), a = int.parse(w[2]!);
+  return da <= a ? (da, a) : (a, da);
+}
+
+/// Quello che si scrive nel campo dei watt: "200" diventa "200 W", "190-210"
+/// "190-210 W"; le % dell'FTP restano così. Vuoto se non vuol dire niente.
+String obiettivoWatt(String testo) {
+  final t = testo.trim().replaceAll('–', '-').replaceAll(RegExp(r'\s+'), ' ');
+  if (RegExp(
+    r'^\d{2,3}( ?- ?\d{2,3})? ?%( ?FTP)?$',
+    caseSensitive: false,
+  ).hasMatch(t)) {
+    return t;
+  }
+  final n = RegExp(
+    r'^(\d{2,4})( ?- ?(\d{2,4}))? ?(w|watt)?$',
+    caseSensitive: false,
+  ).firstMatch(t);
+  if (n == null) return '';
+  return n[3] == null ? '${n[1]} W' : '${n[1]}-${n[3]} W';
+}
+
+/// Vero se l'intensità è in watt o in % dell'FTP (non una zona o un passo).
+bool intensitaInWatt(String intensita) =>
+    _wattScritti.hasMatch(intensita) || _percentuale.hasMatch(intensita);
+
+/// L'obiettivo secondario: i soli numeri prendono l'unità dello sport ("85-90"
+/// in bici è "85-90 rpm", nella corsa "170-180 ppm"); il resto resta com'è.
+String normalizzaSecondario(String testo, String sport) {
+  final t = testo.trim().replaceAll('–', '-').replaceAll(RegExp(r'\s+'), ' ');
+  final n = RegExp(r'^(\d{2,3})( ?- ?(\d{2,3}))?$').firstMatch(t);
+  if (n == null) return t;
+  final unita = stessoSport(sport, 'Bici')
+      ? ' rpm'
+      : stessoSport(sport, 'Corsa')
+      ? ' ppm'
+      : '';
+  return '${n[1]}${n[3] == null ? '' : '-${n[3]}'}$unita';
+}
+
+/// La cadenza chiesta dall'obiettivo secondario ("85-90 rpm", "90 rpm").
+(int, int)? rangeCadenza(String obiettivo2) {
+  final m = RegExp(
+    r'(\d{2,3})(?: ?- ?(\d{2,3}))? ?rpm\b',
+    caseSensitive: false,
+  ).firstMatch(obiettivo2);
+  if (m == null) return null;
+  final da = int.parse(m[1]!);
+  final a = m[2] == null ? da : int.parse(m[2]!);
+  return da <= a ? (da, a) : (a, da);
+}
+
+/// Margine sulla cadenza prima di avvisare: i giri oscillano sempre un po'.
+const margineCadenza = 2;
+
+/// Fuori cadenza: 1 troppo agile, -1 troppo duro, 0 dentro (o ruota libera).
+int versoCadenza(int rpm, (int, int) r) => rpm <= 0
+    ? 0
+    : rpm > r.$2 + margineCadenza
+    ? 1
+    : rpm < r.$1 - margineCadenza
+    ? -1
+    : 0;
+
+String fraseCadenza(int rpm, (int, int) r, int verso) => verso > 0
+    ? 'Cadenza $rpm, scendi sotto ${r.$2}.'
+    : 'Cadenza $rpm, sali sopra ${r.$1}.';
+
+/// La cadenza per intervals.icu e Garmin: "85-90rpm". Vuoto se non c'è.
+String obiettivo2Icu(String obiettivo2) {
+  final r = rangeCadenza(obiettivo2);
+  if (r == null) return '';
+  return r.$1 == r.$2 ? '${r.$1}rpm' : '${r.$1}-${r.$2}rpm';
+}
+
 /// I watt da tenere in un passo di bici: watt scritti ("200-220 W"), % dell'FTP
 /// ("88-94%", "75% FTP") o zona ("zona 4"). Un recupero senza obiettivo va
 /// piano (45-55%). Null se il passo non dice niente.
@@ -88,15 +171,7 @@ final _zona = RegExp(r'\b(?:zona\s*|Z)([1-7])\b', caseSensitive: false);
   ZonePotenza p, {
   bool recupero = false,
 }) {
-  final w = _wattScritti.firstMatch(intensita);
-  if (w != null) {
-    if (w[3] != null) {
-      final v = int.parse(w[3]!);
-      return (v, v);
-    }
-    final da = int.parse(w[1]!), a = int.parse(w[2]!);
-    return da <= a ? (da, a) : (a, da);
-  }
+  if (rangeWattScritti(intensita) case final w?) return w;
   final q = _percentuale.firstMatch(intensita);
   if (q != null) {
     int watt(String x) => (p.ftp * int.parse(x) / 100).round();

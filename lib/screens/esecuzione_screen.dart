@@ -240,6 +240,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
   final ritmo = ControlloRitmo();
+  final _ritmoCadenza = ControlloRitmo();
   StreamSubscription<int>? _battiti;
 
   /// Percorso da seguire (GPX): mappa, curve e fuori percorso a voce.
@@ -536,13 +537,24 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       mediaRecente(_seriePotenza, DateTime.now()) ?? sensoreBici.potenza;
 
   /// La zona di potenza chiesta dal blocco di bici in corso, se c'è l'FTP.
-  (int, int)? get _rangeBlocco => _zonePotenza == null || !_bici || preparati
-      ? null
-      : rangeWatt(
-          b.intensita,
-          _zonePotenza,
-          recupero: b.tipo == TipoBlocco.recupero,
-        );
+  (int, int)? get _rangeBlocco {
+    if (!_bici || preparati) return null;
+    final zp = _zonePotenza;
+    // I watt scritti valgono anche senza FTP.
+    if (zp == null) return rangeWattScritti(b.intensita);
+    return rangeWatt(b.intensita, zp, recupero: b.tipo == TipoBlocco.recupero);
+  }
+
+  /// La cadenza chiesta dal blocco, se l'obiettivo secondario la dice.
+  (int, int)? get _rangeCadenza =>
+      !_bici || preparati ? null : rangeCadenza(b.obiettivo2);
+
+  /// Fuori cadenza adesso: 1 sopra, -1 sotto, 0 dentro.
+  int get _versoCadenza {
+    final r = _rangeCadenza;
+    final c = sensoreBici.cadenza;
+    return r == null || c == null ? 0 : versoCadenza(c.round(), r);
+  }
 
   /// ERG: il rullo tiene i watt del blocco. Acceso di base; i tasti −5% e
   /// +5% spostano tutti i blocchi.
@@ -685,6 +697,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     extra = 0;
     _ultimoBip = -1;
     ritmo.azzera();
+    _ritmoCadenza.azzera();
     // L'attività libera ha un passo solo: basta il cronometro.
     if (!widget.libera) {
       voce.di(fraseBlocco(b), valida: const Duration(seconds: 30));
@@ -772,6 +785,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// da un po': lo dice la voce.
   void _controllaRitmo() {
     final ora = DateTime.now();
+    // La cadenza si controlla sempre, anche in ERG: quella la decide chi pedala.
+    if (_rangeCadenza case final rc?) {
+      final verso = _versoCadenza;
+      if (_ritmoCadenza.controlla(verso, ora)) {
+        voce.di(
+          fraseCadenza(sensoreBici.cadenza!.round(), rc, verso),
+          valida: const Duration(seconds: 20),
+        );
+      }
+    }
     final zona = zonaObiettivo(b.intensita);
     final r = _rangeBlocco;
     final w = _watt;
@@ -1399,6 +1422,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     style: t.bodyMedium,
                                   ),
                                 ),
+                              if (b.obiettivo2.isNotEmpty)
+                                Text(b.obiettivo2, style: t.bodyMedium),
                               if (sensazioneDi(b.intensita) != null)
                                 Text(
                                   sensazioneDi(b.intensita)!,
@@ -1676,6 +1701,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ),
           note: b.note,
           range: _rangeBlocco,
+          obiettivo2: recupero ? '' : b.obiettivo2,
+          versoSecondario: recupero ? 0 : _versoCadenza,
           wattErg: sensoreBici.comandabile ? _wattErg : null,
           restano: b.aTempo ? _restano.clamp(0, 99999).toInt() : null,
           trascorso: _tempoBlocco.inSeconds,

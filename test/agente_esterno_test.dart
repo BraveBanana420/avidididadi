@@ -264,6 +264,24 @@ void main() {
       expect(b[1].secondi, 240);
     });
 
+    test('anche l\'obiettivo secondario, dall\'assistente', () {
+      final a = leggiRispostaAgente(
+        blocco({
+          'allenamenti': [
+            {
+              'data': '2026-11-07',
+              'sport': 'Bici',
+              'passi': [
+                {'minuti': 20, 'intensita': '200 W', 'secondario': '85-90'},
+              ],
+            },
+          ],
+        }),
+        codice,
+      ).allenamenti!.single;
+      expect(a.passi.single.obiettivo2, '85-90 rpm');
+    });
+
     test('passi sbagliati: un messaggio chiaro', () {
       Map<String, dynamic> con(
         Map<String, dynamic> passo, [

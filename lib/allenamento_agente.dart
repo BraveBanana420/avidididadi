@@ -1,5 +1,6 @@
 import 'esecuzione.dart';
 import 'models.dart';
+import 'potenza.dart';
 
 // Allenamenti preparati dall'assistente (per esempio Claude) passo per passo:
 // riscaldamento, ripetute con watt o % dell'FTP, recuperi, defaticamento.
@@ -125,6 +126,7 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
         intensita: _testo(x['intensita'] ?? x['potenza'], 60),
         recuperoS: recupero > 0 ? '$recupero' : '',
         note: _testo(x['note'], 200),
+        obiettivo2: normalizzaSecondario(_testo(x['secondario'], 40), sport),
       ),
     );
   }
@@ -157,6 +159,7 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
         intensita: s.intensita,
         recuperoS: s.recuperoS,
         note: s.note,
+        obiettivo2: s.obiettivo2,
       ),
   ];
   return AllenamentoAgente(

@@ -5,6 +5,7 @@ import 'package:allenamenti_app/invio_intervals.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/registro_forza.dart';
 import 'package:allenamenti_app/scheda.dart';
+import 'package:allenamenti_app/voce.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -345,5 +346,55 @@ void main() {
     // Giorno di riposo: solo aggiunto.
     expect(conSportNelGiorno(settimana, 4, 'Nuoto').tolti, isEmpty);
     expect(conSportNelGiorno(settimana, 4, 'Nuoto').aggiunto.durataMin, 45);
+  });
+
+  test('obiettivo secondario: si salva nella scheda e arriva ai blocchi', () {
+    final scheda = Scheda(
+      id: 'b1',
+      nome: 'Rulli',
+      sport: 'Bici',
+      inizio: DateTime(2026, 11, 2),
+      giorni: const [
+        GiornoScheda(
+          nome: 'Forza resistente',
+          giorni: {2},
+          esercizi: [
+            EsercizioScheda(
+              nome: 'Costante',
+              serie: 1,
+              recuperoS: 0,
+              durataMin: '20',
+              intensita: '200 W',
+              obiettivo2: '85-90 rpm',
+            ),
+          ],
+        ),
+      ],
+    );
+    final letta = schedeDa(
+      Tabella.da(
+        toCsv([
+          schedeHeader,
+          ...righeSchede([scheda]),
+        ]),
+      ),
+      Tabella.da(
+        toCsv([
+          schedeEserciziHeader,
+          ...righeEserciziSchede([scheda]),
+        ]),
+      ),
+    ).single.giorni.single;
+    final e = letta.esercizi.single;
+    expect(e.intensita, '200 W');
+    expect(e.obiettivo2, '85-90 rpm');
+    expect(e.riassunto, '20 min · 200 W · 85-90 rpm');
+    final b = blocchiDa(
+      passiScheda(letta, DateTime(2026, 11, 3), 20, sport: 'Bici'),
+    ).single;
+    expect(b.intensita, '200 W');
+    expect(b.obiettivo2, '85-90 rpm');
+    expect(fraseBlocco(b), contains('da 85 a 90 giri al minuto'));
+    expect(fraseBlocco(b), contains('200 watt'));
   });
 }

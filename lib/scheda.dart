@@ -25,7 +25,8 @@ class EsercizioScheda {
   final String fase; // riscaldamento, principale, defaticamento
   final String durataMin; // "10", "1,5"
   final String distanzaM; // "400"
-  final String intensita; // "zona 2", "passo 5:00/km", "passo 1:50/100 m"
+  final String intensita; // "zona 2", "200 W", "passo 5:00/km"…
+  final String obiettivo2; // obiettivo secondario, es. "85-90 rpm"
   const EsercizioScheda({
     this.esercizio = '',
     required this.nome,
@@ -38,6 +39,7 @@ class EsercizioScheda {
     this.durataMin = '',
     this.distanzaM = '',
     this.intensita = '',
+    this.obiettivo2 = '',
   });
 
   /// Un passo a tempo o a distanza (corsa, bici, nuoto).
@@ -59,6 +61,7 @@ class EsercizioScheda {
     String? durataMin,
     String? distanzaM,
     String? intensita,
+    String? obiettivo2,
   }) => EsercizioScheda(
     esercizio: esercizio ?? this.esercizio,
     nome: nome ?? this.nome,
@@ -71,6 +74,7 @@ class EsercizioScheda {
     durataMin: durataMin ?? this.durataMin,
     distanzaM: distanzaM ?? this.distanzaM,
     intensita: intensita ?? this.intensita,
+    obiettivo2: obiettivo2 ?? this.obiettivo2,
   );
 
   /// Forza: "3 × 10 · 90 s · 20 kg" oppure "3 × 10 · 20, 22,5, 25 kg".
@@ -83,6 +87,7 @@ class EsercizioScheda {
       return [
         serie > 1 ? '$serie × $quanto' : quanto,
         if (intensita.isNotEmpty) intensita,
+        if (obiettivo2.isNotEmpty) obiettivo2,
         if (recuperoS > 0) 'recupero $recuperoS s',
       ].join(' · ');
     }
@@ -222,6 +227,7 @@ const schedeEserciziHeader = [
   'durata_min',
   'distanza_m',
   'intensita',
+  'obiettivo_2',
 ];
 
 String _kgTesto(List<double> kg) => kg.map(fmtKg).join(';');
@@ -268,6 +274,7 @@ List<List<String>> righeEserciziSchede(List<Scheda> schede) => [
           e.durataMin,
           e.distanzaM,
           e.intensita,
+          e.obiettivo2,
         ],
 ];
 
@@ -308,6 +315,7 @@ List<Scheda> schedeDa(Tabella? schede, Tabella? esercizi) {
           durataMin: esercizi.v(r, 'durata_min'),
           distanzaM: esercizi.v(r, 'distanza_m'),
           intensita: esercizi.v(r, 'intensita'),
+          obiettivo2: esercizi.v(r, 'obiettivo_2'),
         ),
       ));
     }
@@ -378,6 +386,7 @@ List<WorkoutStep> passiScheda(
         note: e.note,
         esercizio: forza ? e.esercizio : '',
         kg: forza ? _kgTesto(e.kg) : '',
+        obiettivo2: forza ? '' : e.obiettivo2,
       ),
   ];
 }

@@ -110,7 +110,7 @@ void main() {
       t.getRect(find.byType(ProfiloAllenamento)).bottom,
       lessThan(samsung.height),
     );
-    expect(find.text('140 W'), findsOneWidget);
+    expect(find.text('140 W', findRichText: true), findsOneWidget);
     expect(find.text('Rullo in ERG'), findsOneWidget);
     expect(find.textContaining('Poi: Z4'), findsOneWidget);
     expect(find.textContaining('Massimo 312 W'), findsOneWidget);
@@ -177,6 +177,31 @@ void main() {
     expect(find.textContaining('▼'), findsOneWidget);
   });
 
+  testWidgets('primario grande e secondario accanto, con la freccia', (
+    t,
+  ) async {
+    await disegna(
+      t,
+      DatiVistaBici(
+        zone: fc,
+        titolo: 'Ripetute',
+        range: (200, 200),
+        wattErg: 200,
+        obiettivo2: '85-90 rpm',
+        versoSecondario: -1,
+        restano: 60,
+        durata: 120,
+        trascorso: 60,
+      ),
+      samsung,
+    );
+    expect(t.takeException(), isNull);
+    expect(
+      find.textContaining('200 W · ▲ 85-90 rpm', findRichText: true),
+      findsOneWidget,
+    );
+  });
+
   test('il grafico guarda solo gli ultimi minuti', () {
     final u = ultimiCampioni(serie, const Duration(minutes: 5));
     expect(u.last, serie.last);
@@ -213,5 +238,9 @@ void main() {
       'Z4 · 195-225 W · 6:00',
     );
     expect(descriviBarra(const BarraAllenamento(60, null), zp), '1:00');
+    expect(
+      descriviBarra(const BarraAllenamento(360, (200, 200), '85-90 rpm'), zp),
+      'Z4 · 200 W · 85-90 rpm · 6:00',
+    );
   });
 }

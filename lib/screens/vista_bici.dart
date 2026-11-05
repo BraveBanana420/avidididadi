@@ -30,6 +30,8 @@ class DatiVistaBici {
   final String intensita; // scritta per esteso, per chi non ha i watt
   final String note;
   final (int, int)? range; // watt da tenere nel blocco
+  final String obiettivo2; // obiettivo secondario, es. "85-90 rpm"
+  final int versoSecondario; // 1 sopra, -1 sotto, 0 dentro
   final int? wattErg; // watt che il rullo sta tenendo
   final int? restano; // secondi; null = blocco senza tempo, si conta in su
   final int trascorso; // secondi nel blocco
@@ -59,6 +61,8 @@ class DatiVistaBici {
     this.intensita = '',
     this.note = '',
     this.range,
+    this.obiettivo2 = '',
+    this.versoSecondario = 0,
     this.wattErg,
     this.restano,
     this.trascorso = 0,
@@ -458,24 +462,47 @@ class _BloccoInCorso extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: t.titleSmall,
                     ),
-                    if (principale.isNotEmpty)
+                    if (principale.isNotEmpty || d.obiettivo2.isNotEmpty)
+                      // Primario grande, secondario accanto: "200 W · 85-90 rpm".
                       FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          [
-                            if (verso > 0) '▼',
-                            if (verso < 0) '▲',
-                            principale,
-                          ].join(' '),
-                          maxLines: 1,
-                          style: t.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: verso == 0 ? null : scheme.error,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              if (principale.isNotEmpty)
+                                TextSpan(
+                                  text: [
+                                    if (verso > 0) '▼',
+                                    if (verso < 0) '▲',
+                                    principale,
+                                  ].join(' '),
+                                  style: t.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: verso == 0 ? null : scheme.error,
+                                  ),
+                                ),
+                              if (d.obiettivo2.isNotEmpty)
+                                TextSpan(
+                                  text: [
+                                    if (principale.isNotEmpty) ' ·',
+                                    if (d.versoSecondario > 0) '▼',
+                                    if (d.versoSecondario < 0) '▲',
+                                    d.obiettivo2,
+                                  ].join(' '),
+                                  style: t.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    color: d.versoSecondario == 0
+                                        ? null
+                                        : scheme.error,
+                                  ),
+                                ),
+                            ],
                           ),
+                          maxLines: 1,
                         ),
-                      )
-                    else if (d.intensita.isNotEmpty)
+                      ),
+                    if (principale.isEmpty && d.intensita.isNotEmpty)
                       Text(
                         d.intensita,
                         maxLines: 2,
@@ -697,8 +724,11 @@ class _Andamento extends CustomPainter {
 String descriviBarra(BarraAllenamento b, ZonePotenza zone) {
   final r = b.range;
   final quanto = fmtTimer(Duration(seconds: b.secondi));
-  if (r == null) return quanto;
-  return 'Z${zone.zonaDi((r.$1 + r.$2) ~/ 2)} · ${fmtRange(r)} · $quanto';
+  return [
+    if (r != null) 'Z${zone.zonaDi((r.$1 + r.$2) ~/ 2)} · ${fmtRange(r)}',
+    if (b.obiettivo2.isNotEmpty) b.obiettivo2,
+    quanto,
+  ].join(' · ');
 }
 
 /// Il diagramma con sotto il blocco che viene dopo e quanto manca alla fine.

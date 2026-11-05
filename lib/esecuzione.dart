@@ -11,6 +11,7 @@ class Blocco {
   final String titolo; // nome dell'esercizio (o "Recupero")
   final String dettaglio; // "Serie 2 di 3 · 8-10 ripetizioni"
   final String intensita;
+  final String obiettivo2; // obiettivo secondario, es. "85-90 rpm"
   final String note;
   final String fase; // riscaldamento, principale, mobilità…
   final String esercizio; // id nel catalogo, per la figura dei muscoli
@@ -25,6 +26,7 @@ class Blocco {
     required this.titolo,
     this.dettaglio = '',
     this.intensita = '',
+    this.obiettivo2 = '',
     this.note = '',
     this.fase = '',
     this.esercizio = '',
@@ -93,6 +95,7 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
             if (quanti.isNotEmpty) quanti,
           ].join(' · '),
           intensita: s.intensita,
+          obiettivo2: s.obiettivo2,
           note: [
             if (perLato && secondiDi(s) != null) 'Cambia lato a metà.',
             s.note,
