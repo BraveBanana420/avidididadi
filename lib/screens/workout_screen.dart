@@ -795,7 +795,12 @@ class _DatiSessione extends StatelessWidget {
         ),
       if (s.passi > 0) ('Passi', '${s.passi}'),
       if (s.potenzaMedia > 0) ('Potenza media', '${s.potenzaMedia} W'),
-      if (s.cadenzaMedia > 0) ('Cadenza media', '${s.cadenzaMedia} rpm'),
+      // Corsa e camminata hanno i passi al minuto, qui sotto.
+      if (s.cadenzaMedia > 0 && !siCammina(s.sport))
+        (
+          'Cadenza media',
+          '${s.cadenzaMedia} ${stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto'}',
+        ),
       if (cadenza(s) case final c?) ('Passi al minuto', '$c ppm'),
       if (s.rpe > 0) ('Fatica (RPE)', '${fmtNum(s.rpe)}/10'),
     ];

@@ -133,6 +133,7 @@ void main() {
     expect(cadenza(s('Bici', 8000)), isNull);
     expect(cadenza(s('Corsa', 0)), isNull);
     expect(cadenza(s('Corsa', 100)), isNull);
+    expect(cadenza(s('Camminata', 5500)), 110);
   });
 
   test('GPX malformato: si legge comunque, in fretta', () {

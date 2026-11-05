@@ -37,6 +37,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
         s.inizio!,
         s.fine!,
         origine: daFreeletics(s) ? '' : s.origine,
+        conPassi: siCammina(s.sport),
       );
     }
     // Battito, potenza e cadenza dai sensori collegati all'app (rulli,
@@ -47,7 +48,8 @@ class _GraficiScreenState extends State<GraficiScreen> {
         fc: serie.fc.isEmpty ? app.fc : serie.fc,
         velocita: serie.velocita,
         potenza: app.potenza,
-        cadenza: app.cadenza,
+        // Quella di Health Connect resta, se i sensori non ne hanno una.
+        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
       );
     }
     if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
@@ -142,12 +144,30 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
-              if (serie.cadenza.isNotEmpty) ...[
+              if (siCammina(s.sport))
+                // Corsa e camminata: passi al minuto, non giri.
+                if (passiAlMinuto(serie.cadenza, s.sport) case final p
+                    when p.isNotEmpty) ...[
+                  _Semplice(
+                    titolo: 'Passi al minuto',
+                    serie: p,
+                    inizio: _inizio(serie),
+                    unita: 'ppm',
+                    colore: const Color(0xFF2EA8FF),
+                    numeri: [
+                      ('Media', '${media(p).round()} ppm'),
+                      ('Massima', '${massimo(p).round()} ppm'),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                ] else
+                  const SizedBox.shrink()
+              else if (serie.cadenza.isNotEmpty) ...[
                 _Semplice(
                   titolo: 'Cadenza',
                   serie: serie.cadenza,
                   inizio: _inizio(serie),
-                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'ppm',
+                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto',
                   colore: const Color(0xFF2EA8FF),
                   numeri: [
                     (

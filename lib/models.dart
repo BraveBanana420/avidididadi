@@ -561,14 +561,32 @@ class ProgrammaRiga {
 /// Passi al minuto della corsa (cadenza media), dai passi della sessione.
 /// Null se mancano i passi o il valore non è credibile.
 int? cadenza(Sessione s) {
-  if (!stessoSport(s.sport, 'Corsa') || s.passi <= 0) return null;
+  if (!siCammina(s.sport)) return null;
   final minuti = s.inizio != null && s.fine != null
       ? s.fine!.difference(s.inizio!).inSeconds / 60
       : s.durataMin.toDouble();
-  if (minuti <= 0) return null;
-  final c = (s.passi / minuti).round();
+  final double v;
+  if (s.passi > 0 && minuti > 0) {
+    v = s.passi / minuti;
+  } else if (s.cadenzaMedia > 0) {
+    // Solo la cadenza dell'orologio (intervals.icu), senza i passi totali.
+    final m = s.cadenzaMedia.toDouble();
+    v = cadenzaDiUnPiede(m, s.sport) ? m * 2 : m;
+  } else {
+    return null;
+  }
+  final c = v.round();
   return c >= 60 && c <= 240 ? c : null;
 }
+
+/// Corsa e camminata si misurano in passi al minuto, non in giri.
+bool siCammina(String sport) =>
+    stessoSport(sport, 'Corsa') || stessoSport(sport, 'Camminata');
+
+/// Garmin e altri orologi salvano la cadenza contando un piede solo (85 invece
+/// di 170): nessuno corre sotto i 120 passi al minuto, né cammina sotto i 75.
+bool cadenzaDiUnPiede(double v, String sport) =>
+    v > 0 && v < (stessoSport(sport, 'Corsa') ? 120 : 75);
 
 double? ritmo(Sessione s) {
   if (s.distanzaKm <= 0 || s.durataMin <= 0) return null;

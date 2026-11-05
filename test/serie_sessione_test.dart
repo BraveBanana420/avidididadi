@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
 import 'package:allenamenti_app/percorso.dart';
 import 'package:allenamenti_app/serie_sessione.dart';
@@ -82,5 +83,82 @@ void main() {
     );
     expect((strade['layers'] as List).first['id'], 'acqua');
     expect((strade['layers'] as List).last['id'], 'estremi');
+  });
+
+  group('passi al minuto', () {
+    final t0 = DateTime(2026, 11, 5, 8);
+    List<Campione> serie(List<double> v) => [
+      for (final (k, x) in v.indexed) Campione(t0.add(Duration(seconds: k)), x),
+    ];
+
+    test('Garmin conta un piede: nella corsa 85 sono 170 passi', () {
+      final p = passiAlMinuto(serie([84, 85, 86, 0, 85]), 'Corsa');
+      expect(p.map((c) => c.v), [168, 170, 172, 170]); // lo 0 non conta
+    });
+
+    test('se sono già passi al minuto non si raddoppiano', () {
+      expect(passiAlMinuto(serie([168, 172, 170]), 'Corsa').map((c) => c.v), [
+        168,
+        172,
+        170,
+      ]);
+      expect(
+        passiAlMinuto(serie([105, 110, 108]), 'Camminata').map((c) => c.v),
+        [105, 110, 108],
+      );
+    });
+
+    test('nella camminata 55 sono 110 passi', () {
+      expect(passiAlMinuto(serie([54, 55, 56]), 'Camminata').map((c) => c.v), [
+        108,
+        110,
+        112,
+      ]);
+    });
+
+    test('un tratto strano non cambia la scala della seduta', () {
+      // Un momento lento di chi conta già i due piedi: resta com'è.
+      expect(
+        passiAlMinuto(
+          serie([170, 172, 100, 171, 169]),
+          'Corsa',
+        ).map((c) => c.v),
+        [170, 172, 100, 171, 169],
+      );
+    });
+
+    test('dalla media delle attività di intervals.icu', () {
+      Sessione s(String sport, int cad) => Sessione(
+        id: 'x',
+        data: t0,
+        sport: sport,
+        durataMin: 40,
+        cadenzaMedia: cad,
+      );
+      expect(cadenza(s('Corsa', 85)), 170);
+      expect(cadenza(s('Corsa', 172)), 172);
+      expect(cadenza(s('Camminata', 55)), 110);
+      expect(cadenza(s('Bici', 88)), isNull); // in bici restano i giri
+    });
+
+    test('dai conteggi di Health Connect, a pezzi', () {
+      final pezzi = [
+        for (var m = 0; m < 4; m++)
+          (
+            t0.add(Duration(minutes: m)),
+            t0.add(Duration(minutes: m + 1)),
+            170.0,
+          ),
+      ];
+      final p = passiDaConteggi(pezzi);
+      expect(p, hasLength(4));
+      expect(p.first.v, 170);
+      // Un solo totale della seduta non fa un grafico.
+      expect(
+        passiDaConteggi([(t0, t0.add(const Duration(minutes: 50)), 8000)]),
+        isEmpty,
+      );
+      expect(passiDaConteggi(pezzi.take(2).toList()), isEmpty);
+    });
   });
 }

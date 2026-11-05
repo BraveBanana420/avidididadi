@@ -227,10 +227,15 @@ class HealthConnectService {
     DateTime da,
     DateTime a, {
     String origine = '',
+    bool conPassi = false, // corsa e camminata: i passi al minuto
   }) async {
     await _configura();
     final punti = await _h.getHealthDataFromTypes(
-      types: [HealthDataType.HEART_RATE, HealthDataType.SPEED],
+      types: [
+        HealthDataType.HEART_RATE,
+        HealthDataType.SPEED,
+        if (conPassi) HealthDataType.STEPS,
+      ],
       startTime: da,
       endTime: a,
     );
@@ -247,6 +252,17 @@ class HealthConnectService {
     return SerieSessione(
       fc: di(HealthDataType.HEART_RATE),
       velocita: di(HealthDataType.SPEED),
+      cadenza: passiDaConteggi([
+        for (final p in punti)
+          if (p.type == HealthDataType.STEPS &&
+              p.value is NumericHealthValue &&
+              (origine.isEmpty || _pacchetto(p) == origine))
+            (
+              p.dateFrom,
+              p.dateTo,
+              (p.value as NumericHealthValue).numericValue.toDouble(),
+            ),
+      ]),
     );
   }
 

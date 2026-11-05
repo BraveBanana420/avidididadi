@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'obiettivo.dart';
+import 'models.dart';
 import 'percorso.dart';
 
 /// Le serie nel tempo di un'attività (battito, velocità) per i grafici, come
@@ -58,6 +59,33 @@ List<Campione> ricampiona(List<Campione> serie, {int punti = 120}) {
           somme[i] / conti[i],
         ),
   ];
+}
+
+/// La cadenza di corsa e camminata in passi al minuto: si raddoppia se è
+/// contata su un piede solo. Lo decide il valore centrale della seduta, così
+/// un tratto strano non cambia la scala; i momenti da fermi non contano.
+List<Campione> passiAlMinuto(List<Campione> cadenza, String sport) {
+  final inMoto = [
+    for (final c in cadenza)
+      if (c.v > 0) c,
+  ];
+  if (inMoto.isEmpty) return const [];
+  final ordinati = [for (final c in inMoto) c.v]..sort();
+  final doppio = cadenzaDiUnPiede(ordinati[ordinati.length ~/ 2], sport);
+  return doppio ? [for (final c in inMoto) Campione(c.t, c.v * 2)] : inMoto;
+}
+
+/// Passi al minuto dai conteggi di Health Connect (inizio, fine, passi). Quelli
+/// lunghi (il totale del giorno o della seduta) non dicono com'è andata nel
+/// tempo, e con meno di 3 punti il grafico non serve.
+List<Campione> passiDaConteggi(List<(DateTime, DateTime, double)> conteggi) {
+  final out = <Campione>[
+    for (final (da, a, passi) in conteggi)
+      if (a.difference(da).inSeconds case final s when s >= 5 && s <= 600)
+        if (passi / s * 60 case final v when v >= 30 && v <= 260)
+          Campione(da, v),
+  ]..sort((x, y) => x.t.compareTo(y.t));
+  return out.length < 3 ? const [] : out;
 }
 
 /// Tempo passato in ogni zona di battito (1-5); i buchi oltre il minuto tra
