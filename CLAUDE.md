@@ -90,6 +90,7 @@ lib/
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
   screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
   screens/condividi_screen.dart  immagine 4:5 di sessione o settimana, condivisa con FileProvider (cache/condivisi)
+  screens/vista_bici.dart  bici al chiuso durante l'allenamento: dati, blocco in corso, ERG, grafico e diagramma in una pagina
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
 assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
 test/                  un file *_test.dart per area

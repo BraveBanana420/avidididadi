@@ -62,6 +62,15 @@ const coloriZonePotenza = [
   Color(0xFFB566FF),
 ];
 
+/// Colori delle cinque zone di battito.
+const coloriZoneBattito = [
+  Color(0xFF9A9AA5),
+  Color(0xFF2EA8FF),
+  Color(0xFF22E07A),
+  Color(0xFFFFC233),
+  Color(0xFFFF3B47),
+];
+
 final _wattScritti = RegExp(
   r'(\d{2,4})\s*(?:-|–|a)\s*(\d{2,4})\s*w\b|(\d{2,4})\s*w\b',
   caseSensitive: false,

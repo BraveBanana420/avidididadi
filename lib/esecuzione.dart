@@ -129,6 +129,17 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
   return out;
 }
 
+/// Il dettaglio da mostrare durante il blocco: "Serie 2 di 5" resta, "10 min"
+/// no, perché nei blocchi a tempo lo dice già il timer.
+String dettaglioBreve(Blocco b) => b.dettaglio
+    .split(' · ')
+    .where(
+      (x) =>
+          x.isNotEmpty &&
+          !(b.aTempo && RegExp(r'^\d+([.,]\d+)?\s*(min|s)\b').hasMatch(x)),
+    )
+    .join(' · ');
+
 /// "4:05" o "1:02:30".
 String fmtTimer(Duration d) {
   final s = d.inSeconds.abs();

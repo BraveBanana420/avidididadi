@@ -263,14 +263,6 @@ class _Zone extends StatelessWidget {
   final Zone zone;
   const _Zone({required this.fc, required this.zone});
 
-  static const _colori = [
-    Color(0xFF9A9AA5),
-    Color(0xFF2EA8FF),
-    Color(0xFF22E07A),
-    Color(0xFFFFC233),
-    Color(0xFFFF3B47),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
@@ -298,7 +290,7 @@ class _Zone extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: tempi[n]!.inSeconds / totale.inSeconds,
                         minHeight: 12,
-                        color: _colori[n - 1],
+                        color: coloriZoneBattito[n - 1],
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .surfaceContainerHighest,

@@ -38,6 +38,7 @@ import 'mappa_live.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
 import 'profilo_allenamento.dart';
+import 'vista_bici.dart';
 import 'opzioni_allenamento_screen.dart';
 
 const _canale = MethodChannel('avidididadi/avvio');
@@ -1064,7 +1065,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final esercizio = preparati || recupero ? null : perId[b.esercizio];
     final esercizioPoi = recupero ? perId[prossimo?.esercizio] : null;
     final aTempo = preparati || b.aTempo;
-    final faseNome = preparati ? '' : maiuscola(b.fase);
 
     return Stack(
       children: [
@@ -1075,7 +1075,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           esercizio: esercizio,
           esercizioPoi: esercizioPoi,
           aTempo: aTempo,
-          faseNome: faseNome,
         ),
         Positioned(
           top: 64,
@@ -1105,7 +1104,6 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     required Esercizio? esercizio,
     required Esercizio? esercizioPoi,
     required bool aTempo,
-    required String faseNome,
   }) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
@@ -1183,6 +1181,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           // Prima del via solo il timer e le scelte: i dati arrivano dopo.
           child: preparati
               ? _preparati(context, prossimo)
+              // Bici al chiuso: tutti i dati in una pagina, senza scorrere.
+              : _bici && gps == null
+              ? _vistaBici(context, recupero: recupero)
               : _centro(
                   context,
                   Column(
@@ -1221,7 +1222,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 ],
                               ],
                             ),
-                            if (gps != null) ...[
+                            // Durante la seduta il GPS si nomina solo se non va.
+                            if (gps != null &&
+                                gps!.stato != StatoGps.pronto) ...[
                               const SizedBox(height: 8),
                               _StatoGps(gps: gps!, riaccendi: _accendiGps),
                             ],
@@ -1316,7 +1319,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     if (gps == null && sensoreBattito.ricordato)
                                       _DatoBattito(zone: _zone),
                                     if (bici && sensoreBici.comandabile)
-                                      _ControlloErg(
+                                      ControlloErg(
                                         acceso: _ergAcceso,
                                         watt: _ergAcceso ? _wattErg : null,
                                         scala: _ergScala,
@@ -1335,7 +1338,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             ),
                             if (_barre case final barre?) ...[
                               const SizedBox(height: 8),
-                              _DiagrammaInCorso(
+                              DiagrammaInCorso(
                                 barre: barre,
                                 zone: _zonePotenza!,
                                 corrente: i,
@@ -1343,27 +1346,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 durata: _durata,
                               ),
                             ],
-                            const SizedBox(height: 6),
-                            Text(
-                              preparati
-                                  ? widget.libera
-                                        ? widget.nome
-                                        : '${widget.nome} · $nPassi esercizi'
-                                  : 'Esercizio ${b.passo + 1} di $nPassi'
-                                        '${faseNome.isEmpty ? '' : ' · $faseNome'}',
-                              style: t.bodySmall,
-                            ),
                           ],
                         ),
                       ),
                       Expanded(
                         child: ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
                           children: [
                             if (recupero) ...[
-                              Text('Recupero', style: t.headlineMedium),
+                              Text('Recupero', style: t.titleMedium),
                               if (b.note.isNotEmpty)
-                                Text(b.note, style: t.bodyLarge),
+                                Text(b.note, style: t.bodySmall),
                             ] else ...[
                               // A sinistra l'anteprima del movimento, se c'è.
                               Row(
@@ -1380,16 +1373,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(b.titolo, style: t.titleLarge),
-                                        if (b.dettaglio.isNotEmpty)
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 2,
-                                            ),
-                                            child: Text(
-                                              b.dettaglio,
-                                              style: t.titleMedium,
-                                            ),
+                                        // Solo il nome, piccolo: titolo e durata
+                                        // della seduta sono già stati scelti.
+                                        Text(b.titolo, style: t.titleSmall),
+                                        if (dettaglioBreve(b).isNotEmpty)
+                                          Text(
+                                            dettaglioBreve(b),
+                                            style: t.bodySmall,
                                           ),
                                       ],
                                     ),
@@ -1398,23 +1388,28 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                               ),
                               if (b.intensita.isNotEmpty)
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 6),
+                                  padding: const EdgeInsets.only(top: 4),
                                   child: Text(
-                                    'Intensità: ${intensitaCon(b.intensita, widget.sport, _zonePotenza, _zone)}',
-                                    style: t.bodyLarge,
+                                    intensitaCon(
+                                      b.intensita,
+                                      widget.sport,
+                                      _zonePotenza,
+                                      _zone,
+                                    ),
+                                    style: t.bodyMedium,
                                   ),
                                 ),
                               if (sensazioneDi(b.intensita) != null)
                                 Text(
-                                  'Come ti devi sentire: ${sensazioneDi(b.intensita)}',
-                                  style: t.bodyMedium?.copyWith(
+                                  sensazioneDi(b.intensita)!,
+                                  style: t.bodySmall?.copyWith(
                                     fontStyle: FontStyle.italic,
                                   ),
                                 ),
                               if (b.note.isNotEmpty)
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 6),
-                                  child: Text(b.note, style: t.bodyMedium),
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: Text(b.note, style: t.bodySmall),
                                 ),
                               if (_daRegistrare(i)) ...[
                                 const SizedBox(height: 16),
@@ -1428,7 +1423,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 ),
                               ],
                             ],
-                            const SizedBox(height: 24),
+                            const SizedBox(height: 12),
                             Center(
                               // Durante "Preparati" un tocco sul timer fa partire subito.
                               child: GestureDetector(
@@ -1592,7 +1587,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
               if (_barre case final barre?) ...[
                 const SizedBox(height: 20),
-                _DiagrammaInCorso(
+                DiagrammaInCorso(
                   barre: barre,
                   zone: _zonePotenza!,
                   corrente: -1,
@@ -1650,6 +1645,59 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _vistaBici(BuildContext context, {required bool recupero}) {
+    return ListenableBuilder(
+      listenable: Listenable.merge([sensoreBattito, sensoreBici]),
+      builder: (context, _) => VistaBici(
+        dati: DatiVistaBici(
+          watt: _watt,
+          wattMedia: potenza.media,
+          wattMassimo: potenza.massimo,
+          seriePotenza: _seriePotenza,
+          zonePotenza: _zonePotenza,
+          bpm: sensoreBattito.bpm,
+          zone: _zone,
+          calorie: _calorie?.attive.round(),
+          cadenza: sensoreBici.cadenza?.round().toString() ?? '–',
+          velocita: fmtVelocita(widget.sport, sensoreBici.velocita),
+          km: (_metriSensore / 1000).toStringAsFixed(2).replaceAll('.', ','),
+          sensoriRicordati: sensoreBici.ricordato,
+          titolo: recupero ? 'Recupero' : b.titolo,
+          dettaglio: dettaglioBreve(b),
+          intensita: intensitaCon(
+            b.intensita,
+            widget.sport,
+            _zonePotenza,
+            _zone,
+          ),
+          note: b.note,
+          range: _rangeBlocco,
+          wattErg: sensoreBici.comandabile ? _wattErg : null,
+          restano: b.aTempo ? _restano.clamp(0, 99999).toInt() : null,
+          trascorso: _tempoBlocco.inSeconds,
+          durata: _durata,
+          pausa: _inPausa,
+          recupero: recupero,
+          barre: _barre,
+          corrente: i,
+          comandabile: sensoreBici.comandabile,
+          ergAcceso: _ergAcceso,
+          ergScala: _ergScala,
+        ),
+        apriSensori: () => mostraSensoreBici(context),
+        apriBattito: () => mostraBattito(context),
+        cambiaErg: (acceso) => setState(() {
+          _ergAcceso = acceso;
+          _comandaRullo();
+        }),
+        cambiaScala: (s) => setState(() {
+          _ergScala = s;
+          _comandaRullo();
+        }),
       ),
     );
   }
@@ -2368,145 +2416,6 @@ class _DatoPotenza extends StatelessWidget {
             },
       notaFuori: verso != 0,
       onTap: onTap,
-    );
-  }
-}
-
-/// Il diagramma con sotto il blocco che viene dopo e quanto manca alla fine.
-class _DiagrammaInCorso extends StatelessWidget {
-  final List<BarraAllenamento> barre;
-  final ZonePotenza zone;
-  final int corrente; // -1 prima del via
-  final int trascorso; // secondi nel blocco in corso
-  final int durata; // secondi del blocco in corso (0 se a "Fatto")
-  const _DiagrammaInCorso({
-    required this.barre,
-    required this.zone,
-    required this.corrente,
-    required this.trascorso,
-    required this.durata,
-  });
-
-  String _descrivi(BarraAllenamento b) {
-    final r = b.range;
-    final quanto = fmtTimer(Duration(seconds: b.secondi));
-    if (r == null) return quanto;
-    return 'Z${zone.zonaDi((r.$1 + r.$2) ~/ 2)} · ${fmtRange(r)} · $quanto';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
-    final restoBlocco = corrente < 0 ? 0 : (durata - trascorso).clamp(0, 99999);
-    final dopo = [
-      for (var k = corrente + 1; k < barre.length; k++) barre[k].secondi,
-    ].fold(0, (a, b) => a + b);
-    final poi = corrente + 1 < barre.length ? barre[corrente + 1] : null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ProfiloAllenamento(
-          barre: barre,
-          zone: zone,
-          corrente: corrente,
-          avanzamento: durata > 0 ? trascorso / durata : 0.5,
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                poi == null
-                    ? 'Ultimo blocco'
-                    : '${corrente < 0 ? 'Si parte' : 'Poi'}: ${_descrivi(poi)}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: t.labelMedium,
-              ),
-            ),
-            Text(
-              'Fine tra ${fmtTimer(Duration(seconds: restoBlocco + dopo))}',
-              style: t.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-/// ERG del rullo: acceso o spento, i watt imposti e i tasti −5% / +5%.
-class _ControlloErg extends StatelessWidget {
-  final bool acceso;
-  final int? watt;
-  final double scala;
-  final ValueChanged<bool> cambia;
-  final ValueChanged<double> scalaCambia;
-  const _ControlloErg({
-    required this.acceso,
-    required this.watt,
-    required this.scala,
-    required this.cambia,
-    required this.scalaCambia,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
-    final percento = ((scala - 1) * 100).round();
-    return Material(
-      color: scheme.surfaceContainer,
-      borderRadius: BorderRadius.circular(20),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 4, 6, 4),
-        child: Row(
-          children: [
-            Icon(Icons.tune, size: 18, color: scheme.primary),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    acceso ? 'Rullo in ERG' : 'Rullo libero',
-                    style: t.labelLarge,
-                  ),
-                  Text(
-                    acceso
-                        ? [
-                            watt == null ? 'senza obiettivo' : 'tiene $watt W',
-                            if (percento != 0)
-                              '${percento > 0 ? '+' : ''}$percento%',
-                          ].join(' · ')
-                        : 'i watt li decidi tu',
-                    style: t.bodySmall,
-                  ),
-                ],
-              ),
-            ),
-            if (acceso) ...[
-              IconButton(
-                tooltip: '5% in meno',
-                onPressed: scala > 0.71
-                    ? () => scalaCambia(((scala - 0.05) * 100).round() / 100)
-                    : null,
-                icon: const Icon(Icons.remove),
-              ),
-              IconButton(
-                tooltip: '5% in più',
-                onPressed: scala < 1.29
-                    ? () => scalaCambia(((scala + 0.05) * 100).round() / 100)
-                    : null,
-                icon: const Icon(Icons.add),
-              ),
-            ],
-            Switch(value: acceso, onChanged: cambia),
-          ],
-        ),
-      ),
     );
   }
 }

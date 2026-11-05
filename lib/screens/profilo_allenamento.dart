@@ -83,9 +83,10 @@ class _Disegno extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final totale = barre.fold(0, (t, b) => t + b.secondi);
     if (totale == 0) return;
-    // L'altezza piena è il passo più duro (almeno l'FTP).
+    // L'altezza piena è il passo più duro; sopra l'FTP resta un po' di spazio,
+    // così la sua linea si vede anche nelle sedute facili.
     final tetto = barre.fold<double>(
-      zone.ftp.toDouble(),
+      zone.ftp * 1.1,
       (m, b) => b.range == null ? m : (b.range!.$2 > m ? b.range!.$2 * 1.0 : m),
     );
     var x = 0.0;
@@ -105,6 +106,14 @@ class _Disegno extends CustomPainter {
       );
       if (k == corrente) xAdesso = x + w * avanzamento;
       x += w;
+    }
+    // La linea tratteggiata dell'FTP: sopra si fatica davvero.
+    final yFtp = size.height * (1 - zone.ftp / tetto);
+    final tratteggio = Paint()
+      ..color = segno.withValues(alpha: 0.5)
+      ..strokeWidth = 1;
+    for (var px = 0.0; px < size.width; px += 8) {
+      canvas.drawLine(Offset(px, yFtp), Offset(px + 4, yFtp), tratteggio);
     }
     if (xAdesso != null) {
       canvas.drawRect(
