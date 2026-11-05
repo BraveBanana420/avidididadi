@@ -16,6 +16,8 @@ final _misuraPotenza = Uuid.parse('2a63');
 final servizioRulli = Uuid.parse('1826');
 final _datiRulli = Uuid.parse('2ad2');
 final _comandiRulli = Uuid.parse('2ad9'); // Fitness Machine Control Point
+final _funzioniRulli = Uuid.parse('2acc'); // Fitness Machine Feature
+final _statoRulli = Uuid.parse('2ada'); // Fitness Machine Status
 
 // Comandi FTMS al rullo (tutti con risposta: 0x80, comando, esito).
 const _chiediControllo = 0x00;
@@ -35,6 +37,14 @@ bool? esitoComando(List<int> d, int comando) {
   if (d.length < 3 || d[0] != 0x80 || d[1] != comando) return null;
   return d[2] == 0x01;
 }
+
+/// Il rullo dichiara di saper fare la calibrazione via Bluetooth: bit 14 delle
+/// "Target Setting Features" (i secondi 4 byte di Fitness Machine Feature).
+bool calibrazioneSupportata(List<int> funzioni) =>
+    funzioni.length >= 6 && funzioni[5] & 0x40 != 0;
+
+String _esadecimale(List<int> d) =>
+    d.map((x) => x.toRadixString(16).padLeft(2, '0')).join(' ');
 
 /// Circonferenza della ruota se non si sa: 700×25C, la più comune su strada.
 const circonferenzaDiBase = 2105; // mm
@@ -183,6 +193,7 @@ class SensoreBici extends SensoreBle {
 
   /// Un rullo smart collegato adesso: vuol dire che si pedala al chiuso.
   bool get rulloInUso => comandabile && stato == StatoSensore.collegato;
+  bool _diagnosiFatta = false;
   bool _controllo = false; // il rullo ha accettato i comandi da noi
   int? _wattMandati;
   DateTime _mandatiIl = DateTime(0);
@@ -223,7 +234,42 @@ class SensoreBici extends SensoreBle {
     _flusso(servizioPotenza, _misuraPotenza, id),
     _flusso(servizioCsc, _misuraCsc, id),
     _flusso(servizioRulli, _comandiRulli, id),
+    _flusso(servizioRulli, _statoRulli, id),
   ];
+
+  /// Prova per la calibrazione: scrive nel registro del telefono che cosa
+  /// dichiara il rullo. Legge soltanto, non manda comandi.
+  Future<void> _diagnosi() async {
+    if (_diagnosiFatta || id.isEmpty) return;
+    _diagnosiFatta = true;
+    try {
+      final funzioni = await ble.readCharacteristic(
+        QualifiedCharacteristic(
+          serviceId: servizioRulli,
+          characteristicId: _funzioniRulli,
+          deviceId: id,
+        ),
+      );
+      debugPrint(
+        'RulloDiagnosi funzioni=${_esadecimale(funzioni)} '
+        'calibrazione=${calibrazioneSupportata(funzioni)}',
+      );
+    } catch (e) {
+      debugPrint('RulloDiagnosi funzioni non lette: $e');
+    }
+    try {
+      await ble.discoverAllServices(id);
+      for (final s in await ble.getDiscoveredServices(id)) {
+        debugPrint(
+          'RulloDiagnosi servizio ${s.id}: '
+          '${s.characteristics.map((c) => '${c.id}').join(' ')}',
+        );
+      }
+    } catch (e) {
+      debugPrint('RulloDiagnosi servizi non letti: $e');
+    }
+    debugPrint('RulloDiagnosi fine');
+  }
 
   Future<bool> _scrivi(List<int> comando) async {
     if (id.isEmpty || stato != StatoSensore.collegato) return false;
@@ -280,6 +326,7 @@ class SensoreBici extends SensoreBle {
     switch (k) {
       case 0:
         comandabile = true;
+        _diagnosi();
         final r = rulliDa(pacchetto);
         if (r.kmh != null) _velocita.imposta(r.kmh! / 3.6);
         if (r.rpm != null) _cadenza.imposta(r.rpm!);
@@ -309,6 +356,8 @@ class SensoreBici extends SensoreBle {
           _controllo = false;
           _mandatiIl = DateTime(0);
         }
+      case 4:
+        debugPrint('RulloDiagnosi stato=${_esadecimale(pacchetto)}');
     }
   }
 
@@ -322,6 +371,7 @@ class SensoreBici extends SensoreBle {
     _pedaliPotenza.azzera();
     // Staccato: la prossima uscita può essere su strada, con un altro sensore.
     comandabile = false;
+    _diagnosiFatta = false;
     // Ricollegato: il rullo ha dimenticato tutto, si richiede il controllo.
     _controllo = false;
     _wattMandati = null;

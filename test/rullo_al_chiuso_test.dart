@@ -97,6 +97,19 @@ void main() {
       expect(s.velocita, closeTo(10, 0.01));
     });
 
+    test('calibrazione: dice sì solo se il rullo la dichiara', () {
+      // Un rullo tipico: ERG e simulazione, con o senza il bit 14.
+      expect(
+        calibrazioneSupportata([0x83, 0x14, 0, 0, 0x0C, 0xE0, 0, 0]),
+        isTrue,
+      );
+      expect(
+        calibrazioneSupportata([0x83, 0x14, 0, 0, 0x0C, 0xA0, 0, 0]),
+        isFalse,
+      );
+      expect(calibrazioneSupportata([0x83, 0x14]), isFalse);
+    });
+
     test('senza rullo la velocità viene dai giri della ruota', () {
       final s = SensoreBici();
       s.leggi(2, _ruota(100, 0));
