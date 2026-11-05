@@ -5,6 +5,7 @@ import '../models.dart';
 import '../obiettivo.dart';
 import '../potenza.dart';
 import '../widgets.dart';
+import 'esecuzione_screen.dart';
 
 String _dataBreve(DateTime d) => '${two(d.day)}/${two(d.month)}/${d.year}';
 
@@ -252,11 +253,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
   late final ftp = TextEditingController(
     text: p.ftpManuale > 0 ? '${p.ftpManuale}' : '',
   );
+  late final ftpCorsa = TextEditingController(
+    text: p.ftpCorsaManuale > 0 ? '${p.ftpCorsaManuale}' : '',
+  );
   String? errore;
 
   @override
   void dispose() {
-    for (final c in [fcMax, fcRiposo, passo, ftp]) {
+    for (final c in [fcMax, fcRiposo, passo, ftp, ftpCorsa]) {
       c.dispose();
     }
     super.dispose();
@@ -274,11 +278,13 @@ class _ZoneScreenState extends State<ZoneScreen> {
     final rp = _intero(fcRiposo, 30, 100);
     final ps = _leggiTempo(passo.text); // m:ss letto come ore:minuti -> secondi
     final fw = _intero(ftp, 50, 600);
+    final fc = _intero(ftpCorsa, 50, 600);
     if (mx == null ||
         rp == null ||
         ps == null ||
         (ps > 0 && ps < 50) ||
-        fw == null) {
+        fw == null ||
+        fc == null) {
       setState(
         () => errore =
             'Controlla i valori: FC max 120-230, FC riposo 30-100, passo m:ss, '
@@ -291,10 +297,86 @@ class _ZoneScreenState extends State<ZoneScreen> {
       ..fcMaxManuale = mx
       ..fcRiposoManuale = rp
       ..passoCriticoManuale = ps
-      ..ftpManuale = fw;
+      ..ftpManuale = fw
+      ..ftpCorsaManuale = fc;
     await widget.state.salvaProfilo();
     navigator.pop();
   }
+
+  /// Il test per l'FTP di corsa: cosa si fa, e farlo ora o in un altro giorno.
+  Future<void> _apriTest() => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (c) {
+      final t = Theme.of(c).textTheme;
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          spacing: 12,
+          children: [
+            Text(nomeTestFtpCorsa, style: t.titleLarge),
+            const Text(
+              '15 minuti facili e 3 allunghi, poi 20 minuti al massimo che '
+              'riesci a tenere, poi 10 minuti lentissimi. Circa 50 minuti.',
+            ),
+            const Text(
+              'Il telefono non misura i watt di corsa: registra la corsa anche '
+              'con l\'orologio. Poi apri i grafici di quella corsa: lì trovi '
+              'la tua FTP e il tasto per salvarla.',
+            ),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(c);
+                avviaAllenamento(
+                  context,
+                  widget.state,
+                  sport: 'Corsa',
+                  tipo: 'Test FTP',
+                  nome: nomeTestFtpCorsa,
+                  passi: passiTestFtpCorsa('libera'),
+                  libera: true,
+                );
+              },
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Inizia ora'),
+            ),
+            OutlinedButton.icon(
+              onPressed: () async {
+                final navigator = Navigator.of(c);
+                final messenger = ScaffoldMessenger.of(context);
+                final oggi = soloData(DateTime.now());
+                final data = await showDatePicker(
+                  context: c,
+                  initialDate: oggi,
+                  firstDate: oggi,
+                  lastDate: oggi.add(const Duration(days: 365)),
+                  helpText: 'In che giorno?',
+                );
+                if (data == null) return;
+                final ok = await widget.state.programmaTestFtpCorsa(data);
+                navigator.pop();
+                messenger.showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      ok
+                          ? 'Test nel calendario: ${dataLunga(data)}. Prende '
+                                'il posto della corsa di quel giorno.'
+                          : 'Scegli oggi o un giorno dopo.',
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.event_available),
+              label: const Text('Mettilo nel calendario'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -419,6 +501,54 @@ class _ZoneScreenState extends State<ZoneScreen> {
                         'l\'FTP è circa il 95% della potenza media.',
               helperMaxLines: 3,
             ),
+          ),
+          const SizedBox(height: 24),
+          Text('Le tue zone di potenza (corsa)', style: t.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            'L\'FTP della bici non vale correndo: la corsa ha la sua. Serve ai '
+            'grafici delle corse registrate con un orologio che misura i watt.',
+            style: t.bodySmall,
+          ),
+          if (widget.state.zonePotenzaCorsa case final zc?) ...[
+            const SizedBox(height: 8),
+            Card(
+              child: Column(
+                children: [
+                  for (var n = 1; n <= zc.numero; n++)
+                    ListTile(
+                      dense: true,
+                      leading: CircleAvatar(radius: 14, child: Text('$n')),
+                      title: Text(zc.nomiZone[n - 1]),
+                      trailing: Text(zc.testo(n), style: t.titleSmall),
+                    ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          TextField(
+            controller: ftpCorsa,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'FTP di corsa',
+              suffixText: 'W',
+              helperText: widget.state.ftpCorsaIcu > 0
+                  ? 'Vuoto = quello di intervals.icu: '
+                        '${widget.state.ftpCorsaIcu} W.'
+                  : widget.state.stimaFtpDiCorsa != null
+                  ? 'Vuoto = stima da età e peso: '
+                        '${widget.state.stimaFtpDiCorsa} W. È solo un punto di '
+                        'partenza.'
+                  : 'Vuoto = stima da età e peso: scrivi il peso nel Profilo.',
+              helperMaxLines: 3,
+            ),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTest,
+            icon: const Icon(Icons.timer_outlined),
+            label: const Text('Fai il test per calcolarla'),
           ),
           if (errore != null) ...[
             const SizedBox(height: 12),

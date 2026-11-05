@@ -138,11 +138,35 @@ class _GraficiScreenState extends State<GraficiScreen> {
               if (serie.potenza.isNotEmpty) ...[
                 GraficoPotenza(serie: serie.potenza, inizio: _inizio(serie)),
                 const SizedBox(height: 12),
-                ZonePotenzaCard(
-                  serie: serie.potenza,
-                  zone: widget.state.zonePotenza,
-                ),
-                const SizedBox(height: 12),
+                // Ogni sport con la sua soglia; gli altri non hanno zone.
+                if (stessoSport(s.sport, 'Bici')) ...[
+                  ZonePotenzaCard(
+                    serie: serie.potenza,
+                    zone: widget.state.zonePotenza,
+                  ),
+                  const SizedBox(height: 12),
+                ] else if (stessoSport(s.sport, 'Corsa')) ...[
+                  ListenableBuilder(
+                    listenable: widget.state,
+                    builder: (context, _) => ZonePotenzaCard(
+                      serie: serie.potenza,
+                      zone: widget.state.zonePotenzaCorsa,
+                      nota: widget.state.ftpCorsaStimata
+                          ? 'FTP di corsa stimata da età e peso: per averla '
+                                'precisa fai il test in Profilo → Le mie zone.'
+                          : null,
+                      aiuto:
+                          'Per le zone serve il tuo peso (Profilo), oppure '
+                          'l\'FTP di corsa in Profilo → Le mie zone.',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _SogliaDaCorsa(
+                    state: widget.state,
+                    sessione: s,
+                    serie: serie.potenza,
+                  ),
+                ],
               ],
               if (siCammina(s.sport))
                 // Corsa e camminata: passi al minuto, non giri.
@@ -394,6 +418,76 @@ class _Velocita extends StatelessWidget {
   }
 }
 
+/// Dopo il test, o una corsa più forte della soglia di adesso: propone la
+/// soglia nuova (il 95% dei migliori 20 minuti).
+class _SogliaDaCorsa extends StatelessWidget {
+  final AppState state;
+  final Sessione sessione;
+  final List<Campione> serie;
+  const _SogliaDaCorsa({
+    required this.state,
+    required this.sessione,
+    required this.serie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final soglia = sogliaDaVenti(serie);
+    if (soglia == null) return const SizedBox.shrink();
+    return ListenableBuilder(
+      listenable: state,
+      builder: (context, _) {
+        final attuale = state.zonePotenzaCorsa?.ftp;
+        // Il test fatto col player vale anche per la corsa dell'orologio dello
+        // stesso giorno, che ha un altro nome: quella ha i watt.
+        final prova = RegExp(r'test|ftp', caseSensitive: false);
+        final giorno = soloData(sessione.data);
+        final test =
+            prova.hasMatch(sessione.tipo) ||
+            state.storicoCsv.any(
+              (x) =>
+                  soloData(x.data) == giorno &&
+                  stessoSport(x.sport, 'Corsa') &&
+                  prova.hasMatch(x.tipo),
+            ) ||
+            state.piano.any(
+              (r) =>
+                  r.data == giorno &&
+                  stessoSport(r.sport, 'Corsa') &&
+                  prova.hasMatch(r.tipo),
+            );
+        if (soglia == attuale || !(test || soglia > (attuale ?? 0))) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SuperficiePulse(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('La tua FTP di corsa: $soglia W', style: t.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  'È il 95% dei tuoi migliori 20 minuti. Vale se in quei 20 '
+                  'minuti hai corso al massimo.',
+                  style: t.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () => state.impostaFtpCorsa(soglia),
+                  icon: const Icon(Icons.check),
+                  label: const Text('Usala come FTP di corsa'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 /// La potenza nel tempo, con media, normalizzata e massima.
 class GraficoPotenza extends StatelessWidget {
   final List<Campione> serie;
@@ -427,20 +521,24 @@ class GraficoPotenza extends StatelessWidget {
 class ZonePotenzaCard extends StatelessWidget {
   final List<Campione> serie;
   final ZonePotenza? zone;
-  const ZonePotenzaCard({super.key, required this.serie, required this.zone});
+  final String? nota; // da dove viene la soglia, se è solo una stima
+  final String aiuto; // cosa fare se non c'è la soglia
+  const ZonePotenzaCard({
+    super.key,
+    required this.serie,
+    required this.zone,
+    this.nota,
+    this.aiuto =
+        'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → '
+        'Zone, oppure impostalo su intervals.icu.',
+  });
 
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final z = zone;
     if (z == null) {
-      return SuperficiePulse(
-        child: Text(
-          'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → '
-          'Zone, oppure impostalo su intervals.icu.',
-          style: t.bodySmall,
-        ),
-      );
+      return SuperficiePulse(child: Text(aiuto, style: t.bodySmall));
     }
     final tempi = tempoNelleZonePotenza(serie, z);
     final totale = tempi.values.fold(Duration.zero, (a, b) => a + b);
@@ -451,17 +549,14 @@ class ZonePotenzaCard extends StatelessWidget {
         children: [
           Text('Tempo nelle zone di potenza', style: t.titleMedium),
           const SizedBox(height: 10),
-          for (var n = 7; n >= 1; n--)
+          for (var n = z.numero; n >= 1; n--)
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
                   SizedBox(
                     width: 112,
-                    child: Text(
-                      'Z$n ${ZonePotenza.nomi[n - 1]}',
-                      style: t.bodySmall,
-                    ),
+                    child: Text('Z$n ${z.nomiZone[n - 1]}', style: t.bodySmall),
                   ),
                   Expanded(
                     child: ClipRRect(
@@ -469,7 +564,7 @@ class ZonePotenzaCard extends StatelessWidget {
                       child: LinearProgressIndicator(
                         value: tempi[n]!.inSeconds / totale.inSeconds,
                         minHeight: 12,
-                        color: coloriZonePotenza[n - 1],
+                        color: z.colori[n - 1],
                         backgroundColor: Theme.of(context)
                             .colorScheme
                             .surfaceContainerHighest,
@@ -487,7 +582,10 @@ class ZonePotenzaCard extends StatelessWidget {
                 ],
               ),
             ),
-          Text('Zone calcolate sul tuo FTP (${z.ftp} W).', style: t.bodySmall),
+          Text(
+            nota ?? 'Zone calcolate sul tuo FTP (${z.ftp} W).',
+            style: t.bodySmall,
+          ),
         ],
       ),
     );

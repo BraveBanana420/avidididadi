@@ -410,4 +410,93 @@ void main() {
       expect(WorkoutStep.da(t, t.righe.single)!.obiettivo2, '');
     });
   });
+
+  group('FTP di corsa', () {
+    test('cinque zone sue, separate da quelle della bici', () {
+      const c = ZonePotenza.corsa(300);
+      expect(c.numero, 5);
+      expect(
+        [for (var n = 1; n <= 5; n++) c.testo(n)],
+        ['fino a 240 W', '241-270 W', '271-300 W', '301-345 W', 'oltre 345 W'],
+      );
+      expect(c.zonaDi(250), 2);
+      expect(c.zonaDi(500), 5);
+      expect(c.colori, hasLength(5));
+      expect(const ZonePotenza(214).numero, 7);
+    });
+
+    test('tempo nelle zone: conta le zone della corsa', () {
+      final z = tempoNelleZonePotenza([
+        for (var s = 0; s < 61; s++)
+          Campione(t0.add(Duration(seconds: s)), 280),
+      ], const ZonePotenza.corsa(300));
+      expect(z.keys, [1, 2, 3, 4, 5]);
+      expect(z[3]!.inSeconds, 60);
+    });
+
+    test('la stima: peso, età e sesso; senza peso niente', () {
+      expect(stimaFtpCorsa(pesoKg: 70, eta: 30, sesso: 'Uomo'), 259);
+      expect(stimaFtpCorsa(pesoKg: 60, eta: 30, sesso: 'Donna'), 192);
+      // Con gli anni cala, ma poco.
+      expect(stimaFtpCorsa(pesoKg: 70, eta: 55, sesso: 'Uomo'), 223);
+      expect(stimaFtpCorsa(pesoKg: 70), 242);
+      expect(stimaFtpCorsa(eta: 30, sesso: 'Uomo'), isNull);
+      expect(stimaFtpCorsa(pesoKg: 5), isNull);
+    });
+
+    test('la soglia dal test: 95% dei migliori 20 minuti', () {
+      // 10 minuti facili a 200 W, 20 a 300 W, 10 a 200 W.
+      final prova = [
+        for (var s = 0; s < 2400; s++)
+          Campione(
+            t0.add(Duration(seconds: s)),
+            s >= 600 && s < 1800 ? 300 : 200,
+          ),
+      ];
+      expect(migliorePotenza(prova, const Duration(minutes: 20)), 300);
+      expect(sogliaDaVenti(prova), 285);
+    });
+
+    test('corsa troppo corta o una sosta lunga', () {
+      final corta = [
+        for (var s = 0; s < 600; s++)
+          Campione(t0.add(Duration(seconds: s)), 300),
+      ];
+      expect(sogliaDaVenti(corta), isNull);
+      // 10 minuti, 10 fermi senza dati, altri 10: la sosta abbassa la media.
+      final conSosta = [
+        ...corta,
+        for (var s = 1200; s < 1800; s++)
+          Campione(t0.add(Duration(seconds: s)), 300),
+      ];
+      expect(
+        migliorePotenza(conSosta, const Duration(minutes: 20)),
+        lessThan(160),
+      );
+    });
+
+    test('il test ha i 20 minuti al massimo, nel player', () {
+      final b = blocchiDa(passiTestFtpCorsa('w'));
+      expect(b.where((x) => x.secondi == 1200), hasLength(1));
+      expect(b.first.secondi, 900);
+      expect(b.last.secondi, 600);
+    });
+
+    test('da intervals.icu: l\'FTP giusto per ogni sport', () {
+      final atleta = {
+        'sportSettings': [
+          {
+            'types': ['Run', 'VirtualRun'],
+            'ftp': 280,
+          },
+          {
+            'types': ['Ride'],
+            'ftp': 214,
+          },
+        ],
+      };
+      expect(ftpDaAtletaIcu(atleta), 214);
+      expect(ftpDaAtletaIcu(atleta, tipo: 'Run'), 280);
+    });
+  });
 }

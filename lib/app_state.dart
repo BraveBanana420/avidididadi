@@ -1310,6 +1310,55 @@ class AppState extends ChangeNotifier {
     return ftp > 0 ? ZonePotenza(ftp) : null;
   }
 
+  /// La stima dell'FTP di corsa da peso, età e sesso (null senza il peso).
+  int? get stimaFtpDiCorsa => stimaFtpCorsa(
+    pesoKg: ultimaMisura('peso_kg')?.$1,
+    eta: profilo.eta,
+    sesso: profilo.sesso,
+  );
+
+  /// Vero se l'FTP di corsa è solo la stima: nessun numero scritto o arrivato.
+  bool get ftpCorsaStimata => profilo.ftpCorsaManuale <= 0 && ftpCorsaIcu <= 0;
+
+  /// Zone di potenza della corsa: FTP scritto, di intervals.icu o la stima.
+  ZonePotenza? get zonePotenzaCorsa {
+    final ftp = profilo.ftpCorsaManuale > 0
+        ? profilo.ftpCorsaManuale
+        : ftpCorsaIcu > 0
+        ? ftpCorsaIcu
+        : stimaFtpDiCorsa;
+    return ftp == null ? null : ZonePotenza.corsa(ftp);
+  }
+
+  /// Le zone di potenza di uno sport: solo bici e corsa ne hanno.
+  ZonePotenza? zonePotenzaDi(String sport) => stessoSport(sport, 'Bici')
+      ? zonePotenza
+      : stessoSport(sport, 'Corsa')
+      ? zonePotenzaCorsa
+      : null;
+
+  /// Scrive l'FTP di corsa, per esempio dal risultato del test.
+  Future<void> impostaFtpCorsa(int watt) async {
+    profilo.ftpCorsaManuale = watt;
+    await salvaProfilo();
+    notifyListeners();
+  }
+
+  /// Mette il test dell'FTP di corsa nel calendario di quel giorno.
+  Future<bool> programmaTestFtpCorsa(DateTime data) async =>
+      await applicaAllenamentiAgente([
+        AllenamentoAgente(
+          data: soloData(data),
+          sport: 'Corsa',
+          tipo: 'Test FTP',
+          nome: nomeTestFtpCorsa,
+          fascia: '',
+          passi: passiTestFtpCorsa(idAllenamentoAgente(data, 'Corsa')),
+          durataIndicata: 50,
+        ),
+      ], da: MessaggioChat(false, '')) >
+      0;
+
   /// Passo critico del nuoto in secondi per 100 m (null se non stimabile).
   int? get passoCritico => profilo.passoCriticoManuale > 0
       ? profilo.passoCriticoManuale
@@ -1590,6 +1639,9 @@ class AppState extends ChangeNotifier {
 
   /// FTP della bici letto da intervals.icu (0 = non arrivato).
   int ftpIcu = 0;
+
+  /// FTP della corsa letto da intervals.icu (0 = non arrivato).
+  int ftpCorsaIcu = 0;
   List<EventoInviato> inviatiIcu = [];
   String? erroreInvio;
   bool inviando = false;
@@ -1621,6 +1673,7 @@ class AppState extends ChangeNotifier {
     invioIntervals = m['invio'] == 'si';
     ultimoInvio = DateTime.tryParse(m['ultimo_invio'] ?? '');
     ftpIcu = int.tryParse(m['ftp'] ?? '') ?? 0;
+    ftpCorsaIcu = int.tryParse(m['ftp_corsa'] ?? '') ?? 0;
     final ti = await Storage.readTabella(_fileInviati);
     inviatiIcu = ti == null
         ? []
@@ -1650,6 +1703,7 @@ class AppState extends ChangeNotifier {
         ['invio', invioIntervals ? 'si' : ''],
         ['ultimo_invio', ultimoInvio?.toIso8601String() ?? ''],
         ['ftp', ftpIcu == 0 ? '' : '$ftpIcu'],
+        ['ftp_corsa', ftpCorsaIcu == 0 ? '' : '$ftpCorsaIcu'],
       ],
     );
   }
@@ -1690,7 +1744,9 @@ class AppState extends ChangeNotifier {
       final nuove = await ClientIntervals(chiave).attivita(da, oggi);
       try {
         // L'FTP serve alle zone di potenza; se non arriva si tiene il vecchio.
-        ftpIcu = await ClientIntervals(chiave).ftp() ?? ftpIcu;
+        final soglie = await ClientIntervals(chiave).soglie();
+        ftpIcu = soglie.bici ?? ftpIcu;
+        ftpCorsaIcu = soglie.corsa ?? ftpCorsaIcu;
       } on ErroreIntervals {
         // Le attività sono arrivate: va bene lo stesso.
       }
@@ -1858,6 +1914,7 @@ class AppState extends ChangeNotifier {
     sessioniIcu = [];
     icuAlChiuso = {};
     ftpIcu = 0;
+    ftpCorsaIcu = 0;
     await _salvaIntervals();
     _ricombina();
     await _aggiornaEndurance();

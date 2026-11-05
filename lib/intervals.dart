@@ -318,8 +318,14 @@ class ClientIntervals {
     return '${j['name'] ?? ''}'.trim();
   }
 
-  /// L'FTP della bici impostato su intervals.icu (null se non c'è).
-  Future<int?> ftp() async => ftpDaAtletaIcu(await _get('/api/v1/athlete/0'));
+  /// Gli FTP di bici e corsa impostati su intervals.icu (null se non ci sono).
+  Future<({int? bici, int? corsa})> soglie() async {
+    final atleta = await _get('/api/v1/athlete/0');
+    return (
+      bici: ftpDaAtletaIcu(atleta),
+      corsa: ftpDaAtletaIcu(atleta, tipo: 'Run'),
+    );
+  }
 
   /// Le attività tra [da] e [a] (date locali).
   Future<List<AttivitaIcu>> attivita(DateTime da, DateTime a) async {

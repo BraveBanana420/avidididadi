@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-04.1';
+const versioneTermini = '2026-11-05.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -153,7 +153,7 @@ class PrivacyScreen extends StatelessWidget {
         "Se colleghi intervals.icu con la tua chiave API, l'app scarica da lì "
             "le tue attività di corsa, bici e nuoto (nome, orari, distanza, "
             "battito, velocità, altitudine, potenza, percorso GPS) e il tuo "
-            "FTP della bici, per le zone di potenza. intervals.icu "
+            "FTP di bici e corsa, per le zone di potenza. intervals.icu "
             "le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai "
             "collegato tu, con le sue condizioni sulla privacy. La chiave resta "
             "cifrata sul telefono. Solo se accendi \"Manda il piano a "

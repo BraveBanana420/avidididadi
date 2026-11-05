@@ -13,10 +13,31 @@ import 'serie_sessione.dart';
 /// che si tiene per circa un'ora).
 class ZonePotenza {
   final int ftp; // watt
-  const ZonePotenza(this.ftp);
+  final List<int> limiti;
+  final List<String> nomiZone;
+  final List<Color> colori;
+  const ZonePotenza(this.ftp)
+    : limiti = quote,
+      nomiZone = nomi,
+      colori = coloriZonePotenza;
+
+  /// La corsa ha le sue cinque zone e la sua soglia: gli stessi watt di una
+  /// pedalata, correndo, sono tutt'altro sforzo.
+  const ZonePotenza.corsa(this.ftp)
+    : limiti = quoteCorsa,
+      nomiZone = nomiCorsa,
+      colori = coloriZoneBattito;
 
   /// Limiti superiori in % dell'FTP: Z1 fino a 55, Z2 fino a 75…; Z7 oltre 150.
   static const quote = [55, 75, 90, 105, 120, 150];
+  static const quoteCorsa = [80, 90, 100, 115];
+  static const nomiCorsa = [
+    'Facile',
+    'Medio',
+    'Soglia',
+    'Intervalli',
+    'Ripetute',
+  ];
   static const nomi = [
     'Recupero',
     'Fondo',
@@ -27,10 +48,13 @@ class ZonePotenza {
     'Sprint',
   ];
 
-  /// Zona [n] da 1 a 7: (da, a) in watt; [a] è null per la Z7, senza tetto.
+  /// Quante zone ci sono.
+  int get numero => limiti.length + 1;
+
+  /// Zona [n] da 1: (da, a) in watt; [a] è null per l'ultima, senza tetto.
   (int, int?) zona(int n) {
-    final da = n == 1 ? 0 : (ftp * quote[n - 2] / 100).round() + 1;
-    final a = n == 7 ? null : (ftp * quote[n - 1] / 100).round();
+    final da = n == 1 ? 0 : (ftp * limiti[n - 2] / 100).round() + 1;
+    final a = n == numero ? null : (ftp * limiti[n - 1] / 100).round();
     return (da, a);
   }
 
@@ -42,9 +66,9 @@ class ZonePotenza {
     return '$da-$a W';
   }
 
-  /// In quale zona cade una potenza (1-7).
+  /// In quale zona cade una potenza.
   int zonaDi(int watt) {
-    for (var n = 7; n >= 2; n--) {
+    for (var n = numero; n >= 2; n--) {
       if (watt >= zona(n).$1) return n;
     }
     return 1;
@@ -285,7 +309,7 @@ int? mediaRecente(List<Campione> serie, DateTime ora, {int secondi = 3}) {
 /// Tempo passato in ogni zona di potenza (1-7); i buchi oltre il minuto
 /// (pause) non contano.
 Map<int, Duration> tempoNelleZonePotenza(List<Campione> w, ZonePotenza p) {
-  final out = {for (var n = 1; n <= 7; n++) n: Duration.zero};
+  final out = {for (var n = 1; n <= p.numero; n++) n: Duration.zero};
   final ordinata = [...w]..sort((a, b) => a.t.compareTo(b.t));
   for (var i = 1; i < ordinata.length; i++) {
     final dt = ordinata[i].t.difference(ordinata[i - 1].t);
@@ -346,16 +370,137 @@ String? obiettivoPotenzaIcu(String intensita) {
   return '$da-${ZonePotenza.quote[n - 1]}%';
 }
 
-/// L'FTP della bici dal profilo dell'atleta di intervals.icu
-/// (sportSettings: quello che comprende "Ride"). Null se non c'è.
-int? ftpDaAtletaIcu(Object? atleta) {
+/// Una prima stima dell'FTP di corsa, se non c'è di meglio: watt per chilo di
+/// un runner amatoriale, che calano piano dopo i 35 anni. Serve a leggere i
+/// grafici finché non si fa il test. Null senza il peso.
+int? stimaFtpCorsa({double? pesoKg, int? eta, String sesso = ''}) {
+  if (pesoKg == null || pesoKg < 30 || pesoKg > 200) return null;
+  final base = switch (sesso) {
+    'Uomo' => 3.7,
+    'Donna' => 3.2,
+    _ => 3.45,
+  };
+  final anni = (eta ?? 35) - 35;
+  final calo = anni <= 0 ? 1.0 : math.max(0.6, 1 - anni * 0.007);
+  return (pesoKg * base * calo).round();
+}
+
+/// La potenza media migliore su [durata]: un valore al secondo, tenendo
+/// l'ultimo nei buchi brevi e contando zero nelle soste. Null se l'attività
+/// è più corta.
+int? migliorePotenza(List<Campione> serie, Duration durata) {
+  final ordinata = [...serie]..sort((a, b) => a.t.compareTo(b.t));
+  final finestra = durata.inSeconds;
+  if (ordinata.length < 2 || finestra <= 0) return null;
+  final inizio = ordinata.first.t;
+  final secondi = ordinata.last.t.difference(inizio).inSeconds + 1;
+  if (secondi < finestra) return null;
+  final alSecondo = List<double>.filled(secondi, 0);
+  for (var i = 0; i < ordinata.length; i++) {
+    final da = ordinata[i].t.difference(inizio).inSeconds;
+    final a = i + 1 < ordinata.length
+        ? ordinata[i + 1].t.difference(inizio).inSeconds
+        : secondi;
+    final fine = math.min(a, da + 5);
+    for (var s = da; s < fine && s < secondi; s++) {
+      alSecondo[s] = ordinata[i].v;
+    }
+  }
+  var somma = 0.0;
+  var migliore = 0.0;
+  for (var s = 0; s < secondi; s++) {
+    somma += alSecondo[s];
+    if (s >= finestra) somma -= alSecondo[s - finestra];
+    if (s >= finestra - 1 && somma > migliore) migliore = somma;
+  }
+  return (migliore / finestra).round();
+}
+
+/// La soglia da una corsa: il 95% dei migliori 20 minuti. Null se non ci sono
+/// 20 minuti di potenza.
+int? sogliaDaVenti(List<Campione> serie) {
+  final m = migliorePotenza(serie, const Duration(minutes: 20));
+  return m == null || m <= 0 ? null : (m * 0.95).round();
+}
+
+/// Il test per l'FTP di corsa: riscaldamento, 20 minuti al massimo costante,
+/// defaticamento. La potenza la misura l'orologio, non il telefono.
+List<WorkoutStep> passiTestFtpCorsa(String id) {
+  WorkoutStep passo(
+    int ordine,
+    String fase,
+    String descrizione, {
+    String serie = '',
+    String ripetizioni = '',
+    String minuti = '',
+    String intensita = '',
+    String recupero = '',
+    String note = '',
+  }) => WorkoutStep(
+    id: id,
+    sport: 'Corsa',
+    nome: nomeTestFtpCorsa,
+    durataTot: 50,
+    ordine: ordine,
+    fase: fase,
+    descrizione: descrizione,
+    serie: serie,
+    ripetizioni: ripetizioni,
+    distanzaM: '',
+    durataMin: minuti,
+    intensita: intensita,
+    recuperoS: recupero,
+    note: note,
+  );
+  return [
+    passo(
+      1,
+      'riscaldamento',
+      'Corsa facile',
+      minuti: '15',
+      intensita: 'zona 2',
+      note: 'Registra questa corsa anche con l\'orologio: è lui a misurare i watt.',
+    ),
+    passo(
+      2,
+      'riscaldamento',
+      'Allunghi',
+      serie: '3',
+      ripetizioni: '20 s',
+      recupero: '60',
+      note: 'Veloci ma sciolti, poi cammina o corri piano.',
+    ),
+    passo(
+      3,
+      'principale',
+      'Test: 20 minuti al massimo',
+      minuti: '20',
+      note:
+          'Il ritmo più forte che riesci a tenere fino alla fine, costante. '
+          'Meglio partire un po\' piano e chiudere in crescendo.',
+    ),
+    passo(
+      4,
+      'defaticamento',
+      'Corsa lentissima',
+      minuti: '10',
+      intensita: 'zona 1',
+    ),
+  ];
+}
+
+const nomeTestFtpCorsa = 'Test FTP di corsa';
+
+/// L'FTP dal profilo dell'atleta di intervals.icu (sportSettings: quello che
+/// comprende [tipo], "Ride" o "Run"). Null se non c'è.
+int? ftpDaAtletaIcu(Object? atleta, {String tipo = 'Ride'}) {
   if (atleta is! Map) return null;
   final impostazioni = atleta['sportSettings'];
   if (impostazioni is! List) return null;
   for (final s in impostazioni) {
     if (s is! Map) continue;
     final tipi = s['types'];
-    if (tipi is! List || !tipi.contains('Ride')) continue;
+    if (tipi is! List || !tipi.contains(tipo)) continue;
     final ftp = s['ftp'];
     if (ftp is num && ftp >= 50 && ftp <= 600) return ftp.round();
   }
