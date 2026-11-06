@@ -21,6 +21,61 @@ void main() {
     note: 'Camminata',
   );
 
+  group('invio delle sedute', () {
+    InvioSessione invio(
+      Sessione s, {
+      bool collegato = true,
+      bool inviata = false,
+      DateTime? dal,
+    }) => invioDi(s, collegato: collegato, inviata: inviata, invioDal: dal);
+
+    test('con l\'invio acceso la seduta parte da sola, senza tasto', () {
+      expect(
+        invio(camminata, dal: inizio.subtract(const Duration(days: 1))),
+        InvioSessione.automatico,
+      );
+    });
+
+    test('accenderlo non manda le sedute di prima', () {
+      expect(
+        invio(camminata, dal: inizio.add(const Duration(days: 1))),
+        InvioSessione.tasto,
+      );
+    });
+
+    test('con l\'invio spento resta il tasto', () {
+      expect(invio(camminata), InvioSessione.tasto);
+    });
+
+    test('già inviata non riparte', () {
+      expect(
+        invio(camminata, inviata: true, dal: inizio),
+        InvioSessione.inviata,
+      );
+    });
+
+    test('non collegato, o sessione dell\'orologio: niente', () {
+      expect(invio(camminata, collegato: false), InvioSessione.nessuno);
+      expect(
+        invio(camminata.copyWith(fonte: 'Garmin'), dal: inizio),
+        InvioSessione.nessuno,
+      );
+    });
+
+    test('due sedute uguali nello stesso giorno: due attività', () {
+      final dopo = Sessione(
+        id: camminata.id,
+        data: camminata.data,
+        inizio: inizio.add(const Duration(hours: 6)),
+        sport: camminata.sport,
+        durataMin: 45,
+        fonte: fonteApp,
+      );
+      expect(idEsterno(camminata), isNot(idEsterno(dopo)));
+      expect(idEsterno(camminata), idEsterno(camminata));
+    });
+  });
+
   test('tipo di attività, anche al chiuso', () {
     expect(tipoAttivitaIcu('Corsa'), 'Run');
     expect(tipoAttivitaIcu('Corsa', alChiuso: true), 'VirtualRun');
@@ -66,7 +121,8 @@ void main() {
     expect(a['distance'], 4600);
     expect(a['average_heartrate'], 108);
     expect(a['max_heartrate'], 131);
-    expect(a['external_id'], 'avidididadi-${camminata.id}');
+    expect(a['external_id'], idEsterno(camminata));
+    expect(a['external_id'], startsWith('avidididadi-${camminata.id}-'));
     expect(a.containsKey('trainer'), isFalse);
     final forza = Sessione(
       id: 'app-2026-11-01-forza',

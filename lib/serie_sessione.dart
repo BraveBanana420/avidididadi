@@ -34,6 +34,26 @@ class SerieSessione {
       fc.isEmpty && velocita.isEmpty && altitudine.isEmpty && potenza.isEmpty;
 }
 
+/// La nota sotto i grafici, solo quando serve davvero: all'aperto, senza
+/// intervals.icu. Al chiuso altitudine e pendenza non esistono, e con
+/// intervals.icu già collegato non c'è niente da fare.
+String? notaDatiMancanti({
+  required bool conPercorso,
+  required bool alChiuso,
+  required bool intervalsCollegato,
+  required bool conAltitudine,
+  required bool conPotenza,
+}) {
+  if (!conPercorso || alChiuso || intervalsCollegato || conAltitudine) {
+    return null;
+  }
+  final cosa = conPotenza
+      ? 'Altitudine e pendenza'
+      : 'Altitudine, pendenza e potenza';
+  return '$cosa non ci sono: per averle collega intervals.icu '
+      '(Profilo → Dati e collegamenti).';
+}
+
 /// Al massimo [punti] valori: media dei campioni in intervalli uguali di
 /// tempo, così il grafico resta leggibile e veloce.
 List<Campione> ricampiona(List<Campione> serie, {int punti = 120}) {

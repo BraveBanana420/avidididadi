@@ -40,13 +40,13 @@ class _GraficiScreenState extends State<GraficiScreen> {
         conPassi: siCammina(s.sport),
       );
     }
-    // Battito, potenza e cadenza dai sensori collegati all'app (rulli,
-    // misuratore di potenza, fascia cardio).
+    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
+    // (rulli, misuratore di potenza, fascia cardio).
     final app = await widget.state.serieApp(s);
     if (!app.vuota) {
       serie = SerieSessione(
         fc: serie.fc.isEmpty ? app.fc : serie.fc,
-        velocita: serie.velocita,
+        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
         potenza: app.potenza,
         // Quella di Health Connect resta, se i sensori non ne hanno una.
         cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
@@ -203,13 +203,15 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 ),
                 const SizedBox(height: 12),
               ],
-              if (serie.altitudine.isEmpty)
-                Text(
-                  '${serie.potenza.isEmpty ? 'Altitudine, pendenza e potenza' : 'Altitudine e pendenza'} '
-                  'non ci sono: Health Connect non le riceve. Collega '
-                  'intervals.icu (Profilo → Dati e collegamenti) per averle.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
+              if (notaDatiMancanti(
+                    conPercorso: sportConPercorso(s.sport, s.tipo),
+                    alChiuso: widget.state.alChiuso(s),
+                    intervalsCollegato: widget.state.intervalsCollegato,
+                    conAltitudine: serie.altitudine.isNotEmpty,
+                    conPotenza: serie.potenza.isNotEmpty,
+                  )
+                  case final nota?)
+                Text(nota, style: Theme.of(context).textTheme.bodySmall),
             ],
           );
         },

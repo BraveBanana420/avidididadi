@@ -32,6 +32,7 @@ import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'battito_sheet.dart';
+import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
 import 'mappa_live.dart';
@@ -212,6 +213,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
   /// si parte col tasto Inizia, senza conto alla rovescia.
   bool get _aspettaIlVia => preparati && _conPercorso;
+
+  /// Corsa, bici e camminata hanno tanti dati: il tempo è una barra sempre in
+  /// vista, non un cerchio da cercare scorrendo. La bici al chiuso e la mappa a
+  /// tutto schermo hanno già il loro tempo.
+  bool get _tempoPiatto =>
+      _conPercorso &&
+      !preparati &&
+      !(_bici && gps == null) &&
+      !(gps != null && vistaMappa.value == VistaMappa.schermo);
+
+  /// Attività libera: il nome lo sai già e "Fatto" lo dice già il tempo (barra
+  /// o cerchio). Nelle sedute programmate il testo resta: dice cosa fare in
+  /// quel blocco.
+  bool get _senzaTesto => widget.libera;
   bool _sceltoAllAperto = false; // l'interruttore spento a mano
   final _kmScritti = TextEditingController();
 
@@ -241,6 +256,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final _serieFc = <Campione>[];
   final _seriePotenza = <Campione>[];
   final _serieCadenza = <Campione>[];
+  final _serieVelocita = <Campione>[];
 
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
@@ -525,6 +541,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (v != null && dt <= 1) _metriSensore += v * dt;
     if (ora.difference(_statisticheIl) < const Duration(seconds: 1)) return;
     _statisticheIl = ora;
+    if (v != null) _serieVelocita.add(Campione(ora, v));
     if (sensoreBici.potenza case final w?) {
       potenza.aggiungi(w);
       _seriePotenza.add(Campione(ora, w.toDouble()));
@@ -547,6 +564,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     }
     _serieFc.add(Campione(ora, bpm.toDouble()));
   }
+
+  /// Watt e cadenza si vedono solo col sensore collegato e se li manda davvero.
+  /// Una volta arrivati restano: fermi al semaforo il riquadro non sparisce.
+  bool get _conWatt =>
+      _bici &&
+      sensoreBici.stato == StatoSensore.collegato &&
+      (sensoreBici.potenza != null || _seriePotenza.isNotEmpty);
+  bool get _conCadenza =>
+      _bici &&
+      sensoreBici.stato == StatoSensore.collegato &&
+      (sensoreBici.cadenza != null || _serieCadenza.isNotEmpty);
 
   /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
   int? get _watt =>
@@ -1009,7 +1037,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (percorso != null && !percorso.vuoto) {
       await widget.state.salvaPercorsoApp(oggi, widget.sport, percorso);
     }
-    if (_serieFc.isNotEmpty || _seriePotenza.isNotEmpty) {
+    if (_serieFc.isNotEmpty ||
+        _seriePotenza.isNotEmpty ||
+        _serieVelocita.isNotEmpty) {
       await widget.state.salvaSerieApp(
         oggi,
         widget.sport,
@@ -1017,6 +1047,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           fc: _serieFc,
           potenza: _seriePotenza,
           cadenza: _serieCadenza,
+          velocita: _serieVelocita,
         ),
       );
     }
@@ -1061,6 +1092,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
+      // In sottofondo: senza rete non deve tenere ferma la fine dell'allenamento.
+      unawaited(widget.state.inviaDopoAllenamento());
     }
     await cancellaInCorso();
     if (feedback && mounted) {
@@ -1225,63 +1258,71 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ? _vistaBici(context, recupero: recupero)
               : _centro(
                   context,
-                  Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  ColonnaDati(
+                    sopra: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Un segmento per esercizio: pieni quelli fatti, mezzo quello in corso.
+                          Row(
+                            children: [
+                              for (var k = 0; k < nPassi; k++) ...[
+                                if (k > 0) const SizedBox(width: 4),
+                                Expanded(
+                                  child: Container(
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: !preparati && k < b.passo
+                                          ? null
+                                          : !preparati && k == b.passo
+                                          ? scheme.primary.withValues(
+                                              alpha: 0.5,
+                                            )
+                                          : scheme.surfaceContainerHigh,
+                                      gradient: !preparati && k < b.passo
+                                          ? LinearGradient(
+                                              colors: Pulse.di(context).anello,
+                                            )
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                          // Durante la seduta il GPS si nomina solo se non va.
+                          if (gps != null && gps!.stato != StatoGps.pronto) ...[
+                            const SizedBox(height: 8),
+                            _StatoGps(gps: gps!, riaccendi: _accendiGps),
+                          ],
+                          if (gps != null &&
+                              vistaMappa.value == VistaMappa.minimappa &&
+                              _guida != null) ...[
+                            const SizedBox(height: 8),
+                            BannerGuida(guida: _guida!, compatto: true),
+                          ],
+                        ],
+                      ),
+                    ),
+                    mappa:
+                        gps != null && vistaMappa.value == VistaMappa.minimappa
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: _mappaLive(compatta: true),
+                            ),
+                          )
+                        : null,
+                    numeri: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Un segmento per esercizio: pieni quelli fatti, mezzo quello in corso.
-                            Row(
-                              children: [
-                                for (var k = 0; k < nPassi; k++) ...[
-                                  if (k > 0) const SizedBox(width: 4),
-                                  Expanded(
-                                    child: Container(
-                                      height: 6,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(6),
-                                        color: !preparati && k < b.passo
-                                            ? null
-                                            : !preparati && k == b.passo
-                                            ? scheme.primary.withValues(
-                                                alpha: 0.5,
-                                              )
-                                            : scheme.surfaceContainerHigh,
-                                        gradient: !preparati && k < b.passo
-                                            ? LinearGradient(
-                                                colors: Pulse.di(context)
-                                                    .anello,
-                                              )
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                            // Durante la seduta il GPS si nomina solo se non va.
-                            if (gps != null &&
-                                gps!.stato != StatoGps.pronto) ...[
-                              const SizedBox(height: 8),
-                              _StatoGps(gps: gps!, riaccendi: _accendiGps),
-                            ],
-                            if (gps != null &&
-                                vistaMappa.value == VistaMappa.minimappa) ...[
-                              if (_guida != null) ...[
-                                const SizedBox(height: 8),
-                                BannerGuida(guida: _guida!, compatto: true),
-                              ],
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                height: 150,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: _mappaLive(compatta: true),
-                                ),
-                              ),
-                            ],
                             ListenableBuilder(
                               listenable: Listenable.merge([
                                 sensoreBattito,
@@ -1327,32 +1368,36 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                           ),
                                         ],
                                       ),
-                                    if (bici)
+                                    // Solo i dati che arrivano davvero: un
+                                    // rullo ricordato ma lontano non conta.
+                                    if (_conWatt || _conCadenza)
                                       Row(
                                         spacing: 8,
                                         children: [
-                                          Expanded(
-                                            child: _DatoPotenza(
-                                              watt: _watt,
-                                              zone: _zonePotenza,
-                                              obiettivo: _rangeBlocco,
-                                              onTap: () =>
-                                                  mostraSensoreBici(context),
+                                          if (_conWatt)
+                                            Expanded(
+                                              child: _DatoPotenza(
+                                                watt: _watt,
+                                                zone: _zonePotenza,
+                                                obiettivo: _rangeBlocco,
+                                                onTap: () =>
+                                                    mostraSensoreBici(context),
+                                              ),
                                             ),
-                                          ),
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: 'Cadenza',
-                                              valore:
-                                                  sensoreBici.cadenza
-                                                      ?.round()
-                                                      .toString() ??
-                                                  '–',
-                                              unita: 'rpm',
-                                              onTap: () =>
-                                                  mostraSensoreBici(context),
+                                          if (_conCadenza)
+                                            Expanded(
+                                              child: _Dato(
+                                                etichetta: 'Cadenza',
+                                                valore:
+                                                    sensoreBici.cadenza
+                                                        ?.round()
+                                                        .toString() ??
+                                                    '–',
+                                                unita: 'rpm',
+                                                onTap: () =>
+                                                    mostraSensoreBici(context),
+                                              ),
                                             ),
-                                          ),
                                         ],
                                       ),
                                     if (gps == null && sensoreBattito.ricordato)
@@ -1388,149 +1433,163 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           ],
                         ),
                       ),
-                      Expanded(
-                        child: ListView(
-                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
-                          children: [
-                            if (recupero) ...[
-                              Text('Recupero', style: t.titleMedium),
-                              if (b.note.isNotEmpty)
-                                Text(b.note, style: t.bodySmall),
-                            ] else ...[
-                              // A sinistra l'anteprima del movimento, se c'è.
-                              Row(
-                                children: [
-                                  if (_conAnteprima(esercizio)) ...[
-                                    _AnteprimaEsercizio(
-                                      esercizio: esercizio!,
-                                      larghezza: 112,
-                                    ),
-                                    const SizedBox(width: 14),
-                                  ],
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        // Solo il nome, piccolo: titolo e durata
-                                        // della seduta sono già stati scelti.
-                                        TestoUnaRiga(
-                                          b.titolo,
-                                          style: t.titleSmall,
-                                        ),
-                                        if (dettaglioBreve(b).isNotEmpty)
-                                          Text(
-                                            dettaglioBreve(b),
-                                            style: t.bodySmall,
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              if (b.intensita.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(
-                                    intensitaCon(
-                                      b.intensita,
-                                      widget.sport,
-                                      _zonePotenza,
-                                      _zone,
-                                    ),
-                                    style: t.bodyMedium,
-                                  ),
+                    ),
+                    testo: ListView(
+                      shrinkWrap: true,
+                      padding: _senzaTesto && _tempoPiatto
+                          ? EdgeInsets.zero
+                          : const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                      children: [
+                        if (_senzaTesto)
+                          const SizedBox.shrink()
+                        else if (recupero) ...[
+                          Text('Recupero', style: t.titleMedium),
+                          if (b.note.isNotEmpty)
+                            Text(b.note, style: t.bodySmall),
+                        ] else ...[
+                          // A sinistra l'anteprima del movimento, se c'è.
+                          Row(
+                            children: [
+                              if (_conAnteprima(esercizio)) ...[
+                                _AnteprimaEsercizio(
+                                  esercizio: esercizio!,
+                                  larghezza: 112,
                                 ),
-                              if (b.obiettivo2.isNotEmpty)
-                                Text(b.obiettivo2, style: t.bodyMedium),
-                              if (sensazioneDi(b.intensita) != null)
-                                Text(
-                                  sensazioneDi(b.intensita)!,
-                                  style: t.bodySmall?.copyWith(
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                ),
-                              if (b.note.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4),
-                                  child: Text(b.note, style: t.bodySmall),
-                                ),
-                              if (_daRegistrare(i)) ...[
-                                const SizedBox(height: 16),
-                                RegistroSerie(
-                                  valori: _valoriDi(i),
-                                  massimo: ripetizioniPreviste(b.ripetizioni)!
-                                      .$2,
-                                  conKg: _conKg(b),
-                                  ultima: _ultima(b),
-                                  cambia: (v) => setState(() => _valori[i] = v),
-                                ),
+                                const SizedBox(width: 14),
                               ],
-                            ],
-                            const SizedBox(height: 12),
-                            Center(
-                              // Durante "Preparati" un tocco sul timer fa partire subito.
-                              child: GestureDetector(
-                                onTap: preparati && !pausa ? _avanti : null,
-                                child: _Orologio(
-                                  recupero: recupero,
-                                  aTempo: aTempo,
-                                  restano: aTempo
-                                      ? _restano.clamp(0, 99999).toInt()
-                                      : 0,
-                                  totale: aTempo ? _durata : 0,
-                                  trascorso: _tempoBlocco,
-                                  pausa: _inPausa,
-                                  // Piccolo: entra sotto il testo senza scorrere.
-                                  piccolo: true,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Solo il nome, piccolo: titolo e durata
+                                    // della seduta sono già stati scelti.
+                                    TestoUnaRiga(b.titolo, style: t.titleSmall),
+                                    if (dettaglioBreve(b).isNotEmpty)
+                                      Text(
+                                        dettaglioBreve(b),
+                                        style: t.bodySmall,
+                                      ),
+                                  ],
                                 ),
+                              ),
+                            ],
+                          ),
+                          if (b.intensita.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                intensitaCon(
+                                  b.intensita,
+                                  widget.sport,
+                                  _zonePotenza,
+                                  _zone,
+                                ),
+                                style: t.bodyMedium,
                               ),
                             ),
-                            if (recupero && prossimo != null) ...[
-                              const SizedBox(height: 24),
-                              SuperficiePulse(
-                                child: Row(
-                                  children: [
-                                    if (_conAnteprima(esercizioPoi))
-                                      _AnteprimaEsercizio(
-                                        esercizio: esercizioPoi!,
-                                        larghezza: 84,
-                                      )
-                                    else
-                                      const IconaQuadrata(
-                                        Icons.skip_next,
-                                        evidenza: true,
-                                      ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Poi', style: t.bodySmall),
-                                          TestoUnaRiga(
-                                            prossimo.titolo,
-                                            style: t.titleMedium,
-                                          ),
-                                          if (prossimo.dettaglio.isNotEmpty)
-                                            Text(
-                                              prossimo.dettaglio,
-                                              style: t.bodySmall,
-                                            ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                          if (b.obiettivo2.isNotEmpty)
+                            Text(b.obiettivo2, style: t.bodyMedium),
+                          if (sensazioneDi(b.intensita) != null)
+                            Text(
+                              sensazioneDi(b.intensita)!,
+                              style: t.bodySmall?.copyWith(
+                                fontStyle: FontStyle.italic,
                               ),
-                            ],
+                            ),
+                          if (b.note.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(b.note, style: t.bodySmall),
+                            ),
+                          if (_daRegistrare(i)) ...[
+                            const SizedBox(height: 16),
+                            RegistroSerie(
+                              valori: _valoriDi(i),
+                              massimo: ripetizioniPreviste(b.ripetizioni)!.$2,
+                              conKg: _conKg(b),
+                              ultima: _ultima(b),
+                              cambia: (v) => setState(() => _valori[i] = v),
+                            ),
                           ],
-                        ),
-                      ),
-                    ],
+                        ],
+                        if (!_tempoPiatto) ...[
+                          const SizedBox(height: 12),
+                          Center(
+                            // Durante "Preparati" un tocco sul timer fa partire subito.
+                            child: GestureDetector(
+                              onTap: preparati && !pausa ? _avanti : null,
+                              child: _Orologio(
+                                recupero: recupero,
+                                aTempo: aTempo,
+                                restano: aTempo
+                                    ? _restano.clamp(0, 99999).toInt()
+                                    : 0,
+                                totale: aTempo ? _durata : 0,
+                                trascorso: _tempoBlocco,
+                                pausa: _inPausa,
+                                // Piccolo: entra sotto il testo senza scorrere.
+                                piccolo: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (recupero && prossimo != null) ...[
+                          const SizedBox(height: 24),
+                          SuperficiePulse(
+                            child: Row(
+                              children: [
+                                if (_conAnteprima(esercizioPoi))
+                                  _AnteprimaEsercizio(
+                                    esercizio: esercizioPoi!,
+                                    larghezza: 84,
+                                  )
+                                else
+                                  const IconaQuadrata(
+                                    Icons.skip_next,
+                                    evidenza: true,
+                                  ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Poi', style: t.bodySmall),
+                                      TestoUnaRiga(
+                                        prossimo.titolo,
+                                        style: t.titleMedium,
+                                      ),
+                                      if (prossimo.dettaglio.isNotEmpty)
+                                        Text(
+                                          prossimo.dettaglio,
+                                          style: t.bodySmall,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
         ),
+        if (_tempoPiatto)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+            child: _TempoPiatto(
+              recupero: recupero,
+              aTempo: aTempo,
+              restano: aTempo ? _restano.clamp(0, 99999).toInt() : 0,
+              totale: aTempo ? _durata : 0,
+              trascorso: _tempoBlocco,
+              pausa: _inPausa,
+              // Un blocco solo senza durata: il tempo è già quello in alto.
+              conCronometro: blocchi.length > 1,
+            ),
+          ),
         // In basso: indietro, azione principale, +15 s o salta.
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
@@ -2671,6 +2730,76 @@ class _Orologio extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Il tempo del blocco in piano: una barra che si riempie e le cifre sotto.
+/// Senza durata la barra non c'è, e senza [conCronometro] nemmeno le cifre.
+class _TempoPiatto extends StatelessWidget {
+  final bool recupero;
+  final bool aTempo;
+  final int restano; // secondi
+  final int totale;
+  final Duration trascorso;
+  final bool pausa;
+  final bool conCronometro;
+  const _TempoPiatto({
+    required this.recupero,
+    required this.aTempo,
+    required this.restano,
+    required this.totale,
+    required this.trascorso,
+    required this.pausa,
+    required this.conCronometro,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final etichetta = pausa
+        ? 'in pausa'
+        : aTempo
+        ? (recupero ? 'mancano' : 'poi passa da solo')
+        : 'tocca Fatto quando hai finito';
+    return Semantics(
+      label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 4,
+        children: [
+          if (aTempo && totale > 0)
+            BarraAvanzamento((totale - restano) / totale),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            spacing: 8,
+            children: [
+              if (aTempo || conCronometro)
+                Text(
+                  aTempo
+                      ? fmtTimer(Duration(seconds: restano))
+                      : fmtTimer(trascorso),
+                  style: t.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              Flexible(
+                child: Text(
+                  etichetta,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

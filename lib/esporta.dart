@@ -1,5 +1,6 @@
 import 'models.dart';
 import 'percorso.dart';
+import 'sincronizzazione.dart';
 
 // Le sessioni registrate dall'app, fuori dall'app: un file GPX col percorso
 // (per Strava, Garmin Connect, intervals.icu…) o un'attività di intervals.icu.
@@ -8,7 +9,44 @@ import 'percorso.dart';
 const inviateHeader = ['id_sessione', 'id_intervals'];
 
 /// external_id su intervals.icu: la stessa sessione non si crea due volte.
-String idEsterno(Sessione s) => 'avidididadi-${s.id}';
+/// Con l'orario, perché due sedute uguali nello stesso giorno hanno lo stesso
+/// id nell'app ma là sono due attività.
+String idEsterno(Sessione s) {
+  final base = 'avidididadi-${s.id}';
+  final inizio = s.inizio;
+  return inizio == null ? base : '$base-${inizio.millisecondsSinceEpoch}';
+}
+
+/// Come una sessione arriva a intervals.icu.
+enum InvioSessione {
+  /// Non c'entra: viene dall'orologio, o intervals.icu non è collegato.
+  nessuno,
+
+  /// Solo a mano: l'invio è spento, o la seduta è di prima di accenderlo.
+  tasto,
+
+  /// Parte da sola, senza chiedere niente.
+  automatico,
+
+  /// È già là.
+  inviata,
+}
+
+/// [invioDal] è quando è stato acceso l'invio (null = spento): le sedute di
+/// prima non partono da sole, altrimenti accenderlo manderebbe tutto lo storico.
+InvioSessione invioDi(
+  Sessione s, {
+  required bool collegato,
+  required bool inviata,
+  required DateTime? invioDal,
+}) {
+  if (s.fonte != fonteApp || !collegato) return InvioSessione.nessuno;
+  if (inviata) return InvioSessione.inviata;
+  if (invioDal == null || (s.inizio ?? s.data).isBefore(invioDal)) {
+    return InvioSessione.tasto;
+  }
+  return InvioSessione.automatico;
+}
 
 /// Tipo di attività di intervals.icu (e di Strava) per una sessione svolta.
 String tipoAttivitaIcu(String sport, {bool alChiuso = false}) {

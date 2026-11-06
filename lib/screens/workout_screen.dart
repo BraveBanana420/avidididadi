@@ -920,21 +920,12 @@ class _DatiSessione extends StatelessWidget {
                   ),
                 // Solo quelle registrate dall'app: quelle dell'orologio
                 // sono già su Garmin Connect, intervals.icu e simili.
-                if (s.fonte == fonteApp && state.intervalsCollegato)
+                // Il tasto resta solo dove l'invio non pensa da solo.
+                if (state.invioSessione(s) == InvioSessione.tasto)
                   OutlinedButton.icon(
-                    onPressed: state.inviate.containsKey(s.id)
-                        ? null
-                        : () => _inviaIntervals(context),
-                    icon: Icon(
-                      state.inviate.containsKey(s.id)
-                          ? Icons.cloud_done_outlined
-                          : Icons.cloud_upload_outlined,
-                    ),
-                    label: Text(
-                      state.inviate.containsKey(s.id)
-                          ? 'Su intervals.icu'
-                          : 'Invia a intervals.icu',
-                    ),
+                    onPressed: () => _inviaIntervals(context),
+                    icon: const Icon(Icons.cloud_upload_outlined),
+                    label: const Text('Invia a intervals.icu'),
                   ),
                 if (s.fonte == fonteApp &&
                     sportConPercorso(s.sport, s.tipo) &&
@@ -946,6 +937,36 @@ class _DatiSessione extends StatelessWidget {
                   ),
               ],
             ),
+            if (switch (state.invioSessione(s)) {
+                  InvioSessione.inviata => (
+                    Icons.cloud_done_outlined,
+                    'Su intervals.icu',
+                  ),
+                  InvioSessione.automatico => (
+                    Icons.cloud_queue,
+                    'Parte da sola per intervals.icu appena c\'è rete',
+                  ),
+                  _ => null,
+                }
+                case (final icona, final testo)) ...[
+              const SizedBox(height: 12),
+              Row(
+                spacing: 8,
+                children: [
+                  Icon(
+                    icona,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  Expanded(
+                    child: Text(
+                      testo,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

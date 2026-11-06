@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-05.1';
+const versioneTermini = '2026-11-06.2';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -112,7 +112,7 @@ class PrivacyScreen extends StatelessWidget {
             "GPS si spegne. L'app non usa la posizione in nessun altro momento "
             "e non la raccoglie in background. Il percorso viene salvato solo "
             "sul telefono: non va in Health Connect, non va all'assistente e non "
-            "viene inviato a nessuno, a meno che sia tu a mandarlo a "
+            "viene inviato a nessuno, a meno che sia tu ad accendere l'invio a "
             "intervals.icu o a salvarlo in un file GPX. Mentre ti alleni, una "
             "copia della seduta "
             "in corso (percorso compreso) resta sul telefono per riprenderla "
@@ -125,8 +125,8 @@ class PrivacyScreen extends StatelessWidget {
             "trasmette il battito o ai sensori della bici (rulli, potenza, "
             "velocità e cadenza), per mostrarteli mentre ti alleni. Alla fine "
             "salva nella sessione battito medio e massimo, potenza e cadenza "
-            "medie e, per i grafici, un valore al secondo di battito, potenza "
-            "e cadenza: tutto sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
+            "medie e, per i grafici, un valore al secondo di battito, potenza, "
+            "cadenza e velocità: tutto sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
             "la circonferenza della ruota) restano sul telefono per "
             "ricollegarsi la volta dopo: li cancelli con \"Dimentica\". Il "
             "permesso \"Dispositivi nelle vicinanze\" serve solo a trovare il "
@@ -156,15 +156,17 @@ class PrivacyScreen extends StatelessWidget {
             "FTP di bici e corsa, per le zone di potenza. intervals.icu "
             "le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai "
             "collegato tu, con le sue condizioni sulla privacy. La chiave resta "
-            "cifrata sul telefono. Solo se accendi \"Manda il piano a "
+            "cifrata sul telefono. Solo se accendi \"Manda piano e sedute a "
             "intervals.icu\", l'app scrive nel tuo calendario di intervals.icu "
             "le sedute di corsa, bici e nuoto dei prossimi 14 giorni (data, "
             "sport, nome, durata, passi con zone di battito, potenza o passo): niente "
             "nome, foto, misure, feedback o forza. Spegnendolo, le sedute future "
-            "mandate dall'app vengono tolte. Solo se tocchi \"Invia a "
-            "intervals.icu\" su una sessione registrata dall'app, quella "
-            "sessione va sul tuo account: orario, sport, nome, durata, distanza, "
-            "battito medio e massimo e, se c'è, il percorso GPS. Allo stesso "
+            "mandate dall'app vengono tolte. Con questo invio acceso, ogni "
+            "sessione che registri con l'app (forza compresa) va da sola sul "
+            "tuo account appena finita; spento, solo se tocchi \"Invia a "
+            "intervals.icu\" su quella sessione. Partono orario, sport, nome, "
+            "durata, distanza, battito medio e massimo e, se c'è, il percorso "
+            "GPS. Allo stesso "
             "modo \"Salva GPX\" crea un file col percorso dove scegli tu. Le "
             "attività scaricate "
             "restano sul telefono ed entrano nel backup; scollegando, vengono "

@@ -11,7 +11,7 @@ Funzioni principali:
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
 - **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
-- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin).
+- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin), e le sedute registrate con l'app partono da sole appena finite.
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
 - **Progressi**: carico, grafici, report per sport.
@@ -90,6 +90,7 @@ lib/
   screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
   screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
   screens/condividi_screen.dart  immagine 4:5 di sessione o settimana, condivisa con FileProvider (cache/condivisi)
+  screens/colonna_dati.dart  colonna dei dati in allenamento: la minimappa prende lo spazio che resta
   screens/vista_bici.dart  bici al chiuso durante l'allenamento: dati, blocco in corso, ERG, grafico e diagramma in una pagina
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
 assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
@@ -105,7 +106,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza e cadenza al secondo dai sensori);
+- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);
@@ -134,7 +135,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
   - Il numero di build (`+N`) sale di 1 a ogni installazione. Le modifiche tra un'installazione e l'altra restano nella stessa versione.
-  - Attuale: `1.8.0+21`.
+  - Attuale: `1.9.2+24`.
 - **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.

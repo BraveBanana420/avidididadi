@@ -145,11 +145,12 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
         type: MaterialType.transparency,
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Manda il piano a intervals.icu'),
+          title: const Text('Manda piano e sedute a intervals.icu'),
           subtitle: Text(
             'Corsa, bici e nuoto dei prossimi $giorniInvio giorni, passo per '
-            'passo. Si aggiornano da soli quando il piano cambia. La forza '
-            'resta qui.',
+            'passo: si aggiornano da soli quando il piano cambia. Le sedute '
+            "registrate con l'app partono da sole appena finite, con il "
+            'percorso se c\'è.',
             style: t.bodySmall,
           ),
           value: state.invioIntervals,
