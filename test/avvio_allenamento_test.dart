@@ -1,5 +1,7 @@
 import 'package:allenamenti_app/app_state.dart';
+import 'package:allenamenti_app/avvisi.dart';
 import 'package:allenamenti_app/models.dart';
+import 'package:allenamenti_app/pulse.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -94,6 +96,30 @@ void main() {
     await _aspettaOltreIlConto(tester);
     expect(find.text('Preparati'), findsNothing);
     expect(find.text('Inizia subito'), findsNothing);
+    expect(find.byType(AnelloPulse), findsOneWidget);
     await _chiudi(tester);
   });
+
+  for (final vista in [VistaMappa.minimappa, VistaMappa.pagine]) {
+    testWidgets(
+      'bici all\'aperto (${vista.name}): barra piatta, sempre in vista',
+      (tester) async {
+        final prima = vistaMappa.value;
+        vistaMappa.value = vista;
+        addTearDown(() => vistaMappa.value = prima);
+        await _apri(tester, 'Bici', 'Intervalli');
+        await tester.tap(find.text('Inizia'));
+        await tester.pump();
+
+        expect(find.byType(AnelloPulse), findsNothing);
+        expect(find.byType(BarraAvanzamento), findsOneWidget);
+        // Tutta dentro lo schermo, anche con la mappa: senza scorrere.
+        expect(
+          tester.getBottomRight(find.byType(BarraAvanzamento)).dy,
+          lessThan(tester.view.physicalSize.height / 2.625),
+        );
+        await _chiudi(tester);
+      },
+    );
+  }
 }

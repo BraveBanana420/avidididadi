@@ -587,6 +587,14 @@ class AppState extends ChangeNotifier {
   /// Registra un allenamento fatto con la modalità allenamento, per chi non ha
   /// un orologio collegato. Una seduta dello stesso giorno e sport la sostituisce.
   Future<void> registraSvolta(Sessione s) async {
+    final prima = storicoCsv.where((x) => x.id == s.id).firstOrNull;
+    // Un'altra seduta con lo stesso id: per intervals.icu è un'attività nuova.
+    if (prima != null &&
+        prima.inizio != s.inizio &&
+        inviate.containsKey(s.id)) {
+      inviate = {...inviate}..remove(s.id);
+      await _salvaInviate();
+    }
     storicoCsv = [...storicoCsv.where((x) => x.id != s.id), s];
     await Storage.write(
       'sessioni.csv',
@@ -1619,14 +1627,52 @@ class AppState extends ChangeNotifier {
               attivitaManuale(s, nome: nome, alChiuso: alChiuso(s)),
             );
       inviate = {...inviate, s.id: id ?? ''};
-      await Storage.write('sessioni_inviate.csv', inviateHeader, [
-        for (final e in inviate.entries) [e.key, e.value],
-      ]);
+      await _salvaInviate();
       notifyListeners();
       return 'Inviata a intervals.icu.';
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
+  }
+
+  Future<void> _salvaInviate() =>
+      Storage.write('sessioni_inviate.csv', inviateHeader, [
+        for (final e in inviate.entries) [e.key, e.value],
+      ]);
+
+  /// Come arriva a intervals.icu questa sessione.
+  InvioSessione invioSessione(Sessione s) => invioDi(
+    s,
+    collegato: intervalsCollegato,
+    inviata: inviate.containsKey(s.id),
+    invioDal: invioIntervals ? invioDal : null,
+  );
+
+  bool _inviandoSedute = false;
+
+  /// Manda da sole le sedute registrate dall'app con l'invio acceso. Parte da
+  /// [sessioni]: così quelle già arrivate dall'orologio non si mandano due
+  /// volte. Senza rete si ferma e riprova alla prossima apertura.
+  Future<void> inviaSeduteFatte() async {
+    if (_inviandoSedute) return;
+    _inviandoSedute = true;
+    try {
+      final daMandare = sessioni
+          .where((s) => invioSessione(s) == InvioSessione.automatico)
+          .toList();
+      for (final s in daMandare) {
+        await inviaSessioneIntervals(s);
+        if (!inviate.containsKey(s.id)) break;
+      }
+    } finally {
+      _inviandoSedute = false;
+    }
+  }
+
+  /// A fine allenamento: prima legge le attività (se l'orologio ha registrato
+  /// la stessa seduta non serve mandarla), poi manda quella dell'app.
+  Future<void> inviaDopoAllenamento() async {
+    if (invioIntervals) await sincronizzaIntervals();
   }
 
   DateTime? ultimaIntervals;
@@ -1636,6 +1682,9 @@ class AppState extends ChangeNotifier {
   /// Invio del piano (corsa, bici, nuoto) al calendario di intervals.icu.
   bool invioIntervals = false;
   DateTime? ultimoInvio;
+
+  /// Quando è stato acceso l'invio: da lì in poi le sedute partono da sole.
+  DateTime? invioDal;
 
   /// FTP della bici letto da intervals.icu (0 = non arrivato).
   int ftpIcu = 0;
@@ -1674,6 +1723,12 @@ class AppState extends ChangeNotifier {
     ultimoInvio = DateTime.tryParse(m['ultimo_invio'] ?? '');
     ftpIcu = int.tryParse(m['ftp'] ?? '') ?? 0;
     ftpCorsaIcu = int.tryParse(m['ftp_corsa'] ?? '') ?? 0;
+    invioDal = DateTime.tryParse(m['invio_dal'] ?? '');
+    // Acceso con una versione di prima: le sedute già fatte restano a mano.
+    if (invioIntervals && invioDal == null) {
+      invioDal = DateTime.now();
+      await _salvaIntervals();
+    }
     final ti = await Storage.readTabella(_fileInviati);
     inviatiIcu = ti == null
         ? []
@@ -1704,6 +1759,7 @@ class AppState extends ChangeNotifier {
         ['ultimo_invio', ultimoInvio?.toIso8601String() ?? ''],
         ['ftp', ftpIcu == 0 ? '' : '$ftpIcu'],
         ['ftp_corsa', ftpCorsaIcu == 0 ? '' : '$ftpCorsaIcu'],
+        ['invio_dal', invioDal?.toIso8601String() ?? ''],
       ],
     );
   }
@@ -1773,6 +1829,7 @@ class AppState extends ChangeNotifier {
       final letto = '${nuove.length} attività lette da intervals.icu.';
       if (!invioIntervals) return letto;
       sincronizzandoIntervals = false;
+      await inviaSeduteFatte();
       return '$letto ${await inviaPianoIntervals()}';
     } on ErroreIntervals catch (e) {
       erroreIntervals = e.messaggio;
@@ -1883,6 +1940,7 @@ class AppState extends ChangeNotifier {
   /// dall'app spariscono dal calendario di intervals.icu.
   Future<String> impostaInvioIntervals(bool attivo) async {
     invioIntervals = attivo;
+    invioDal = attivo ? DateTime.now() : null;
     await _salvaIntervals();
     notifyListeners();
     if (attivo) return inviaPianoIntervals();
@@ -1906,6 +1964,7 @@ class AppState extends ChangeNotifier {
   Future<void> scollegaIntervals() async {
     if (inviatiIcu.isNotEmpty) await impostaInvioIntervals(false);
     invioIntervals = false;
+    invioDal = null;
     ultimoInvio = null;
     await ChiaveIntervals.elimina();
     intervalsCollegato = false;

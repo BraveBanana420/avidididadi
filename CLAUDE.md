@@ -11,7 +11,7 @@ Funzioni principali:
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
 - **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
-- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin).
+- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin), e le sedute registrate con l'app partono da sole appena finite.
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
 - **Progressi**: carico, grafici, report per sport.
