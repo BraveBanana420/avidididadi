@@ -8,24 +8,33 @@ import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-WorkoutStep _passo(String sport) => WorkoutStep(
-  id: 'prova',
-  sport: sport,
-  nome: 'Prova',
-  durataTot: 10,
-  ordine: 1,
-  fase: 'principale',
-  descrizione: 'Primo blocco',
-  serie: '',
-  ripetizioni: '',
-  distanzaM: '',
-  durataMin: '10',
-  intensita: '',
-  recuperoS: '',
-  note: '',
-);
+const _notaLibera = 'Tocca "Fatto" quando hai finito.';
 
-Future<void> _apri(WidgetTester tester, String sport, String tipo) async {
+WorkoutStep _passo(String sport, {String durata = '10', String note = ''}) =>
+    WorkoutStep(
+      id: 'prova',
+      sport: sport,
+      nome: 'Prova',
+      durataTot: 10,
+      ordine: 1,
+      fase: 'principale',
+      descrizione: 'Primo blocco',
+      serie: '',
+      ripetizioni: '',
+      distanzaM: '',
+      durataMin: durata,
+      intensita: '',
+      recuperoS: '',
+      note: note,
+    );
+
+Future<void> _apri(
+  WidgetTester tester,
+  String sport,
+  String tipo, {
+  bool libera = false,
+  WorkoutStep? passo,
+}) async {
   tester.view.physicalSize = const Size(1080, 2400);
   tester.view.devicePixelRatio = 2.625;
   addTearDown(tester.view.reset);
@@ -36,7 +45,8 @@ Future<void> _apri(WidgetTester tester, String sport, String tipo) async {
         sport: sport,
         tipo: tipo,
         nome: 'Prova',
-        passi: [_passo(sport)],
+        libera: libera,
+        passi: [passo ?? _passo(sport)],
       ),
     ),
   );
@@ -129,6 +139,46 @@ void main() {
     expect(find.text('CADENZA'), findsNothing);
     await _chiudi(tester);
   });
+
+  testWidgets('forza libera: il cerchio resta, il testo doppio no', (
+    tester,
+  ) async {
+    await _apri(
+      tester,
+      'Forza',
+      '',
+      libera: true,
+      passo: _passo('Forza', durata: '', note: _notaLibera),
+    );
+    await tester.tap(find.text('Inizia subito'));
+    await tester.pump();
+
+    expect(find.byType(AnelloPulse), findsOneWidget);
+    expect(find.text('tocca Fatto quando hai finito'), findsOneWidget);
+    expect(find.text(_notaLibera), findsNothing);
+    await _chiudi(tester);
+  });
+
+  for (final libera in [true, false]) {
+    testWidgets(
+      'bici all\'aperto ${libera ? 'libera: niente doppioni' : 'programmata: il testo resta'}',
+      (tester) async {
+        await _apri(
+          tester,
+          'Bici',
+          'Intervalli',
+          libera: libera,
+          passo: _passo('Bici', durata: '', note: _notaLibera),
+        );
+        await tester.tap(find.text('Inizia'));
+        await tester.pump();
+
+        expect(find.text('tocca Fatto quando hai finito'), findsOneWidget);
+        expect(find.text(_notaLibera), libera ? findsNothing : findsOneWidget);
+        await _chiudi(tester);
+      },
+    );
+  }
 
   for (final vista in [VistaMappa.minimappa, VistaMappa.pagine]) {
     testWidgets(

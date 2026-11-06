@@ -222,6 +222,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       !preparati &&
       !(_bici && gps == null) &&
       !(gps != null && vistaMappa.value == VistaMappa.schermo);
+
+  /// Attività libera: il nome lo sai già e "Fatto" lo dice già il tempo (barra
+  /// o cerchio). Nelle sedute programmate il testo resta: dice cosa fare in
+  /// quel blocco.
+  bool get _senzaTesto => widget.libera;
   bool _sceltoAllAperto = false; // l'interruttore spento a mano
   final _kmScritti = TextEditingController();
 
@@ -1431,9 +1436,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ),
                     testo: ListView(
                       shrinkWrap: true,
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                      padding: _senzaTesto && _tempoPiatto
+                          ? EdgeInsets.zero
+                          : const EdgeInsets.fromLTRB(20, 10, 20, 8),
                       children: [
-                        if (recupero) ...[
+                        if (_senzaTesto)
+                          const SizedBox.shrink()
+                        else if (recupero) ...[
                           Text('Recupero', style: t.titleMedium),
                           if (b.note.isNotEmpty)
                             Text(b.note, style: t.bodySmall),
