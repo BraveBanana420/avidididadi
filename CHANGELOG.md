@@ -2,6 +2,20 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.9.2
+
+- Rullo smart: collegato il rullo, la bici passa da sola alla schermata al chiuso, con velocità e distanza dal rullo.
+- Calibrazione del rullo dall'app (foglio dei sensori), con promemoria ogni due settimane.
+- Grafico della velocità a fine seduta col rullo o con un sensore, dalle prossime sedute.
+- intervals.icu: con l'invio acceso nel Profilo le sedute registrate partono da sole, senza tasto.
+- Corsa, bici e camminata partono col tasto Inizia, senza conto alla rovescia; la forza lo tiene.
+- Corsa, bici e camminata: tempo in una barra sempre in vista al posto del cerchio.
+- Minimappa che prende tutto lo spazio libero; watt e cadenza compaiono solo se il sensore li manda.
+- FTP della corsa separata da quella della bici; passi al minuto per corsa e camminata.
+- Attività libere più pulite: via le scritte doppie; nomi su una riga su ogni schermo.
+- Camminata più leggibile sul fondo chiaro.
+- All'apertura riaccetta l'informativa (velocità e invio automatico).
+
 ## 1.5.1
 
 - Bici: zone di potenza dall'FTP (da intervals.icu o scritto in Profilo → Le mie zone), sedute con il range di watt da tenere.
