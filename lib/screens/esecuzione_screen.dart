@@ -559,6 +559,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _serieFc.add(Campione(ora, bpm.toDouble()));
   }
 
+  /// Watt e cadenza si vedono solo col sensore collegato e se li manda davvero.
+  /// Una volta arrivati restano: fermi al semaforo il riquadro non sparisce.
+  bool get _conWatt =>
+      _bici &&
+      sensoreBici.stato == StatoSensore.collegato &&
+      (sensoreBici.potenza != null || _seriePotenza.isNotEmpty);
+  bool get _conCadenza =>
+      _bici &&
+      sensoreBici.stato == StatoSensore.collegato &&
+      (sensoreBici.cadenza != null || _serieCadenza.isNotEmpty);
+
   /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
   int? get _watt =>
       mediaRecente(_seriePotenza, DateTime.now()) ?? sensoreBici.potenza;
@@ -1310,8 +1321,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       ),
                                     ],
                                     const SizedBox(height: 8),
+                                    // Senza il cerchio c'è più spazio: lo prende
+                                    // la mappa, meno se ci sono watt e cadenza.
                                     SizedBox(
-                                      height: 150,
+                                      height:
+                                          (box.maxHeight *
+                                                  (_conWatt || _conCadenza
+                                                      ? 0.24
+                                                      : 0.32))
+                                              .clamp(150.0, 260.0),
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(20),
                                         child: _mappaLive(compatta: true),
@@ -1368,36 +1386,40 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                                 ),
                                               ],
                                             ),
-                                          if (bici)
+                                          // Solo i dati che arrivano davvero: un
+                                          // rullo ricordato ma lontano non conta.
+                                          if (_conWatt || _conCadenza)
                                             Row(
                                               spacing: 8,
                                               children: [
-                                                Expanded(
-                                                  child: _DatoPotenza(
-                                                    watt: _watt,
-                                                    zone: _zonePotenza,
-                                                    obiettivo: _rangeBlocco,
-                                                    onTap: () =>
-                                                        mostraSensoreBici(
-                                                          context,
-                                                        ),
+                                                if (_conWatt)
+                                                  Expanded(
+                                                    child: _DatoPotenza(
+                                                      watt: _watt,
+                                                      zone: _zonePotenza,
+                                                      obiettivo: _rangeBlocco,
+                                                      onTap: () =>
+                                                          mostraSensoreBici(
+                                                            context,
+                                                          ),
+                                                    ),
                                                   ),
-                                                ),
-                                                Expanded(
-                                                  child: _Dato(
-                                                    etichetta: 'Cadenza',
-                                                    valore:
-                                                        sensoreBici.cadenza
-                                                            ?.round()
-                                                            .toString() ??
-                                                        '–',
-                                                    unita: 'rpm',
-                                                    onTap: () =>
-                                                        mostraSensoreBici(
-                                                          context,
-                                                        ),
+                                                if (_conCadenza)
+                                                  Expanded(
+                                                    child: _Dato(
+                                                      etichetta: 'Cadenza',
+                                                      valore:
+                                                          sensoreBici.cadenza
+                                                              ?.round()
+                                                              .toString() ??
+                                                          '–',
+                                                      unita: 'rpm',
+                                                      onTap: () =>
+                                                          mostraSensoreBici(
+                                                            context,
+                                                          ),
+                                                    ),
                                                   ),
-                                                ),
                                               ],
                                             ),
                                           if (gps == null &&
