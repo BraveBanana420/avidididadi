@@ -41,7 +41,13 @@ import 'workout_base.dart';
 /// Sport ignorati dall'app (non mostrati né importati).
 const sportEsclusi = {'Altro'};
 
-List<Slot> settimanaIniziale() => [
+/// La settimana con cui si parte. Chi installa l'app parte da zero e la sceglie
+/// nel benvenuto. Solo chi aveva già un piano e non ha mai salvato la settimana
+/// tiene quella che usava prima, altrimenti la perderebbe aggiornando.
+List<Slot> settimanaDiPartenza(List<Slot>? salvata, {required bool conPiano}) =>
+    salvata ?? (conPiano ? _settimanaDiPrima() : []);
+
+List<Slot> _settimanaDiPrima() => [
   Slot(giorno: 1, fascia: 'Mattina', sport: 'Forza', durataMin: 45),
   Slot(giorno: 2, fascia: 'Mattina', sport: 'Bici', durataMin: 60),
   Slot(giorno: 2, fascia: 'Pranzo', sport: 'Nuoto', durataMin: 60),
@@ -105,7 +111,6 @@ class AppState extends ChangeNotifier {
 
   Future<void> load() async {
     await Storage.pulisciTemporanei();
-    settimana = await Storage.readSettimana() ?? settimanaIniziale();
     piano = [
       for (final r in await Storage.readPiano())
         r.tipo.isNotEmpty || tipoPredefinito(r.data, r.sport).isEmpty
@@ -121,6 +126,10 @@ class AppState extends ChangeNotifier {
                 note: r.note,
               ),
     ];
+    settimana = settimanaDiPartenza(
+      await Storage.readSettimana(),
+      conPiano: piano.isNotEmpty,
+    );
 
     // Una riga illeggibile si salta: non deve impedire di aprire l'app.
     Sessione? riga(Tabella t, List<String> r) {
@@ -1265,6 +1274,19 @@ class AppState extends ChangeNotifier {
     oggi: DateTime.now(),
   );
 
+  /// Le sedute decise dall'assistente devono poter partire: attiva la
+  /// preparazione dei loro sport, così l'app ne scrive i passi.
+  Future<void> _attivaSportDelPiano() async {
+    final oggi = soloData(DateTime.now());
+    final nuovi = sportDaAttivare(piano, profilo.sportGenerati, oggi);
+    if (nuovi.isEmpty) return;
+    if (profilo.inizioEndurance == null || profilo.sportGenerati.isEmpty) {
+      profilo.inizioEndurance = oggi;
+    }
+    profilo.sportGenerati = {...profilo.sportGenerati, ...nuovi};
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+  }
+
   /// Sostituisce il calendario dalla data del piano nuovo (ricontrollato).
   Future<int> applicaPianoAgente(PianoAgente p, {MessaggioChat? da}) async {
     final esito = valutaPianoDa(p);
@@ -1272,6 +1294,7 @@ class AppState extends ChangeNotifier {
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();
+    await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
     _segnaApplicata(da);
@@ -1289,6 +1312,7 @@ class AppState extends ChangeNotifier {
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();
+    await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
     m.applicata = true;
