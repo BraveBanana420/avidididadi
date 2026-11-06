@@ -32,6 +32,7 @@ import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'battito_sheet.dart';
+import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
 import 'mappa_live.dart';
@@ -1252,356 +1253,315 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ? _vistaBici(context, recupero: recupero)
               : _centro(
                   context,
-                  LayoutBuilder(
-                    builder: (context, box) => Column(
-                      children: [
-                        // Su uno schermo piccolo i dati scorrono invece di
-                        // uscire: non devono spingere via il resto.
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: (box.maxHeight - 72).clamp(
-                              0.0,
-                              double.infinity,
-                            ),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Un segmento per esercizio: pieni quelli fatti, mezzo quello in corso.
-                                  Row(
-                                    children: [
-                                      for (var k = 0; k < nPassi; k++) ...[
-                                        if (k > 0) const SizedBox(width: 4),
-                                        Expanded(
-                                          child: Container(
-                                            height: 6,
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                              color: !preparati && k < b.passo
-                                                  ? null
-                                                  : !preparati && k == b.passo
-                                                  ? scheme.primary.withValues(
-                                                      alpha: 0.5,
-                                                    )
-                                                  : scheme.surfaceContainerHigh,
-                                              gradient:
-                                                  !preparati && k < b.passo
-                                                  ? LinearGradient(
-                                                      colors: Pulse.di(context)
-                                                          .anello,
-                                                    )
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  // Durante la seduta il GPS si nomina solo se non va.
-                                  if (gps != null &&
-                                      gps!.stato != StatoGps.pronto) ...[
-                                    const SizedBox(height: 8),
-                                    _StatoGps(
-                                      gps: gps!,
-                                      riaccendi: _accendiGps,
-                                    ),
-                                  ],
-                                  if (gps != null &&
-                                      vistaMappa.value ==
-                                          VistaMappa.minimappa) ...[
-                                    if (_guida != null) ...[
-                                      const SizedBox(height: 8),
-                                      BannerGuida(
-                                        guida: _guida!,
-                                        compatto: true,
-                                      ),
-                                    ],
-                                    const SizedBox(height: 8),
-                                    // Senza il cerchio c'è più spazio: lo prende
-                                    // la mappa, meno se ci sono watt e cadenza.
-                                    SizedBox(
-                                      height:
-                                          (box.maxHeight *
-                                                  (_conWatt || _conCadenza
-                                                      ? 0.24
-                                                      : 0.32))
-                                              .clamp(150.0, 260.0),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: _mappaLive(compatta: true),
-                                      ),
-                                    ),
-                                  ],
-                                  ListenableBuilder(
-                                    listenable: Listenable.merge([
-                                      sensoreBattito,
-                                      sensoreBici,
-                                    ]),
-                                    builder: (_, _) {
-                                      final bici =
-                                          _bici && sensoreBici.ricordato;
-                                      return Column(
-                                        spacing: 8,
-                                        children: [
-                                          const SizedBox.shrink(),
-                                          if (gps != null)
-                                            _GrigliaLive(
-                                              sport: widget.sport,
-                                              gps: gps!,
-                                              tempo: _tempoMedia,
-                                              ultimo: giri!.giri.lastOrNull,
-                                              zone: _zone,
-                                            )
-                                          else if (bici)
-                                            // Rulli: velocità e km dal sensore.
-                                            Row(
-                                              spacing: 8,
-                                              children: [
-                                                Expanded(
-                                                  child: _Dato(
-                                                    etichetta: 'Velocità',
-                                                    valore: fmtVelocita(
-                                                      widget.sport,
-                                                      sensoreBici.velocita,
-                                                    ),
-                                                    unita: 'km/h',
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: _Dato(
-                                                    etichetta: 'Distanza',
-                                                    valore:
-                                                        (_metriSensore / 1000)
-                                                            .toStringAsFixed(2)
-                                                            .replaceAll(
-                                                              '.',
-                                                              ',',
-                                                            ),
-                                                    unita: 'km',
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          // Solo i dati che arrivano davvero: un
-                                          // rullo ricordato ma lontano non conta.
-                                          if (_conWatt || _conCadenza)
-                                            Row(
-                                              spacing: 8,
-                                              children: [
-                                                if (_conWatt)
-                                                  Expanded(
-                                                    child: _DatoPotenza(
-                                                      watt: _watt,
-                                                      zone: _zonePotenza,
-                                                      obiettivo: _rangeBlocco,
-                                                      onTap: () =>
-                                                          mostraSensoreBici(
-                                                            context,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                if (_conCadenza)
-                                                  Expanded(
-                                                    child: _Dato(
-                                                      etichetta: 'Cadenza',
-                                                      valore:
-                                                          sensoreBici.cadenza
-                                                              ?.round()
-                                                              .toString() ??
-                                                          '–',
-                                                      unita: 'rpm',
-                                                      onTap: () =>
-                                                          mostraSensoreBici(
-                                                            context,
-                                                          ),
-                                                    ),
-                                                  ),
-                                              ],
-                                            ),
-                                          if (gps == null &&
-                                              sensoreBattito.ricordato)
-                                            _DatoBattito(zone: _zone),
-                                          if (bici && sensoreBici.comandabile)
-                                            ControlloErg(
-                                              acceso: _ergAcceso,
-                                              watt: _ergAcceso
-                                                  ? _wattErg
-                                                  : null,
-                                              scala: _ergScala,
-                                              cambia: (acceso) => setState(() {
-                                                _ergAcceso = acceso;
-                                                _comandaRullo();
-                                              }),
-                                              scalaCambia: (s) => setState(() {
-                                                _ergScala = s;
-                                                _comandaRullo();
-                                              }),
-                                            ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                  if (_barre case final barre?) ...[
-                                    const SizedBox(height: 8),
-                                    DiagrammaInCorso(
-                                      barre: barre,
-                                      zone: _zonePotenza!,
-                                      corrente: i,
-                                      trascorso: _tempoBlocco.inSeconds,
-                                      durata: _durata,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListView(
-                            padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                  ColonnaDati(
+                    sopra: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Un segmento per esercizio: pieni quelli fatti, mezzo quello in corso.
+                          Row(
                             children: [
-                              if (recupero) ...[
-                                Text('Recupero', style: t.titleMedium),
-                                if (b.note.isNotEmpty)
-                                  Text(b.note, style: t.bodySmall),
-                              ] else ...[
-                                // A sinistra l'anteprima del movimento, se c'è.
-                                Row(
-                                  children: [
-                                    if (_conAnteprima(esercizio)) ...[
-                                      _AnteprimaEsercizio(
-                                        esercizio: esercizio!,
-                                        larghezza: 112,
-                                      ),
-                                      const SizedBox(width: 14),
-                                    ],
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Solo il nome, piccolo: titolo e durata
-                                          // della seduta sono già stati scelti.
-                                          TestoUnaRiga(
-                                            b.titolo,
-                                            style: t.titleSmall,
-                                          ),
-                                          if (dettaglioBreve(b).isNotEmpty)
-                                            Text(
-                                              dettaglioBreve(b),
-                                              style: t.bodySmall,
-                                            ),
-                                        ],
-                                      ),
+                              for (var k = 0; k < nPassi; k++) ...[
+                                if (k > 0) const SizedBox(width: 4),
+                                Expanded(
+                                  child: Container(
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: !preparati && k < b.passo
+                                          ? null
+                                          : !preparati && k == b.passo
+                                          ? scheme.primary.withValues(
+                                              alpha: 0.5,
+                                            )
+                                          : scheme.surfaceContainerHigh,
+                                      gradient: !preparati && k < b.passo
+                                          ? LinearGradient(
+                                              colors: Pulse.di(context).anello,
+                                            )
+                                          : null,
                                     ),
-                                  ],
-                                ),
-                                if (b.intensita.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      intensitaCon(
-                                        b.intensita,
-                                        widget.sport,
-                                        _zonePotenza,
-                                        _zone,
-                                      ),
-                                      style: t.bodyMedium,
-                                    ),
-                                  ),
-                                if (b.obiettivo2.isNotEmpty)
-                                  Text(b.obiettivo2, style: t.bodyMedium),
-                                if (sensazioneDi(b.intensita) != null)
-                                  Text(
-                                    sensazioneDi(b.intensita)!,
-                                    style: t.bodySmall?.copyWith(
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  ),
-                                if (b.note.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(b.note, style: t.bodySmall),
-                                  ),
-                                if (_daRegistrare(i)) ...[
-                                  const SizedBox(height: 16),
-                                  RegistroSerie(
-                                    valori: _valoriDi(i),
-                                    massimo: ripetizioniPreviste(b.ripetizioni)!
-                                        .$2,
-                                    conKg: _conKg(b),
-                                    ultima: _ultima(b),
-                                    cambia: (v) =>
-                                        setState(() => _valori[i] = v),
-                                  ),
-                                ],
-                              ],
-                              if (!_tempoPiatto) ...[
-                                const SizedBox(height: 12),
-                                Center(
-                                  // Durante "Preparati" un tocco sul timer fa partire subito.
-                                  child: GestureDetector(
-                                    onTap: preparati && !pausa ? _avanti : null,
-                                    child: _Orologio(
-                                      recupero: recupero,
-                                      aTempo: aTempo,
-                                      restano: aTempo
-                                          ? _restano.clamp(0, 99999).toInt()
-                                          : 0,
-                                      totale: aTempo ? _durata : 0,
-                                      trascorso: _tempoBlocco,
-                                      pausa: _inPausa,
-                                      // Piccolo: entra sotto il testo senza scorrere.
-                                      piccolo: true,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              if (recupero && prossimo != null) ...[
-                                const SizedBox(height: 24),
-                                SuperficiePulse(
-                                  child: Row(
-                                    children: [
-                                      if (_conAnteprima(esercizioPoi))
-                                        _AnteprimaEsercizio(
-                                          esercizio: esercizioPoi!,
-                                          larghezza: 84,
-                                        )
-                                      else
-                                        const IconaQuadrata(
-                                          Icons.skip_next,
-                                          evidenza: true,
-                                        ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Poi', style: t.bodySmall),
-                                            TestoUnaRiga(
-                                              prossimo.titolo,
-                                              style: t.titleMedium,
-                                            ),
-                                            if (prossimo.dettaglio.isNotEmpty)
-                                              Text(
-                                                prossimo.dettaglio,
-                                                style: t.bodySmall,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   ),
                                 ),
                               ],
                             ],
                           ),
+                          // Durante la seduta il GPS si nomina solo se non va.
+                          if (gps != null && gps!.stato != StatoGps.pronto) ...[
+                            const SizedBox(height: 8),
+                            _StatoGps(gps: gps!, riaccendi: _accendiGps),
+                          ],
+                          if (gps != null &&
+                              vistaMappa.value == VistaMappa.minimappa &&
+                              _guida != null) ...[
+                            const SizedBox(height: 8),
+                            BannerGuida(guida: _guida!, compatto: true),
+                          ],
+                        ],
+                      ),
+                    ),
+                    mappa:
+                        gps != null && vistaMappa.value == VistaMappa.minimappa
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: _mappaLive(compatta: true),
+                            ),
+                          )
+                        : null,
+                    numeri: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ListenableBuilder(
+                              listenable: Listenable.merge([
+                                sensoreBattito,
+                                sensoreBici,
+                              ]),
+                              builder: (_, _) {
+                                final bici = _bici && sensoreBici.ricordato;
+                                return Column(
+                                  spacing: 8,
+                                  children: [
+                                    const SizedBox.shrink(),
+                                    if (gps != null)
+                                      _GrigliaLive(
+                                        sport: widget.sport,
+                                        gps: gps!,
+                                        tempo: _tempoMedia,
+                                        ultimo: giri!.giri.lastOrNull,
+                                        zone: _zone,
+                                      )
+                                    else if (bici)
+                                      // Rulli: velocità e km dal sensore.
+                                      Row(
+                                        spacing: 8,
+                                        children: [
+                                          Expanded(
+                                            child: _Dato(
+                                              etichetta: 'Velocità',
+                                              valore: fmtVelocita(
+                                                widget.sport,
+                                                sensoreBici.velocita,
+                                              ),
+                                              unita: 'km/h',
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: _Dato(
+                                              etichetta: 'Distanza',
+                                              valore: (_metriSensore / 1000)
+                                                  .toStringAsFixed(2)
+                                                  .replaceAll('.', ','),
+                                              unita: 'km',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    // Solo i dati che arrivano davvero: un
+                                    // rullo ricordato ma lontano non conta.
+                                    if (_conWatt || _conCadenza)
+                                      Row(
+                                        spacing: 8,
+                                        children: [
+                                          if (_conWatt)
+                                            Expanded(
+                                              child: _DatoPotenza(
+                                                watt: _watt,
+                                                zone: _zonePotenza,
+                                                obiettivo: _rangeBlocco,
+                                                onTap: () =>
+                                                    mostraSensoreBici(context),
+                                              ),
+                                            ),
+                                          if (_conCadenza)
+                                            Expanded(
+                                              child: _Dato(
+                                                etichetta: 'Cadenza',
+                                                valore:
+                                                    sensoreBici.cadenza
+                                                        ?.round()
+                                                        .toString() ??
+                                                    '–',
+                                                unita: 'rpm',
+                                                onTap: () =>
+                                                    mostraSensoreBici(context),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    if (gps == null && sensoreBattito.ricordato)
+                                      _DatoBattito(zone: _zone),
+                                    if (bici && sensoreBici.comandabile)
+                                      ControlloErg(
+                                        acceso: _ergAcceso,
+                                        watt: _ergAcceso ? _wattErg : null,
+                                        scala: _ergScala,
+                                        cambia: (acceso) => setState(() {
+                                          _ergAcceso = acceso;
+                                          _comandaRullo();
+                                        }),
+                                        scalaCambia: (s) => setState(() {
+                                          _ergScala = s;
+                                          _comandaRullo();
+                                        }),
+                                      ),
+                                  ],
+                                );
+                              },
+                            ),
+                            if (_barre case final barre?) ...[
+                              const SizedBox(height: 8),
+                              DiagrammaInCorso(
+                                barre: barre,
+                                zone: _zonePotenza!,
+                                corrente: i,
+                                trascorso: _tempoBlocco.inSeconds,
+                                durata: _durata,
+                              ),
+                            ],
+                          ],
                         ),
+                      ),
+                    ),
+                    testo: ListView(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 8),
+                      children: [
+                        if (recupero) ...[
+                          Text('Recupero', style: t.titleMedium),
+                          if (b.note.isNotEmpty)
+                            Text(b.note, style: t.bodySmall),
+                        ] else ...[
+                          // A sinistra l'anteprima del movimento, se c'è.
+                          Row(
+                            children: [
+                              if (_conAnteprima(esercizio)) ...[
+                                _AnteprimaEsercizio(
+                                  esercizio: esercizio!,
+                                  larghezza: 112,
+                                ),
+                                const SizedBox(width: 14),
+                              ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Solo il nome, piccolo: titolo e durata
+                                    // della seduta sono già stati scelti.
+                                    TestoUnaRiga(b.titolo, style: t.titleSmall),
+                                    if (dettaglioBreve(b).isNotEmpty)
+                                      Text(
+                                        dettaglioBreve(b),
+                                        style: t.bodySmall,
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (b.intensita.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                intensitaCon(
+                                  b.intensita,
+                                  widget.sport,
+                                  _zonePotenza,
+                                  _zone,
+                                ),
+                                style: t.bodyMedium,
+                              ),
+                            ),
+                          if (b.obiettivo2.isNotEmpty)
+                            Text(b.obiettivo2, style: t.bodyMedium),
+                          if (sensazioneDi(b.intensita) != null)
+                            Text(
+                              sensazioneDi(b.intensita)!,
+                              style: t.bodySmall?.copyWith(
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          if (b.note.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(b.note, style: t.bodySmall),
+                            ),
+                          if (_daRegistrare(i)) ...[
+                            const SizedBox(height: 16),
+                            RegistroSerie(
+                              valori: _valoriDi(i),
+                              massimo: ripetizioniPreviste(b.ripetizioni)!.$2,
+                              conKg: _conKg(b),
+                              ultima: _ultima(b),
+                              cambia: (v) => setState(() => _valori[i] = v),
+                            ),
+                          ],
+                        ],
+                        if (!_tempoPiatto) ...[
+                          const SizedBox(height: 12),
+                          Center(
+                            // Durante "Preparati" un tocco sul timer fa partire subito.
+                            child: GestureDetector(
+                              onTap: preparati && !pausa ? _avanti : null,
+                              child: _Orologio(
+                                recupero: recupero,
+                                aTempo: aTempo,
+                                restano: aTempo
+                                    ? _restano.clamp(0, 99999).toInt()
+                                    : 0,
+                                totale: aTempo ? _durata : 0,
+                                trascorso: _tempoBlocco,
+                                pausa: _inPausa,
+                                // Piccolo: entra sotto il testo senza scorrere.
+                                piccolo: true,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (recupero && prossimo != null) ...[
+                          const SizedBox(height: 24),
+                          SuperficiePulse(
+                            child: Row(
+                              children: [
+                                if (_conAnteprima(esercizioPoi))
+                                  _AnteprimaEsercizio(
+                                    esercizio: esercizioPoi!,
+                                    larghezza: 84,
+                                  )
+                                else
+                                  const IconaQuadrata(
+                                    Icons.skip_next,
+                                    evidenza: true,
+                                  ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Poi', style: t.bodySmall),
+                                      TestoUnaRiga(
+                                        prossimo.titolo,
+                                        style: t.titleMedium,
+                                      ),
+                                      if (prossimo.dettaglio.isNotEmpty)
+                                        Text(
+                                          prossimo.dettaglio,
+                                          style: t.bodySmall,
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
