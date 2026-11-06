@@ -2,6 +2,17 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.11.1
+
+- Sedute registrate con l'app: tasto "Modifica i dati" nel dettaglio per correggere durata, orario, distanza, battito, calorie e note.
+- Fine seduta: tasto "Inserisci i dati a mano" nel riepilogo.
+- Nuoto: vasche, lunghezza vasca, metri, tempo medio e stile scritti a mano; contano nelle statistiche.
+- Piani importati dall'assistente: l'app prepara i passi e la seduta si può far partire, anche per chi fa un solo sport.
+- Settimana tipo facoltativa: il piano parte dalle sedute in calendario, anche se i giorni cambiano ogni settimana.
+- Chi installa l'app per la prima volta parte da una settimana vuota.
+- intervals.icu: le sedute mandate dall'app restano sue quando tornano, con il titolo giusto e modificabili.
+- All'apertura riaccetta l'informativa (dati scritti a mano).
+
 ## 1.9.2
 
 - Rullo smart: collegato il rullo, la bici passa da sola alla schermata al chiuso, con velocità e distanza dal rullo.
