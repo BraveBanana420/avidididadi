@@ -508,9 +508,9 @@ int? ftpDaAtletaIcu(Object? atleta, {String tipo = 'Ride'}) {
 }
 
 // ---------------------------------------------------------------------
-// Serie registrate dall'app (battito, potenza e cadenza dai sensori)
+// Serie registrate dall'app (battito, potenza, cadenza e velocità dai sensori)
 
-const serieAppHeader = ['tempo_ms', 'fc', 'potenza', 'cadenza'];
+const serieAppHeader = ['tempo_ms', 'fc', 'potenza', 'cadenza', 'velocita'];
 
 /// File con le serie registrate dall'app per quel giorno e sport.
 String fileSerieApp(DateTime giorno, String sport) =>
@@ -520,19 +520,21 @@ String fileSerieApp(DateTime giorno, String sport) =>
 /// Le serie dell'app in CSV: una riga al secondo, vuoto dove manca il dato.
 String serieAppCsv(SerieSessione s) {
   final righe = <int, List<String>>{};
-  void metti(List<Campione> serie, int colonna) {
+  void metti(List<Campione> serie, int colonna, {int decimali = 0}) {
     for (final c in serie) {
       final r = righe.putIfAbsent(
         c.t.millisecondsSinceEpoch,
-        () => ['${c.t.millisecondsSinceEpoch}', '', '', ''],
+        () => ['${c.t.millisecondsSinceEpoch}', '', '', '', ''],
       );
-      r[colonna] = '${c.v.round()}';
+      r[colonna] = c.v.toStringAsFixed(decimali);
     }
   }
 
   metti(s.fc, 1);
   metti(s.potenza, 2);
   metti(s.cadenza, 3);
+  // In m/s: senza decimali 36 e 37 km/h sarebbero lo stesso numero.
+  metti(s.velocita, 4, decimali: 2);
   final ordinate = righe.keys.toList()..sort();
   return toCsv([serieAppHeader, for (final k in ordinate) righe[k]!]);
 }
@@ -541,6 +543,7 @@ SerieSessione serieAppDa(String testo) {
   final t = Tabella.da(testo);
   if (t == null) return const SerieSessione();
   final fc = <Campione>[], w = <Campione>[], cad = <Campione>[];
+  final vel = <Campione>[];
   for (final r in t.righe) {
     final ms = int.tryParse(t.v(r, 'tempo_ms'));
     if (ms == null) continue;
@@ -555,6 +558,7 @@ SerieSessione serieAppDa(String testo) {
     leggi('fc', fc, 250);
     leggi('potenza', w, 3000);
     leggi('cadenza', cad, 250);
+    leggi('velocita', vel, 40);
   }
-  return SerieSessione(fc: fc, potenza: w, cadenza: cad);
+  return SerieSessione(fc: fc, potenza: w, cadenza: cad, velocita: vel);
 }

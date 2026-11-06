@@ -241,6 +241,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final _serieFc = <Campione>[];
   final _seriePotenza = <Campione>[];
   final _serieCadenza = <Campione>[];
+  final _serieVelocita = <Campione>[];
 
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
@@ -525,6 +526,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (v != null && dt <= 1) _metriSensore += v * dt;
     if (ora.difference(_statisticheIl) < const Duration(seconds: 1)) return;
     _statisticheIl = ora;
+    if (v != null) _serieVelocita.add(Campione(ora, v));
     if (sensoreBici.potenza case final w?) {
       potenza.aggiungi(w);
       _seriePotenza.add(Campione(ora, w.toDouble()));
@@ -1009,7 +1011,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (percorso != null && !percorso.vuoto) {
       await widget.state.salvaPercorsoApp(oggi, widget.sport, percorso);
     }
-    if (_serieFc.isNotEmpty || _seriePotenza.isNotEmpty) {
+    if (_serieFc.isNotEmpty ||
+        _seriePotenza.isNotEmpty ||
+        _serieVelocita.isNotEmpty) {
       await widget.state.salvaSerieApp(
         oggi,
         widget.sport,
@@ -1017,6 +1021,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           fc: _serieFc,
           potenza: _seriePotenza,
           cadenza: _serieCadenza,
+          velocita: _serieVelocita,
         ),
       );
     }

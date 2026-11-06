@@ -105,7 +105,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
 - `sessioni.csv`, `health_connect_sessioni.csv`;
 - `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza e cadenza al secondo dai sensori);
+- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `serie.csv` (ripetizioni e kg della forza);

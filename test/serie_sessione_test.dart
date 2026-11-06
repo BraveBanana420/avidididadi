@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
 import 'package:allenamenti_app/percorso.dart';
+import 'package:allenamenti_app/potenza.dart';
 import 'package:allenamenti_app/serie_sessione.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -159,6 +160,69 @@ void main() {
         isEmpty,
       );
       expect(passiDaConteggi(pezzi.take(2).toList()), isEmpty);
+    });
+  });
+
+  group('velocità dai sensori', () {
+    final t0 = DateTime(2026, 11, 6, 7);
+    Campione c(int s, double v) => Campione(t0.add(Duration(seconds: s)), v);
+
+    test('si salva e si rilegge con i decimali', () {
+      final letta = serieAppDa(
+        serieAppCsv(
+          SerieSessione(
+            potenza: [c(0, 150)],
+            velocita: [c(0, 9.72), c(1, 10.28)],
+          ),
+        ),
+      );
+      expect(letta.velocita.map((x) => x.v), [9.72, 10.28]);
+      expect(letta.potenza.single.v, 150);
+    });
+
+    test('i file di prima, senza velocità, restano leggibili', () {
+      final ms = t0.millisecondsSinceEpoch;
+      final letta = serieAppDa('tempo_ms,fc,potenza,cadenza\n$ms,120,150,85\n');
+      expect(letta.velocita, isEmpty);
+      expect(letta.fc.single.v, 120);
+      expect(letta.potenza.single.v, 150);
+      expect(letta.cadenza.single.v, 85);
+    });
+
+    test('valori impossibili si scartano', () {
+      final ms = t0.millisecondsSinceEpoch;
+      final letta = serieAppDa(
+        'tempo_ms,fc,potenza,cadenza,velocita\n$ms,,,,99\n',
+      );
+      expect(letta.velocita, isEmpty);
+    });
+  });
+
+  group('nota sui dati mancanti', () {
+    String? nota({
+      bool conPercorso = true,
+      bool alChiuso = false,
+      bool intervals = false,
+      bool altitudine = false,
+      bool potenza = false,
+    }) => notaDatiMancanti(
+      conPercorso: conPercorso,
+      alChiuso: alChiuso,
+      intervalsCollegato: intervals,
+      conAltitudine: altitudine,
+      conPotenza: potenza,
+    );
+
+    test('all\'aperto senza intervals.icu si spiega come averli', () {
+      expect(nota(), startsWith('Altitudine, pendenza e potenza'));
+      expect(nota(potenza: true), startsWith('Altitudine e pendenza'));
+    });
+
+    test('non compare al chiuso, con intervals.icu o nella forza', () {
+      expect(nota(alChiuso: true), isNull);
+      expect(nota(intervals: true), isNull);
+      expect(nota(conPercorso: false), isNull);
+      expect(nota(altitudine: true), isNull);
     });
   });
 }
