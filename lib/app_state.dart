@@ -1533,13 +1533,14 @@ class AppState extends ChangeNotifier {
   void _ricombina() {
     // Le tolte si filtrano dopo aver unito i doppioni: così non spunta al loro
     // posto la copia della stessa attività arrivata da un'altra fonte.
+    final icu = senzaCopieInviate(sessioniIcu, inviate, storicoCsv);
     sessioni = [
       for (final s in senzaNascoste(
         combina(
           storicoCsv,
           conTipoDalPiano([
-            ...senzaDoppioniIcu(sessioniHc, sessioniIcu),
-            ...sessioniIcu,
+            ...senzaDoppioniIcu(sessioniHc, icu),
+            ...icu,
           ], piano),
         ),
         nascoste,
