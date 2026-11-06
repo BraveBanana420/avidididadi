@@ -159,6 +159,24 @@ void main() {
     await _chiudi(tester);
   });
 
+  testWidgets('a fine seduta i dati a mano si inseriscono dal riepilogo', (
+    tester,
+  ) async {
+    await _apri(
+      tester,
+      'Nuoto',
+      'Piscina',
+      libera: true,
+      passo: _passo('Nuoto', durata: '', note: _notaLibera),
+    );
+    await tester.tap(find.text('Inizia subito'));
+    await tester.pump();
+    await tester.tap(find.text('Fatto'));
+    await tester.pump();
+    expect(find.text('Inserisci i dati a mano'), findsOneWidget);
+    await _chiudi(tester);
+  });
+
   for (final libera in [true, false]) {
     testWidgets(
       'bici all\'aperto ${libera ? 'libera: niente doppioni' : 'programmata: il testo resta'}',

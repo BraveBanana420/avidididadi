@@ -23,6 +23,7 @@ import 'health_connect.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
+import 'modifica_sessione.dart';
 import 'models.dart';
 import 'navigazione.dart';
 import 'obiettivo.dart';
@@ -73,6 +74,7 @@ class AppState extends ChangeNotifier {
   /// Passi degli allenamenti scritti dall'assistente (allenamenti_agente.csv):
   /// valgono al posto di quelli preparati dall'app in quel giorno.
   List<WorkoutStep> allenamentiAgente = [];
+  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<ProgrammaRiga> programma = [];
   Profilo profilo = Profilo();
   List<Misura> misure = []; // in ordine di data
@@ -155,6 +157,13 @@ class AppState extends ChangeNotifier {
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
     backupAuto = await leggiImpostazioniBackup();
+    final tNuoto = await Storage.readTabella('nuoto.csv');
+    nuotate = tNuoto == null
+        ? []
+        : tNuoto.righe
+              .map((r) => SedutaNuoto.da(tNuoto, r))
+              .whereType<SedutaNuoto>()
+              .toList();
     final tInviate = await Storage.readTabella('sessioni_inviate.csv');
     inviate = {
       if (tInviate != null)
@@ -603,6 +612,11 @@ class AppState extends ChangeNotifier {
         inviate.containsKey(s.id)) {
       inviate = {...inviate}..remove(s.id);
       await _salvaInviate();
+    }
+    // Una nuotata nuova con lo stesso id non eredita le vasche di prima.
+    if (prima != null && prima.inizio != s.inizio && nuotoDi(s.id) != null) {
+      nuotate = nuotate.where((x) => x.idSessione != s.id).toList();
+      await _salvaNuotate();
     }
     storicoCsv = [...storicoCsv.where((x) => x.id != s.id), s];
     await Storage.write(
@@ -2295,6 +2309,36 @@ class AppState extends ChangeNotifier {
     final s = schede.where((x) => x.id == id).firstOrNull;
     if (s == null || kg.isEmpty) return;
     await salvaScheda(conPesi(s, kg));
+  }
+
+  /// Vasche e tempi scritti a mano per una nuotata, se ci sono.
+  SedutaNuoto? nuotoDi(String idSessione) =>
+      nuotate.where((n) => n.idSessione == idSessione).firstOrNull;
+
+  Future<void> _salvaNuotate() => Storage.write(
+    'nuoto.csv',
+    nuotoHeader,
+    nuotate.map((x) => x.toRow()).toList(),
+  );
+
+  /// Salva i dati scritti a mano su una seduta registrata con l'app.
+  Future<void> modificaSessione(Sessione s, {SedutaNuoto? nuoto}) async {
+    storicoCsv = [for (final x in storicoCsv) x.id == s.id ? s : x];
+    await Storage.write(
+      'sessioni.csv',
+      sessioniHeader,
+      storicoCsv.map((x) => x.toRow()).toList(),
+    );
+    if (nuoto != null) {
+      nuotate = [
+        ...nuotate.where((x) => x.idSessione != s.id),
+        if (!nuoto.vuota) nuoto,
+      ];
+      await _salvaNuotate();
+    }
+    _ricombina();
+    await _aggiornaEndurance();
+    notifyListeners();
   }
 
   /// Le serie di forza di un giorno, raggruppate per esercizio in ordine.

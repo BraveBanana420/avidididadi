@@ -37,6 +37,7 @@ import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
 import 'mappa_live.dart';
 import 'mappa_percorso.dart';
+import 'modifica_sessione_screen.dart';
 import 'percorsi_screen.dart';
 import 'profilo_allenamento.dart';
 import 'vista_bici.dart';
@@ -1028,8 +1029,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     return r == 'esci';
   }
 
-  Future<void> _salvaEChiudi({bool feedback = false}) async {
+  Future<void> _salvaEChiudi({
+    bool feedback = false,
+    bool aMano = false,
+  }) async {
     final navigator = Navigator.of(context);
+    // Per scrivere i dati la seduta deve esserci.
+    if (aMano) registra = true;
     final oggi = soloData(_partenza ?? DateTime.now());
     final percorso = gps?.percorso;
     // Il percorso si tiene anche se vale la sessione dell'orologio: la mappa
@@ -1068,31 +1074,40 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ? idLibera(inizio, widget.sport)
           : 'app-${isoData(oggi)}-${widget.sport.toLowerCase()}';
       final calorie = _calorie;
-      await widget.state.registraSvolta(
-        Sessione(
-          id: id,
-          data: oggi,
-          inizio: inizio,
-          fine: inizio.add(_tempoTotale),
-          sport: widget.sport,
-          tipo: widget.tipo,
-          durataMin: (_tempoTotale.inSeconds / 60).round().clamp(1, 600),
-          // I km del display (tapis roulant, rulli) valgono più del GPS.
-          distanzaKm: _km,
-          calorieAttive: calorie?.attive.roundToDouble() ?? 0,
-          calorieTotali: calorie?.totali.roundToDouble() ?? 0,
-          fcMedia: fc.media,
-          fcMax: fc.massimo,
-          potenzaMedia: potenza.media,
-          cadenzaMedia: cadenza.media,
-          fonte: fonteApp,
-          note: widget.nome,
-        ),
+      final fatta = Sessione(
+        id: id,
+        data: oggi,
+        inizio: inizio,
+        fine: inizio.add(_tempoTotale),
+        sport: widget.sport,
+        tipo: widget.tipo,
+        durataMin: (_tempoTotale.inSeconds / 60).round().clamp(1, 600),
+        // I km del display (tapis roulant, rulli) valgono più del GPS.
+        distanzaKm: _km,
+        calorieAttive: calorie?.attive.roundToDouble() ?? 0,
+        calorieTotali: calorie?.totali.roundToDouble() ?? 0,
+        fcMedia: fc.media,
+        fcMax: fc.massimo,
+        potenzaMedia: potenza.media,
+        cadenzaMedia: cadenza.media,
+        fonte: fonteApp,
+        note: widget.nome,
       );
+      await widget.state.registraSvolta(fatta);
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
-      // In sottofondo: senza rete non deve tenere ferma la fine dell'allenamento.
+      if (aMano && mounted) {
+        await cancellaInCorso();
+        await navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                ModificaSessioneScreen(state: widget.state, sessione: fatta),
+          ),
+        );
+      }
+      // Dopo i dati a mano, così parte la seduta giusta. In sottofondo: senza
+      // rete non deve tenere ferma la fine dell'allenamento.
       unawaited(widget.state.inviaDopoAllenamento());
     }
     await cancellaInCorso();
@@ -2194,6 +2209,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               "Se l'orologio registra lo stesso allenamento, vale il suo.",
             ),
           ),
+        ),
+        const SizedBox(height: 8),
+        // Per chi non ha niente che misuri la seduta: durata, metri, battito…
+        OutlinedButton.icon(
+          onPressed: () => _salvaEChiudi(aMano: true),
+          icon: const Icon(Icons.edit_note),
+          label: const Text('Inserisci i dati a mano'),
         ),
         const SizedBox(height: 8),
         PulsantePrincipale(
