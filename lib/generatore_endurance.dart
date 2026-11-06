@@ -89,10 +89,26 @@ const modiProgressione = {
   _ => (r - r.clamp(-2, 2).toInt(), r.clamp(-2, 2).toInt()),
 };
 
+/// Gli sport con sedute future decise dall'assistente che l'app non prepara
+/// ancora: senza passi quelle sedute non potrebbero partire.
+Set<String> sportDaAttivare(
+  List<PianoRiga> piano,
+  Set<String> attivi,
+  DateTime oggi,
+) => {
+  for (final r in piano)
+    if (!r.data.isBefore(oggi) &&
+        rigaDaAssistente(r) &&
+        sportEndurance.contains(normSport(r.sport)) &&
+        !attivi.contains(normSport(r.sport)))
+      normSport(r.sport),
+};
+
 /// Ruolo di una seduta dal suo tipo (per quelle decise dall'assistente).
 String _ruoloDi(String sport, String tipo) {
   final t = tipo.toLowerCase();
-  if (t.contains('lung')) return 'lungo';
+  // "Allunghi" contiene "lung", ma non è un lungo.
+  if (t.contains('lung') && !t.contains('allungh')) return 'lungo';
   return switch (sport) {
     'Corsa' =>
       t.isEmpty || t.contains('lento') || t.contains('recupero')
@@ -513,7 +529,9 @@ WorkoutStep _passo(
               Fase.rifinitura => 'Ritmo gara',
               Fase.libera => settimane.isEven ? 'Fartlek' : 'Tempo run',
             };
-      final nucleo = math.max(10, d - 20);
+      // Una seduta breve (scelta dall'assistente) resta breve.
+      final margine = d < 30 ? 5 : 10;
+      final nucleo = math.max(10, d - 2 * margine);
       final nome = '$tipo · $d min';
       final riscaldamento = _passo(
         s,
@@ -521,7 +539,7 @@ WorkoutStep _passo(
         1,
         'riscaldamento',
         'Corsa facile',
-        minuti: '10',
+        minuti: '$margine',
         intensita: 'zona 2',
       );
       final defaticamento = _passo(
@@ -530,7 +548,7 @@ WorkoutStep _passo(
         9,
         'defaticamento',
         'Corsa facile',
-        minuti: '10',
+        minuti: '$margine',
         intensita: 'zona 1',
       );
       // Più intensità = recuperi più corti e più minuti veloci nello stesso tempo.
@@ -599,7 +617,8 @@ WorkoutStep _passo(
             2,
             'principale',
             'Corsa facile',
-            minuti: '${math.max(10, d - 15)}',
+            // Gli allunghi durano circa 8 minuti, recuperi compresi.
+            minuti: '${math.max(5, d - 8)}',
             intensita: 'zona 2',
           ),
           _passo(

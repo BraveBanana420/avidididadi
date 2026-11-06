@@ -52,22 +52,35 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
     ..._p.sportGenerati,
   };
 
-  /// Scelta iniziale: quelli già attivi; la prima volta tutti quelli della
-  /// settimana tipo.
+  /// Scelta iniziale: quelli già attivi; la prima volta tutti quelli che hanno
+  /// delle sedute.
   late final Set<String> scelti = {
     ...(attivi.isNotEmpty
         ? attivi
         : {
             for (final s in _sportPreparabili)
-              if (_volte(s) > 0) s,
+              if (_preparabile(s)) s,
           }),
-    if (widget.sportIniziale != null && _volte(widget.sportIniziale!) > 0)
+    if (widget.sportIniziale != null && _preparabile(widget.sportIniziale!))
       normSport(widget.sportIniziale!),
   };
   bool inCorso = false;
 
   int _volte(String sport) =>
       widget.state.settimana.where((x) => stessoSport(x.sport, sport)).length;
+
+  /// Le sedute future nel calendario, anche fuori dalla settimana tipo (per
+  /// esempio quelle di un piano arrivato dall'assistente).
+  int _inCalendario(String sport) {
+    final oggi = soloData(DateTime.now());
+    return widget.state.piano
+        .where((r) => !r.data.isBefore(oggi) && stessoSport(r.sport, sport))
+        .length;
+  }
+
+  /// Si prepara quello che ha delle sedute: i passi nascono dal calendario.
+  bool _preparabile(String sport) =>
+      _volte(sport) > 0 || _inCalendario(sport) > 0;
 
   Future<void> _prepara() async {
     final messenger = ScaffoldMessenger.of(context);
@@ -290,13 +303,15 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                   for (final sp in _sportPreparabili)
                     () {
                       final n = _volte(sp);
+                      final sedute = _inCalendario(sp);
+                      final attivo = _preparabile(sp);
                       return CheckboxListTile(
                         secondary: Icon(
                           iconaSport(sp),
-                          color: n == 0 ? null : coloreSport(sp),
+                          color: attivo ? coloreSport(sp) : null,
                         ),
                         value: scelti.contains(sp),
-                        onChanged: n == 0
+                        onChanged: !attivo
                             ? null
                             : (v) => setState(
                                 () => v == true
@@ -306,9 +321,11 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                         title: Text(
                           [
                             sp,
-                            n == 0
-                                ? 'non è nella tua settimana'
-                                : '$n ${n == 1 ? 'volta' : 'volte'} a settimana',
+                            n > 0
+                                ? '$n ${n == 1 ? 'volta' : 'volte'} a settimana'
+                                : sedute > 0
+                                ? '$sedute ${sedute == 1 ? 'seduta' : 'sedute'} in calendario'
+                                : 'nessuna seduta in calendario',
                             if (attivi.contains(sp)) 'già preparato',
                           ].join(' · '),
                         ),

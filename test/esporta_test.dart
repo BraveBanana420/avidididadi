@@ -21,6 +21,62 @@ void main() {
     note: 'Camminata',
   );
 
+  group('copie delle sedute mandate a intervals.icu', () {
+    // Il caso vero: bici sui rulli registrata dall'app, mandata e riscaricata.
+    final partenza = DateTime(2026, 11, 6, 7, 12);
+    final fine = partenza.add(const Duration(minutes: 45));
+    final bici = Sessione(
+      id: 'app-l-2026-11-06-0712-bici',
+      data: DateTime(2026, 11, 6),
+      inizio: partenza,
+      fine: fine,
+      sport: 'Bici',
+      durataMin: 45,
+      distanzaKm: 12.44,
+      fonte: fonteApp,
+    );
+    Sessione daIcu(String id, {DateTime? inizio}) => Sessione(
+      id: 'icu-$id',
+      data: DateTime(2026, 11, 6),
+      inizio: inizio ?? partenza,
+      fine: (inizio ?? partenza).add(const Duration(minutes: 45)),
+      sport: 'Bici',
+      durataMin: 45,
+      fonte: 'intervals.icu (intervals.icu)',
+      origine: 'intervals.icu',
+    );
+
+    test('la seduta dell\'app resta sua e si può modificare', () {
+      final icu = senzaCopieInviate([daIcu('i1')], {bici.id: 'i1'}, [bici]);
+      final unite = combina([bici], icu);
+      expect(unite.single.id, bici.id);
+      expect(unite.single.fonte, fonteApp);
+    });
+
+    test('senza l\'id di là la copia si riconosce dalla partenza', () {
+      expect(senzaCopieInviate([daIcu('i1')], {bici.id: ''}, [bici]), isEmpty);
+    });
+
+    test('tolta la seduta, la copia non torna', () {
+      expect(senzaCopieInviate([daIcu('i1')], {bici.id: 'i1'}, []), isEmpty);
+    });
+
+    test('la stessa seduta registrata anche dall\'orologio vince ancora', () {
+      final orologio = daIcu('i2', inizio: partenza.add(Duration(minutes: 3)));
+      final icu = senzaCopieInviate([daIcu('i1'), orologio], {bici.id: 'i1'}, [
+        bici,
+      ]);
+      expect(combina([bici], icu).single.id, 'icu-i2');
+    });
+
+    test('mai inviata: l\'attività di là prende il posto come prima', () {
+      expect(
+        combina([bici], senzaCopieInviate([daIcu('i1')], {}, [bici])).single.id,
+        'icu-i1',
+      );
+    });
+  });
+
   group('invio delle sedute', () {
     InvioSessione invio(
       Sessione s, {

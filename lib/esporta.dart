@@ -1,3 +1,4 @@
+import 'intervals.dart';
 import 'models.dart';
 import 'percorso.dart';
 import 'sincronizzazione.dart';
@@ -46,6 +47,36 @@ InvioSessione invioDi(
     return InvioSessione.tasto;
   }
   return InvioSessione.automatico;
+}
+
+/// Le attività di intervals.icu senza quelle mandate dall'app: sono copie delle
+/// sue sedute, non vengono da un orologio e non devono prenderne il posto (la
+/// seduta non si potrebbe più modificare). Restano nascoste anche se la seduta
+/// viene tolta dallo storico. [inviate] va da id della seduta a id là; se l'id
+/// là non è arrivato, la copia si riconosce dallo stesso orario di partenza.
+List<Sessione> senzaCopieInviate(
+  List<Sessione> icu,
+  Map<String, String> inviate,
+  List<Sessione> storico,
+) {
+  if (inviate.isEmpty) return icu;
+  final idCopie = {
+    for (final id in inviate.values)
+      if (id.isNotEmpty) '$prefissoIcu$id',
+  };
+  final senzaId = [
+    for (final s in storico)
+      if (s.inizio != null && inviate[s.id]?.isEmpty == true) s,
+  ];
+  bool stessaPartenza(Sessione a, Sessione b) =>
+      stessoSport(a.sport, b.sport) &&
+      b.inizio != null &&
+      a.inizio!.difference(b.inizio!).abs() <= const Duration(minutes: 1);
+  return [
+    for (final s in icu)
+      if (!idCopie.contains(s.id) && !senzaId.any((x) => stessaPartenza(x, s)))
+        s,
+  ];
 }
 
 /// Tipo di attività di intervals.icu (e di Strava) per una sessione svolta.

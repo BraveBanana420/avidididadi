@@ -12,6 +12,7 @@ import '../figura.dart';
 import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
+import '../modifica_sessione.dart';
 import '../models.dart';
 import '../potenza.dart';
 import '../percorso.dart';
@@ -26,6 +27,7 @@ import 'crea_piano_screen.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
+import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
 
@@ -764,6 +766,7 @@ class _DatiSessione extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final nuoto = s.sport.toLowerCase() == 'nuoto';
     final r = ritmo(s);
+    final vasca = nuoto ? state.nuotoDi(s.id) : null;
     final dati = <(String, String)>[
       if (s.inizio != null && s.fine != null)
         ('Orario', '${_ora(s.inizio!)} – ${_ora(s.fine!)}'),
@@ -775,7 +778,14 @@ class _DatiSessione extends StatelessWidget {
               ? '${(s.distanzaKm * 1000).round()} m'
               : '${fmtNum(s.distanzaKm)} km',
         ),
-      if (r != null)
+      if (vasca != null && vasca.vasche > 0)
+        ('Vasche', '${vasca.vasche} da ${vasca.lunghezzaM} m'),
+      if (vasca != null && vasca.stile.isNotEmpty) ('Stile', vasca.stile),
+      // Il tempo medio scritto a mano vale più del calcolo: la durata comprende
+      // anche le pause a bordo vasca.
+      if (vasca != null && vasca.passo100S > 0)
+        ('Tempo medio', '${tempoScritto(vasca.passo100S)} /100 m')
+      else if (r != null)
         (
           s.sport.toLowerCase() == 'bici' ? 'Velocità media' : 'Ritmo medio',
           '${fmtRitmo(s.sport, r)} ${unitaRitmo(s.sport)}',
@@ -900,6 +910,19 @@ class _DatiSessione extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
+                // Quelle dell'app si correggono in tutto: per chi non ha un
+                // orologio i dati si scrivono qui.
+                if (state.storicoCsv.any((x) => x.id == s.id))
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            ModificaSessioneScreen(state: state, sessione: s),
+                      ),
+                    ),
+                    icon: const Icon(Icons.edit_note),
+                    label: const Text('Modifica i dati'),
+                  ),
                 // Un'immagine della sessione per WhatsApp, Instagram…
                 OutlinedButton.icon(
                   onPressed: () => apriCondividiSessione(context, state, s),

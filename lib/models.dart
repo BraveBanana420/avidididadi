@@ -366,7 +366,13 @@ class Sessione {
     sport,
     tipo,
     durataMin == 0 ? '' : '$durataMin',
-    fmtNum(distanzaKm),
+    // Tre decimali: in piscina conta il metro (1025 m non sono 1030).
+    distanzaKm == 0
+        ? ''
+        : distanzaKm
+              .toStringAsFixed(3)
+              .replaceFirst(RegExp(r'0+$'), '')
+              .replaceFirst(RegExp(r'\.$'), ''),
     fcMedia == 0 ? '' : '$fcMedia',
     fmtNum(rpe),
     fonte,

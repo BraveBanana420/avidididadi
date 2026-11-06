@@ -23,6 +23,7 @@ import 'health_connect.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
+import 'modifica_sessione.dart';
 import 'models.dart';
 import 'navigazione.dart';
 import 'obiettivo.dart';
@@ -41,7 +42,13 @@ import 'workout_base.dart';
 /// Sport ignorati dall'app (non mostrati né importati).
 const sportEsclusi = {'Altro'};
 
-List<Slot> settimanaIniziale() => [
+/// La settimana con cui si parte. Chi installa l'app parte da zero e la sceglie
+/// nel benvenuto. Solo chi aveva già un piano e non ha mai salvato la settimana
+/// tiene quella che usava prima, altrimenti la perderebbe aggiornando.
+List<Slot> settimanaDiPartenza(List<Slot>? salvata, {required bool conPiano}) =>
+    salvata ?? (conPiano ? _settimanaDiPrima() : []);
+
+List<Slot> _settimanaDiPrima() => [
   Slot(giorno: 1, fascia: 'Mattina', sport: 'Forza', durataMin: 45),
   Slot(giorno: 2, fascia: 'Mattina', sport: 'Bici', durataMin: 60),
   Slot(giorno: 2, fascia: 'Pranzo', sport: 'Nuoto', durataMin: 60),
@@ -67,6 +74,7 @@ class AppState extends ChangeNotifier {
   /// Passi degli allenamenti scritti dall'assistente (allenamenti_agente.csv):
   /// valgono al posto di quelli preparati dall'app in quel giorno.
   List<WorkoutStep> allenamentiAgente = [];
+  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<ProgrammaRiga> programma = [];
   Profilo profilo = Profilo();
   List<Misura> misure = []; // in ordine di data
@@ -105,7 +113,6 @@ class AppState extends ChangeNotifier {
 
   Future<void> load() async {
     await Storage.pulisciTemporanei();
-    settimana = await Storage.readSettimana() ?? settimanaIniziale();
     piano = [
       for (final r in await Storage.readPiano())
         r.tipo.isNotEmpty || tipoPredefinito(r.data, r.sport).isEmpty
@@ -121,6 +128,10 @@ class AppState extends ChangeNotifier {
                 note: r.note,
               ),
     ];
+    settimana = settimanaDiPartenza(
+      await Storage.readSettimana(),
+      conPiano: piano.isNotEmpty,
+    );
 
     // Una riga illeggibile si salta: non deve impedire di aprire l'app.
     Sessione? riga(Tabella t, List<String> r) {
@@ -146,6 +157,13 @@ class AppState extends ChangeNotifier {
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
     backupAuto = await leggiImpostazioniBackup();
+    final tNuoto = await Storage.readTabella('nuoto.csv');
+    nuotate = tNuoto == null
+        ? []
+        : tNuoto.righe
+              .map((r) => SedutaNuoto.da(tNuoto, r))
+              .whereType<SedutaNuoto>()
+              .toList();
     final tInviate = await Storage.readTabella('sessioni_inviate.csv');
     inviate = {
       if (tInviate != null)
@@ -594,6 +612,11 @@ class AppState extends ChangeNotifier {
         inviate.containsKey(s.id)) {
       inviate = {...inviate}..remove(s.id);
       await _salvaInviate();
+    }
+    // Una nuotata nuova con lo stesso id non eredita le vasche di prima.
+    if (prima != null && prima.inizio != s.inizio && nuotoDi(s.id) != null) {
+      nuotate = nuotate.where((x) => x.idSessione != s.id).toList();
+      await _salvaNuotate();
     }
     storicoCsv = [...storicoCsv.where((x) => x.id != s.id), s];
     await Storage.write(
@@ -1265,6 +1288,19 @@ class AppState extends ChangeNotifier {
     oggi: DateTime.now(),
   );
 
+  /// Le sedute decise dall'assistente devono poter partire: attiva la
+  /// preparazione dei loro sport, così l'app ne scrive i passi.
+  Future<void> _attivaSportDelPiano() async {
+    final oggi = soloData(DateTime.now());
+    final nuovi = sportDaAttivare(piano, profilo.sportGenerati, oggi);
+    if (nuovi.isEmpty) return;
+    if (profilo.inizioEndurance == null || profilo.sportGenerati.isEmpty) {
+      profilo.inizioEndurance = oggi;
+    }
+    profilo.sportGenerati = {...profilo.sportGenerati, ...nuovi};
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+  }
+
   /// Sostituisce il calendario dalla data del piano nuovo (ricontrollato).
   Future<int> applicaPianoAgente(PianoAgente p, {MessaggioChat? da}) async {
     final esito = valutaPianoDa(p);
@@ -1272,6 +1308,7 @@ class AppState extends ChangeNotifier {
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();
+    await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
     _segnaApplicata(da);
@@ -1289,6 +1326,7 @@ class AppState extends ChangeNotifier {
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();
+    await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
     m.applicata = true;
@@ -1495,13 +1533,14 @@ class AppState extends ChangeNotifier {
   void _ricombina() {
     // Le tolte si filtrano dopo aver unito i doppioni: così non spunta al loro
     // posto la copia della stessa attività arrivata da un'altra fonte.
+    final icu = senzaCopieInviate(sessioniIcu, inviate, storicoCsv);
     sessioni = [
       for (final s in senzaNascoste(
         combina(
           storicoCsv,
           conTipoDalPiano([
-            ...senzaDoppioniIcu(sessioniHc, sessioniIcu),
-            ...sessioniIcu,
+            ...senzaDoppioniIcu(sessioniHc, icu),
+            ...icu,
           ], piano),
         ),
         nascoste,
@@ -2271,6 +2310,36 @@ class AppState extends ChangeNotifier {
     final s = schede.where((x) => x.id == id).firstOrNull;
     if (s == null || kg.isEmpty) return;
     await salvaScheda(conPesi(s, kg));
+  }
+
+  /// Vasche e tempi scritti a mano per una nuotata, se ci sono.
+  SedutaNuoto? nuotoDi(String idSessione) =>
+      nuotate.where((n) => n.idSessione == idSessione).firstOrNull;
+
+  Future<void> _salvaNuotate() => Storage.write(
+    'nuoto.csv',
+    nuotoHeader,
+    nuotate.map((x) => x.toRow()).toList(),
+  );
+
+  /// Salva i dati scritti a mano su una seduta registrata con l'app.
+  Future<void> modificaSessione(Sessione s, {SedutaNuoto? nuoto}) async {
+    storicoCsv = [for (final x in storicoCsv) x.id == s.id ? s : x];
+    await Storage.write(
+      'sessioni.csv',
+      sessioniHeader,
+      storicoCsv.map((x) => x.toRow()).toList(),
+    );
+    if (nuoto != null) {
+      nuotate = [
+        ...nuotate.where((x) => x.idSessione != s.id),
+        if (!nuoto.vuota) nuoto,
+      ];
+      await _salvaNuotate();
+    }
+    _ricombina();
+    await _aggiornaEndurance();
+    notifyListeners();
   }
 
   /// Le serie di forza di un giorno, raggruppate per esercizio in ordine.
