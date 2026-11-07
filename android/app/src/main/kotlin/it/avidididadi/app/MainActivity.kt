@@ -80,6 +80,8 @@ class MainActivity : FlutterFragmentActivity() {
 
     /** [urgente]: interrompe la frase in corso e la coda (le curve). */
     private fun parla(testo: String, urgente: Boolean = false) {
+        // Sintesi non ancora pronta: anche qui vale solo l'ultima frase urgente.
+        if (urgente) inAttesa.clear()
         val t = tts
         if (t == null) {
             inAttesa.add(testo)

@@ -1,3 +1,4 @@
+import 'attivita.dart';
 import 'models.dart';
 
 // Attività libera: si parte subito, fuori dal piano, e si aggiunge a quello
@@ -10,10 +11,12 @@ const sportCamminata = 'Camminata';
 const attivitaLibere = [
   ('Corsa', 'Corsa libera', 'Corsa libera'),
   (sportCamminata, 'Camminata', 'Camminata'),
+  ('Arrampicata', 'Arrampicata', 'Arrampicata'),
   ('Bici', 'Uscita libera', 'Uscita in bici'),
   ('Nuoto', 'Piscina', 'Nuoto libero'),
   ('Forza', 'Allenamento libero', 'Allenamento libero'),
   ('Mobilità', 'Mobilità libera', 'Mobilità e stretching'),
+  (sportAttivitaLibera, 'Altra attività', 'Altra attività'),
 ];
 
 /// Un passo solo, senza tempo né distanza: il cronometro sale e si chiude

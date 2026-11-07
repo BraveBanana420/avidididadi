@@ -22,6 +22,8 @@ class Profilo {
   DateTime? cambioLivello; // ultimo cambio di livello automatico
   // Corsa, nuoto e bici generati dall'app (vuoto = workout Garmin fissi).
   Set<String> sportGenerati = {};
+  // Le attività scelte: si vedono solo queste (vuoto = non ancora scelte, tutte).
+  Set<String> attivita = {};
   DateTime? inizioEndurance; // da qui si contano i blocchi di 4 settimane
   Map<String, int> regolazioneEndurance = {}; // per sport, dai feedback
   Map<String, String> progressione = {}; // per sport: durata, intensita, auto
@@ -102,6 +104,7 @@ class Profilo {
     ['passo_critico_s', passoCriticoManuale == 0 ? '' : '$passoCriticoManuale'],
     ['ftp', ftpManuale == 0 ? '' : '$ftpManuale'],
     ['ftp_corsa', ftpCorsaManuale == 0 ? '' : '$ftpCorsaManuale'],
+    ['attivita', attivita.join(',')],
   ];
 
   static Profilo da(Tabella? t) {
@@ -120,6 +123,11 @@ class Profilo {
     p.regolazione = int.tryParse(m['regolazione'] ?? '') ?? 0;
     p.cambioLivello = parseData(m['cambio_livello'] ?? '');
     p.sportGenerati = (m['sport_generati'] ?? '')
+        .split(',')
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .toSet();
+    p.attivita = (m['attivita'] ?? '')
         .split(',')
         .map((x) => x.trim())
         .where((x) => x.isNotEmpty)

@@ -1,8 +1,81 @@
 import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/voce.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  group('cambiando blocco', () {
+    const canale = MethodChannel('avidididadi/avvio');
+    Blocco blocco(String titolo) => Blocco(
+      tipo: TipoBlocco.lavoro,
+      titolo: titolo,
+      dettaglio: '',
+      intensita: '',
+      obiettivo2: '',
+      note: '',
+      fase: 'principale',
+      esercizio: '',
+      secondi: null,
+      passo: 0,
+      serie: 1,
+      ripetizioni: '',
+    );
+
+    late List<Map<Object?, Object?>> dette;
+    var risposta = 'parlato';
+    setUp(() {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      dette = [];
+      risposta = 'parlato';
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(canale, (c) async {
+            if (c.method == 'parla') {
+              dette.add(c.arguments as Map<Object?, Object?>);
+            }
+            return risposta;
+          });
+    });
+    tearDown(
+      () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(canale, null),
+    );
+
+    test('col timer non taglia l\'avviso in corso', () async {
+      await Voce().diBlocco(blocco('Serie 1'), aMano: false);
+      expect(dette.single['urgente'], false);
+    });
+
+    test('a mano ogni titolo interrompe quello prima, senza coda', () async {
+      final v = Voce();
+      for (final t in [
+        'Riscaldamento',
+        'Serie 1',
+        'Serie 2',
+        'Defaticamento',
+      ]) {
+        await v.diBlocco(blocco(t), aMano: true);
+      }
+      expect(dette, hasLength(4));
+      expect(dette.every((d) => d['urgente'] == true), isTrue);
+      expect(dette.last['testo'], contains('Defaticamento'));
+    });
+
+    test('le altre frasi restano in coda, senza interrompere', () async {
+      await Voce().di('Chilometro 3.');
+      expect(dette.single['urgente'], false);
+    });
+
+    test('durante una chiamata conta solo l\'ultimo titolo', () async {
+      final v = Voce();
+      risposta = 'chiamata';
+      await v.diBlocco(blocco('Serie 1'), aMano: true);
+      await v.diBlocco(blocco('Serie 2'), aMano: true);
+      // Il secondo non chiede nemmeno di parlare: aspetta la fine della chiamata.
+      expect(dette, hasLength(1));
+      v.ferma();
+    });
+  });
+
   group('a voce, per esteso', () {
     test('durate', () {
       expect(parlaDurata(const Duration(seconds: 42)), '42 secondi');

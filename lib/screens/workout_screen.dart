@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../adattamento.dart';
 import '../app_state.dart';
+import '../arrampicata.dart';
 import '../dati_live.dart';
 import '../esercizi.dart';
 import '../esporta.dart';
@@ -13,6 +14,7 @@ import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
 import '../modifica_sessione.dart';
+import '../attivita_libera.dart';
 import '../models.dart';
 import '../potenza.dart';
 import '../percorso.dart';
@@ -21,11 +23,13 @@ import '../registro_forza.dart';
 import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
+import 'arrampicata_sheet.dart';
 import 'catalogo_screen.dart';
 import 'condividi_screen.dart';
 import 'crea_piano_screen.dart';
 import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
+import 'allenamenti_arrampicata_screen.dart';
 import 'grafici_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
@@ -102,11 +106,20 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     final sport = widget.sport;
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
-    final steps = state.passiSeduta(data, sport, widget.tipo);
-    final id = steps.isEmpty ? null : steps.first.id;
     final svolte = state.sessioni
         .where((s) => s.data == data && stessoSport(s.sport, sport))
         .toList();
+    final previsto = state.piano
+        .where((r) => r.data == data && stessoSport(r.sport, sport))
+        .firstOrNull;
+    // A seduta fatta il tipo qui è quello svolto: i passi previsti vengono dal
+    // calendario.
+    final steps = state.passiSeduta(
+      data,
+      sport,
+      svolte.isNotEmpty && previsto != null ? previsto.tipo : widget.tipo,
+    );
+    final id = steps.isEmpty ? null : steps.first.id;
     final perId = {for (final e in state.esercizi) e.id: e};
     // La figura dei muscoli c'è solo se la parte principale ha esercizi noti
     // (forza sì, mobilità no).
@@ -153,9 +166,6 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     }
 
     // Fatto un allenamento diverso da quello in programma: lo si dice.
-    final previsto = state.piano
-        .where((r) => r.data == data && stessoSport(r.sport, sport))
-        .firstOrNull;
     if (svolte.isNotEmpty &&
         previsto != null &&
         state.statoDel(previsto) == StatoSeduta.sostituita) {
@@ -221,18 +231,48 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       children.add(const SizedBox(height: 12));
     }
 
+    // Non registrata: i dati si possono scrivere anche giorni dopo.
+    if (svolte.isEmpty &&
+        !stessoSport(sport, 'Riposo') &&
+        !data.isAfter(soloData(DateTime.now()))) {
+      children.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => ModificaSessioneScreen(
+                  state: state,
+                  sessione: sessioneDaScrivere(
+                    data,
+                    sport,
+                    tipo: tipo,
+                    durataMin: widget.durataMin,
+                    occupati: {for (final s in state.sessioni) s.id},
+                  ),
+                ),
+              ),
+            ),
+            icon: const Icon(Icons.edit_note),
+            label: const Text("L'ho già fatta: scrivi i dati"),
+          ),
+        ),
+      );
+    }
+
     if (steps.isEmpty) {
       if (svolte.isEmpty) {
         children.add(
           _SenzaEsercizi(
             state: state,
             sport: sport,
+            giorno: data,
             durataMin: widget.durataMin,
           ),
         );
       }
-    } else if (svolte.isEmpty) {
-      // Il previsto si vede solo finché l'attività non è stata fatta.
+    } else if (svolte.isEmpty || previsto != null) {
+      // A seduta fatta resta da vedere cosa era in programma, per confrontarlo.
       final nome = steps.first.nome;
       final tot = steps.first.durataTot;
       // Modalità allenamento: un esercizio alla volta, con il cronometro.
@@ -513,10 +553,12 @@ class _SpiegazioneState extends State<_Spiegazione> {
 class _SenzaEsercizi extends StatelessWidget {
   final AppState state;
   final String sport;
+  final DateTime giorno;
   final int durataMin;
   const _SenzaEsercizi({
     required this.state,
     required this.sport,
+    required this.giorno,
     required this.durataMin,
   });
 
@@ -524,9 +566,51 @@ class _SenzaEsercizi extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final forza = stessoSport(sport, 'Forza');
+    final arrampicata = stessoSport(sport, sportArrampicata);
     final daCreare = forza
         ? state.profilo.obiettivo.isEmpty
-        : !state.profilo.sportGenerati.contains(normSport(sport));
+        : !arrampicata &&
+              !state.profilo.sportGenerati.contains(normSport(sport));
+    if (arrampicata) {
+      return Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 8,
+            children: [
+              Text('Seduta di arrampicata', style: t.titleMedium),
+              const Text(
+                'Scegli uno dei tuoi allenamenti o chiedilo all\'assistente. '
+                'Puoi anche partire e segnare vie e gradi alla fine.',
+              ),
+              if (giorno == soloData(DateTime.now()))
+                FilledButton.icon(
+                  onPressed: () => avviaAllenamento(
+                    context,
+                    state,
+                    sport: sport,
+                    tipo: sportArrampicata,
+                    nome: sportArrampicata,
+                    passi: passiLiberi(sport, sportArrampicata),
+                  ),
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Inizia la seduta'),
+                ),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => AllenamentiArrampicataScreen(state: state),
+                  ),
+                ),
+                icon: const Icon(Icons.terrain),
+                label: const Text('Scegli un allenamento'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -849,7 +933,12 @@ class _DatiSessione extends StatelessWidget {
             if (s.fonte.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
-                child: Text('Fonte: ${s.fonte}', style: t.bodySmall),
+                child: Text(
+                  state.sessioniModificate.containsKey(s.id)
+                      ? 'Fonte: ${s.fonte} · corretta a mano'
+                      : 'Fonte: ${s.fonte}',
+                  style: t.bodySmall,
+                ),
               ),
             const SizedBox(height: 12),
             LayoutBuilder(
@@ -901,6 +990,47 @@ class _DatiSessione extends StatelessWidget {
                   child: Text('• $nome: ${fmtSerie(serie)}'),
                 ),
             ],
+            // Arrampicata: vie, blocchi e gradi, da segnare anche dopo.
+            if (stessoSport(s.sport, sportArrampicata)) ...[
+              const SizedBox(height: 16),
+              Text('Arrampicata', style: t.titleSmall),
+              const SizedBox(height: 4),
+              if (arrampicataDi(state.arrampicate, s.id, s.data)
+                  case final a?) ...[
+                for (final r in a.riassunto)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Text('• $r'),
+                  ),
+                if (recordArrampicata(state.arrampicate, a.disciplina) case (
+                  final g,
+                  final quando,
+                ))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Record ${a.falesia ? 'sulle vie' : 'nel boulder'}: '
+                      '$g (${quando.day} ${mesiNomi[quando.month - 1]} ${quando.year})',
+                      style: t.bodySmall,
+                    ),
+                  ),
+              ],
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => apriArrampicata(
+                  context,
+                  state,
+                  idSessione: s.id,
+                  data: s.data,
+                ),
+                icon: const Icon(Icons.terrain),
+                label: Text(
+                  arrampicataDi(state.arrampicate, s.id, s.data) == null
+                      ? 'Segna vie, blocchi e gradi'
+                      : 'Modifica',
+                ),
+              ),
+            ],
             if (s.note.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(s.note, style: t.bodySmall),
@@ -910,18 +1040,23 @@ class _DatiSessione extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                // Quelle dell'app si correggono in tutto: per chi non ha un
-                // orologio i dati si scrivono qui.
-                if (state.storicoCsv.any((x) => x.id == s.id))
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            ModificaSessioneScreen(state: state, sessione: s),
-                      ),
+                // Si corregge tutto, anche quello che arriva dall'orologio:
+                // quanto scritto a mano resta quando i dati arrivano di nuovo.
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          ModificaSessioneScreen(state: state, sessione: s),
                     ),
-                    icon: const Icon(Icons.edit_note),
-                    label: const Text('Modifica i dati'),
+                  ),
+                  icon: const Icon(Icons.edit_note),
+                  label: const Text('Modifica i dati'),
+                ),
+                if (state.sessioniModificate.containsKey(s.id))
+                  OutlinedButton.icon(
+                    onPressed: () => state.annullaCorrezioni(s.id),
+                    icon: const Icon(Icons.undo),
+                    label: const Text('Torna ai dati originali'),
                   ),
                 // Un'immagine della sessione per WhatsApp, Instagram…
                 OutlinedButton.icon(

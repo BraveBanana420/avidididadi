@@ -58,13 +58,19 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
     ...(attivi.isNotEmpty
         ? attivi
         : {
-            for (final s in _sportPreparabili)
+            for (final s in _preparabili)
               if (_preparabile(s)) s,
           }),
     if (widget.sportIniziale != null && _preparabile(widget.sportIniziale!))
       normSport(widget.sportIniziale!),
   };
   bool inCorso = false;
+
+  /// Solo le attività scelte (e quelle già preparate, che non spariscono).
+  List<String> get _preparabili => [
+    for (final s in _sportPreparabili)
+      if (widget.state.attivitaScelta(s) || attivi.contains(s)) s,
+  ];
 
   int _volte(String sport) =>
       widget.state.settimana.where((x) => stessoSport(x.sport, sport)).length;
@@ -300,7 +306,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
             Card(
               child: Column(
                 children: [
-                  for (final sp in _sportPreparabili)
+                  for (final sp in _preparabili)
                     () {
                       final n = _volte(sp);
                       final sedute = _inCalendario(sp);

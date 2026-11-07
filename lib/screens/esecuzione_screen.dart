@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_state.dart';
+import '../arrampicata.dart';
 import '../attivita_libera.dart';
 import '../avvisi.dart';
 import '../navigazione.dart';
@@ -31,6 +32,7 @@ import '../voce.dart';
 import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
+import 'arrampicata_sheet.dart';
 import 'battito_sheet.dart';
 import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
@@ -726,14 +728,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       }
       if (r <= 0) {
         avviso(fine: true);
-        _avanti();
+        _avanti(daTimer: true);
         return;
       }
     }
     setState(() {});
   }
 
-  void _nuovoBlocco() {
+  void _nuovoBlocco({required bool aMano}) {
     blocco
       ..reset()
       ..start();
@@ -744,7 +746,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _ritmoCadenza.azzera();
     // L'attività libera ha un passo solo: basta il cronometro.
     if (!widget.libera) {
-      voce.di(fraseBlocco(b), valida: const Duration(seconds: 30));
+      voce.diBlocco(b, aMano: aMano);
     }
     _salvaInCorso();
     _notifica();
@@ -796,7 +798,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
   }();
 
-  void _avanti({bool saltato = false}) {
+  void _avanti({bool saltato = false, bool daTimer = false}) {
     if (!preparati && _daRegistrare(i)) {
       if (saltato) {
         fatte.remove(i);
@@ -810,18 +812,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         _partenza ??= DateTime.now();
         totale.start();
         gps?.imposta(true);
-        _nuovoBlocco();
+        _nuovoBlocco(aMano: !daTimer);
       });
       return;
     }
     tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
     if (i >= blocchi.length - 1) {
-      _fine();
+      _fine(aMano: !daTimer);
       return;
     }
     setState(() {
       i++;
-      _nuovoBlocco();
+      _nuovoBlocco(aMano: !daTimer);
     });
   }
 
@@ -890,7 +892,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (preparati || i == 0) return;
     setState(() {
       i--;
-      _nuovoBlocco();
+      _nuovoBlocco(aMano: true);
     });
   }
 
@@ -974,7 +976,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _notifica();
   }
 
-  void _fine() {
+  void _fine({bool aMano = true}) {
     totale.stop();
     blocco.stop();
     if (_bici) sensoreBici.libera();
@@ -991,6 +993,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     voce.di(
       'Allenamento completato. ${parlaDurata(_tempoTotale)}'
       '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
+      urgente: aMano,
     );
     setState(() => finito = true);
     _salvaInCorso(); // anche il riepilogo si ritrova, se l'app si chiude
@@ -1027,6 +1030,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     }
     if (r == 'esci') await cancellaInCorso();
     return r == 'esci';
+  }
+
+  /// Id della sessione che si salva alla fine.
+  String get _idSessione {
+    final inizio = _partenza ?? DateTime.now().subtract(_tempoTotale);
+    return widget.libera
+        ? idLibera(inizio, widget.sport)
+        : 'app-${isoData(soloData(inizio))}-${widget.sport.toLowerCase()}';
   }
 
   Future<void> _salvaEChiudi({
@@ -1097,7 +1108,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
-      if (aMano && mounted) {
+      // Nuoto e arrampicata non hanno niente che li misuri: subito i dati a mano.
+      if ((aMano ||
+              stessoSport(widget.sport, 'Nuoto') ||
+              stessoSport(widget.sport, sportArrampicata)) &&
+          mounted) {
         await cancellaInCorso();
         await navigator.push(
           MaterialPageRoute<void>(
@@ -2198,6 +2213,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           nomeWorkout: widget.passi.firstOrNull?.nome ?? '',
           fatte: [for (final l in seriePasso.values) ...l],
         ),
+        if (stessoSport(widget.sport, sportArrampicata)) ...[
+          const SizedBox(height: 12),
+          _RiepilogoArrampicata(
+            state: widget.state,
+            idSessione: _idSessione,
+            onCambia: () => setState(() {}),
+          ),
+        ],
         Material(
           type: MaterialType.transparency,
           child: CheckboxListTile(
@@ -3088,6 +3111,58 @@ class _PesiSchedaState extends State<_PesiScheda> {
                   ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Arrampicata: vie, blocchi e gradi della seduta appena finita.
+class _RiepilogoArrampicata extends StatelessWidget {
+  final AppState state;
+  final String idSessione;
+  final VoidCallback onCambia;
+  const _RiepilogoArrampicata({
+    required this.state,
+    required this.idSessione,
+    required this.onCambia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final oggi = soloData(DateTime.now());
+    final a = state.arrampicate
+        .where((x) => x.idSessione == idSessione)
+        .firstOrNull;
+    Future<void> apri() async {
+      await apriArrampicata(context, state, idSessione: idSessione, data: oggi);
+      onCambia();
+    }
+
+    if (a == null) {
+      return FilledButton.tonalIcon(
+        onPressed: apri,
+        icon: const Icon(Icons.terrain),
+        label: const Text('Segna vie, blocchi e gradi'),
+      );
+    }
+    return SuperficiePulse(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final r in a.riassunto) Text(r, style: t.bodyMedium),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Modifica',
+            onPressed: apri,
+            icon: const Icon(Icons.edit_outlined),
+          ),
+        ],
       ),
     );
   }

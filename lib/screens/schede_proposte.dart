@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 
 import '../agente_esterno.dart';
 import '../allenamento_agente.dart';
+import '../allenamento_arrampicata.dart';
 import '../app_state.dart';
 import '../assistente.dart';
 import '../esecuzione.dart';
 import '../models.dart';
 import '../potenza.dart';
+import 'allenamenti_arrampicata_screen.dart';
 import 'profilo_allenamento.dart';
 
 // Anteprime delle proposte del coach (chat con la chiave API) e
@@ -231,6 +233,114 @@ class SchedaPiano extends StatelessWidget {
                   ),
                 ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Anteprima degli allenamenti di arrampicata dell'assistente: vanno nella
+/// raccolta e, quelli con la data, nel calendario.
+class SchedaArrampicata extends StatelessWidget {
+  final AppState state;
+  final List<PropostaArrampicata> proposte;
+  final MessaggioChat?
+  messaggio; // dalla chat del coach; null: assistente esterno
+  const SchedaArrampicata({
+    super.key,
+    required this.state,
+    required this.proposte,
+    this.messaggio,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final oggi = soloData(DateTime.now());
+    final conData = proposte.where((p) => p.data != null).length;
+    final passate = proposte
+        .where((p) => p.data != null && p.data!.isBefore(oggi))
+        .length;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(
+              proposte.length == 1
+                  ? 'Allenamento di arrampicata'
+                  : '${proposte.length} allenamenti di arrampicata',
+              style: t.titleSmall,
+            ),
+            for (final p in proposte) ...[
+              Row(
+                children: [
+                  for (final tipo in p.allenamento.tipi)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: Icon(iconaTipoArrampicata(tipo), size: 18),
+                    ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      '${p.allenamento.nome} · ${p.allenamento.minuti} min',
+                      style: t.titleSmall,
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                [
+                  if (p.allenamento.categoria.isNotEmpty)
+                    p.allenamento.categoria,
+                  p.data == null
+                      ? 'nella raccolta'
+                      : 'nel calendario ${dataLunga(p.data!)}',
+                ].join(' · '),
+                style: t.bodySmall,
+              ),
+              for (final e in p.allenamento.esercizi)
+                Text('• ${e.nome}: ${e.riassunto}', style: t.bodySmall),
+            ],
+            if (passate > 0)
+              Text(
+                'Le date passate non vanno nel calendario, ma l\'allenamento '
+                'si salva lo stesso.',
+                style: t.bodySmall,
+              ),
+            if (messaggio?.applicata ?? state.rispostaApplicata)
+              const Text('Salvato.')
+            else
+              FilledButton.icon(
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final (salvati, messi) = await state
+                      .applicaProposteArrampicata(proposte, da: messaggio);
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        [
+                          salvati == 1
+                              ? 'Salvato negli allenamenti di arrampicata.'
+                              : '$salvati salvati negli allenamenti di arrampicata.',
+                          if (messi > 0)
+                            messi == 1
+                                ? 'Uno è nel calendario.'
+                                : '$messi sono nel calendario.',
+                        ].join(' '),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.save_alt),
+                label: Text(
+                  conData > passate ? 'Salva e metti nel calendario' : 'Salva',
+                ),
+              ),
           ],
         ),
       ),

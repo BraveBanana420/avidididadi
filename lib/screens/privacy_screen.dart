@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-06.3';
+const versioneTermini = '2026-11-07.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -74,8 +74,8 @@ class PrivacyScreen extends StatelessWidget {
         "Nome, data di nascita, sesso, altezza, peso e misure, foto del "
             "profilo, obiettivo e gara, settimana tipo, attrezzatura, feedback "
             "dopo gli allenamenti (fatica, completata, dolore), ripetizioni e "
-            "kg delle serie di forza, vasche, tempi e altri dati delle sedute "
-            "scritti a mano, schede scritte a mano e sessioni "
+            "kg delle serie di forza, vie, blocchi, gradi e allenamenti dell'arrampicata, vasche, tempi e altri dati delle sedute scritti a mano, "
+            "schede scritte a mano e sessioni "
             "importate da file CSV. Servono a preparare il piano e a mostrare i "
             "progressi.",
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../arrampicata.dart';
 import '../charts.dart';
 import '../models.dart';
 import '../widgets.dart';
@@ -9,11 +10,13 @@ class SportScreen extends StatelessWidget {
   final String sport;
   final List<Sessione> sessioni;
   final List<DateTime> inizi; // lunedì di ogni settimana del periodo
+  final List<SedutaArrampicata> arrampicate; // vie, blocchi e gradi segnati
   const SportScreen({
     super.key,
     required this.sport,
     required this.sessioni,
     required this.inizi,
+    this.arrampicate = const [],
   });
 
   DateTime _lunedi(DateTime d) =>
@@ -139,20 +142,74 @@ class SportScreen extends StatelessWidget {
             (v) => v.toStringAsFixed(0),
           ),
         ]);
+      case 'arrampicata':
+        SedutaArrampicata? scheda(Sessione s) =>
+            arrampicataDi(arrampicate, s.id, s.data);
+        final schede = [for (final s in sessioni) ?scheda(s)];
+        final chiuse = schede.fold(0, (a, x) => a + x.chiuse);
+        final metri = schede.fold(0, (a, x) => a + x.metri);
+        final viaMax = recordArrampicata(schede, Disciplina.falesia);
+        final bloccoMax = recordArrampicata(schede, Disciplina.boulder);
+        _Grafico gradi(String titolo, Disciplina x) =>
+            d.perSessione(titolo, (s) {
+              final a = scheda(s);
+              if (a == null || a.disciplina != x) return null;
+              final l = livello(x, a.gradoMax);
+              return l < 0 ? null : l.toDouble();
+            }, (v) => gradiDi(x)[v.round().clamp(0, gradiDi(x).length - 1)]);
+        tiles.addAll([
+          _Tile('${sessioni.length}', 'sessioni'),
+          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', 'tempo totale'),
+          if (chiuse > 0) _Tile('$chiuse', 'vie e blocchi chiusi'),
+          if (metri > 0) _Tile('$metri m', 'metri saliti'),
+          if (viaMax != null) _Tile(viaMax.$1, 'via più difficile'),
+          if (bloccoMax != null) _Tile(bloccoMax.$1, 'blocco più difficile'),
+          _Tile(d.fcMedia(), 'FC media'),
+        ]);
+        grafici.addAll(
+          [
+            d.settimanale(
+              'Minuti a settimana',
+              (s) => s.durataMin.toDouble(),
+              0,
+            ),
+            d.settimanale(
+              'Vie e blocchi chiusi a settimana',
+              (s) => (scheda(s)?.chiuse ?? 0).toDouble(),
+              0,
+            ),
+            gradi('Grado più difficile: vie', Disciplina.falesia),
+            gradi('Grado più difficile: blocchi', Disciplina.boulder),
+            d.perSessione(
+              'FC media per sessione (bpm)',
+              _fc,
+              (v) => v.toStringAsFixed(0),
+            ),
+          ].where((g) => g.ys.any((y) => y > 0)),
+        );
       default:
         tiles.addAll([
           _Tile('${sessioni.length}', 'sessioni'),
           _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', 'tempo totale'),
+          if (d.km > 0)
+            _Tile('${d.km.toStringAsFixed(1)} km', 'distanza totale'),
           _Tile(d.fcMedia(), 'FC media'),
         ]);
-        grafici.addAll([
-          d.settimanale('Minuti a settimana', (s) => s.durataMin.toDouble(), 0),
-          d.perSessione(
-            'FC media per sessione (bpm)',
-            _fc,
-            (v) => v.toStringAsFixed(0),
-          ),
-        ]);
+        grafici.addAll(
+          [
+            d.settimanale(
+              'Minuti a settimana',
+              (s) => s.durataMin.toDouble(),
+              0,
+            ),
+            d.settimanale('Km a settimana', (s) => s.distanzaKm, 1),
+            d.perSessione(
+              'FC media per sessione (bpm)',
+              _fc,
+              (v) => v.toStringAsFixed(0),
+            ),
+          ].where((g) => g.ys.any((y) => y > 0)),
+        );
     }
 
     final t = Theme.of(context).textTheme;

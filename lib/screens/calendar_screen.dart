@@ -5,6 +5,7 @@ import '../attivita_libera.dart';
 import '../carico.dart';
 import '../generatore_mobilita.dart';
 import '../glossario.dart';
+import '../modifica_sessione.dart';
 import '../models.dart';
 import '../pulse.dart';
 import '../recupero.dart';
@@ -13,6 +14,7 @@ import '../widgets.dart';
 import '../workout_base.dart';
 import 'energia.dart';
 import 'esecuzione_screen.dart';
+import 'modifica_sessione_screen.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
 import 'schede_screen.dart';
@@ -41,6 +43,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       isScrollControlled: true,
       builder: (_) => GeneraSheet(state: widget.state),
+    );
+  }
+
+  /// Quello che non è stato registrato: si sceglie cosa e si scrivono i dati.
+  Future<void> _scriviFatta(DateTime giorno) async {
+    final state = widget.state;
+    final scelta = await scegliAttivitaLibera(
+      context,
+      titolo: "Cos'hai fatto?",
+      sottotitolo: 'Poi scrivi durata e tutto quello che ti ricordi.',
+    );
+    if (scelta == null || !mounted) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ModificaSessioneScreen(
+          state: state,
+          sessione: sessioneDaScrivere(
+            giorno,
+            scelta.$1,
+            tipo: scelta.$2,
+            occupati: {for (final s in state.sessioni) s.id},
+          ),
+        ),
+      ),
     );
   }
 
@@ -273,6 +299,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             sottotitolo: 'Sposta, aggiungi o togli: solo per quel giorno',
                             onTap: () => _apriModifica(selezionato),
                           ),
+                          if (!selezionato.isAfter(oggi))
+                            RigaPulse(
+                              segno: const IconaQuadrata(Icons.edit_note),
+                              titolo: selezionato == oggi
+                                  ? 'Scrivi un\'attività fatta oggi'
+                                  : 'Scrivi un\'attività fatta '
+                                        '${quandoGiorno(selezionato, oggi)}',
+                              sottotitolo:
+                                  'Per quello che non hai registrato: durata, '
+                                  'distanza, battito…',
+                              onTap: () => _scriviFatta(selezionato),
+                            ),
                           RigaPulse(
                             key: ChiaviTour.settimanaTipo,
                             segno: const IconaQuadrata(
@@ -1309,8 +1347,11 @@ class _GiornoSheetState extends State<GiornoSheet> {
     final r = righe[i];
     final s = await showDialog<Slot>(
       context: context,
-      builder: (_) =>
-          SlotDialog(slot: _slot(r), titolo: dataLunga(widget.data)),
+      builder: (_) => SlotDialog(
+        slot: _slot(r),
+        titolo: dataLunga(widget.data),
+        sport: widget.state.sportScelti,
+      ),
     );
     if (s != null) setState(() => righe[i] = _riga(s, r));
   }
@@ -1328,9 +1369,10 @@ class _GiornoSheetState extends State<GiornoSheet> {
         slot: Slot(
           giorno: widget.data.weekday,
           fascia: fascia,
-          sport: sportList.first,
+          sport: widget.state.sportScelti.first,
         ),
         titolo: dataLunga(widget.data),
+        sport: widget.state.sportScelti,
       ),
     );
     if (s != null) setState(() => righe.add(_riga(s)));
@@ -1602,6 +1644,50 @@ class PromemoriaScheda extends StatelessWidget {
   }
 }
 
+/// Le attività tra cui scegliere, tutte: qui non contano quelle scelte nel
+/// Profilo, perché si può sempre fare qualcosa di diverso dal solito.
+Future<(String, String, String)?> scegliAttivitaLibera(
+  BuildContext context, {
+  required String titolo,
+  required String sottotitolo,
+}) => showModalBottomSheet<(String, String, String)>(
+  context: context,
+  showDragHandle: true,
+  builder: (c) {
+    final t = Theme.of(c).textTheme;
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(titolo, style: t.titleLarge),
+            const SizedBox(height: 4),
+            Text(sottotitolo, style: t.bodySmall),
+            const SizedBox(height: 16),
+            GridView.count(
+              crossAxisCount: 3,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              children: [
+                for (final a in attivitaLibere)
+                  _Scelta(
+                    sport: a.$1,
+                    nome: a.$3,
+                    onTap: () => Navigator.pop(c, a),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  },
+);
+
 /// Pulsante rotondo "+": parte subito un'attività che si aggiunge al
 /// calendario, qualunque cosa ci sia in programma.
 class PulsanteLibera extends StatelessWidget {
@@ -1609,45 +1695,10 @@ class PulsanteLibera extends StatelessWidget {
   const PulsanteLibera({super.key, required this.state});
 
   Future<void> _scegli(BuildContext context) async {
-    final scelta = await showModalBottomSheet<(String, String, String)>(
-      context: context,
-      showDragHandle: true,
-      builder: (c) {
-        final t = Theme.of(c).textTheme;
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Cosa vuoi fare adesso?', style: t.titleLarge),
-                const SizedBox(height: 4),
-                Text(
-                  "Si aggiunge a quello che c'è in programma oggi.",
-                  style: t.bodySmall,
-                ),
-                const SizedBox(height: 16),
-                GridView.count(
-                  crossAxisCount: 3,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  children: [
-                    for (final a in attivitaLibere)
-                      _Scelta(
-                        sport: a.$1,
-                        nome: a.$3,
-                        onTap: () => Navigator.pop(c, a),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+    final scelta = await scegliAttivitaLibera(
+      context,
+      titolo: 'Cosa vuoi fare adesso?',
+      sottotitolo: "Si aggiunge a quello che c'è in programma oggi.",
     );
     if (scelta == null || !context.mounted) return;
     final (sport, tipo, nome) = scelta;

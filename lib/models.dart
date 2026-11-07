@@ -24,7 +24,15 @@ const mesiNomi = [
   'dicembre',
 ];
 const fasce = ['Mattina', 'Pranzo', 'Pomeriggio', 'Sera'];
-const sportList = ['Forza', 'Corsa', 'Nuoto', 'Bici', 'Mobilità', 'Riposo'];
+const sportList = [
+  'Forza',
+  'Corsa',
+  'Nuoto',
+  'Bici',
+  'Mobilità',
+  'Arrampicata',
+  'Riposo',
+];
 
 const settimanaHeader = [
   'giorno',

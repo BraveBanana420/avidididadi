@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'csv.dart';
+import 'attivita.dart';
 import 'models.dart';
 
 /// Logica della sincronizzazione con Health Connect, senza dipendere dal plugin:
@@ -12,7 +13,7 @@ const pacchettoGarmin = 'com.garmin.android.apps.connectmobile';
 /// rilegge tutto lo storico, così le sessioni prima ignorate vengono recuperate.
 /// 2: "OTHER" di Garmin come Forza e titoli delle sessioni.
 /// 3: nuovo tentativo di lettura dei titoli.
-const versioneRegole = 4; // 4: yoga, pilates e stretching come mobilità
+const versioneRegole = 5; // 5: camminata e attività libere
 
 bool _daFreeletics(String pacchetto) =>
     pacchetto.toLowerCase().contains('freeletics');
@@ -54,7 +55,7 @@ String nomeFonte(String pacchetto, String nome) {
 }
 
 /// Tipo di attività di Health Connect -> (sport, tipo di sessione) dell'app.
-/// Null se l'app non la segue (camminata, escursionismo e altro).
+/// Quello che non è uno sport noto diventa un'attività libera.
 (String, String)? mappaAttivita(String tipoHc, {String pacchetto = ''}) {
   final m = switch (tipoHc) {
     'RUNNING' => ('Corsa', 'Corsa'),
@@ -70,6 +71,7 @@ String nomeFonte(String pacchetto, String nome) {
     'YOGA' => ('Mobilità', 'Yoga'),
     'PILATES' => ('Mobilità', 'Pilates'),
     'FLEXIBILITY' || 'STRETCHING' => ('Mobilità', 'Stretching'),
+    'ROCK_CLIMBING' || 'CLIMBING' => ('Arrampicata', 'Arrampicata'),
     _ => null,
   };
   if (m != null) return m;
@@ -79,7 +81,7 @@ String nomeFonte(String pacchetto, String nome) {
   if (tipoHc == 'OTHER' && pacchetto.toLowerCase().contains('garmin')) {
     return ('Forza', 'Cardio');
   }
-  return null;
+  return attivitaDaNome(tipoHc);
 }
 
 /// Tipo di corsa ricavato dal titolo scritto dall'app (es. "Pistoia - Fartlek FC").
@@ -470,22 +472,49 @@ List<Sessione> conTipoDalPiano(List<Sessione> hc, List<PianoRiga> piano) => [
     }(),
 ];
 
+/// Stessa attività vista da due fonti: stesso giorno e orari che si
+/// sovrappongono (con 2 minuti di margine).
+bool _stessaUscita(Sessione a, Sessione b) {
+  if (a.data != b.data) return false;
+  final a1 = a.inizio, a2 = a.fine, b1 = b.inizio, b2 = b.fine;
+  if (a1 == null || a2 == null || b1 == null || b2 == null) {
+    return (a.durataMin - b.durataMin).abs() <= 5;
+  }
+  const m = Duration(minutes: 2);
+  return a1.isBefore(b2.add(m)) && b1.isBefore(a2.add(m));
+}
+
+/// Forza e mobilità hanno più dettagli su Health Connect (i blocchi di
+/// Freeletics); gli altri su intervals.icu.
+bool _meglioDaHc(String sport) => sport == 'Forza' || sport == 'Mobilità';
+
 /// Le sessioni di Health Connect senza quelle che intervals.icu ha già, più
-/// complete (stesso sport e orari sovrapposti): corsa, bici e nuoto.
+/// complete. Un'attività libera è la stessa anche con un altro nome di sport.
 List<Sessione> senzaDoppioniIcu(List<Sessione> hc, List<Sessione> icu) {
   if (icu.isEmpty) return hc;
-  bool coperta(Sessione h) => icu.any((i) {
-    if (!stessoSport(i.sport, h.sport) || i.data != h.data) return false;
-    final a1 = h.inizio, a2 = h.fine, b1 = i.inizio, b2 = i.fine;
-    if (a1 == null || a2 == null || b1 == null || b2 == null) {
-      return (i.durataMin - h.durataMin).abs() <= 5;
-    }
-    // Orari che si sovrappongono (con 2 minuti di margine).
-    const m = Duration(minutes: 2);
-    return a1.isBefore(b2.add(m)) && b1.isBefore(a2.add(m));
-  });
+  bool coperta(Sessione h) => icu.any(
+    (i) =>
+        (stessoSport(i.sport, h.sport) || h.sport == sportAttivitaLibera) &&
+        _stessaUscita(h, i),
+  );
   return [
     for (final h in hc)
-      if (!['Corsa', 'Bici', 'Nuoto'].contains(h.sport) || !coperta(h)) h,
+      if (_meglioDaHc(h.sport) || !coperta(h)) h,
+  ];
+}
+
+/// Le sessioni di intervals.icu senza quelle che restano da Health Connect:
+/// forza e mobilità, e le libere che là hanno un nome di sport.
+List<Sessione> icuSenzaDoppioniHc(List<Sessione> icu, List<Sessione> hc) {
+  if (hc.isEmpty) return icu;
+  bool coperta(Sessione i) => hc.any(
+    (h) =>
+        (stessoSport(i.sport, h.sport) && _meglioDaHc(h.sport) ||
+            i.sport == sportAttivitaLibera) &&
+        _stessaUscita(h, i),
+  );
+  return [
+    for (final i in icu)
+      if (!coperta(i)) i,
   ];
 }

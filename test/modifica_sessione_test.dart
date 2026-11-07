@@ -171,5 +171,23 @@ void main() {
       await tester.pump();
       expect(find.text('Scrivi quanti minuti è durata'), findsOneWidget);
     });
+
+    testWidgets('arrampicata: niente distanza, ci sono vie e gradi', (
+      tester,
+    ) async {
+      await apri(
+        tester,
+        Sessione(
+          id: 'app-2026-11-06-arrampicata-1830',
+          data: DateTime(2026, 11, 6),
+          sport: 'Arrampicata',
+          durataMin: 1,
+          fonte: fonteApp,
+        ),
+      );
+      expect(campo('Distanza'), findsNothing);
+      expect(campo('Vasche'), findsNothing);
+      expect(find.text('Vie, blocchi e gradi'), findsOneWidget);
+    });
   });
 }

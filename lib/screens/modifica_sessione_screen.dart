@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../arrampicata.dart';
 import '../modifica_sessione.dart';
 import '../models.dart';
 import '../pulse.dart';
 import '../widgets.dart';
+import 'arrampicata_sheet.dart';
 
 /// Tutti i dati di una seduta registrata con l'app, da scrivere o correggere
 /// dopo: durata, distanza, battito… e per il nuoto vasche e tempo medio.
@@ -24,7 +26,8 @@ class ModificaSessioneScreen extends StatefulWidget {
 class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
   late final s = widget.sessione;
   late final bool nuoto = stessoSport(s.sport, 'Nuoto');
-  late final bool conDistanza = !stessoSport(s.sport, 'Forza');
+  late final bool arrampicata = stessoSport(s.sport, sportArrampicata);
+  late final bool conDistanza = !arrampicata && !stessoSport(s.sport, 'Forza');
   late final SedutaNuoto? datiNuoto = widget.state.nuotoDi(s.id);
 
   String _n(num v) => v > 0 ? fmtNum(v.toDouble()) : '';
@@ -283,6 +286,17 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
               if (nuoto) ..._nuoto(),
               if (conDistanza && !nuoto)
                 _campo(km, 'Distanza', suffisso: 'km', decimali: true),
+              if (arrampicata)
+                OutlinedButton.icon(
+                  onPressed: () => apriArrampicata(
+                    context,
+                    widget.state,
+                    idSessione: s.id,
+                    data: s.data,
+                  ),
+                  icon: const Icon(Icons.terrain),
+                  label: const Text('Vie, blocchi e gradi'),
+                ),
               Text('Come è andata', style: t.titleMedium),
               _coppia(
                 _campo(fcMedia, 'Battito medio', suffisso: 'bpm'),

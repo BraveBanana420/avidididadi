@@ -4,8 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:health/health.dart' show HealthDataType;
 
 import 'adattamento.dart';
+import 'arrampicata.dart';
+import 'attivita_libera.dart';
 import 'agente_esterno.dart';
 import 'allenamento_agente.dart';
+import 'allenamento_arrampicata.dart';
 import 'assistente.dart';
 import 'backup.dart';
 import 'backup_auto.dart';
@@ -23,6 +26,7 @@ import 'health_connect.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
+import 'attivita.dart';
 import 'modifica_sessione.dart';
 import 'models.dart';
 import 'navigazione.dart';
@@ -74,7 +78,9 @@ class AppState extends ChangeNotifier {
   /// Passi degli allenamenti scritti dall'assistente (allenamenti_agente.csv):
   /// valgono al posto di quelli preparati dall'app in quel giorno.
   List<WorkoutStep> allenamentiAgente = [];
-  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
+
+  /// La raccolta degli allenamenti di arrampicata (allenamenti_arrampicata.csv).
+  List<AllenamentoArrampicata> allenamentiArrampicata = [];
   List<ProgrammaRiga> programma = [];
   Profilo profilo = Profilo();
   List<Misura> misure = []; // in ordine di data
@@ -83,6 +89,8 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
+  List<SedutaArrampicata> arrampicate = []; // vie, blocchi e gradi
+  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<Scheda> schede = []; // schede scritte a mano (personal trainer)
   List<GiornoRecupero> recupero = []; // FC a riposo, HRV e sonno, per giorno
   ConfigAssistente assistente = ConfigAssistente();
@@ -151,19 +159,16 @@ class AppState extends ChangeNotifier {
               .where((s) => !sportEsclusi.contains(s.sport))
               .toList();
     storicoCsv = leggiSessioni(await Storage.readTabella('sessioni.csv'));
+    sessioniModificate = {
+      for (final s in leggiSessioni(await Storage.readTabella(_fileModificate)))
+        s.id: s,
+    };
     sessioniHc = leggiSessioni(
       await Storage.readTabella('health_connect_sessioni.csv'),
     ).map(riparaFonte).toList();
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
     backupAuto = await leggiImpostazioniBackup();
-    final tNuoto = await Storage.readTabella('nuoto.csv');
-    nuotate = tNuoto == null
-        ? []
-        : tNuoto.righe
-              .map((r) => SedutaNuoto.da(tNuoto, r))
-              .whereType<SedutaNuoto>()
-              .toList();
     final tInviate = await Storage.readTabella('sessioni_inviate.csv');
     inviate = {
       if (tInviate != null)
@@ -193,6 +198,13 @@ class AppState extends ChangeNotifier {
               .map((r) => WorkoutStep.da(tw, r))
               .whereType<WorkoutStep>()
               .toList();
+
+    final tAllArr = await Storage.readTabella(fileAllenamentiArrampicata);
+    allenamentiArrampicata = [
+      if (tAllArr != null)
+        for (final r in tAllArr.righe)
+          ?AllenamentoArrampicata.daRiga(tAllArr, r),
+    ];
 
     final ta = await Storage.readTabella(fileAllenamentiAgente);
     // Quelli di più di due mesi fa non servono più.
@@ -230,6 +242,21 @@ class AppState extends ChangeNotifier {
               .map((r) => SerieFatta.da(tSerie, r))
               .whereType<SerieFatta>()
               .toList();
+    final tNuoto = await Storage.readTabella('nuoto.csv');
+    nuotate = tNuoto == null
+        ? []
+        : tNuoto.righe
+              .map((r) => SedutaNuoto.da(tNuoto, r))
+              .whereType<SedutaNuoto>()
+              .toList();
+    final tArr = await Storage.readTabella('arrampicata.csv');
+    arrampicate = tArr == null
+        ? []
+        : (tArr.righe
+              .map((r) => SedutaArrampicata.da(tArr, r))
+              .whereType<SedutaArrampicata>()
+              .toList()
+            ..sort((a, b) => a.data.compareTo(b.data)));
     final tr = await Storage.readTabella('recupero.csv');
     recupero = tr == null
         ? []
@@ -256,8 +283,115 @@ class AppState extends ChangeNotifier {
         : (tm.righe.map((r) => Misura.da(tm, r)).whereType<Misura>().toList()
             ..sort((a, b) => a.data.compareTo(b.data)));
 
+    // Aveva già l'app quando non si sceglievano: valgono quelle dei suoi dati.
+    if (profilo.attivita.isEmpty) {
+      final trovate = attivitaDaiDati(
+        settimana: settimana,
+        piano: piano,
+        sessioni: sessioni,
+        generati: profilo.sportGenerati,
+        forza: profilo.obiettivo.isNotEmpty,
+        arrampicata:
+            arrampicate.isNotEmpty || allenamentiArrampicata.isNotEmpty,
+      );
+      if (trovate.isNotEmpty) {
+        profilo.attivita = trovate;
+        await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+      }
+    }
+
     // Le sedute future seguono sempre i feedback e i dati più recenti.
     await _aggiornaEndurance();
+    notifyListeners();
+  }
+
+  /// Le attività di chi usa l'app (nessuna scelta fatta: tutte).
+  Set<String> get attivitaScelte =>
+      profilo.attivita.isEmpty ? attivitaDaScegliere.toSet() : profilo.attivita;
+
+  bool attivitaScelta(String sport) =>
+      attivitaScelte.contains(normSport(sport));
+
+  /// Gli sport dei menu del piano.
+  List<String> get sportScelti => sportDeiMenu(profilo.attivita);
+
+  /// Cambia le attività scelte. Le sedute future di quelle tolte escono dal
+  /// calendario e dalla settimana tipo; quello che è stato fatto resta.
+  Future<void> impostaAttivita(Set<String> nuove) async {
+    final tolte = attivitaScelte.difference(nuove);
+    profilo.attivita = nuove;
+    if (tolte.isNotEmpty) {
+      final oggi = soloData(DateTime.now());
+      piano = senzaSedute(
+        piano,
+        tolte,
+        oggi,
+        (r) => sessioni.any(
+          (s) => s.data == r.data && stessoSport(s.sport, r.sport),
+        ),
+      );
+      await Storage.writePiano(piano);
+      settimana = [
+        for (final s in settimana)
+          if (!tolte.contains(normSport(s.sport))) s,
+      ];
+      await Storage.writeSettimana(settimana);
+      profilo.sportGenerati = profilo.sportGenerati.difference(tolte);
+      if (profilo.sportGenerati.isEmpty) profilo.inizioEndurance = null;
+      if (tolte.contains('Forza') && profilo.obiettivo.isNotEmpty) {
+        await disattivaForza();
+      }
+    }
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    _ricombina();
+    await _aggiornaEndurance();
+    notifyListeners();
+  }
+
+  /// Mette un'attività nel calendario nei giorni della settimana scelti (1 =
+  /// lunedì), fino alla fine del piano, e ne prepara i passi se l'app li sa
+  /// scrivere. L'arrampicata no: l'allenamento lo sceglie chi arrampica.
+  Future<void> aggiungiAlCalendario(
+    String sport,
+    Set<int> giorni,
+    int minuti,
+  ) async {
+    if (giorni.isEmpty) return;
+    final oggi = soloData(DateTime.now());
+    final minimo = oggi.add(const Duration(days: 90));
+    final u = ultimoGiornoPiano;
+    final slot = [
+      for (final g in giorni)
+        Slot(giorno: g, fascia: 'Mattina', sport: sport, durataMin: minuti),
+    ];
+    piano = conSeduteNuove(
+      piano,
+      slot,
+      oggi,
+      u != null && u.isAfter(minimo) ? u : minimo,
+    );
+    await Storage.writePiano(piano);
+    // La settimana tipo è facoltativa: non nasce da sola per un solo sport.
+    if (settimana.isNotEmpty) {
+      settimana = [
+        ...settimana,
+        for (final s in slot)
+          if (!settimana.any(
+            (x) => x.giorno == s.giorno && stessoSport(x.sport, sport),
+          ))
+            s,
+      ];
+      await Storage.writeSettimana(settimana);
+    }
+    _ricombina();
+    if (stessoSport(sport, 'Forza')) {
+      await creaPianoForza(
+        profilo.obiettivo.isEmpty ? 'generale' : profilo.obiettivo,
+        profilo.livello.isEmpty ? 'intermedio' : profilo.livello,
+      );
+    } else if (sportEndurance.contains(sport) || sport == sportMobilita) {
+      await creaPianoEndurance({...profilo.sportGenerati, sport});
+    }
     notifyListeners();
   }
 
@@ -594,7 +728,11 @@ class AppState extends ChangeNotifier {
     final idApp = prog.isEmpty
         ? workoutPredefinito(d, sport, tipo)
         : prog.first.idWorkout;
-    if (idApp == null) return const [];
+    if (idApp == null) {
+      return stessoSport(sport, 'Arrampicata')
+          ? passiLiberi('Arrampicata', titoloSessione('Arrampicata', tipo))
+          : const [];
+    }
     var passi = workout.where((w) => w.id == idApp).toList();
     if (passi.isEmpty) {
       passi = workoutBase.where((w) => w.id == idApp).toList();
@@ -748,6 +886,7 @@ class AppState extends ChangeNotifier {
     final oggi = soloData(DateTime.now());
     if (nome.trim().isNotEmpty) profilo.nome = nome.trim();
     profilo.benvenuto = true;
+    profilo.attivita = sport.toSet();
     await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
     settimana = settimanaDa(sport: sport, giorni: giorni, minuti: minuti);
     await Storage.writeSettimana(settimana);
@@ -1065,6 +1204,7 @@ class AppState extends ChangeNotifier {
     feedback: feedback,
     recupero: recupero,
     sportGenerati: profilo.sportGenerati,
+    attivita: profilo.attivita,
   );
 
   /// Verifica che il servizio scelto risponda e aggiorna lo stato mostrato.
@@ -1132,6 +1272,7 @@ class AppState extends ChangeNotifier {
           proposta: p?.modifiche,
           piano: p?.piano,
           allenamenti: p?.allenamenti,
+          arrampicata: p?.arrampicata,
           motivo: p?.motivo ?? '',
           errore: r.errore,
         ),
@@ -1246,6 +1387,7 @@ class AppState extends ChangeNotifier {
       ];
       piano = pianoCon(piano, a);
     }
+    await _attivitaDalPiano();
     await Storage.write(
       fileAllenamentiAgente,
       workoutHeader,
@@ -1259,6 +1401,90 @@ class AppState extends ChangeNotifier {
     // Subito anche nel calendario di intervals.icu (e da lì a Garmin).
     if (invioIntervals) await inviaPianoIntervals();
     return validi.length;
+  }
+
+  // ---------------------------------------------------------------------
+  // Allenamenti di arrampicata
+
+  Future<void> _salvaArrampicata() => Storage.write(
+    fileAllenamentiArrampicata,
+    allenamentiArrampicataHeader,
+    allenamentiArrampicata.map((a) => a.toRow()).toList(),
+  );
+
+  /// Aggiunge un allenamento alla raccolta, o lo aggiorna se c'è già.
+  Future<void> salvaAllenamentoArrampicata(AllenamentoArrampicata a) async {
+    final i = allenamentiArrampicata.indexWhere((x) => x.id == a.id);
+    allenamentiArrampicata = [...allenamentiArrampicata];
+    if (i >= 0) {
+      allenamentiArrampicata[i] = a;
+    } else {
+      allenamentiArrampicata.add(a);
+    }
+    await _salvaArrampicata();
+    notifyListeners();
+  }
+
+  Future<void> eliminaAllenamentoArrampicata(String id) async {
+    allenamentiArrampicata = [
+      for (final a in allenamentiArrampicata)
+        if (a.id != id) a,
+    ];
+    await _salvaArrampicata();
+    notifyListeners();
+  }
+
+  /// Mette l'allenamento nel calendario quel giorno, al posto della seduta
+  /// di arrampicata (o in più). False se il giorno è passato.
+  Future<bool> programmaArrampicata(
+    AllenamentoArrampicata a,
+    DateTime data, {
+    String fascia = '',
+  }) async =>
+      await applicaAllenamentiAgente([a.perIlGiorno(data, fascia: fascia)]) > 0;
+
+  /// Le proposte dell'assistente: tutte nella raccolta (uno con lo stesso
+  /// nome si aggiorna), quelle con la data anche nel calendario.
+  /// Restituisce (salvati, nel calendario).
+  Future<(int, int)> applicaProposteArrampicata(
+    List<PropostaArrampicata> proposte, {
+    MessaggioChat? da,
+  }) async {
+    final lista = [...allenamentiArrampicata];
+    final perIlCalendario = <AllenamentoAgente>[];
+    for (final p in proposte) {
+      final i = lista.indexWhere(
+        (x) => x.nome.toLowerCase() == p.allenamento.nome.toLowerCase(),
+      );
+      final a = i >= 0
+          ? AllenamentoArrampicata(
+              id: lista[i].id,
+              nome: p.allenamento.nome,
+              categoria: p.allenamento.categoria,
+              tipi: p.allenamento.tipi,
+              durataMin: p.allenamento.durataMin,
+              descrizione: p.allenamento.descrizione,
+              daSegnare: p.allenamento.daSegnare,
+              esercizi: p.allenamento.esercizi,
+            )
+          : p.allenamento;
+      if (i >= 0) {
+        lista[i] = a;
+      } else {
+        lista.add(a);
+      }
+      if (p.data case final d?) {
+        perIlCalendario.add(a.perIlGiorno(d, fascia: p.fascia));
+      }
+    }
+    allenamentiArrampicata = lista;
+    await _salvaArrampicata();
+    final messi = perIlCalendario.isEmpty
+        ? 0
+        : await applicaAllenamentiAgente(perIlCalendario, da: da);
+    _segnaApplicata(da);
+    notifyListeners();
+    return (proposte.length, messi);
   }
 
   /// Proposta applicata: nel messaggio della chat del coach, oppure nella
@@ -1288,9 +1514,28 @@ class AppState extends ChangeNotifier {
     oggi: DateTime.now(),
   );
 
+  /// Un piano accettato con uno sport non ancora scelto: lo si è voluto, quindi
+  /// quello sport ora si vede anche nei menu.
+  Future<void> _attivitaDalPiano() async {
+    if (profilo.attivita.isEmpty) return;
+    final oggi = soloData(DateTime.now());
+    final nel = attivitaDaiDati(
+      settimana: const [],
+      piano: piano.where((r) => !r.data.isBefore(oggi)).toList(),
+      sessioni: const [],
+      generati: const {},
+      forza: false,
+      arrampicata: false,
+    );
+    if (nel.difference(profilo.attivita).isEmpty) return;
+    profilo.attivita = {...profilo.attivita, ...nel};
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+  }
+
   /// Le sedute decise dall'assistente devono poter partire: attiva la
   /// preparazione dei loro sport, così l'app ne scrive i passi.
   Future<void> _attivaSportDelPiano() async {
+    await _attivitaDalPiano();
     final oggi = soloData(DateTime.now());
     final nuovi = sportDaAttivare(piano, profilo.sportGenerati, oggi);
     if (nuovi.isEmpty) return;
@@ -1533,23 +1778,57 @@ class AppState extends ChangeNotifier {
   void _ricombina() {
     // Le tolte si filtrano dopo aver unito i doppioni: così non spunta al loro
     // posto la copia della stessa attività arrivata da un'altra fonte.
-    final icu = senzaCopieInviate(sessioniIcu, inviate, storicoCsv);
+    final copie = senzaCopieInviate(sessioniIcu, inviate, storicoCsv);
+    final hc = senzaDoppioniIcu(sessioniHc, copie);
+    final icu = icuSenzaDoppioniHc(copie, hc);
     sessioni = [
       for (final s in senzaNascoste(
-        combina(
-          storicoCsv,
-          conTipoDalPiano([
-            ...senzaDoppioniIcu(sessioniHc, icu),
-            ...icu,
-          ], piano),
-        ),
+        combina(storicoCsv, conTipoDalPiano([...hc, ...icu], piano)),
         nascoste,
       ).where((s) => !sportEsclusi.contains(s.sport)))
-        // Il nome scritto a mano vince su quello dell'orologio.
-        (ritocchi[s.id]?.nome ?? '').isEmpty
-            ? s
-            : s.copyWith(tipo: ritocchi[s.id]!.nome),
+        _conCorrezioni(s),
     ];
+  }
+
+  /// Quello che è scritto a mano vince su quello che arriva dall'orologio.
+  Sessione _conCorrezioni(Sessione s) {
+    final o = sessioniModificate[s.id];
+    final c = o == null
+        ? s
+        : sessioneModificata(
+            s,
+            inizio: o.inizio ?? s.inizio ?? s.data,
+            durataMin: o.durataMin,
+            distanzaKm: o.distanzaKm,
+            fcMedia: o.fcMedia,
+            fcMax: o.fcMax,
+            calorie: o.calorieAttive,
+            rpe: o.rpe,
+            note: o.note,
+          );
+    final nome = ritocchi[s.id]?.nome ?? '';
+    return nome.isEmpty ? c : c.copyWith(tipo: nome);
+  }
+
+  static const _fileModificate = 'sessioni_modificate.csv';
+
+  /// Sessioni dell'orologio corrette a mano, per id: non si perdono quando
+  /// l'orologio manda di nuovo i suoi dati.
+  Map<String, Sessione> sessioniModificate = {};
+
+  Future<void> _salvaModificate() => Storage.write(
+    _fileModificate,
+    sessioniHeader,
+    sessioniModificate.values.map((x) => x.toRow()).toList(),
+  );
+
+  /// Toglie le correzioni: tornano i dati arrivati dall'orologio.
+  Future<void> annullaCorrezioni(String id) async {
+    sessioniModificate = {...sessioniModificate}..remove(id);
+    await _salvaModificate();
+    _ricombina();
+    await _aggiornaEndurance();
+    notifyListeners();
   }
 
   /// Nome e "al chiuso" scritti a mano sulle sessioni, per id.
@@ -1735,6 +2014,9 @@ class AppState extends ChangeNotifier {
   bool inviando = false;
   static const _fileInviati = 'intervals_inviati.csv';
 
+  /// Le regole con cui sono state lette le attività di intervals.icu.
+  int _regoleIcu = 0;
+
   static const _fileIcu = 'intervals_sessioni.csv';
   static const _infoIcu = 'intervals.csv';
   static const _icuHeader = [...sessioniHeader, 'al_chiuso'];
@@ -1762,6 +2044,7 @@ class AppState extends ChangeNotifier {
     ultimoInvio = DateTime.tryParse(m['ultimo_invio'] ?? '');
     ftpIcu = int.tryParse(m['ftp'] ?? '') ?? 0;
     ftpCorsaIcu = int.tryParse(m['ftp_corsa'] ?? '') ?? 0;
+    _regoleIcu = int.tryParse(m['regole'] ?? '') ?? 0;
     invioDal = DateTime.tryParse(m['invio_dal'] ?? '');
     // Acceso con una versione di prima: le sedute già fatte restano a mano.
     if (invioIntervals && invioDal == null) {
@@ -1799,6 +2082,7 @@ class AppState extends ChangeNotifier {
         ['ftp', ftpIcu == 0 ? '' : '$ftpIcu'],
         ['ftp_corsa', ftpCorsaIcu == 0 ? '' : '$ftpCorsaIcu'],
         ['invio_dal', invioDal?.toIso8601String() ?? ''],
+        ['regole', '$_regoleIcu'],
       ],
     );
   }
@@ -1833,7 +2117,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     try {
       final oggi = soloData(DateTime.now());
-      final da = ultimaIntervals == null
+      final da = ultimaIntervals == null || _regoleIcu != versioneRegoleIcu
           ? oggi.subtract(const Duration(days: 90))
           : soloData(ultimaIntervals!).subtract(const Duration(days: 3));
       final nuove = await ClientIntervals(chiave).attivita(da, oggi);
@@ -1861,6 +2145,7 @@ class AppState extends ChangeNotifier {
         ..sort((a, b) => a.data.compareTo(b.data));
       icuAlChiuso = chiuse;
       ultimaIntervals = DateTime.now();
+      _regoleIcu = versioneRegoleIcu;
       erroreIntervals = null;
       await _salvaIntervals();
       _ricombina();
@@ -2322,14 +2607,23 @@ class AppState extends ChangeNotifier {
     nuotate.map((x) => x.toRow()).toList(),
   );
 
-  /// Salva i dati scritti a mano su una seduta registrata con l'app.
+  /// Salva i dati scritti a mano su una seduta: registrata con l'app, arrivata
+  /// dall'orologio o nuova, di un giorno passato.
   Future<void> modificaSessione(Sessione s, {SedutaNuoto? nuoto}) async {
-    storicoCsv = [for (final x in storicoCsv) x.id == s.id ? s : x];
-    await Storage.write(
-      'sessioni.csv',
-      sessioniHeader,
-      storicoCsv.map((x) => x.toRow()).toList(),
-    );
+    final dellApp = storicoCsv.any((x) => x.id == s.id);
+    if (!dellApp && sessioni.any((x) => x.id == s.id)) {
+      sessioniModificate = {...sessioniModificate, s.id: s};
+      await _salvaModificate();
+    } else {
+      storicoCsv = dellApp
+          ? [for (final x in storicoCsv) x.id == s.id ? s : x]
+          : [...storicoCsv, s];
+      await Storage.write(
+        'sessioni.csv',
+        sessioniHeader,
+        storicoCsv.map((x) => x.toRow()).toList(),
+      );
+    }
     if (nuoto != null) {
       nuotate = [
         ...nuotate.where((x) => x.idSessione != s.id),
@@ -2339,6 +2633,18 @@ class AppState extends ChangeNotifier {
     }
     _ricombina();
     await _aggiornaEndurance();
+    notifyListeners();
+  }
+
+  /// Salva (o sostituisce) la scheda dell'arrampicata di una seduta.
+  Future<void> salvaArrampicata(SedutaArrampicata a) async {
+    arrampicate = [...arrampicate.where((x) => x.idSessione != a.idSessione), a]
+      ..sort((x, y) => x.data.compareTo(y.data));
+    await Storage.write(
+      'arrampicata.csv',
+      arrampicataHeader,
+      arrampicate.map((x) => x.toRow()).toList(),
+    );
     notifyListeners();
   }
 

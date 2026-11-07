@@ -47,21 +47,27 @@ void main() {
       expect(mappaAttivita('CALISTHENICS')!.$1, 'Forza');
     });
 
-    test('camminata, escursionismo e altro sono ignorati', () {
-      expect(mappaAttivita('WALKING'), isNull);
-      expect(mappaAttivita('HIKING'), isNull);
-      expect(mappaAttivita('OTHER'), isNull);
-      expect(sessioneDa(record('w', 'WALKING'), const MetricheHc()), isNull);
+    test('camminata ed escursione ci sono; il resto è attività libera', () {
+      expect(mappaAttivita('WALKING'), ('Camminata', 'Camminata'));
+      expect(mappaAttivita('HIKING'), ('Camminata', 'Escursione'));
+      expect(mappaAttivita('OTHER'), ('Attività libera', 'Allenamento'));
+      expect(
+        sessioneDa(record('w', 'WALKING'), const MetricheHc())!.sport,
+        'Camminata',
+      );
     });
 
     test(
-      'il Cardio indoor di Garmin (OTHER) è forza, OTHER di altre app no',
+      'il Cardio indoor di Garmin (OTHER) è forza, OTHER di altre app è libera',
       () {
         expect(mappaAttivita('OTHER', pacchetto: pacchettoGarmin), (
           'Forza',
           'Cardio',
         ));
-        expect(mappaAttivita('OTHER', pacchetto: 'com.altra.app'), isNull);
+        expect(
+          mappaAttivita('OTHER', pacchetto: 'com.altra.app')!.$1,
+          'Attività libera',
+        );
       },
     );
 
