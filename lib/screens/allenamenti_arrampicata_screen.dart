@@ -55,7 +55,7 @@ class AllenamentiArrampicataScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Text(
                   'Crealo con "Nuovo", oppure chiedilo al tuo assistente (per '
-                  'esempio mandandogli lo screenshot di un'altra app): nella sua '
+                  "esempio mandandogli lo screenshot di un'altra app): nella sua "
                   'risposta condividi il blocco con l\'app e qui trovi '
                   'l\'allenamento, pronto da mettere nel calendario.',
                 ),
