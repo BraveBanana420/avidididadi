@@ -746,7 +746,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _ritmoCadenza.azzera();
     // L'attività libera ha un passo solo: basta il cronometro.
     if (!widget.libera) {
-      voce.di(fraseBlocco(b), valida: const Duration(seconds: 30));
+      voce.diBlocco(b);
     }
     _salvaInCorso();
     _notifica();
@@ -993,6 +993,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     voce.di(
       'Allenamento completato. ${parlaDurata(_tempoTotale)}'
       '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
+      urgente: true,
     );
     setState(() => finito = true);
     _salvaInCorso(); // anche il riepilogo si ritrova, se l'app si chiude

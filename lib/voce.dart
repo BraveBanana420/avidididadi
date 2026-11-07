@@ -252,6 +252,11 @@ class Voce {
     });
   }
 
+  /// Il blocco appena aperto: toglie la voce a quello di prima, così scorrendo
+  /// veloce si sente solo quello che è sullo schermo, non una coda di titoli.
+  Future<void> diBlocco(Blocco b) =>
+      di(fraseBlocco(b), valida: const Duration(seconds: 30), urgente: true);
+
   /// Fine allenamento: niente frasi in sospeso.
   void ferma() {
     _riprova?.cancel();
