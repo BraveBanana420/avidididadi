@@ -70,6 +70,7 @@ String nomeFonte(String pacchetto, String nome) {
     'YOGA' => ('Mobilità', 'Yoga'),
     'PILATES' => ('Mobilità', 'Pilates'),
     'FLEXIBILITY' || 'STRETCHING' => ('Mobilità', 'Stretching'),
+    'ROCK_CLIMBING' || 'CLIMBING' => ('Arrampicata', 'Arrampicata'),
     _ => null,
   };
   if (m != null) return m;

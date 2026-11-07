@@ -10,6 +10,7 @@ const sportCamminata = 'Camminata';
 const attivitaLibere = [
   ('Corsa', 'Corsa libera', 'Corsa libera'),
   (sportCamminata, 'Camminata', 'Camminata'),
+  ('Arrampicata', 'Arrampicata', 'Arrampicata'),
   ('Bici', 'Uscita libera', 'Uscita in bici'),
   ('Nuoto', 'Piscina', 'Nuoto libero'),
   ('Forza', 'Allenamento libero', 'Allenamento libero'),

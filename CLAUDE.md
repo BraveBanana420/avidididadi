@@ -4,9 +4,10 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 
 ## 1. Panoramica
 
-**Avidididadi** è un'app Android personale (Flutter) per pianificare e seguire gli allenamenti di forza, corsa, nuoto, bici e mobilità. Tutti i dati restano sul telefono: niente server, account o pubblicità.
+**Avidididadi** è un'app Android personale (Flutter) per pianificare e seguire gli allenamenti di forza, corsa, nuoto, bici, mobilità e arrampicata. Tutti i dati restano sul telefono: niente server, account o pubblicità.
 
 Funzioni principali:
+- **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
 - **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
@@ -15,6 +16,7 @@ Funzioni principali:
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
 - **Progressi**: carico, grafici, report per sport.
+- **Arrampicata**: vie, blocchi e gradi di ogni seduta; allenamenti scritti a mano o dall'assistente, senza generatore.
 - **Rullo smart**: collegato il rullo la bici passa da sola al chiuso; in ERG l'app manda al rullo (FTMS, es. Tacx Flux S) i watt di ogni blocco; calibrazione dall'app, con promemoria ogni 2 settimane; diagramma dell'allenamento a barre colorate per zona.
 - **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
 - **Condividi**: immagine della sessione o della settimana per WhatsApp, Instagram… (percorso solo se scelto).
@@ -77,7 +79,10 @@ lib/
   navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
   mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre
   assistente.dart / llm.dart / agente_esterno.dart   coach AI
-  modifica_sessione.dart  dati di una seduta scritti a mano dopo la fine (nuoto.csv)
+  attivita.dart        attività scelte dall'utente, attività libere dall'orologio, sedute aggiunte al calendario
+  arrampicata.dart     scheda di una seduta di arrampicata: vie, blocchi, gradi (arrampicata.csv)
+  allenamento_arrampicata.dart  allenamenti di arrampicata: modello, passi per il player, formato dell'assistente
+  modifica_sessione.dart  dati di una seduta scritti a mano dopo la fine (nuoto.csv, sessioni_modificate.csv)
   allenamento_agente.dart  allenamenti passo per passo scritti dall'assistente, nel calendario al posto della seduta
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
@@ -110,6 +115,8 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
+- `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
+- `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
 - `serie.csv` (ripetizioni e kg della forza); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
 - `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
@@ -159,6 +166,8 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 | Nuoto | `#FF8A3D` | `#00B2FF` |
 | Bici | `#B3123A` | `#00E0B8` |
 | Mobilità | `#F48FB1` | `#FF7A00` |
+| Arrampicata | `#4FA3A5` | `#FFE600` |
+| Attività libera | `#7C83FD` | `#7C83FD` |
 | Camminata (fondo scuro) | `#E0A33A` | `#C6FF3D` |
 | Camminata (fondo chiaro) | `#B87A0F` | `#5F9400` |
 

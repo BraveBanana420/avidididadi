@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../adattamento.dart';
 import '../app_state.dart';
+import '../arrampicata.dart';
 import '../dati_live.dart';
 import '../esercizi.dart';
 import '../esporta.dart';
@@ -21,6 +22,7 @@ import '../registro_forza.dart';
 import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
+import 'arrampicata_sheet.dart';
 import 'catalogo_screen.dart';
 import 'condividi_screen.dart';
 import 'crea_piano_screen.dart';
@@ -900,6 +902,47 @@ class _DatiSessione extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Text('• $nome: ${fmtSerie(serie)}'),
                 ),
+            ],
+            // Arrampicata: vie, blocchi e gradi, da segnare anche dopo.
+            if (stessoSport(s.sport, sportArrampicata)) ...[
+              const SizedBox(height: 16),
+              Text('Arrampicata', style: t.titleSmall),
+              const SizedBox(height: 4),
+              if (arrampicataDi(state.arrampicate, s.id, s.data)
+                  case final a?) ...[
+                for (final r in a.riassunto)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Text('• $r'),
+                  ),
+                if (recordArrampicata(state.arrampicate, a.disciplina) case (
+                  final g,
+                  final quando,
+                ))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Record ${a.falesia ? 'in falesia' : 'nel boulder'}: '
+                      '$g (${quando.day} ${mesiNomi[quando.month - 1]} ${quando.year})',
+                      style: t.bodySmall,
+                    ),
+                  ),
+              ],
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => apriArrampicata(
+                  context,
+                  state,
+                  idSessione: s.id,
+                  data: s.data,
+                ),
+                icon: const Icon(Icons.terrain),
+                label: Text(
+                  arrampicataDi(state.arrampicate, s.id, s.data) == null
+                      ? 'Segna vie, blocchi e gradi'
+                      : 'Modifica',
+                ),
+              ),
             ],
             if (s.note.isNotEmpty) ...[
               const SizedBox(height: 12),

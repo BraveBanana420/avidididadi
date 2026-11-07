@@ -91,7 +91,11 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           tipo: TipoBlocco.lavoro,
           titolo: titolo,
           dettaglio: [
-            if (n > 1) 'Serie $i di $n',
+            // Nell'arrampicata le "serie" di un passo sono le ripetizioni.
+            if (n > 1)
+              s.sport == 'Arrampicata'
+                  ? 'Ripetizione $i di $n'
+                  : 'Serie $i di $n',
             if (quanti.isNotEmpty) quanti,
           ].join(' · '),
           intensita: s.intensita,
@@ -117,7 +121,11 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           Blocco(
             tipo: TipoBlocco.recupero,
             titolo: 'Recupero',
-            dettaglio: i < n ? 'Poi serie ${i + 1} di $n' : '',
+            dettaglio: i < n
+                ? s.sport == 'Arrampicata'
+                      ? 'Poi ripetizione ${i + 1} di $n'
+                      : 'Poi serie ${i + 1} di $n'
+                : '',
             note: s.sport == 'Corsa' || s.sport == 'Bici'
                 ? 'Continua piano, senza fermarti.'
                 : 'Respira e bevi un sorso d\'acqua.',

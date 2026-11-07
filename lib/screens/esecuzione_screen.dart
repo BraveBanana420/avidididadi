@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_state.dart';
+import '../arrampicata.dart';
 import '../attivita_libera.dart';
 import '../avvisi.dart';
 import '../navigazione.dart';
@@ -31,6 +32,7 @@ import '../voce.dart';
 import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../widgets.dart';
+import 'arrampicata_sheet.dart';
 import 'battito_sheet.dart';
 import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
@@ -1029,6 +1031,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     return r == 'esci';
   }
 
+  /// Id della sessione che si salva alla fine.
+  String get _idSessione {
+    final inizio = _partenza ?? DateTime.now().subtract(_tempoTotale);
+    return widget.libera
+        ? idLibera(inizio, widget.sport)
+        : 'app-${isoData(soloData(inizio))}-${widget.sport.toLowerCase()}';
+  }
+
   Future<void> _salvaEChiudi({
     bool feedback = false,
     bool aMano = false,
@@ -1097,7 +1107,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
-      if (aMano && mounted) {
+      // Nuoto e arrampicata non hanno niente che li misuri: subito i dati a mano.
+      if ((aMano ||
+              stessoSport(widget.sport, 'Nuoto') ||
+              stessoSport(widget.sport, sportArrampicata)) &&
+          mounted) {
         await cancellaInCorso();
         await navigator.push(
           MaterialPageRoute<void>(
@@ -2198,6 +2212,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           nomeWorkout: widget.passi.firstOrNull?.nome ?? '',
           fatte: [for (final l in seriePasso.values) ...l],
         ),
+        if (stessoSport(widget.sport, sportArrampicata)) ...[
+          const SizedBox(height: 12),
+          _RiepilogoArrampicata(
+            state: widget.state,
+            idSessione: _idSessione,
+            onCambia: () => setState(() {}),
+          ),
+        ],
         Material(
           type: MaterialType.transparency,
           child: CheckboxListTile(
@@ -3088,6 +3110,58 @@ class _PesiSchedaState extends State<_PesiScheda> {
                   ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Arrampicata: vie, blocchi e gradi della seduta appena finita.
+class _RiepilogoArrampicata extends StatelessWidget {
+  final AppState state;
+  final String idSessione;
+  final VoidCallback onCambia;
+  const _RiepilogoArrampicata({
+    required this.state,
+    required this.idSessione,
+    required this.onCambia,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final oggi = soloData(DateTime.now());
+    final a = state.arrampicate
+        .where((x) => x.idSessione == idSessione)
+        .firstOrNull;
+    Future<void> apri() async {
+      await apriArrampicata(context, state, idSessione: idSessione, data: oggi);
+      onCambia();
+    }
+
+    if (a == null) {
+      return FilledButton.tonalIcon(
+        onPressed: apri,
+        icon: const Icon(Icons.terrain),
+        label: const Text('Segna vie, blocchi e gradi'),
+      );
+    }
+    return SuperficiePulse(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final r in a.riassunto) Text(r, style: t.bodyMedium),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Modifica',
+            onPressed: apri,
+            icon: const Icon(Icons.edit_outlined),
+          ),
+        ],
       ),
     );
   }

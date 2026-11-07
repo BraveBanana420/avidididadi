@@ -9,6 +9,7 @@ import '../pulse.dart';
 import '../profilo.dart';
 import '../tema.dart';
 import '../esercizi.dart';
+import 'allenamenti_arrampicata_screen.dart';
 import 'altre_pagine.dart';
 import 'attrezzatura_screen.dart';
 import 'benvenuto_screen.dart';
@@ -360,6 +361,12 @@ class ProfileScreen extends StatelessWidget {
                       "Durante l'allenamento",
                       'Voce, bip, pausa automatica e passo medio',
                       const OpzioniAllenamentoScreen(),
+                    ),
+                    voce(
+                      Icons.terrain,
+                      'Allenamenti di arrampicata',
+                      'I tuoi allenamenti: creali, falli o mettili nel piano',
+                      AllenamentiArrampicataScreen(state: state),
                     ),
                     voce(
                       Icons.route,

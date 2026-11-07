@@ -329,6 +329,15 @@ class _Fumetto extends StatelessWidget {
                   messaggio: m,
                 ),
               ),
+            if (m.arrampicata case final a?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaArrampicata(
+                  state: state,
+                  proposte: a,
+                  messaggio: m,
+                ),
+              ),
             if (m.piano case final p?)
               Padding(
                 padding: const EdgeInsets.only(top: 4),

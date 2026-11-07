@@ -4,6 +4,7 @@ import 'carico.dart';
 import 'csv.dart';
 import 'feedback.dart';
 import 'allenamento_agente.dart';
+import 'allenamento_arrampicata.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'recupero.dart';
@@ -112,6 +113,7 @@ class MessaggioChat {
   final List<Modifica>? proposta;
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
+  final List<PropostaArrampicata>? arrampicata;
   final String motivo;
   final String? errore; // la proposta c'era ma non si legge
   bool applicata = false;
@@ -121,6 +123,7 @@ class MessaggioChat {
     this.proposta,
     this.piano,
     this.allenamenti,
+    this.arrampicata,
     this.motivo = '',
     this.errore,
   });
@@ -308,6 +311,7 @@ $apri
 $chiudi
 ```
 "durata_min" (facoltativa) è la durata totale, utile se ci sono passi a distanza. Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). "secondario" (facoltativo) è il secondo obiettivo del passo: in bici la cadenza ("85-90 rpm"), altrimenti quello che serve. L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
+${formatoArrampicata(apri, chiudi)}
 Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi; nuoto: Tecnica, Soglia; bici: Uscita, Intervalli, Uscita lunga; fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
 Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Con {"piano"} i passi delle sedute li prepara l'app da tipo e durata; se vuoi passi precisi, per esempio con i passi gara della persona, manda quelle sedute con {"allenamenti"}.''';
 
@@ -316,11 +320,13 @@ class RispostaAgente {
   final List<Modifica>? modifiche;
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
+  final List<PropostaArrampicata>? arrampicata;
   final String motivo; // perché l'assistente propone gli allenamenti
   const RispostaAgente({
     this.modifiche,
     this.piano,
     this.allenamenti,
+    this.arrampicata,
     this.motivo = '',
   });
 }
@@ -336,6 +342,12 @@ class PianoAgente {
 /// Le proposte in un blocco JSON (modifiche, piano nuovo o allenamenti).
 /// Lancia [FormatException] con un messaggio semplice se non va bene.
 RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
+  final arrampicata = j['arrampicata'];
+  if (arrampicata is List) {
+    return RispostaAgente(
+      arrampicata: proposteArrampicata(arrampicata, DateTime.now()),
+    );
+  }
   final allenamenti = j['allenamenti'];
   if (allenamenti is List) {
     final lista = [
@@ -425,7 +437,7 @@ class Modifica {
 
 final _blocco = RegExp(r'<proposta>([\s\S]*?)</proposta>');
 final _json = RegExp(
-  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti)"[\s\S]*\})\s*```',
+  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata)"[\s\S]*\})\s*```',
 );
 
 /// Separa il testo della risposta dalla proposta: modifiche, piano nuovo o

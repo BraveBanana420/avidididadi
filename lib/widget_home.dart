@@ -120,10 +120,19 @@ String _nomeIcona(String sport) => switch (sport.toLowerCase()) {
   'nuoto' => 'nuoto',
   'bici' => 'bici',
   'mobilità' => 'mobilita',
+  'arrampicata' => 'arrampicata',
   _ => 'riposo',
 };
 
-const _sportIcone = ['Forza', 'Corsa', 'Nuoto', 'Bici', 'Mobilità', 'Riposo'];
+const _sportIcone = [
+  'Forza',
+  'Corsa',
+  'Nuoto',
+  'Bici',
+  'Mobilità',
+  'Arrampicata',
+  'Riposo',
+];
 
 /// Icone degli sport in PNG bianchi, da colorare nel widget.
 Future<String> _preparaIcone() async {

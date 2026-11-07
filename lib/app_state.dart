@@ -4,8 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:health/health.dart' show HealthDataType;
 
 import 'adattamento.dart';
+import 'arrampicata.dart';
+import 'attivita_libera.dart';
 import 'agente_esterno.dart';
 import 'allenamento_agente.dart';
+import 'allenamento_arrampicata.dart';
 import 'assistente.dart';
 import 'backup.dart';
 import 'backup_auto.dart';
@@ -74,7 +77,9 @@ class AppState extends ChangeNotifier {
   /// Passi degli allenamenti scritti dall'assistente (allenamenti_agente.csv):
   /// valgono al posto di quelli preparati dall'app in quel giorno.
   List<WorkoutStep> allenamentiAgente = [];
-  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
+
+  /// La raccolta degli allenamenti di arrampicata (allenamenti_arrampicata.csv).
+  List<AllenamentoArrampicata> allenamentiArrampicata = [];
   List<ProgrammaRiga> programma = [];
   Profilo profilo = Profilo();
   List<Misura> misure = []; // in ordine di data
@@ -83,6 +88,8 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
+  List<SedutaArrampicata> arrampicate = []; // vie, blocchi e gradi
+  List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<Scheda> schede = []; // schede scritte a mano (personal trainer)
   List<GiornoRecupero> recupero = []; // FC a riposo, HRV e sonno, per giorno
   ConfigAssistente assistente = ConfigAssistente();
@@ -157,13 +164,6 @@ class AppState extends ChangeNotifier {
     infoSync = InfoSync.da(await Storage.readTabella('health_connect.csv'));
     await _caricaIntervals();
     backupAuto = await leggiImpostazioniBackup();
-    final tNuoto = await Storage.readTabella('nuoto.csv');
-    nuotate = tNuoto == null
-        ? []
-        : tNuoto.righe
-              .map((r) => SedutaNuoto.da(tNuoto, r))
-              .whereType<SedutaNuoto>()
-              .toList();
     final tInviate = await Storage.readTabella('sessioni_inviate.csv');
     inviate = {
       if (tInviate != null)
@@ -193,6 +193,13 @@ class AppState extends ChangeNotifier {
               .map((r) => WorkoutStep.da(tw, r))
               .whereType<WorkoutStep>()
               .toList();
+
+    final tAllArr = await Storage.readTabella(fileAllenamentiArrampicata);
+    allenamentiArrampicata = [
+      if (tAllArr != null)
+        for (final r in tAllArr.righe)
+          ?AllenamentoArrampicata.daRiga(tAllArr, r),
+    ];
 
     final ta = await Storage.readTabella(fileAllenamentiAgente);
     // Quelli di più di due mesi fa non servono più.
@@ -230,6 +237,21 @@ class AppState extends ChangeNotifier {
               .map((r) => SerieFatta.da(tSerie, r))
               .whereType<SerieFatta>()
               .toList();
+    final tNuoto = await Storage.readTabella('nuoto.csv');
+    nuotate = tNuoto == null
+        ? []
+        : tNuoto.righe
+              .map((r) => SedutaNuoto.da(tNuoto, r))
+              .whereType<SedutaNuoto>()
+              .toList();
+    final tArr = await Storage.readTabella('arrampicata.csv');
+    arrampicate = tArr == null
+        ? []
+        : (tArr.righe
+              .map((r) => SedutaArrampicata.da(tArr, r))
+              .whereType<SedutaArrampicata>()
+              .toList()
+            ..sort((a, b) => a.data.compareTo(b.data)));
     final tr = await Storage.readTabella('recupero.csv');
     recupero = tr == null
         ? []
@@ -594,7 +616,11 @@ class AppState extends ChangeNotifier {
     final idApp = prog.isEmpty
         ? workoutPredefinito(d, sport, tipo)
         : prog.first.idWorkout;
-    if (idApp == null) return const [];
+    if (idApp == null) {
+      return stessoSport(sport, 'Arrampicata')
+          ? passiLiberi('Arrampicata', titoloSessione('Arrampicata', tipo))
+          : const [];
+    }
     var passi = workout.where((w) => w.id == idApp).toList();
     if (passi.isEmpty) {
       passi = workoutBase.where((w) => w.id == idApp).toList();
@@ -1132,6 +1158,7 @@ class AppState extends ChangeNotifier {
           proposta: p?.modifiche,
           piano: p?.piano,
           allenamenti: p?.allenamenti,
+          arrampicata: p?.arrampicata,
           motivo: p?.motivo ?? '',
           errore: r.errore,
         ),
@@ -1259,6 +1286,90 @@ class AppState extends ChangeNotifier {
     // Subito anche nel calendario di intervals.icu (e da lì a Garmin).
     if (invioIntervals) await inviaPianoIntervals();
     return validi.length;
+  }
+
+  // ---------------------------------------------------------------------
+  // Allenamenti di arrampicata
+
+  Future<void> _salvaArrampicata() => Storage.write(
+    fileAllenamentiArrampicata,
+    allenamentiArrampicataHeader,
+    allenamentiArrampicata.map((a) => a.toRow()).toList(),
+  );
+
+  /// Aggiunge un allenamento alla raccolta, o lo aggiorna se c'è già.
+  Future<void> salvaAllenamentoArrampicata(AllenamentoArrampicata a) async {
+    final i = allenamentiArrampicata.indexWhere((x) => x.id == a.id);
+    allenamentiArrampicata = [...allenamentiArrampicata];
+    if (i >= 0) {
+      allenamentiArrampicata[i] = a;
+    } else {
+      allenamentiArrampicata.add(a);
+    }
+    await _salvaArrampicata();
+    notifyListeners();
+  }
+
+  Future<void> eliminaAllenamentoArrampicata(String id) async {
+    allenamentiArrampicata = [
+      for (final a in allenamentiArrampicata)
+        if (a.id != id) a,
+    ];
+    await _salvaArrampicata();
+    notifyListeners();
+  }
+
+  /// Mette l'allenamento nel calendario quel giorno, al posto della seduta
+  /// di arrampicata (o in più). False se il giorno è passato.
+  Future<bool> programmaArrampicata(
+    AllenamentoArrampicata a,
+    DateTime data, {
+    String fascia = '',
+  }) async =>
+      await applicaAllenamentiAgente([a.perIlGiorno(data, fascia: fascia)]) > 0;
+
+  /// Le proposte dell'assistente: tutte nella raccolta (uno con lo stesso
+  /// nome si aggiorna), quelle con la data anche nel calendario.
+  /// Restituisce (salvati, nel calendario).
+  Future<(int, int)> applicaProposteArrampicata(
+    List<PropostaArrampicata> proposte, {
+    MessaggioChat? da,
+  }) async {
+    final lista = [...allenamentiArrampicata];
+    final perIlCalendario = <AllenamentoAgente>[];
+    for (final p in proposte) {
+      final i = lista.indexWhere(
+        (x) => x.nome.toLowerCase() == p.allenamento.nome.toLowerCase(),
+      );
+      final a = i >= 0
+          ? AllenamentoArrampicata(
+              id: lista[i].id,
+              nome: p.allenamento.nome,
+              categoria: p.allenamento.categoria,
+              tipi: p.allenamento.tipi,
+              durataMin: p.allenamento.durataMin,
+              descrizione: p.allenamento.descrizione,
+              daSegnare: p.allenamento.daSegnare,
+              esercizi: p.allenamento.esercizi,
+            )
+          : p.allenamento;
+      if (i >= 0) {
+        lista[i] = a;
+      } else {
+        lista.add(a);
+      }
+      if (p.data case final d?) {
+        perIlCalendario.add(a.perIlGiorno(d, fascia: p.fascia));
+      }
+    }
+    allenamentiArrampicata = lista;
+    await _salvaArrampicata();
+    final messi = perIlCalendario.isEmpty
+        ? 0
+        : await applicaAllenamentiAgente(perIlCalendario, da: da);
+    _segnaApplicata(da);
+    notifyListeners();
+    return (proposte.length, messi);
   }
 
   /// Proposta applicata: nel messaggio della chat del coach, oppure nella
@@ -2339,6 +2450,18 @@ class AppState extends ChangeNotifier {
     }
     _ricombina();
     await _aggiornaEndurance();
+    notifyListeners();
+  }
+
+  /// Salva (o sostituisce) la scheda dell'arrampicata di una seduta.
+  Future<void> salvaArrampicata(SedutaArrampicata a) async {
+    arrampicate = [...arrampicate.where((x) => x.idSessione != a.idSessione), a]
+      ..sort((x, y) => x.data.compareTo(y.data));
+    await Storage.write(
+      'arrampicata.csv',
+      arrampicataHeader,
+      arrampicate.map((x) => x.toRow()).toList(),
+    );
     notifyListeners();
   }
 
