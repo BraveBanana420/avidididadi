@@ -1,7 +1,7 @@
 # Avidididadi
 
 App Android (Flutter) per pianificare e seguire allenamenti di forza, corsa,
-nuoto, bici e mobilità: piano generato e adattato dai feedback, modalità
+nuoto, bici, mobilità e arrampicata: piano generato e adattato dai feedback, modalità
 allenamento passo passo, percorsi GPS con mappa, progressi e un coach con
 l'assistente scelto dall'utente.
 
