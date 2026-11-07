@@ -771,12 +771,7 @@ Future<EsercizioScheda?> modificaEsercizio(
     showDragHandle: true,
     builder: (c) => StatefulBuilder(
       builder: (c, aggiorna) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          0,
-          20,
-          20 + MediaQuery.viewInsetsOf(c).bottom,
-        ),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + spazioInBasso(c)),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1028,12 +1023,7 @@ Future<EsercizioScheda?> modificaPasso(
       builder: (c, aggiorna) {
         final t = Theme.of(c).textTheme;
         return Padding(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            0,
-            20,
-            20 + MediaQuery.viewInsetsOf(c).bottom,
-          ),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + spazioInBasso(c)),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,

@@ -688,12 +688,7 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
           ),
         );
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + spazioInBasso(context)),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

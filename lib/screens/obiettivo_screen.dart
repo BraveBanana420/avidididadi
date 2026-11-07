@@ -311,7 +311,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
     builder: (c) {
       final t = Theme.of(c).textTheme;
       return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + spazioInBasso(c)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -1654,10 +1654,12 @@ Future<(String, String, String)?> scegliAttivitaLibera(
 }) => showModalBottomSheet<(String, String, String)>(
   context: context,
   showDragHandle: true,
+  // Senza, il foglio si ferma a 9/16 dello schermo e l'ultima riga viene tagliata.
+  isScrollControlled: true,
   builder: (c) {
     final t = Theme.of(c).textTheme;
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
