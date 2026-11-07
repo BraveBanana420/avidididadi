@@ -41,7 +41,7 @@ void main() {
     expect(b.toRow(), a.toRow());
     expect(b.metri, 200);
     expect(b.riassunto, [
-      'Outdoor · Falesia · Arco, Massone',
+      'Falesia · Vie · Arco, Massone',
       'Grado più difficile: 6b+ (lavorata)',
       '8 vie chiuse, 2 provate',
       'circa 200 m saliti · da primo',

@@ -131,7 +131,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 ),
                 ButtonSegment(
                   value: Ambiente.outdoor,
-                  label: Text('Outdoor'),
+                  label: Text('Falesia'),
                   icon: Icon(Icons.landscape_outlined),
                 ),
               ],
@@ -152,10 +152,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
             SegmentedButton<Disciplina>(
               emptySelectionAllowed: true,
               segments: const [
-                ButtonSegment(
-                  value: Disciplina.falesia,
-                  label: Text('Falesia (vie)'),
-                ),
+                ButtonSegment(value: Disciplina.falesia, label: Text('Vie')),
                 ButtonSegment(
                   value: Disciplina.boulder,
                   label: Text('Boulder'),
@@ -168,7 +165,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
             ),
             if (d == null)
               Text(
-                'Scegli falesia o boulder: i gradi hanno due scale diverse.',
+                'Scegli vie o boulder: i gradi hanno due scale diverse.',
                 style: t.bodySmall,
               )
             else ...[

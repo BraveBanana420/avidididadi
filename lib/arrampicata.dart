@@ -21,10 +21,11 @@ const arrampicataHeader = [
   'progetto',
 ];
 
-/// Indoor (palestra) o outdoor (roccia).
+/// Indoor (palestra) o falesia (roccia). Nel file resta "outdoor".
 enum Ambiente { indoor, outdoor }
 
-/// Falesia = vie con la corda; boulder = blocchi bassi sul materasso.
+/// Vie con la corda o boulder, blocchi bassi sul materasso. Nel file la prima
+/// resta "falesia".
 enum Disciplina { falesia, boulder }
 
 /// Come è stato chiuso il grado più difficile.
@@ -142,8 +143,8 @@ class SedutaArrampicata {
   /// Righe brevi per il dettaglio della seduta.
   List<String> get riassunto => [
     [
-      ambiente == Ambiente.indoor ? 'Indoor' : 'Outdoor',
-      falesia ? 'Falesia' : 'Boulder',
+      ambiente == Ambiente.indoor ? 'Indoor' : 'Falesia',
+      falesia ? 'Vie' : 'Boulder',
       if (luogo.isNotEmpty) luogo,
     ].join(' · '),
     if (gradoMax.isNotEmpty)

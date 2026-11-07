@@ -1009,7 +1009,7 @@ class _DatiSessione extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      'Record ${a.falesia ? 'in falesia' : 'nel boulder'}: '
+                      'Record ${a.falesia ? 'sulle vie' : 'nel boulder'}: '
                       '$g (${quando.day} ${mesiNomi[quando.month - 1]} ${quando.year})',
                       style: t.bodySmall,
                     ),

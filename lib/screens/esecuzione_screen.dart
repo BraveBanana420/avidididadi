@@ -728,14 +728,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       }
       if (r <= 0) {
         avviso(fine: true);
-        _avanti();
+        _avanti(daTimer: true);
         return;
       }
     }
     setState(() {});
   }
 
-  void _nuovoBlocco() {
+  void _nuovoBlocco({required bool aMano}) {
     blocco
       ..reset()
       ..start();
@@ -746,7 +746,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _ritmoCadenza.azzera();
     // L'attività libera ha un passo solo: basta il cronometro.
     if (!widget.libera) {
-      voce.diBlocco(b);
+      voce.diBlocco(b, aMano: aMano);
     }
     _salvaInCorso();
     _notifica();
@@ -798,7 +798,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
   }();
 
-  void _avanti({bool saltato = false}) {
+  void _avanti({bool saltato = false, bool daTimer = false}) {
     if (!preparati && _daRegistrare(i)) {
       if (saltato) {
         fatte.remove(i);
@@ -812,18 +812,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         _partenza ??= DateTime.now();
         totale.start();
         gps?.imposta(true);
-        _nuovoBlocco();
+        _nuovoBlocco(aMano: !daTimer);
       });
       return;
     }
     tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
     if (i >= blocchi.length - 1) {
-      _fine();
+      _fine(aMano: !daTimer);
       return;
     }
     setState(() {
       i++;
-      _nuovoBlocco();
+      _nuovoBlocco(aMano: !daTimer);
     });
   }
 
@@ -892,7 +892,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (preparati || i == 0) return;
     setState(() {
       i--;
-      _nuovoBlocco();
+      _nuovoBlocco(aMano: true);
     });
   }
 
@@ -976,7 +976,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     _notifica();
   }
 
-  void _fine() {
+  void _fine({bool aMano = true}) {
     totale.stop();
     blocco.stop();
     if (_bici) sensoreBici.libera();
@@ -993,7 +993,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     voce.di(
       'Allenamento completato. ${parlaDurata(_tempoTotale)}'
       '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
-      urgente: true,
+      urgente: aMano,
     );
     setState(() => finito = true);
     _salvaInCorso(); // anche il riepilogo si ritrova, se l'app si chiude

@@ -40,7 +40,12 @@ void main() {
           .setMockMethodCallHandler(canale, null),
     );
 
-    test('ogni titolo interrompe quello prima, senza coda', () async {
+    test('col timer non taglia l\'avviso in corso', () async {
+      await Voce().diBlocco(blocco('Serie 1'), aMano: false);
+      expect(dette.single['urgente'], false);
+    });
+
+    test('a mano ogni titolo interrompe quello prima, senza coda', () async {
       final v = Voce();
       for (final t in [
         'Riscaldamento',
@@ -48,7 +53,7 @@ void main() {
         'Serie 2',
         'Defaticamento',
       ]) {
-        await v.diBlocco(blocco(t));
+        await v.diBlocco(blocco(t), aMano: true);
       }
       expect(dette, hasLength(4));
       expect(dette.every((d) => d['urgente'] == true), isTrue);
@@ -63,8 +68,8 @@ void main() {
     test('durante una chiamata conta solo l\'ultimo titolo', () async {
       final v = Voce();
       risposta = 'chiamata';
-      await v.diBlocco(blocco('Serie 1'));
-      await v.diBlocco(blocco('Serie 2'));
+      await v.diBlocco(blocco('Serie 1'), aMano: true);
+      await v.diBlocco(blocco('Serie 2'), aMano: true);
       // Il secondo non chiede nemmeno di parlare: aspetta la fine della chiamata.
       expect(dette, hasLength(1));
       v.ferma();

@@ -252,10 +252,11 @@ class Voce {
     });
   }
 
-  /// Il blocco appena aperto: toglie la voce a quello di prima, così scorrendo
-  /// veloce si sente solo quello che è sullo schermo, non una coda di titoli.
-  Future<void> diBlocco(Blocco b) =>
-      di(fraseBlocco(b), valida: const Duration(seconds: 30), urgente: true);
+  /// Il blocco appena aperto. Scorrendo a mano ([aMano]) toglie la voce a quello
+  /// di prima, così si sente solo quello che è sullo schermo; quando passa da
+  /// solo, col timer, non taglia un avviso in corso (una svolta, un chilometro).
+  Future<void> diBlocco(Blocco b, {required bool aMano}) =>
+      di(fraseBlocco(b), valida: const Duration(seconds: 30), urgente: aMano);
 
   /// Fine allenamento: niente frasi in sospeso.
   void ferma() {
