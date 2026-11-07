@@ -2,6 +2,18 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.12.3
+
+- Le mie attività: al primo avvio scegli i tuoi sport e vedi solo quelli; dal Profilo ne aggiungi o togli e il calendario si aggiorna.
+- Arrampicata nell'app: vie, blocchi, gradi e allenamenti scritti a mano o dall'assistente, con i suoi grafici.
+- Tasto "+": ci sono sempre tutte le attività, anche "Altra attività".
+- Orologio e intervals.icu: nomi tradotti (walking diventa Camminata), il resto entra come attività libera, senza doppioni.
+- Modifica i dati: ora vale per tutte le sedute, anche quelle dell'orologio, e puoi tornare ai dati originali.
+- Sedute dimenticate: puoi scrivere a mano un'attività fatta nei giorni passati.
+- A seduta fatta rivedi anche l'allenamento che era in programma.
+- Voce: scorrendo le fasi a mano si interrompe e legge quella che vedi; i gradi si leggono bene (6a è "6 A").
+- All'apertura riaccetta l'informativa (dati dell'arrampicata).
+
 ## 1.11.1
 
 - Sedute registrate con l'app: tasto "Modifica i dati" nel dettaglio per correggere durata, orario, distanza, battito, calorie e note.
