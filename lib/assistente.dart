@@ -149,6 +149,7 @@ String contestoAllenamento({
   required List<FeedbackSessione> feedback,
   required List<GiornoRecupero> recupero,
   Set<String> sportGenerati = const {},
+  Set<String> attivita = const {},
 }) {
   final o = soloData(oggi);
   final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
@@ -173,6 +174,12 @@ String contestoAllenamento({
   }
   if (passoCritico != null) {
     b.writeln('Passo critico nuoto: ${fmtPasso100(passoCritico)}');
+  }
+  if (attivita.isNotEmpty) {
+    b.writeln(
+      'Attività scelte dall\'atleta: ${attivita.join(', ')}. Proponi solo '
+      'queste, salvo che chieda altro.',
+    );
   }
   if (sportGenerati.isNotEmpty) {
     b.writeln('Sedute generate dall\'app: ${sportGenerati.join(', ')}, Forza');

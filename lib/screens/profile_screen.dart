@@ -10,6 +10,7 @@ import '../profilo.dart';
 import '../tema.dart';
 import '../esercizi.dart';
 import 'allenamenti_arrampicata_screen.dart';
+import 'attivita_screen.dart';
 import 'altre_pagine.dart';
 import 'attrezzatura_screen.dart';
 import 'benvenuto_screen.dart';
@@ -251,6 +252,12 @@ class ProfileScreen extends StatelessWidget {
                           : '${o.nome} · ${dataLunga(o.data)}',
                       ObiettivoScreen(state: state),
                     ),
+                    voce(
+                      Icons.tune,
+                      'Le mie attività',
+                      state.attivitaScelte.join(', '),
+                      AttivitaScreen(state: state),
+                    ),
                     // "Prepara le sedute" e "Le mie schede" insieme, per il giro.
                     Column(
                       key: ChiaviTour.prepara,
@@ -362,12 +369,13 @@ class ProfileScreen extends StatelessWidget {
                       'Voce, bip, pausa automatica e passo medio',
                       const OpzioniAllenamentoScreen(),
                     ),
-                    voce(
-                      Icons.terrain,
-                      'Allenamenti di arrampicata',
-                      'I tuoi allenamenti: creali, falli o mettili nel piano',
-                      AllenamentiArrampicataScreen(state: state),
-                    ),
+                    if (state.attivitaScelta('Arrampicata'))
+                      voce(
+                        Icons.terrain,
+                        'Allenamenti di arrampicata',
+                        'I tuoi allenamenti: creali, falli o mettili nel piano',
+                        AllenamentiArrampicataScreen(state: state),
+                      ),
                     voce(
                       Icons.route,
                       'I miei percorsi',

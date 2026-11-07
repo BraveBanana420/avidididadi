@@ -77,7 +77,7 @@ class WeekScreen extends StatelessWidget {
 
   Future<Slot?> _modifica(BuildContext context, Slot slot) => showDialog<Slot>(
     context: context,
-    builder: (_) => SlotDialog(slot: slot),
+    builder: (_) => SlotDialog(slot: slot, sport: state.sportScelti),
   );
 
   @override
@@ -174,7 +174,15 @@ class WeekScreen extends StatelessWidget {
 class SlotDialog extends StatefulWidget {
   final Slot slot;
   final String? titolo; // default: il giorno della settimana
-  const SlotDialog({super.key, required this.slot, this.titolo});
+
+  /// Gli sport tra cui scegliere: quelli delle attività scelte.
+  final List<String> sport;
+  const SlotDialog({
+    super.key,
+    required this.slot,
+    this.titolo,
+    this.sport = sportList,
+  });
 
   @override
   State<SlotDialog> createState() => _SlotDialogState();
@@ -219,7 +227,7 @@ class _SlotDialogState extends State<SlotDialog> {
               initialValue: sport,
               decoration: const InputDecoration(labelText: 'Sport'),
               items: _con(
-                sportList,
+                widget.sport,
                 sport,
               ).map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
               onChanged: (v) => setState(() => sport = v ?? sport),

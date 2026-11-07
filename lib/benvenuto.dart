@@ -11,6 +11,7 @@ const sportBenvenuto = {
   'Bici': "All'aperto o sui rulli, a ritmo tranquillo.",
   'Mobilità':
       'Stretching e movimenti lenti: perfetta per iniziare o recuperare.',
+  'Arrampicata': 'In palestra o in falesia: segni vie, blocchi e gradi.',
 };
 
 /// Quanto si allena oggi: diventa il livello del piano di forza.

@@ -257,6 +257,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           sport: s,
                           sessioni: perSport[s]!,
                           inizi: inizi,
+                          arrampicate: widget.state.arrampicate,
                         ),
                       ),
                     ),

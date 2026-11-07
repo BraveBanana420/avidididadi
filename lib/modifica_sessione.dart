@@ -1,5 +1,7 @@
 import 'csv.dart';
+import 'attivita_libera.dart';
 import 'models.dart';
+import 'sincronizzazione.dart';
 
 // Modifica a mano di una seduta già fatta: per chi non ha un orologio che la
 // misura, i dati si scrivono dopo. Logica pura, la schermata è in screens/.
@@ -90,6 +92,33 @@ int secondiDa(String testo) {
 /// "1:55" per il campo del tempo medio (vuoto se non c'è).
 String tempoScritto(int secondi) =>
     secondi <= 0 ? '' : '${secondi ~/ 60}:${two(secondi % 60)}';
+
+/// Una seduta di un giorno passato, ancora da scrivere: si salva solo se poi
+/// si conferma. L'orario di partenza è indicativo, si corregge nella schermata;
+/// [occupati] sono gli id già presi, così non ne sostituisce un'altra.
+Sessione sessioneDaScrivere(
+  DateTime giorno,
+  String sport, {
+  String tipo = '',
+  int durataMin = 0,
+  Set<String> occupati = const {},
+}) {
+  final data = soloData(giorno);
+  var inizio = data.add(const Duration(hours: 12));
+  while (occupati.contains(idLibera(inizio, sport))) {
+    inizio = inizio.add(const Duration(minutes: 1));
+  }
+  return Sessione(
+    id: idLibera(inizio, sport),
+    data: data,
+    sport: sport,
+    tipo: tipo,
+    durataMin: durataMin,
+    fonte: fonteApp,
+    inizio: inizio,
+    fine: inizio.add(Duration(minutes: durataMin)),
+  );
+}
 
 /// La sessione con i dati scritti a mano. Il giorno e l'id non cambiano, perché
 /// percorso, grafici e feedback sono legati a quelli; la fine segue la durata.

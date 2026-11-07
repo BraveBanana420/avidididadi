@@ -39,12 +39,13 @@ class SchedeScreen extends StatelessWidget {
                 ('Bici', 'Passi a tempo o distanza, con zona'),
                 ('Nuoto', 'Vasche, passo per 100 m e pause'),
               ])
-                ListTile(
-                  leading: Icon(iconaSport(sp), color: coloreSport(sp)),
-                  title: Text(sp),
-                  subtitle: Text(testo),
-                  onTap: () => Navigator.pop(c, sp),
-                ),
+                if (state.attivitaScelta(sp))
+                  ListTile(
+                    leading: Icon(iconaSport(sp), color: coloreSport(sp)),
+                    title: Text(sp),
+                    subtitle: Text(testo),
+                    onTap: () => Navigator.pop(c, sp),
+                  ),
             ],
           ),
         ),

@@ -43,7 +43,7 @@ void main() {
   test('tipi: corsa, nuoto in acque libere, sport ignorati', () {
     expect(sportDaTipoIcu('Run'), ('Corsa', 'Corsa'));
     expect(sportDaTipoIcu('OpenWaterSwim'), ('Nuoto', 'Acque libere'));
-    expect(sportDaTipoIcu('WeightTraining'), isNull);
+    expect(sportDaTipoIcu('WeightTraining'), ('Forza', 'Pesi'));
     final corsa = attivitaDaIcu(
       attivita(type: 'Run', name: '', trainer: false),
     )!;

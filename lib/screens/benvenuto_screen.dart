@@ -149,13 +149,11 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                         children: [
                           for (final e in sportBenvenuto.entries)
                             SizedBox(
-                              width: e.key == 'Mobilità'
-                                  ? v.maxWidth
-                                  : (v.maxWidth - 12) / 2,
+                              width: (v.maxWidth - 12) / 2,
                               child: _TesseraSport(
                                 sport: e.key,
                                 testo: e.value,
-                                largo: e.key == 'Mobilità',
+                                largo: false,
                                 scelta: sport.contains(e.key),
                                 onTap: () => setState(
                                   () => sport.contains(e.key)

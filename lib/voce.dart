@@ -52,10 +52,23 @@ String fraseGiro(String sport, Giro g) {
       '${parlaDurata(g.tempo)}, ${parlaVelocita(sport, mps)}.';
 }
 
+/// I gradi dell'arrampicata per la sintesi vocale: "6a+" → "6 A più", altrimenti
+/// "6a" si legge "sesta". "6a-6c" → "da 6 A a 6 C".
+String gradiParlati(String testo) {
+  const grado = r'(?<![\w:.,/])([4-9])([abcABC])(\+?)(?!\w)';
+  String di(String n, String l, String p) =>
+      '$n ${l.toUpperCase()}${p.isEmpty ? '' : ' più'}';
+  final t = testo.replaceAllMapped(
+    RegExp('$grado-([4-9])([abcABC])(\\+?)(?!\\w)'),
+    (m) => 'da ${di(m[1]!, m[2]!, m[3]!)} a ${di(m[4]!, m[5]!, m[6]!)}',
+  );
+  return t.replaceAllMapped(RegExp(grado), (m) => di(m[1]!, m[2]!, m[3]!));
+}
+
 /// Le sigle dello schermo dette per esteso: "8-10" → "da 8 a 10",
 /// "45 s" → "45 secondi", "Z2" → "zona 2", " · " → pausa.
 String parlato(String testo) {
-  var t = testo.replaceAll(' · ', ', ');
+  var t = gradiParlati(testo).replaceAll(' · ', ', ');
   String plurale(Match m, String uno, String tanti) =>
       '${m[1]} ${m[1] == '1' ? uno : tanti}';
   t = t.replaceAllMapped(
@@ -97,7 +110,7 @@ String fraseBlocco(Blocco b) {
         : 'Recupero, ${parlaDurata(Duration(seconds: b.secondi!))}.';
   }
   final pezzi = [
-    'Ora: ${b.titolo}',
+    'Ora: ${gradiParlati(b.titolo)}',
     if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
     if (b.intensita.isNotEmpty) parlato(b.intensita),
     if (b.obiettivo2.isNotEmpty) parlato(b.obiettivo2),

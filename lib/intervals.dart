@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import 'attivita.dart';
 import 'models.dart';
 import 'percorso.dart';
 import 'potenza.dart';
@@ -51,8 +52,7 @@ class AttivitaIcu {
   const AttivitaIcu(this.sessione, {this.alChiuso = false});
 }
 
-/// Sport e tipo dell'app dal tipo di intervals.icu. Null per quelli che
-/// arrivano da Health Connect (forza, mobilità) o che l'app non segue.
+/// Tipo di attività di intervals.icu -> (sport, tipo di sessione) dell'app.
 (String, String)? sportDaTipoIcu(String tipo) => switch (tipo) {
   'Run' || 'TrailRun' => ('Corsa', 'Corsa'),
   'VirtualRun' => ('Corsa', 'Tapis roulant'),
@@ -63,8 +63,12 @@ class AttivitaIcu {
   'VirtualRide' => ('Bici', 'Rulli'),
   'Swim' => ('Nuoto', 'Piscina'),
   'OpenWaterSwim' => ('Nuoto', 'Acque libere'),
-  _ => null,
+  // Gli altri, anche scritti diversi ("walking"): noti o attività libera.
+  _ => attivitaDaNome(tipo),
 };
+
+/// Quando cambia la traduzione dei nomi si rileggono gli ultimi 90 giorni.
+const versioneRegoleIcu = 2;
 
 const _sorgenti = {
   'GARMIN_CONNECT': 'Garmin',

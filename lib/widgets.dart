@@ -39,6 +39,8 @@ IconData iconaSport(String sport) {
       return Icons.directions_walk;
     case 'arrampicata':
       return Icons.terrain;
+    case 'attività libera':
+      return Icons.bolt;
     case 'riposo':
       return Icons.bedtime_outlined;
     default:
@@ -127,6 +129,8 @@ Color coloreSport(String sport) {
       return n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A);
     case 'arrampicata':
       return n ? const Color(0xFFFFE600) : const Color(0xFF4FA3A5);
+    case 'attività libera':
+      return const Color(0xFF7C83FD);
     case 'riposo':
       return temaScuroAttivo
           ? const Color(0xFF6E6E6E)
