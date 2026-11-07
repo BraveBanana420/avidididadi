@@ -131,7 +131,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 ),
                 ButtonSegment(
                   value: Ambiente.outdoor,
-                  label: Text('Falesia'),
+                  label: Text('Outdoor'),
                   icon: Icon(Icons.landscape_outlined),
                 ),
               ],

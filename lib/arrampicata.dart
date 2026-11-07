@@ -21,7 +21,7 @@ const arrampicataHeader = [
   'progetto',
 ];
 
-/// Indoor (palestra) o falesia (roccia). Nel file resta "outdoor".
+/// Indoor (palestra) o outdoor (roccia).
 enum Ambiente { indoor, outdoor }
 
 /// Vie con la corda o boulder, blocchi bassi sul materasso. Nel file la prima
@@ -32,7 +32,7 @@ enum Disciplina { falesia, boulder }
 const stili = ['A vista', 'Flash', 'Lavorata'];
 
 /// Come si sale in falesia.
-const corde = ['Da primo', 'Moulinette'];
+const corde = ['Da primo', 'Da secondo'];
 
 /// Scala francese per le vie: 4a … 9c.
 final gradiFalesia = [
@@ -78,7 +78,7 @@ class SedutaArrampicata {
   final String stile; // a vista, flash, lavorata
   final int chiuse; // vie o blocchi chiusi
   final int provate; // provati senza chiuderli
-  final String corda; // da primo o moulinette (solo falesia)
+  final String corda; // da primo o da secondo (solo vie)
   final int altezzaM; // altezza media delle vie (solo falesia)
   final String progetto; // grado che sta provando, non ancora chiuso
   const SedutaArrampicata({
@@ -134,7 +134,8 @@ class SedutaArrampicata {
       stile: t.v(r, 'stile'),
       chiuse: int.tryParse(t.v(r, 'chiuse')) ?? 0,
       provate: int.tryParse(t.v(r, 'provate')) ?? 0,
-      corda: t.v(r, 'corda'),
+      // Le sedute segnate prima con il vecchio nome.
+      corda: t.v(r, 'corda') == 'Moulinette' ? 'Da secondo' : t.v(r, 'corda'),
       altezzaM: int.tryParse(t.v(r, 'altezza_m')) ?? 0,
       progetto: t.v(r, 'progetto'),
     );
@@ -143,7 +144,7 @@ class SedutaArrampicata {
   /// Righe brevi per il dettaglio della seduta.
   List<String> get riassunto => [
     [
-      ambiente == Ambiente.indoor ? 'Indoor' : 'Falesia',
+      ambiente == Ambiente.indoor ? 'Indoor' : 'Outdoor',
       falesia ? 'Vie' : 'Boulder',
       if (luogo.isNotEmpty) luogo,
     ].join(' · '),

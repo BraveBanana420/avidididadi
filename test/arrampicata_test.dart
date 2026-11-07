@@ -3,6 +3,31 @@ import 'package:allenamenti_app/csv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('le sedute con "Moulinette" si leggono "Da secondo"', () {
+    final riga = [
+      'x',
+      '2026-10-20',
+      'indoor',
+      'falesia',
+      '',
+      '6a',
+      '',
+      '5',
+      '0',
+      'Moulinette',
+      '15',
+      '',
+    ];
+    final t = Tabella(
+      {for (final (i, c) in arrampicataHeader.indexed) c: i},
+      [riga],
+    );
+    final a = SedutaArrampicata.da(t, riga)!;
+    expect(a.corda, 'Da secondo');
+    expect(corde, contains(a.corda));
+    expect(a.riassunto, contains('circa 75 m saliti · da secondo'));
+  });
+
   test('scale dei gradi in ordine', () {
     expect(gradiFalesia.first, '3');
     expect(gradiFalesia.last, '9c');
@@ -41,7 +66,7 @@ void main() {
     expect(b.toRow(), a.toRow());
     expect(b.metri, 200);
     expect(b.riassunto, [
-      'Falesia · Vie · Arco, Massone',
+      'Outdoor · Vie · Arco, Massone',
       'Grado più difficile: 6b+ (lavorata)',
       '8 vie chiuse, 2 provate',
       'circa 200 m saliti · da primo',
