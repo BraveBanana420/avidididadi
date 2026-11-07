@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
@@ -667,13 +668,11 @@ class _DatiSessione extends StatelessWidget {
 
   Future<void> _inviaIntervals(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(
-      const SnackBar(content: Text('Invio a intervals.icu…')),
-    );
+    messenger.showSnackBar(avviso(content: Text('Invio a intervals.icu…')));
     final esito = await state.inviaSessioneIntervals(sessione);
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(esito)));
+      ..showSnackBar(avviso(content: Text(esito)));
   }
 
   /// Il percorso in un file GPX, per Strava, Garmin Connect o altre app.
@@ -682,7 +681,7 @@ class _DatiSessione extends StatelessWidget {
     final gpx = await state.gpxSessione(sessione);
     if (gpx == null) {
       messenger.showSnackBar(
-        const SnackBar(
+        avviso(
           content: Text("Per questa sessione l'app non ha un percorso GPS."),
         ),
       );
@@ -697,7 +696,7 @@ class _DatiSessione extends StatelessWidget {
       );
       if (uri != null) {
         messenger.showSnackBar(
-          const SnackBar(
+          avviso(
             content: Text(
               'GPX salvato: puoi caricarlo su Strava o Garmin Connect.',
             ),
@@ -705,7 +704,7 @@ class _DatiSessione extends StatelessWidget {
         );
       }
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('GPX non salvato: $e')));
+      messenger.showSnackBar(avviso(content: Text('GPX non salvato: $e')));
     }
   }
 
@@ -835,10 +834,7 @@ class _DatiSessione extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final ripristina = await state.eliminaSessione(s);
     messenger.showSnackBar(
-      SnackBar(
-        content: const Text('Sessione eliminata'),
-        action: SnackBarAction(label: 'Annulla', onPressed: ripristina),
-      ),
+      avviso(content: const Text('Sessione eliminata'), annulla: ripristina),
     );
   }
 

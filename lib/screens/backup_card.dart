@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../backup.dart';
 import '../backup_auto.dart';
@@ -19,8 +20,7 @@ class _SezioneBackupState extends State<SezioneBackup> {
   bool inCorso = false;
 
   void _messaggio(String testo) =>
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(testo)));
+      ScaffoldMessenger.of(context).showSnackBar(avviso(content: Text(testo)));
 
   Future<void> _salva() async {
     setState(() => inCorso = true);

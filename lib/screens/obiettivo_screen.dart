@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../models.dart';
 import '../obiettivo.dart';
@@ -67,9 +68,8 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
     }
     if (data == null) {
       setState(() => erroreTempo = null);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Scegli la data della gara.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text('Scegli la data della gara.')));
       return;
     }
     final navigator = Navigator.of(context);
@@ -359,7 +359,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                 final ok = await widget.state.programmaTestFtpCorsa(data);
                 navigator.pop();
                 messenger.showSnackBar(
-                  SnackBar(
+                  avviso(
                     content: Text(
                       ok
                           ? 'Test nel calendario: ${dataLunga(data)}. Prende '

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../carico.dart';
 import '../condivisione.dart';
@@ -117,9 +118,7 @@ class _Pagina extends StatelessWidget {
               final ok = await _condividi(chiave, testo);
               if (!ok) {
                 messenger.showSnackBar(
-                  const SnackBar(
-                    content: Text('Immagine non riuscita: riprova.'),
-                  ),
+                  avviso(content: Text('Immagine non riuscita: riprova.')),
                 );
               }
             },

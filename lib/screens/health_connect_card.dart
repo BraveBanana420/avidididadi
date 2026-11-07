@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart' show HealthDataType;
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../health_connect.dart';
 import '../sincronizzazione.dart';
@@ -43,7 +44,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
     final msg = await widget.state.sincronizzaHc(interattiva: true);
     if (!mounted) return;
     _aggiorna();
-    messenger.showSnackBar(SnackBar(content: Text(msg)));
+    messenger.showSnackBar(avviso(content: Text(msg)));
   }
 
   Future<void> _rivediPermessi(_Stato s) async {
@@ -212,5 +213,5 @@ Future<void> sincronizzaConMessaggio(
 ) async {
   final messenger = ScaffoldMessenger.of(context);
   final msg = await state.sincronizzaHc();
-  messenger.showSnackBar(SnackBar(content: Text(msg)));
+  messenger.showSnackBar(avviso(content: Text(msg)));
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
 import '../attivita.dart';
@@ -72,7 +73,7 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
     if (!mounted) return;
     navigator.pop();
     messenger.showSnackBar(
-      const SnackBar(content: Text('Le tue attività sono aggiornate.')),
+      avviso(content: Text('Le tue attività sono aggiornate.')),
     );
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../allenamento_arrampicata.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
@@ -198,7 +199,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final ok = await state.programmaArrampicata(a, data);
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           ok
               ? '${a.nome} è nel calendario: ${dataLunga(data)}.'

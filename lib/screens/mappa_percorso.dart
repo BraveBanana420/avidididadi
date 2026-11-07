@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../health_connect.dart';
 import '../models.dart';
@@ -281,7 +282,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
     if (!mounted) return;
     if (p == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        avviso(
           content: Text(
             'Percorso non concesso. Puoi sempre permetterlo da Health Connect.',
           ),
@@ -309,11 +310,11 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
         utf8.decode(await files.first.readAsBytes(), allowMalformed: true),
       );
     } on FormatException catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(e.message)));
+      messenger.showSnackBar(avviso(content: Text(e.message)));
       return;
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Impossibile leggere il file: $e')),
+        avviso(content: Text('Impossibile leggere il file: $e')),
       );
       return;
     }
@@ -345,7 +346,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
     if (!mounted) return;
     setState(() => _risposta = Future.value(RispostaPercorso.dati(p)));
     messenger.showSnackBar(
-      SnackBar(content: Text('Percorso aggiunto: ${fmtKm(p.distanzaKm)}')),
+      avviso(content: Text('Percorso aggiunto: ${fmtKm(p.distanzaKm)}')),
     );
   }
 

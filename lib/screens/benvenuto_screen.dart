@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../benvenuto.dart';
 import '../models.dart';
@@ -73,11 +74,10 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
     );
     navigator.pop();
     messenger.showSnackBar(
-      const SnackBar(
+      avviso(
         content: Text(
           'Il tuo piano è pronto! In "Oggi" trovi cosa fare ogni giorno.',
         ),
-        duration: Duration(seconds: 6),
       ),
     );
   }

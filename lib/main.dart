@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'avviso.dart';
 import 'app_state.dart';
 import 'condivisione.dart';
 import 'health_connect.dart';
@@ -208,7 +209,7 @@ class _HomePageState extends State<HomePage> {
     // Se è aperta un'altra pagina (es. un allenamento) non si chiude: avviso.
     if (Navigator.of(context).canPop()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Risposta ricevuta: la trovi in Coach.')),
+        avviso(content: Text('Risposta ricevuta: la trovi in Coach.')),
       );
     }
   }

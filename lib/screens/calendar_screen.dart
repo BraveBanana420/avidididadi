@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../attivita_libera.dart';
 import '../carico.dart';
@@ -1257,7 +1258,7 @@ class _GeneraSheetState extends State<GeneraSheet> {
     await widget.state.genera(inizio, mesi.round());
     if (!mounted) return;
     Navigator.pop(context);
-    messenger.showSnackBar(const SnackBar(content: Text('Piano generato')));
+    messenger.showSnackBar(avviso(content: Text('Piano generato')));
   }
 
   @override
@@ -1384,7 +1385,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     messenger.showSnackBar(
-      SnackBar(content: Text('${dataLunga(widget.data)} aggiornato')),
+      avviso(content: Text('${dataLunga(widget.data)} aggiornato')),
     );
   }
 

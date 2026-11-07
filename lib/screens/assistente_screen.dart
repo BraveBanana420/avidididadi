@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../assistente.dart';
 import '../llm.dart';
@@ -73,7 +74,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
     if (errore != null) {
       _testo.text = t; // il messaggio non è andato: si può riprovare
       messenger.showSnackBar(
-        SnackBar(content: Text(errore), duration: const Duration(seconds: 8)),
+        avviso(content: Text(errore), duration: const Duration(seconds: 8)),
       );
     }
     _inFondo();
@@ -418,7 +419,7 @@ class SchedaProposta extends StatelessWidget {
                     final messenger = ScaffoldMessenger.of(context);
                     final n = await state.applicaProposta(messaggio);
                     messenger.showSnackBar(
-                      SnackBar(
+                      avviso(
                         content: Text(
                           n == 0
                               ? 'Niente da applicare: il piano è cambiato nel frattempo.'
@@ -529,15 +530,13 @@ class _ImpostazioniAssistenteScreenState
         await ChiaviAssistente.leggi(c.fornitore),
       );
     } on ErroreLlm catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(e.messaggio)));
+      messenger.showSnackBar(avviso(content: Text(e.messaggio)));
       return;
     }
     if (!mounted) return;
     if (modelli.isEmpty) {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Nessun modello disponibile con questa chiave.'),
-        ),
+        avviso(content: Text('Nessun modello disponibile con questa chiave.')),
       );
       return;
     }

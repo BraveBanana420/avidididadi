@@ -58,6 +58,7 @@ lib/
   tema.dart            temi (chiaro o scuro × rosso o neon), estensione Pulse
   pulse.dart           componenti grafici dello stile Pulse
   widgets.dart         coloreSport, iconaSport, card comuni
+  avviso.dart          avvisi in basso (usare `avviso(...)`, non `SnackBar`): durata breve, si chiudono scorrendo, tasto Annulla
   generator*.dart      generatori del piano (forza, endurance, mobilità)
   adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
   feedback.dart        feedback e regole di carico

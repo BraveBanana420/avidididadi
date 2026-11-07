@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../avviso.dart';
 import '../agente_esterno.dart';
 import '../app_state.dart';
 import '../condivisione.dart';
@@ -170,14 +171,14 @@ class PannelloAgente extends StatelessWidget {
     final testo = await state.messaggioAgente(completo: completo);
     await Clipboard.setData(ClipboardData(text: testo));
     messenger.showSnackBar(
-      SnackBar(content: Text('Messaggio copiato: incollalo in $_app.')),
+      avviso(content: Text('Messaggio copiato: incollalo in $_app.')),
     );
   }
 
   Future<void> _copia(BuildContext context, String testo, String fatto) async {
     final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: testo));
-    messenger.showSnackBar(SnackBar(content: Text(fatto)));
+    messenger.showSnackBar(avviso(content: Text(fatto)));
   }
 
   Future<void> _incolla(BuildContext context) async {
@@ -186,7 +187,7 @@ class PannelloAgente extends StatelessWidget {
     final testo = d?.text ?? '';
     if (testo.trim().isEmpty) {
       messenger.showSnackBar(
-        SnackBar(
+        avviso(
           content: Text(
             'Gli appunti sono vuoti: copia prima la risposta di $_app.',
           ),

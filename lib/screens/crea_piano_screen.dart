@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../generatore_endurance.dart';
@@ -129,7 +130,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
     if (!mounted) return;
     navigator.pop();
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           scelti.isEmpty
               ? 'Sedute preparate tolte.'

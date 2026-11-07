@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../charts.dart';
 import '../figura.dart';
@@ -43,7 +44,7 @@ class ProfileScreen extends StatelessWidget {
       await state.impostaFoto(x.path);
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Impossibile caricare la foto: $e')),
+        avviso(content: Text('Impossibile caricare la foto: $e')),
       );
     }
   }

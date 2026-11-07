@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../invio_intervals.dart';
 import '../models.dart';
@@ -37,7 +38,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
     if (!mounted) return;
     setState(() => _inCorso = false);
     if (msg.isNotEmpty) {
-      messenger.showSnackBar(SnackBar(content: Text(msg)));
+      messenger.showSnackBar(avviso(content: Text(msg)));
     }
   }
 

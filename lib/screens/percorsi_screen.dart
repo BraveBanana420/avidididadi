@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../mappa_offline.dart';
 import '../navigazione.dart';
@@ -39,14 +40,14 @@ Future<PercorsoSalvato?> aggiungiGpx(
     final p = await state.aggiungiPercorso(t);
     scaricaMappa(state, p);
     messenger.showSnackBar(
-      SnackBar(content: Text('Aggiunto: ${p.nome} · ${fmtKm(p.km)}')),
+      avviso(content: Text('Aggiunto: ${p.nome} · ${fmtKm(p.km)}')),
     );
     return p;
   } on FormatException catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+    messenger.showSnackBar(avviso(content: Text(e.message)));
   } catch (e) {
     messenger.showSnackBar(
-      SnackBar(content: Text('Impossibile leggere il file: $e')),
+      avviso(content: Text('Impossibile leggere il file: $e')),
     );
   }
   return null;
