@@ -96,6 +96,39 @@ void main() {
       );
     });
 
+    test('il lungo segue quello fatto davvero, anche a metà blocco', () {
+      // Lungo in programma da 70 minuti (terza settimana), corso in 101.
+      final sabato = lunedi.add(const Duration(days: 7 * 2 + 5));
+      final storico = [
+        Sessione(
+          id: 'hc-giovedi',
+          data: sabato.subtract(const Duration(days: 2)),
+          sport: 'Corsa',
+          tipo: 'Corsa',
+          durataMin: 45,
+          distanzaKm: 7.5,
+        ),
+        Sessione(
+          id: 'hc-lungo',
+          data: sabato,
+          sport: 'Corsa',
+          tipo: 'Pistoia Corsa',
+          durataMin: 101,
+          distanzaKm: 15.02,
+        ),
+      ];
+      final p = generaPianoEndurance(
+        piano: piano(),
+        storico: storico,
+        sport: {'Corsa'},
+        inizio: lunedi,
+        da: sabato.add(const Duration(days: 2)),
+      );
+      // Scarico: 75% di quello fatto; poi si riparte da 100 minuti.
+      expect(durata(p, 3, 5, 'Corsa'), 75);
+      expect(durata(p, 4, 5, 'Corsa'), 100);
+    });
+
     test('le sedute prima di "da" non si generano', () {
       final p = genera({'Corsa'}, da: lunedi.add(const Duration(days: 14)));
       expect(p.programma.length, 12);
