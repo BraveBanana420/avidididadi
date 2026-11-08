@@ -1208,6 +1208,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+    // Senza dati dei sensori sotto resterebbe solo spazio vuoto: il movimento
+    // lo riempie, in grande. Con un sensore torna piccolo accanto al nome.
+    final figuraGrande =
+        !_senzaTesto &&
+        _conAnteprima(esercizio) &&
+        gps == null &&
+        !sensoreBattito.ricordato &&
+        !(_bici && sensoreBici.ricordato) &&
+        !_conWatt &&
+        !_conCadenza &&
+        _barre == null;
     return Column(
       children: [
         // In alto: chiudi, tempo totale, pausa.
@@ -1480,7 +1491,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           // A sinistra l'anteprima del movimento, se c'è.
                           Row(
                             children: [
-                              if (_conAnteprima(esercizio)) ...[
+                              if (_conAnteprima(esercizio) &&
+                                  !figuraGrande) ...[
                                 _AnteprimaEsercizio(
                                   esercizio: esercizio!,
                                   larghezza: 112,
@@ -1603,6 +1615,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         ],
                       ],
                     ),
+                    figura: figuraGrande
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                            // L'immagine tiene le sue proporzioni e si allarga
+                            // fin dove c'è posto.
+                            child: Center(
+                              child: _AnteprimaEsercizio(esercizio: esercizio!),
+                            ),
+                          )
+                        : null,
                   ),
                 ),
         ),
@@ -2856,10 +2878,11 @@ bool _conAnteprima(Esercizio? e) =>
     e != null && (animazioneDi(e.id) != null || e.immagini.isNotEmpty);
 
 /// Il movimento dell'esercizio in piccolo; un tocco lo apre in grande.
+/// Senza [larghezza] occupa tutto lo spazio che ha.
 class _AnteprimaEsercizio extends StatelessWidget {
   final Esercizio esercizio;
-  final double larghezza;
-  const _AnteprimaEsercizio({required this.esercizio, required this.larghezza});
+  final double? larghezza;
+  const _AnteprimaEsercizio({required this.esercizio, this.larghezza});
 
   @override
   Widget build(BuildContext context) {
@@ -2889,7 +2912,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
           child: AnimazioneEsercizio(
             id: e.id,
             immagini: e.immagini,
-            mini: true,
+            mini: larghezza != null,
           ),
         ),
       ),
