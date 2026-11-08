@@ -132,19 +132,21 @@ flutter pub get
 dart format lib test                        # formattazione
 flutter analyze                             # deve dare "No issues found!"
 flutter test                                # tutti i test devono passare
-flutter build apk --release --split-per-abi # APK firmato, arm64 ~32 MB
+flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD) # APK firmato, arm64 ~32 MB
 adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
-- **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): **resta ferma su `staging`**, anche a ogni installazione e negli APK dei tester. Si alza **solo quando l'utente decide di portare `staging` su `main`**: su `staging`, subito prima dell'unione, guardando tutte le modifiche dall'ultima unione su `main` e scegliendo il salto più grande.
-  - solo correzioni o piccoli ritocchi → PATCH (1.1.0 → 1.1.1);
-  - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
-  - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
-  - Il numero di build (`+N`) sale di 1 insieme alla versione. Con lo stesso numero Android installa lo stesso sopra (`adb install -r`, e anche i tester).
-  - Attuale: `1.12.4+32` (già diversa da `main`, che ha la 1.12.3: all'unione basta confermarla o alzarla, se nel frattempo sono arrivate funzioni nuove).
+- **Versione** (`version:` in `pubspec.yaml`, `MAJOR.MINOR.PATCH+build`): **prima della pubblicazione il primo numero resta 0**. La **1.0.0** arriva solo quando l'utente pubblica l'app.
+  - **Resta ferma su `staging`**, anche a ogni installazione e negli APK dei tester: le prove si riconoscono dal **commit**, che l'APK mostra nel Profilo ("versione 0.1.0 (32) · prova a1b2c3d") grazie a `--dart-define=COMMIT=...` nel comando di build.
+  - Si alza **solo quando l'utente decide di portare `staging` su `main`**: su `staging`, subito prima dell'unione, una volta sola per tutte le modifiche dall'ultima unione:
+    - solo correzioni o piccoli ritocchi → PATCH (0.1.0 → 0.1.1);
+    - funzioni nuove → MINOR (0.1.1 → 0.2.0);
+    - prima di 1.0 anche i cambi che rompono i dati sono MINOR (chiedi prima all'utente).
+  - Il numero di build (`+N`) sale di 1 insieme alla versione e **non scende mai**: Android rifiuta di installare un numero più basso sopra uno più alto (per questo dopo la 1.12.4+32 si è ripartiti da 0.1.0+32).
+  - Attuale: `0.1.0+32` (su `staging`; `main` ha ancora la 1.12.3+31 fino alla prossima unione).
 - **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono. Prima la stessa Wi-Fi (`adb mdns services`, poi `adb connect <ip>:<porta>`), poi Tailscale. Se non è raggiungibile, dillo e installa alla prima occasione.
 - **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
@@ -242,7 +244,7 @@ Repository: `https://github.com/BraveBanana420/avidididadi`, branch principale `
   - **`staging`**: tutte le modifiche, piccole e grandi, si fanno qui e si installano sul telefono da qui. Commit e push su `staging`, che non si cancella mai;
   - **`main`**: la versione stabile, destinata a diventare pubblica. Resta ferma finché l'utente non decide di rilasciare l'aggiornamento: solo allora si unisce `staging` (`git merge --no-ff staging`, poi push). Mai modifiche dirette su `main`;
   - **rami `funzione/<nome-breve>`**: solo se una funzione grossa va provata a parte. Nascono da `staging` e tornano in `staging`; dopo l'unione si cancellano, anche su GitHub;
-  - **APK per gli amici (tester)**: da `staging`, con l'etichetta della versione sul commit di `staging` (`git tag -a v<versione>`, poi `git push origin v<versione>`). Mai spostare un'etichetta già caricata.
+  - **APK per gli amici (tester)**: da `staging`, senza etichetta (si riconosce dal commit mostrato nell'app). L'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`) va sul commit di `main` a ogni unione. Mai spostare un'etichetta già caricata.
 - **Al termine di ogni modifica completata e funzionante esegui sempre**:
   1. `git add` dei file della modifica;
   2. `git commit` con un **messaggio chiaro in italiano** che descriva la modifica;

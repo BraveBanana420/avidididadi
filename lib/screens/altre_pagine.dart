@@ -109,6 +109,10 @@ class GlossarioScreen extends StatelessWidget {
   }
 }
 
+/// Commit da cui è stato fatto l'APK (`--dart-define=COMMIT=...`): distingue
+/// le prove di staging senza alzare la versione.
+const _commit = String.fromEnvironment('COMMIT');
+
 /// Nome e versione dell'app, sotto informativa e termini.
 class _Versione extends StatelessWidget {
   const _Versione();
@@ -122,7 +126,8 @@ class _Versione extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Text(
-          'Avidididadi · versione ${v.version} (${v.buildNumber})',
+          'Avidididadi · versione ${v.version} (${v.buildNumber})'
+          '${_commit.isEmpty ? '' : ' · prova $_commit'}',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall
               ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
