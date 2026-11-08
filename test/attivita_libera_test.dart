@@ -90,10 +90,18 @@ void main() {
       expect(pulisciNomeAttivita('   '), '');
     });
 
-    test('forza libera: nome chiaro, non "Allenamento libero"', () {
+    test('forza: nome chiaro, non "Allenamento libero"', () {
       final forza = attivitaLibere.firstWhere((a) => a.$1 == 'Forza');
       expect(forza.$2, tipoForzaLibera);
-      expect(forza.$3, 'Forza libera');
+      expect(forza.$3, 'Forza');
+    });
+
+    test('arrampicata penultima, prima di altra attività', () {
+      final sport = attivitaLibere.map((a) => a.$1).toList();
+      expect(sport.sublist(sport.length - 2), [
+        'Arrampicata',
+        sportAttivitaLibera,
+      ]);
     });
   });
 }

@@ -17,11 +17,11 @@ const tipoAltraAttivita = 'Altra attività';
 const attivitaLibere = [
   ('Corsa', 'Corsa libera', 'Corsa libera'),
   (sportCamminata, 'Camminata', 'Camminata'),
-  ('Arrampicata', 'Arrampicata', 'Arrampicata'),
   ('Bici', 'Uscita libera', 'Uscita in bici'),
   ('Nuoto', 'Piscina', 'Nuoto libero'),
-  ('Forza', tipoForzaLibera, tipoForzaLibera),
+  ('Forza', tipoForzaLibera, 'Forza'),
   ('Mobilità', 'Mobilità libera', 'Mobilità e stretching'),
+  ('Arrampicata', 'Arrampicata', 'Arrampicata'),
   (sportAttivitaLibera, tipoAltraAttivita, tipoAltraAttivita),
 ];
 
