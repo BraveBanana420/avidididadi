@@ -266,6 +266,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final ritmo = ControlloRitmo();
   final _ritmoCadenza = ControlloRitmo();
   StreamSubscription<int>? _battiti;
+  bool _battitoArrivato = false; // almeno un battito in questa seduta
 
   /// Percorso da seguire (GPX): mappa, curve e fuori percorso a voce.
   PercorsoSalvato? _percorso;
@@ -287,6 +288,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sensoreBattito.avvia();
     if (_bici) sensoreBici.avvia();
     _battiti = sensoreBattito.valori.stream.listen((v) {
+      _battitoArrivato = true;
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
     });
     final r = widget.ripresa;
@@ -578,6 +580,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       _bici &&
       sensoreBici.stato == StatoSensore.collegato &&
       (sensoreBici.cadenza != null || _serieCadenza.isNotEmpty);
+
+  /// Il battito si vede solo con la fascia collegata e dopo il primo valore:
+  /// un sensore ricordato ma spento non lascia un riquadro vuoto.
+  bool get _conBattito =>
+      sensoreBattito.stato == StatoSensore.collegato &&
+      (sensoreBattito.bpm != null || _battitoArrivato);
 
   /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
   int? get _watt =>
@@ -1214,7 +1222,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         !_senzaTesto &&
         _conAnteprima(esercizio) &&
         gps == null &&
-        !sensoreBattito.ricordato &&
+        !_conBattito &&
         !(_bici && sensoreBici.ricordato) &&
         !_conWatt &&
         !_conCadenza &&
@@ -1441,7 +1449,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                             ),
                                         ],
                                       ),
-                                    if (gps == null && sensoreBattito.ricordato)
+                                    if (gps == null && _conBattito)
                                       _DatoBattito(zone: _zone),
                                     if (bici && sensoreBici.comandabile)
                                       ControlloErg(

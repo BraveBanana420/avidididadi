@@ -1,10 +1,11 @@
 import 'package:allenamenti_app/app_state.dart';
 import 'package:allenamenti_app/avvisi.dart';
+import 'package:allenamenti_app/battito.dart';
 import 'package:allenamenti_app/esercizi.dart';
+import 'package:allenamenti_app/immagini.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/pulse.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
-import 'package:allenamenti_app/sensore_ble.dart';
 import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -211,6 +212,25 @@ void main() {
       tester.getTopLeft(figura).dy,
       greaterThan(tester.getBottomLeft(find.byType(AnelloPulse)).dy),
     );
+    expect(find.textContaining('BATTITO'), findsNothing);
+
+    // Fascia collegata ma ancora muta: niente riquadro vuoto, figura grande.
+    addTearDown(() {
+      sensoreBattito.stato = StatoSensore.spento;
+      sensoreBattito.azzera();
+    });
+    sensoreBattito.stato = StatoSensore.collegato;
+    sensoreBattito.notifyListeners();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('BATTITO'), findsNothing);
+    expect(tester.getSize(figura).width, greaterThan(250));
+
+    // Arriva il battito: riquadro e figura piccola accanto al nome.
+    sensoreBattito.leggi(0, [0x00, 66]);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('BATTITO'), findsOneWidget);
+    expect(find.textContaining('66', findRichText: true), findsOneWidget);
+    expect(tester.getSize(find.byType(AnimazioneEsercizio)).width, 112);
     expect(tester.takeException(), isNull);
     await _chiudi(tester);
   });
