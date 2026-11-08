@@ -144,8 +144,9 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
   - Il numero di build (`+N`) sale di 1 a ogni installazione. Le modifiche tra un'installazione e l'altra restano nella stessa versione.
-  - Attuale: `1.12.3+31`.
-- **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
+  - Attuale: `1.12.4+32`.
+- **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono (cavo, oppure Tailscale se il telefono è online). Se non è raggiungibile, dillo e installa alla prima occasione.
+- **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
@@ -239,9 +240,9 @@ Repository: `https://github.com/BraveBanana420/avidididadi`, branch principale `
 
 - **Dove si lavora**:
   - **`staging`**: tutte le modifiche, piccole e grandi, si fanno qui e si installano sul telefono da qui. Commit e push su `staging`, che non si cancella mai;
-  - **`main`**: la versione stabile, destinata a diventare pubblica. Si aggiorna **solo** unendo `staging` quando l'utente dà l'ok dopo le prove (`git merge --no-ff staging`, poi push). Mai modifiche dirette su `main`;
+  - **`main`**: la versione stabile, destinata a diventare pubblica. Resta ferma finché l'utente non decide di rilasciare l'aggiornamento: solo allora si unisce `staging` (`git merge --no-ff staging`, poi push). Mai modifiche dirette su `main`;
   - **rami `funzione/<nome-breve>`**: solo se una funzione grossa va provata a parte. Nascono da `staging` e tornano in `staging`; dopo l'unione si cancellano, anche su GitHub;
-  - **APK per gli amici**: da `main`, con l'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`). Mai spostare un'etichetta già caricata.
+  - **APK per gli amici (tester)**: da `staging`, con l'etichetta della versione sul commit di `staging` (`git tag -a v<versione>`, poi `git push origin v<versione>`). Mai spostare un'etichetta già caricata.
 - **Al termine di ogni modifica completata e funzionante esegui sempre**:
   1. `git add` dei file della modifica;
   2. `git commit` con un **messaggio chiaro in italiano** che descriva la modifica;
