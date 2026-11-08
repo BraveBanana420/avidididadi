@@ -6,6 +6,8 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 - Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
 - Lungo: se lo fai più lungo del previsto conta comunque come lungo, e i prossimi lunghi partono da quello che hai fatto davvero.
+- Altra attività: le dai tu il nome (es. Kayak), che resta sulla sessione, e scegli all'inizio se registrare il percorso GPS.
+- Forza libera (prima "Allenamento libero"): alla fine scrivi esercizi, serie e kg; puoi farlo anche dopo, dal dettaglio di ogni seduta di forza.
 
 ## 1.12.3
 

@@ -113,4 +113,44 @@ void main() {
     expect(lavoro.map((x) => x.serie), [1, 2, 3]);
     expect(lavoro.first.ripetizioni, '8-10');
   });
+
+  group('serie scritte a mano', () {
+    final giorno = DateTime(2026, 11, 8, 18, 30);
+
+    test('numerate da 1, senza le serie vuote', () {
+      final serie = serieDaEsercizi(giorno, [
+        (
+          esercizio: 'panca_piana',
+          nome: 'Panca piana',
+          serie: [(10, 60.0), (0, 60.0), (8, 62.5)],
+        ),
+        (esercizio: '', nome: 'Trazioni', serie: [(6, 0.0), (5, -3.0)]),
+      ]);
+      expect(
+        serie.map(
+          (s) => '${s.nome} ${s.serie}: ${s.ripetizioni}x${fmtKg(s.kg)}',
+        ),
+        [
+          'Panca piana 1: 10x60',
+          'Panca piana 2: 8x62,5',
+          'Trazioni 1: 6x0',
+          'Trazioni 2: 5x0',
+        ],
+      );
+      expect(serie.every((s) => s.data == DateTime(2026, 11, 8)), isTrue);
+    });
+
+    test('andata e ritorno: gli esercizi si riaprono come erano', () {
+      final serie = serieDaEsercizi(giorno, [
+        (esercizio: 'squat', nome: 'Squat', serie: [(5, 100.0), (5, 100.0)]),
+        (esercizio: '', nome: 'Plank laterale', serie: [(3, 0.0)]),
+      ]);
+      final e = eserciziDaSerie(serie.reversed.toList());
+      expect(e.map((x) => x.nome).toSet(), {'Squat', 'Plank laterale'});
+      expect(e.firstWhere((x) => x.nome == 'Squat').serie, [
+        (5, 100.0),
+        (5, 100.0),
+      ]);
+    });
+  });
 }

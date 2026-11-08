@@ -7,6 +7,7 @@ import '../avviso.dart';
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
+import '../attivita.dart';
 import '../dati_live.dart';
 import '../esercizi.dart';
 import '../esporta.dart';
@@ -35,6 +36,7 @@ import 'grafici_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
+import 'serie_a_mano_screen.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -148,7 +150,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     for (final s in svolte) {
       // Il percorso GPS (registrato dall'app o letto da Health Connect).
       // Al chiuso (rulli, Tacx, tapis roulant) non c'è un percorso.
-      if (sportConPercorso(s.sport, s.tipo) && !state.alChiuso(s)) {
+      // Altra attività (es. kayak) registrata con l'app: il percorso, se si
+      // è scelto il GPS (senza, la mappa non compare).
+      final liberaApp =
+          stessoSport(s.sport, sportAttivitaLibera) && s.fonte == fonteApp;
+      if ((sportConPercorso(s.sport, s.tipo) || liberaApp) &&
+          !state.alChiuso(s)) {
         children.add(
           AnteprimaPercorso(key: ValueKey(s.id), state: state, sessione: s),
         );
@@ -1048,6 +1055,22 @@ class _DatiSessione extends StatelessWidget {
                   icon: const Icon(Icons.edit_note),
                   label: const Text('Modifica i dati'),
                 ),
+                // Forza: esercizi, serie e kg scritti a mano.
+                if (stessoSport(s.sport, 'Forza'))
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            SerieAManoScreen(state: state, giorno: s.data),
+                      ),
+                    ),
+                    icon: const Icon(Icons.fitness_center),
+                    label: Text(
+                      state.serieDel(s.data).isEmpty
+                          ? 'Scrivi gli esercizi'
+                          : 'Modifica gli esercizi',
+                    ),
+                  ),
                 if (state.sessioniModificate.containsKey(s.id))
                   OutlinedButton.icon(
                     onPressed: () => state.annullaCorrezioni(s.id),

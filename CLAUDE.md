@@ -8,6 +8,7 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 
 Funzioni principali:
 - **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
+- **Attività libera** (dal "+"): forza libera con esercizi, serie e kg scritti alla fine; "Altra attività" col nome scritto dall'utente (es. Kayak) e GPS facoltativo scelto all'inizio.
 - **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
 - **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
@@ -227,7 +228,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici. Bluetooth del battito solo con la modalità allenamento aperta.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth del battito solo con la modalità allenamento aperta.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.

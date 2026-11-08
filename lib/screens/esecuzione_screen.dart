@@ -34,6 +34,7 @@ import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'arrampicata_sheet.dart';
 import 'battito_sheet.dart';
+import 'serie_a_mano_screen.dart';
 import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
@@ -63,6 +64,7 @@ void avviaAllenamento(
   required String nome,
   required List<WorkoutStep> passi,
   bool libera = false,
+  bool conGps = false,
 }) {
   Navigator.of(context).push(
     MaterialPageRoute<void>(
@@ -74,6 +76,7 @@ void avviaAllenamento(
         nome: nome,
         passi: passi,
         libera: libera,
+        conGps: conGps,
       ),
     ),
   );
@@ -95,6 +98,7 @@ void riprendiAllenamento(
         nome: r.nome,
         passi: r.passi,
         libera: r.libera,
+        conGps: r.conGps,
         ripresa: r,
       ),
     ),
@@ -111,6 +115,10 @@ class EsecuzioneScreen extends StatefulWidget {
   final String nome;
   final List<WorkoutStep> passi;
   final bool libera; // fuori dal piano: si aggiunge a quello che c'è
+
+  /// GPS scelto a mano (altra attività, es. kayak): corsa, camminata e bici
+  /// ce l'hanno già.
+  final bool conGps;
   final AllenamentoInCorso? ripresa; // seduta interrotta da riprendere
   const EsecuzioneScreen({
     super.key,
@@ -120,6 +128,7 @@ class EsecuzioneScreen extends StatefulWidget {
     required this.nome,
     required this.passi,
     this.libera = false,
+    this.conGps = false,
     this.ripresa,
   });
 
@@ -210,7 +219,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
   /// Corsa, camminata e bici al chiuso (tapis roulant, rulli): niente GPS,
   /// i km si scrivono alla fine.
-  late final bool _conPercorso = sportConPercorso(widget.sport, widget.tipo);
+  late final bool _conPercorso =
+      sportConPercorso(widget.sport, widget.tipo) || widget.conGps;
+
+  /// Sport con tapis roulant o rulli: solo lì c'è l'interruttore "Al chiuso".
+  late final bool _conAttrezzo = sportConPercorso(widget.sport, widget.tipo);
   late bool _alChiuso = _conPercorso && tipoAlChiuso(widget.tipo);
 
   /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
@@ -461,6 +474,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         tipo: widget.tipo,
         nome: widget.nome,
         libera: widget.libera,
+        conGps: widget.conGps,
         passi: widget.passi,
         indice: i,
         finito: finito,
@@ -1129,6 +1143,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ),
         );
       }
+      // Forza libera: un passo solo, senza esercizi da segnare durante. Alla
+      // fine si scrivono quelli fatti, con serie e kg.
+      if (widget.libera && stessoSport(widget.sport, 'Forza') && mounted) {
+        await cancellaInCorso();
+        await navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => SerieAManoScreen(state: widget.state, giorno: oggi),
+          ),
+        );
+      }
       // Dopo i dati a mano, così parte la seduta giusta. In sottofondo: senza
       // rete non deve tenere ferma la fine dell'allenamento.
       unawaited(widget.state.inviaDopoAllenamento());
@@ -1771,7 +1795,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ),
               ],
               const SizedBox(height: 24),
-              if (_conPercorso)
+              if (_conAttrezzo)
                 Material(
                   type: MaterialType.transparency,
                   child: SwitchListTile(

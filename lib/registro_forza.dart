@@ -153,3 +153,54 @@ bool prontoPerAumentare(List<SerieFatta> ultima, int massimo) =>
   if (stessa != null) return (previste.$1, stessa.kg);
   return (previste.$1, kgPiano ?? 0);
 }
+
+/// Un esercizio scritto a mano dopo l'allenamento: le sue serie in ordine,
+/// ognuna con ripetizioni e kg (0 = corpo libero).
+typedef EsercizioFatto = ({
+  String esercizio,
+  String nome,
+  List<(int, double)> serie,
+});
+
+/// Gli esercizi scritti a mano diventano serie numerate da 1; le serie
+/// senza ripetizioni non contano.
+List<SerieFatta> serieDaEsercizi(DateTime giorno, List<EsercizioFatto> lista) {
+  final d = soloData(giorno);
+  return [
+    for (final e in lista)
+      ...() {
+        var n = 0;
+        return [
+          for (final (rip, kg) in e.serie)
+            if (rip > 0)
+              SerieFatta(
+                data: d,
+                esercizio: e.esercizio,
+                nome: e.nome,
+                serie: ++n,
+                ripetizioni: rip,
+                kg: kg < 0 ? 0 : kg,
+              ),
+        ];
+      }(),
+  ];
+}
+
+/// Le serie di un giorno raggruppate per esercizio, per riscriverle.
+List<EsercizioFatto> eserciziDaSerie(List<SerieFatta> serie) {
+  final per = <String, List<SerieFatta>>{};
+  for (final s in serie) {
+    (per[s.chiave] ??= []).add(s);
+  }
+  return [
+    for (final l in per.values)
+      (
+        esercizio: l.first.esercizio,
+        nome: l.first.nome,
+        serie: [
+          for (final s in l..sort((a, b) => a.serie.compareTo(b.serie)))
+            (s.ripetizioni, s.kg),
+        ],
+      ),
+  ];
+}

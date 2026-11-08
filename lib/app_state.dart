@@ -2534,6 +2534,19 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Tutte le serie di un giorno scritte a mano: sostituiscono quelle che
+  /// c'erano, così un esercizio tolto sparisce davvero.
+  Future<void> scriviSerieDel(DateTime giorno, List<SerieFatta> nuove) async {
+    final d = soloData(giorno);
+    serieFatte = [...serieFatte.where((s) => s.data != d), ...nuove];
+    await Storage.write(
+      'serie.csv',
+      serieHeader,
+      serieFatte.map((s) => s.toRow()).toList(),
+    );
+    notifyListeners();
+  }
+
   // ---------------------------------------------------------------------
   // Schede scritte a mano
 
