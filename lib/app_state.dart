@@ -1698,6 +1698,7 @@ class AppState extends ChangeNotifier {
       previsto: r,
       fatte: sessioni,
       metriPrevisti: stessoSport(r.sport, 'Nuoto') ? metriDi(passi).round() : 0,
+      lungo: tipoLungo(r.tipo) || passi.any((p) => tipoLungo(p.nome)),
     );
   }
 
