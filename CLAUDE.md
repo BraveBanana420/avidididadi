@@ -119,7 +119,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
 - `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
-- `serie.csv` (ripetizioni e kg della forza); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
+- `serie.csv` (ripetizioni e kg della forza, o secondi per le serie a tempo); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
 - `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
 - `percorsi_salvati.csv`, `traccia_<id>.csv`, `percorsi_piano.csv` (percorsi da seguire e sedute a cui sono assegnati).

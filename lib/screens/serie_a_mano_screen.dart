@@ -24,26 +24,42 @@ class SerieAManoScreen extends StatefulWidget {
   State<SerieAManoScreen> createState() => _SerieAManoScreenState();
 }
 
-/// Una serie in modifica: due campi, ripetizioni e kg.
+/// Una serie in modifica: ripetizioni e kg, oppure il tempo.
 class _Serie {
   final rip = TextEditingController();
   final kg = TextEditingController();
-  _Serie([int r = 0, double k = 0]) {
+  final tempo = TextEditingController();
+  _Serie({int r = 0, double k = 0, int sec = 0}) {
     if (r > 0) rip.text = '$r';
     if (k > 0) kg.text = fmtKg(k);
+    if (sec > 0) tempo.text = sec < 60 ? '$sec' : fmtSecondi(sec);
   }
+
+  /// La serie dopo: uguale a questa.
+  _Serie copia() => _Serie()
+    ..rip.text = rip.text
+    ..kg.text = kg.text
+    ..tempo.text = tempo.text;
+
   void dispose() {
     rip.dispose();
     kg.dispose();
+    tempo.dispose();
   }
 }
 
 class _Esercizio {
   final String esercizio; // id del catalogo, vuoto se scritto a mano
   final String nome;
+  bool aTempo; // plank, isometrie: secondi al posto di ripetizioni e kg
   final List<_Serie> serie;
-  _Esercizio(this.esercizio, this.nome, this.serie);
+  _Esercizio(this.esercizio, this.nome, this.serie, {this.aTempo = false});
 }
+
+/// Le serie di un esercizio già fatto, da modificare.
+List<_Serie> _serieDi(EsercizioFatto e) => [
+  for (final (v, k) in e.serie) e.aTempo ? _Serie(sec: v) : _Serie(r: v, k: k),
+];
 
 class _SerieAManoScreenState extends State<SerieAManoScreen> {
   late final List<_Esercizio> _esercizi = [
@@ -52,9 +68,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
           .where((s) => s.data == soloData(widget.giorno))
           .toList(),
     ))
-      _Esercizio(e.esercizio, e.nome, [
-        for (final (r, k) in e.serie) _Serie(r, k),
-      ]),
+      _Esercizio(e.esercizio, e.nome, _serieDi(e), aTempo: e.aTempo),
   ];
 
   @override
@@ -81,14 +95,17 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
       chiave,
       prima: soloData(widget.giorno),
     );
+    final fatto = eserciziDaSerie(prima).firstOrNull;
     setState(
       () => _esercizi.add(
-        _Esercizio(scelto.esercizio, scelto.nome, [
-          if (prima.isEmpty)
-            _Serie()
-          else
-            for (final s in prima) _Serie(s.ripetizioni, s.kg),
-        ]),
+        fatto == null
+            ? _Esercizio(scelto.esercizio, scelto.nome, [_Serie()])
+            : _Esercizio(
+                scelto.esercizio,
+                scelto.nome,
+                _serieDi(fatto),
+                aTempo: fatto.aTempo,
+              ),
       ),
     );
   }
@@ -103,9 +120,12 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
           (
             esercizio: e.esercizio,
             nome: e.nome,
+            aTempo: e.aTempo,
             serie: [
               for (final s in e.serie)
-                (int.tryParse(s.rip.text.trim()) ?? 0, kg(s.kg.text)),
+                e.aTempo
+                    ? (parseSecondi(s.tempo.text) ?? 0, 0.0)
+                    : (int.tryParse(s.rip.text.trim()) ?? 0, kg(s.kg.text)),
             ],
           ),
       ]),
@@ -117,11 +137,20 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
     TextEditingController c,
     String etichetta, {
     bool dec = false,
+    bool tempo = false,
+    String? aiuto,
   }) => Expanded(
     child: TextField(
       controller: c,
-      keyboardType: TextInputType.numberWithOptions(decimal: dec),
-      decoration: InputDecoration(labelText: etichetta, isDense: true),
+      // Il tempo vuole anche i due punti ("1:30").
+      keyboardType: tempo
+          ? TextInputType.datetime
+          : TextInputType.numberWithOptions(decimal: dec),
+      decoration: InputDecoration(
+        labelText: etichetta,
+        hintText: aiuto,
+        isDense: true,
+      ),
     ),
   );
 
@@ -147,6 +176,24 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
               ),
             ],
           ),
+          // Con il peso (o a corpo libero) oppure a tempo.
+          SegmentedButton<bool>(
+            segments: const [
+              ButtonSegment(
+                value: false,
+                icon: Icon(Icons.fitness_center),
+                label: Text('Ripetizioni e kg'),
+              ),
+              ButtonSegment(
+                value: true,
+                icon: Icon(Icons.timer_outlined),
+                label: Text('Tempo'),
+              ),
+            ],
+            selected: {e.aTempo},
+            showSelectedIcon: false,
+            onSelectionChanged: (v) => setState(() => e.aTempo = v.first),
+          ),
           for (var j = 0; j < e.serie.length; j++)
             Row(
               spacing: 12,
@@ -155,8 +202,17 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
                   width: 28,
                   child: Text('${j + 1}ª', style: t.titleSmall),
                 ),
-                _numero(e.serie[j].rip, 'Ripetizioni'),
-                _numero(e.serie[j].kg, 'kg', dec: true),
+                if (e.aTempo)
+                  _numero(
+                    e.serie[j].tempo,
+                    'Secondi',
+                    tempo: true,
+                    aiuto: '45 o 1:30',
+                  )
+                else ...[
+                  _numero(e.serie[j].rip, 'Ripetizioni'),
+                  _numero(e.serie[j].kg, 'kg', dec: true),
+                ],
                 IconButton(
                   tooltip: 'Togli la serie',
                   icon: const Icon(Icons.remove_circle_outline),
@@ -171,16 +227,9 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
               icon: const Icon(Icons.add),
               label: const Text('Serie'),
               // La nuova serie copia l'ultima: di solito si ripete uguale.
-              onPressed: () => setState(() {
-                final u = e.serie.lastOrNull;
-                e.serie.add(
-                  u == null
-                      ? _Serie()
-                      : (_Serie()
-                          ..rip.text = u.rip.text
-                          ..kg.text = u.kg.text),
-                );
-              }),
+              onPressed: () => setState(
+                () => e.serie.add(e.serie.lastOrNull?.copia() ?? _Serie()),
+              ),
             ),
           ),
         ],
@@ -209,8 +258,8 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
               Text('Forza · ${dataLunga(widget.giorno)}', style: t.titleMedium),
               Text(
                 'Scrivi cosa hai fatto: ripetizioni e kg di ogni serie '
-                '(kg vuoto = corpo libero). Restano nello storico '
-                "dell'esercizio.",
+                '(kg vuoto = corpo libero), oppure il tempo per plank e '
+                "tenute. Restano nello storico dell'esercizio.",
                 style: t.bodySmall,
               ),
               for (var i = 0; i < _esercizi.length; i++) _esercizio(context, i),

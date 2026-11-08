@@ -274,7 +274,9 @@ class _StoricoEsercizio extends StatelessWidget {
           Text('Le tue serie', style: t.titleMedium),
           const SizedBox(height: 4),
           Text(
-            record.kg > 0
+            record.aTempo
+                ? 'Record: ${fmtSecondi(record.secondi)}'
+                : record.kg > 0
                 ? 'Record: ${fmtKg(record.kg)} kg × ${record.ripetizioni}'
                 : 'Record: ${record.ripetizioni} ripetizioni',
             style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w700),

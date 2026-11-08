@@ -53,7 +53,12 @@ void main() {
       final giorno = DateTime(2026, 11, 8);
       final state = AppState()
         ..serieFatte = serieDaEsercizi(giorno, [
-          (esercizio: '', nome: 'Panca piana', serie: [(10, 60.0), (8, 62.5)]),
+          (
+            esercizio: '',
+            nome: 'Panca piana',
+            aTempo: false,
+            serie: [(10, 60.0), (8, 62.5)],
+          ),
         ]);
       await tester.pumpWidget(
         MaterialApp(
@@ -68,6 +73,11 @@ void main() {
       // La nuova serie copia l'ultima.
       expect(find.text('62,5'), findsNWidgets(2));
       expect(find.text('3ª'), findsOneWidget);
+      // A tempo: un campo solo, i secondi.
+      await tester.tap(find.text('Tempo'));
+      await tester.pump();
+      expect(find.widgetWithText(TextField, 'Secondi'), findsNWidgets(3));
+      expect(find.widgetWithText(TextField, 'kg'), findsNothing);
       expect(tester.takeException(), isNull);
     });
   }
