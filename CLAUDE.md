@@ -139,13 +139,13 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
-- **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): alzala tu **solo quando installi l'app sul telefono** (o prepari l'APK per gli amici), non a ogni modifica: guarda tutte le modifiche dall'ultima installazione e scegli il salto più grande.
+- **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): **resta ferma su `staging`**, anche a ogni installazione e negli APK dei tester. Si alza **solo quando l'utente decide di portare `staging` su `main`**: su `staging`, subito prima dell'unione, guardando tutte le modifiche dall'ultima unione su `main` e scegliendo il salto più grande.
   - solo correzioni o piccoli ritocchi → PATCH (1.1.0 → 1.1.1);
   - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
   - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
-  - Il numero di build (`+N`) sale di 1 a ogni installazione. Le modifiche tra un'installazione e l'altra restano nella stessa versione.
-  - Attuale: `1.12.4+32`.
-- **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono (cavo, oppure Tailscale se il telefono è online). Se non è raggiungibile, dillo e installa alla prima occasione.
+  - Il numero di build (`+N`) sale di 1 insieme alla versione. Con lo stesso numero Android installa lo stesso sopra (`adb install -r`, e anche i tester).
+  - Attuale: `1.12.4+32` (già diversa da `main`, che ha la 1.12.3: all'unione basta confermarla o alzarla, se nel frattempo sono arrivate funzioni nuove).
+- **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono. Prima la stessa Wi-Fi (`adb mdns services`, poi `adb connect <ip>:<porta>`), poi Tailscale. Se non è raggiungibile, dillo e installa alla prima occasione.
 - **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
