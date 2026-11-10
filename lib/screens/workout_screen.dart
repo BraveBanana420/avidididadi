@@ -1139,8 +1139,46 @@ class _Intervalli extends StatefulWidget {
 }
 
 class _IntervalliState extends State<_Intervalli> {
-  late final Future<List<IntervalloFatto>> _intervalli = widget.state
-      .intervalliDi(widget.sessione);
+  late final Future<List<IntervalloFatto>> _intervalli = _carica();
+
+  /// Bici sul rullo registrata con l'app prima che salvasse i suoi blocchi:
+  /// i tratti sono ricostruiti dalla seduta in programma.
+  bool _ricostruiti = false;
+
+  List<WorkoutStep> get _passi {
+    final s = widget.sessione;
+    final previsto = widget.state.piano
+        .where((r) => r.data == s.data && stessoSport(r.sport, s.sport))
+        .firstOrNull;
+    return widget.state.passiSeduta(s.data, s.sport, previsto?.tipo ?? s.tipo);
+  }
+
+  Future<List<IntervalloFatto>> _carica() async {
+    final s = widget.sessione;
+    final state = widget.state;
+    final letti = await state.intervalliDi(s);
+    if (letti.isNotEmpty ||
+        !s.id.startsWith('app-') ||
+        !stessoSport(s.sport, 'Bici') ||
+        !state.alChiuso(s) ||
+        s.inizio == null ||
+        s.fine == null) {
+      return letti;
+    }
+    final secondi = s.fine!.difference(s.inizio!).inSeconds;
+    // Con delle pause in mezzo i tempi dei passi non tornano più.
+    if ((secondi / 60 - s.durataMin).abs() > 1) return letti;
+    final serie = await state.serieApp(s);
+    final ricostruiti = intervalliDalPiano(
+      _passi,
+      inizio: s.inizio!,
+      secondi: secondi,
+      fc: serie.fc,
+      potenza: serie.potenza,
+    );
+    _ricostruiti = ricostruiti.isNotEmpty;
+    return ricostruiti;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1157,19 +1195,21 @@ class _IntervalliState extends State<_Intervalli> {
         if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
           return const SizedBox.shrink();
         }
-        final previsto = state.piano
-            .where((r) => r.data == s.data && stessoSport(r.sport, s.sport))
-            .firstOrNull;
-        final passi = state.passiSeduta(
-          s.data,
-          s.sport,
-          previsto?.tipo ?? s.tipo,
-        );
+        final passi = _passi;
+        final nuoto = stessoSport(s.sport, 'Nuoto');
+        // Corsa e bici: un lungo, un lento o un'uscita continua sono un passo
+        // solo, e i giri dell'orologio non dicono niente di più dei totali.
+        // I tratti si mostrano solo se la seduta ha una struttura.
+        if (aMano == null && !nuoto && !sedutaStrutturata(passi)) {
+          return const SizedBox.shrink();
+        }
         // Quelli corretti a mano valgono al posto di quelli dell'orologio.
         // Quelli registrati con l'app hanno già nome e sezione.
         final dallApp = letti.any((i) => i.fase.isNotEmpty);
+        final abbinati = dallApp ? letti : abbinaAlPiano(s.sport, letti, passi);
+        // I chilometri in più a fine seduta: una riga sola.
         final lista =
-            aMano ?? (dallApp ? letti : abbinaAlPiano(s.sport, letti, passi));
+            aMano ?? (nuoto ? abbinati : conFuoriProgrammaUniti(abbinati));
         // Corsa e bici dall'orologio: i giri di 1 km non dicono niente di
         // più dei totali; si mostrano solo se combaciano con la seduta.
         if (aMano == null &&
@@ -1260,6 +1300,11 @@ class _IntervalliState extends State<_Intervalli> {
                 ),
               ],
             ),
+            if (_ricostruiti && aMano == null)
+              Text(
+                'Ricostruiti dalla seduta in programma e dai dati del rullo.',
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              ),
             if (!conSezioni)
               for (final i in lista)
                 Padding(

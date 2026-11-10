@@ -4,6 +4,8 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 ## 0.1.0
 
+- Corsa e bici: i tratti nel riepilogo compaiono solo se la seduta ha una struttura (ripetute, più passi); lungo, lento e uscite continue mostrano solo i totali. I chilometri in più a fine seduta sono una riga sola.
+- Bici sul rullo registrata con l'app: i tratti si vedono anche per le sedute fatte prima di questo aggiornamento, ricostruiti dal programma e dai dati del rullo.
 - Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
 - Bici all'aperto senza misuratore di potenza: i passi in watt o in % dell'FTP si seguono col battito della zona corrispondente, con avvisi a voce; a schermo vedi watt e bpm.
 - Nuoto dall'orologio (con intervals.icu): nel dettaglio vedi gli intervalli con metri, tempo, passo e battito, e i recuperi; se i metri combaciano con la seduta in programma prendono i nomi dei passi. Nei grafici passo ogni 100 m e bracciate al minuto. Gli intervalli si correggono a mano: nome, metri, tempo, ordine, tratti da togliere o aggiungere.

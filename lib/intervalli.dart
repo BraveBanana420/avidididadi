@@ -592,3 +592,67 @@ List<IntervalloFatto> intervalliDaTratti(
         }(),
   ];
 }
+
+/// Vero se la seduta in programma ha una struttura (ripetute, più passi):
+/// solo allora in corsa e bici i tratti dicono qualcosa di più dei totali.
+/// Un lungo, un lento o un'uscita continua sono un passo solo.
+bool sedutaStrutturata(List<WorkoutStep> passi) =>
+    _trattiDelPiano(passi).where((t) => !t.recupero).length >= 2;
+
+/// I tratti senza nome dopo l'ultimo abbinato alla seduta (i chilometri in
+/// più a fine allenamento) diventano una riga sola, con le somme: tanti giri
+/// da 1 km "fuori programma" non dicono niente. Se non c'è nessun nome, o
+/// il tratto in più è uno solo, la lista resta com'è.
+List<IntervalloFatto> conFuoriProgrammaUniti(List<IntervalloFatto> lista) {
+  final ultimo = lista.lastIndexWhere((i) => i.nome.isNotEmpty);
+  if (ultimo < 0) return lista;
+  final coda = lista.sublist(ultimo + 1);
+  if (coda.where((i) => !i.recupero).length < 2) return lista;
+  return [
+    ...lista.take(ultimo + 1),
+    _unisci(coda, (
+      nome: '',
+      recupero: false,
+      secondi: 0,
+      metri: 0,
+      facoltativo: false,
+    )),
+  ];
+}
+
+/// Sedute sul rullo registrate con l'app prima che salvasse i suoi blocchi:
+/// i tratti si ricostruiscono dalla seduta in programma, che sul rullo
+/// avanza da sola a tempo, fermandosi alla durata fatta davvero. Battito e
+/// watt medi vengono dalle serie al secondo. Vuoti se la seduta ha passi a
+/// distanza (lì i tempi non si conoscono).
+List<IntervalloFatto> intervalliDalPiano(
+  List<WorkoutStep> passi, {
+  required DateTime inizio,
+  required int secondi,
+  List<Campione> fc = const [],
+  List<Campione> potenza = const [],
+}) {
+  final previsti = _trattiDelPiano(passi);
+  if (previsti.any((t) => t.secondi <= 0)) return const [];
+  final out = <IntervalloFatto>[];
+  var da = 0;
+  for (final t in previsti) {
+    if (da >= secondi) break;
+    final durata = da + t.secondi > secondi ? secondi - da : t.secondi;
+    final t0 = inizio.add(Duration(seconds: da));
+    final t1 = t0.add(Duration(seconds: durata));
+    out.add(
+      IntervalloFatto(
+        recupero: t.recupero,
+        inizioS: da,
+        secondi: durata,
+        fcMedia: _mediaTra(fc, t0, t1),
+        wattMedi: _mediaTra(potenza, t0, t1),
+        nome: t.nome,
+        previstoS: t.secondi,
+      ),
+    );
+    da += durata;
+  }
+  return out;
+}
