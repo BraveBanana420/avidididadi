@@ -373,7 +373,7 @@ void main() {
       expect(rigaIntervallo(l[1], 'Corsa'), '520 m · 1:58 · 3:47/km');
     });
 
-    test('un giro che non torna ferma i nomi: niente nomi sbagliati', () {
+    test('un giro che non torna: nessun nome, meglio che sbagliato', () {
       final giri = [
         _giro(900),
         _giro(120),
@@ -382,8 +382,18 @@ void main() {
         _giro(120),
       ];
       final l = abbinaAlPiano('Corsa', giri, fartlek);
-      expect(l.take(3).map((i) => i.nome), ['Riscaldamento', 'Veloce 1/6', '']);
-      expect(l.skip(3).every((i) => i.nome.isEmpty), isTrue);
+      expect(l.every((i) => i.nome.isEmpty), isTrue);
+    });
+
+    test('fermarsi prima della fine della seduta va bene', () {
+      final giri = [_giro(900), _giro(120), _giro(60), _giro(119)];
+      final l = abbinaAlPiano('Corsa', giri, fartlek);
+      expect(l.map((i) => i.nome), [
+        'Riscaldamento',
+        'Veloce 1/6',
+        '',
+        'Veloce 2/6',
+      ]);
     });
 
     test('corsa con i giri automatici di 1 km: nessun abbinamento', () {
@@ -405,6 +415,105 @@ void main() {
         'Ripetuta 3/4',
         'Ripetuta 4/4',
       ]);
+    });
+  });
+
+  group('le corse vere di giovedì (Garmin, giro automatico a 1 km)', () {
+    IntervalloFatto g(int s, double m, {bool r = false}) =>
+        IntervalloFatto(recupero: r, inizioS: 0, secondi: s, metri: m);
+
+    test('tempo run del 5/11: ritmo sostenuto chiuso a 20 minuti su 25', () {
+      final previsto = [
+        _passoCorsa(1, 'riscaldamento', 'Corsa facile', minuti: '10'),
+        _passoCorsa(2, 'principale', 'Corsa a ritmo sostenuto', minuti: '25'),
+        _passoCorsa(3, 'defaticamento', 'Corsa facile', minuti: '10'),
+      ];
+      final giri = [
+        g(380, 1004),
+        g(221, 594),
+        g(365, 1001),
+        g(374, 999),
+        g(461, 997),
+        g(642, 1667),
+        g(258, 803),
+        g(61, 176),
+        g(29, 72, r: true),
+      ];
+      final l = abbinaAlPiano('Corsa', giri, previsto);
+      expect(l.map((i) => i.nome), [
+        'Corsa facile',
+        'Corsa facile',
+        'Corsa a ritmo sostenuto',
+        'Corsa a ritmo sostenuto',
+        'Corsa a ritmo sostenuto',
+        'Corsa facile',
+        '',
+        '',
+        '',
+      ]);
+      expect(fasiDegliIntervalli(l, previsto), [
+        'riscaldamento',
+        'riscaldamento',
+        'principale',
+        'principale',
+        'principale',
+        'defaticamento',
+        '',
+        '',
+        '',
+      ]);
+      // Il defaticamento è un giro solo: si vede il previsto.
+      expect(rigaIntervallo(l[5], 'Corsa'), contains('10:42 (previsti 10:00)'));
+    });
+
+    test('fartlek del 29/10: 6 × 2 minuti con 2 di recupero', () {
+      final previsto = [
+        _passoCorsa(1, 'riscaldamento', 'Corsa facile', minuti: '10'),
+        _passoCorsa(
+          2,
+          'principale',
+          'Corsa veloce',
+          minuti: '2',
+          serie: 6,
+          recupero: '120',
+        ),
+        _passoCorsa(3, 'defaticamento', 'Corsa facile', minuti: '10'),
+      ];
+      final giri = [
+        g(429, 1002),
+        g(172, 441),
+        g(121, 402),
+        g(119, 273, r: true),
+        g(120, 406),
+        g(120, 305, r: true),
+        g(120, 381),
+        g(120, 273, r: true),
+        g(120, 386),
+        g(120, 247, r: true),
+        g(120, 390),
+        g(120, 210, r: true),
+        g(120, 383),
+        g(525, 1000),
+        g(1, 2, r: true),
+        g(75, 137),
+      ];
+      final l = abbinaAlPiano('Corsa', giri, previsto);
+      expect(l.take(3).map((i) => i.nome), [
+        'Corsa facile',
+        'Corsa facile',
+        'Corsa veloce 1/6',
+      ]);
+      expect(l[3].recupero, isTrue);
+      expect(l[12].nome, 'Corsa veloce 6/6');
+      // Dopo l'ultima ripetuta niente recupero: subito il defaticamento,
+      // spezzato in tre giri.
+      expect(l.skip(13).map((i) => i.nome), [
+        'Corsa facile',
+        'Corsa facile',
+        'Corsa facile',
+      ]);
+      expect(fasiDegliIntervalli(l, previsto).last, 'defaticamento');
+      expect(l.every((i) => i.recupero || i.nome.isNotEmpty), isTrue);
     });
   });
 

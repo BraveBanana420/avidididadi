@@ -397,22 +397,27 @@ List<_Tratto> _trattiDelPiano(List<WorkoutStep> passi) {
   return out;
 }
 
-/// Un giro fatto corrisponde al tratto previsto: stessa durata (entro 15
-/// secondi o il 10%) o stessa distanza (entro 20 metri o il 5%).
-bool _combacia(IntervalloFatto f, _Tratto t) {
-  if (t.metri > 0) {
-    final tolleranza = t.metri * 0.05 < 20 ? 20 : t.metri * 0.05;
-    return (f.metri - t.metri).abs() <= tolleranza;
-  }
-  final tolleranza = t.secondi * 0.1 < 15 ? 15 : t.secondi * 0.1;
-  return (f.secondi - t.secondi).abs() <= tolleranza;
-}
+/// Quanto vale un giro per il tratto previsto: metri se il passo è a
+/// distanza, secondi se è a tempo.
+double _quanto(IntervalloFatto f, _Tratto t) =>
+    t.metri > 0 ? f.metri : f.secondi.toDouble();
 
-/// Corsa, bici e camminata dall'orologio (allenamento ricostruito sul Garmin:
-/// un giro per passo): ogni giro prende il nome del tratto previsto, in
-/// ordine, finché durata o distanza combaciano. Un recupero dopo l'ultima
-/// ripetizione si può saltare. Al primo che non torna ci si ferma: meglio
-/// nessun nome che un nome sbagliato.
+double _intero(_Tratto t) => t.metri > 0 ? t.metri : t.secondi.toDouble();
+
+/// Margine: 15 secondi o il 10% a tempo, 20 metri o il 5% a distanza.
+double _margine(_Tratto t) => t.metri > 0
+    ? (t.metri * 0.05 < 20 ? 20 : t.metri * 0.05)
+    : (t.secondi * 0.1 < 15 ? 15 : t.secondi * 0.1);
+
+/// Corsa, bici e camminata dall'orologio (allenamento ricostruito sul Garmin):
+/// ogni giro prende il nome del tratto previsto, in ordine. Un passo può
+/// essere fatto di più giri (il giro automatico di 1 km spezza i passi
+/// lunghi): si sommano finché non arrivano alla durata prevista. Un passo
+/// chiuso prima (25 minuti diventati 20) finisce lì e il giro dopo passa al
+/// passo seguente; il recupero dopo l'ultima ripetizione si può saltare. Se
+/// un giro non torna la corsa non seguiva la seduta (giri automatici di una
+/// corsa libera) e non si dà nessun nome: meglio nessuno che uno sbagliato.
+/// Finire prima della seduta invece va bene.
 List<IntervalloFatto> conNomiATempo(
   List<IntervalloFatto> fatti,
   List<WorkoutStep> passi,
@@ -420,32 +425,42 @@ List<IntervalloFatto> conNomiATempo(
   final previsti = _trattiDelPiano(passi);
   if (previsti.isEmpty) return fatti;
   final out = <IntervalloFatto>[];
-  var j = 0;
-  var perso = false;
+  var j = 0; // tratto previsto a cui si è arrivati
+  var resto = _intero(previsti.first); // quanto gli manca
+  void prossimo() {
+    j++;
+    if (j < previsti.length) resto = _intero(previsti[j]);
+  }
+
   for (final f in fatti) {
-    if (!perso && j < previsti.length && !_combacia(f, previsti[j])) {
-      // Il recupero dopo l'ultima ripetizione può non esserci.
-      if (previsti[j].facoltativo &&
-          j + 1 < previsti.length &&
-          _combacia(f, previsti[j + 1])) {
-        j++;
+    while (j < previsti.length) {
+      final t = previsti[j];
+      if (_quanto(f, t) <= resto + _margine(t)) break; // ci sta
+      // Non ci sta: il tratto era già cominciato (chiuso prima del previsto)
+      // o è il recupero facoltativo? Allora si passa al prossimo.
+      if (resto < _intero(t) || t.facoltativo) {
+        prossimo();
       } else {
-        perso = true;
+        return fatti;
       }
     }
-    if (perso || j >= previsti.length) {
+    if (j >= previsti.length) {
       out.add(f);
       continue;
     }
     final t = previsti[j];
+    final intero = resto == _intero(t);
+    resto -= _quanto(f, t);
+    final finito = resto <= _margine(t);
     out.add(
       f.copia(
         recupero: t.recupero,
         nome: t.nome,
-        previstoS: t.secondi > 0 ? t.secondi : null,
+        // Il previsto ha senso solo se il tratto è stato un giro solo.
+        previstoS: intero && finito && t.secondi > 0 ? t.secondi : null,
       ),
     );
-    j++;
+    if (finito) prossimo();
   }
   return out;
 }
