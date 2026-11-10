@@ -1,5 +1,6 @@
 import 'csv.dart';
 import 'esecuzione.dart';
+import 'fit.dart';
 import 'models.dart';
 import 'serie_sessione.dart';
 
@@ -203,6 +204,26 @@ String rigaIntervallo(IntervalloFatto i, String sport) {
     if (i.fcMedia > 0) 'FC ${i.fcMedia}',
   ].where((x) => x.isNotEmpty).join(' · ');
 }
+
+/// I giri dell'orologio come tratti: il lavoro o il recupero lo decide poi
+/// l'abbinamento con la seduta; senza, valgono i giri di riposo segnati
+/// dall'allenamento sull'orologio.
+List<IntervalloFatto> intervalliDaGiri(List<GiroFit> giri) => [
+  for (final g in giri)
+    IntervalloFatto(
+      recupero: g.riposo,
+      inizioS: g.inizio.difference(giri.first.inizio).inSeconds,
+      secondi: g.secondi,
+      metri: g.metri,
+      fcMedia: g.fcMedia,
+      wattMedi: g.wattMedi,
+    ),
+];
+
+/// File con i giri letti dal file originale dell'orologio (corsa, bici). Se
+/// è vuoto il file originale non aveva giri: non si riscarica.
+String fileGiri(String idSessione) =>
+    'giri_${idSessione.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}.csv';
 
 /// File in cui restano gli intervalli di un'attività, già letti.
 String fileIntervalli(String idSessione) =>

@@ -1,10 +1,13 @@
+import 'fit.dart';
 import 'intervalli.dart';
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'attivita.dart';
@@ -278,6 +281,54 @@ class ClientIntervals {
       client.close();
     }
   }
+
+  /// Il file originale dell'attività (il FIT dell'orologio), al massimo
+  /// 10 MB; null se intervals.icu non ce l'ha.
+  Future<List<int>?> fileOriginale(String id) async {
+    const massimo = 10 * 1024 * 1024;
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 15);
+    try {
+      final req = await client.getUrl(
+        Uri.parse('$baseIntervals/api/v1/activity/$id/file'),
+      );
+      req.headers
+        ..set(
+          HttpHeaders.authorizationHeader,
+          'Basic ${base64Encode(utf8.encode('API_KEY:$chiave'))}',
+        )
+        ..set(HttpHeaders.userAgentHeader, 'Avidididadi');
+      final res = await req.close().timeout(const Duration(seconds: 40));
+      if (res.statusCode == 401 || res.statusCode == 403) {
+        throw const ErroreIntervals('Chiave API non valida.');
+      }
+      if (res.statusCode != 200) {
+        debugPrint(
+          'intervals.icu: file originale non disponibile (${res.statusCode})',
+        );
+        await res.drain<void>();
+        return null;
+      }
+      final dati = BytesBuilder(copy: false);
+      await for (final pezzo in res.timeout(const Duration(seconds: 40))) {
+        dati.add(pezzo);
+        if (dati.length > massimo) return null;
+      }
+      return dati.takeBytes();
+    } on SocketException {
+      throw const ErroreIntervals('Nessuna connessione a internet.');
+    } on TimeoutException {
+      throw const ErroreIntervals('intervals.icu non risponde: riprova.');
+    } finally {
+      client.close();
+    }
+  }
+
+  /// I giri veri dell'orologio, dal file originale: per corsa e bici
+  /// intervals.icu calcola gli intervalli a modo suo e possono scavalcare la
+  /// fine di un passo. Vuoti se il file non c'è o non è un FIT.
+  Future<List<IntervalloFatto>> giriOrologio(String id) async =>
+      intervalliDaGiri(giriDaFit(await fileOriginale(id) ?? const []));
 
   /// Carica un file GPX come attività; restituisce l'id su intervals.icu.
   Future<String?> caricaGpx(

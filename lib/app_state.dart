@@ -2329,6 +2329,11 @@ class AppState extends ChangeNotifier {
   /// (anche i blocchi delle sedute registrate con l'app), altrimenti per
   /// quelle di intervals.icu dalla rete. Vuoti se non ci sono.
   Future<List<IntervalloFatto>> intervalliDi(Sessione s) async {
+    // Corsa e bici dall'orologio: i giri veri, dal file originale.
+    if (s.id.startsWith(prefissoIcu) && !stessoSport(s.sport, 'Nuoto')) {
+      final giri = await _giriDi(s);
+      if (giri.isNotEmpty) return giri;
+    }
     final file = fileIntervalli(s.id);
     final t = await Storage.leggiTesto(file);
     if (t != null) return intervalliDaCsv(t);
@@ -2343,6 +2348,25 @@ class AppState extends ChangeNotifier {
       return l;
     } on ErroreIntervals {
       return const [];
+    }
+  }
+
+  /// I giri dell'orologio di un'attività di intervals.icu: la copia già
+  /// letta, altrimenti dal file originale (una volta sola: se non ha giri si
+  /// segna e non si riscarica).
+  Future<List<IntervalloFatto>> _giriDi(Sessione s) async {
+    final file = fileGiri(s.id);
+    final t = await Storage.leggiTesto(file);
+    if (t != null) return intervalliDaCsv(t);
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) return const [];
+    try {
+      final giri = await ClientIntervals(chiave)
+          .giriOrologio(s.id.substring(prefissoIcu.length));
+      await Storage.scriviTesto(file, intervalliCsv(giri));
+      return giri;
+    } on ErroreIntervals {
+      return const []; // senza rete: si riprova la prossima volta
     }
   }
 
