@@ -433,7 +433,8 @@ double _margine(_Tratto t) => t.metri > 0
 /// Corsa, bici e camminata dall'orologio (allenamento ricostruito sul Garmin):
 /// ogni giro prende il nome del tratto previsto, in ordine. Un passo può
 /// essere fatto di più giri (il giro automatico di 1 km spezza i passi
-/// lunghi): si sommano finché non arrivano alla durata prevista. Un passo
+/// lunghi): si sommano finché non arrivano alla durata prevista e nel
+/// riepilogo diventano una riga sola, col tempo previsto del passo. Un passo
 /// chiuso prima (25 minuti diventati 20) finisce lì e il giro dopo passa al
 /// passo seguente; il recupero dopo l'ultima ripetizione si può saltare. Se
 /// un giro non torna la corsa non seguiva la seduta (giri automatici di una
@@ -446,9 +447,17 @@ List<IntervalloFatto> conNomiATempo(
   final previsti = _trattiDelPiano(passi);
   if (previsti.isEmpty) return fatti;
   final out = <IntervalloFatto>[];
+  final pezzi = <IntervalloFatto>[]; // giri del tratto in corso
   var j = 0; // tratto previsto a cui si è arrivati
   var resto = _intero(previsti.first); // quanto gli manca
+  // Chiude il tratto in corso: i suoi giri diventano una riga sola.
+  void chiudi() {
+    if (pezzi.isNotEmpty) out.add(_unisci(pezzi, previsti[j]));
+    pezzi.clear();
+  }
+
   void prossimo() {
+    chiudi();
     j++;
     if (j < previsti.length) resto = _intero(previsti[j]);
   }
@@ -470,20 +479,41 @@ List<IntervalloFatto> conNomiATempo(
       continue;
     }
     final t = previsti[j];
-    final intero = resto == _intero(t);
+    pezzi.add(f);
     resto -= _quanto(f, t);
-    final finito = resto <= _margine(t);
-    out.add(
-      f.copia(
-        recupero: t.recupero,
-        nome: t.nome,
-        // Il previsto ha senso solo se il tratto è stato un giro solo.
-        previstoS: intero && finito && t.secondi > 0 ? t.secondi : null,
-      ),
-    );
-    if (finito) prossimo();
+    if (resto <= _margine(t)) prossimo();
   }
+  if (j < previsti.length) chiudi(); // finito prima della seduta
   return out;
+}
+
+/// I giri di un tratto (spezzato dal giro automatico di 1 km) in una riga
+/// sola: tempi e metri sommati, battito e watt medi pesati sul tempo.
+IntervalloFatto _unisci(List<IntervalloFatto> giri, _Tratto t) {
+  var secondi = 0, fc = 0, conFc = 0, watt = 0, conWatt = 0;
+  var metri = 0.0;
+  for (final g in giri) {
+    secondi += g.secondi;
+    metri += g.metri;
+    if (g.fcMedia > 0) {
+      fc += g.fcMedia * g.secondi;
+      conFc += g.secondi;
+    }
+    if (g.wattMedi > 0) {
+      watt += g.wattMedi * g.secondi;
+      conWatt += g.secondi;
+    }
+  }
+  return IntervalloFatto(
+    recupero: t.recupero,
+    inizioS: giri.first.inizioS,
+    secondi: secondi,
+    metri: metri,
+    fcMedia: conFc == 0 ? 0 : (fc / conFc).round(),
+    wattMedi: conWatt == 0 ? 0 : (watt / conWatt).round(),
+    nome: t.nome,
+    previstoS: t.secondi,
+  );
 }
 
 /// I nomi dei passi in programma, come li si abbina nello sport: a metri nel

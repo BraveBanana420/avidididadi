@@ -440,30 +440,25 @@ void main() {
         g(29, 72, r: true),
       ];
       final l = abbinaAlPiano('Corsa', giri, previsto);
+      // Una riga per fase. Questi sono gli intervalli calcolati da
+      // intervals.icu (non i giri veri): il quarto scavalca la fine del
+      // ritmo sostenuto, per questo ora si leggono i giri dal file FIT.
       expect(l.map((i) => i.nome), [
         'Corsa facile',
-        'Corsa facile',
-        'Corsa a ritmo sostenuto',
-        'Corsa a ritmo sostenuto',
         'Corsa a ritmo sostenuto',
         'Corsa facile',
         '',
         '',
         '',
       ]);
-      expect(fasiDegliIntervalli(l, previsto), [
+      expect(l.first.secondi, 601);
+      expect(l[1].secondi, 1200);
+      expect(rigaIntervallo(l[1], 'Corsa'), contains('20:00 (previsti 25:00)'));
+      expect(fasiDegliIntervalli(l, previsto).take(3), [
         'riscaldamento',
-        'riscaldamento',
-        'principale',
-        'principale',
         'principale',
         'defaticamento',
-        '',
-        '',
-        '',
       ]);
-      // Il defaticamento è un giro solo: si vede il previsto.
-      expect(rigaIntervallo(l[5], 'Corsa'), contains('10:42 (previsti 10:00)'));
     });
 
     test('fartlek del 29/10: 6 × 2 minuti con 2 di recupero', () {
@@ -498,20 +493,16 @@ void main() {
         g(75, 137),
       ];
       final l = abbinaAlPiano('Corsa', giri, previsto);
-      expect(l.take(3).map((i) => i.nome), [
-        'Corsa facile',
-        'Corsa facile',
-        'Corsa veloce 1/6',
-      ]);
-      expect(l[3].recupero, isTrue);
-      expect(l[12].nome, 'Corsa veloce 6/6');
+      expect(l.length, 13); // 1 + 6 ripetute + 5 recuperi + 1
+      expect(l.first.nome, 'Corsa facile');
+      expect(l.first.secondi, 601);
+      expect(l[1].nome, 'Corsa veloce 1/6');
+      expect(l[2].recupero, isTrue);
+      expect(l[11].nome, 'Corsa veloce 6/6');
       // Dopo l'ultima ripetuta niente recupero: subito il defaticamento,
-      // spezzato in tre giri.
-      expect(l.skip(13).map((i) => i.nome), [
-        'Corsa facile',
-        'Corsa facile',
-        'Corsa facile',
-      ]);
+      // tre giri in una riga.
+      expect(l.last.nome, 'Corsa facile');
+      expect(l.last.secondi, 601);
       expect(fasiDegliIntervalli(l, previsto).last, 'defaticamento');
       expect(l.every((i) => i.recupero || i.nome.isNotEmpty), isTrue);
     });

@@ -203,6 +203,16 @@ void main() {
     expect(minuti('defaticamento'), 600);
     expect(fasi.last, ''); // il minuto e mezzo in più: fuori programma
     expect(l.first.inizioS, 0);
-    expect(l[2].inizioS, 601);
+    // Una riga per fase: i giri di 1 km sono uniti.
+    expect(l.map((i) => i.nome), [
+      'Corsa facile',
+      'Corsa a ritmo sostenuto',
+      'Corsa facile',
+      '',
+    ]);
+    expect(l[1].inizioS, 601);
+    expect(l[1].metri, 3647);
+    expect(l[1].fcMedia, 155); // media pesata sul tempo dei 4 giri
+    expect(rigaIntervallo(l[1], 'Corsa'), startsWith('3,65 km · 25:00 · '));
   });
 }
