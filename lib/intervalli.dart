@@ -1,10 +1,13 @@
 import 'csv.dart';
+import 'esecuzione.dart';
 import 'models.dart';
+import 'serie_sessione.dart';
 
-// Gli intervalli di un'attività dell'orologio (da intervals.icu): ogni tratto
-// di lavoro o di recupero con metri, tempo e battito. Nel nuoto sono quelli
-// segnati col tasto del giro o col "registro allenamento" di Garmin; se
-// combaciano con i passi della seduta in programma prendono i loro nomi.
+// Gli intervalli di un'attività: ogni tratto di lavoro o di recupero con
+// metri, tempo, battito e watt. Dall'orologio (intervals.icu) sono i giri
+// segnati col tasto o dall'allenamento sull'orologio, e se combaciano con i
+// passi della seduta in programma prendono i loro nomi; dalle sedute
+// registrate con l'app sono i blocchi del player, già con nome e sezione.
 
 /// Un tratto dell'attività: lavoro o recupero.
 class IntervalloFatto {
@@ -14,6 +17,9 @@ class IntervalloFatto {
   final double metri; // 0 se non misurati (recuperi a bordo vasca)
   final int fcMedia; // 0 se manca
   final String nome; // dal passo in programma, se combacia
+  final int wattMedi; // 0 se mancano
+  final int previstoS; // durata prevista dal passo; 0 se non si sa
+  final String fase; // sezione della seduta, se già nota (sedute dell'app)
   const IntervalloFatto({
     required this.recupero,
     required this.inizioS,
@@ -21,16 +27,30 @@ class IntervalloFatto {
     this.metri = 0,
     this.fcMedia = 0,
     this.nome = '',
+    this.wattMedi = 0,
+    this.previstoS = 0,
+    this.fase = '',
   });
 
-  IntervalloFatto conNome(String n) => IntervalloFatto(
-    recupero: recupero,
+  IntervalloFatto copia({
+    bool? recupero,
+    int? secondi,
+    double? metri,
+    String? nome,
+    int? previstoS,
+  }) => IntervalloFatto(
+    recupero: recupero ?? this.recupero,
     inizioS: inizioS,
-    secondi: secondi,
-    metri: metri,
+    secondi: secondi ?? this.secondi,
+    metri: metri ?? this.metri,
     fcMedia: fcMedia,
-    nome: n,
+    nome: nome ?? this.nome,
+    wattMedi: wattMedi,
+    previstoS: previstoS ?? this.previstoS,
+    fase: fase,
   );
+
+  IntervalloFatto conNome(String n) => copia(nome: n);
 }
 
 num _n(Object? v) => v is num ? v : 0;
@@ -49,11 +69,14 @@ List<IntervalloFatto> intervalliDaIcu(Object? risposta) {
           secondi: _n(x['elapsed_time'] ?? x['moving_time']).round(),
           metri: _n(x['distance']).toDouble(),
           fcMedia: _n(x['average_heartrate']).round(),
+          wattMedi: _n(x['average_watts']).round(),
         ),
   ];
 }
 
-/// Per tenerli sul telefono: una riga per intervallo.
+/// Per tenerli sul telefono: una riga per intervallo. Le colonne nuove stanno
+/// in fondo (le righe vecchie ne hanno 5) e il nome è l'ultima, perché può
+/// contenere virgole.
 String intervalliCsv(List<IntervalloFatto> l) => [
   for (final i in l)
     [
@@ -62,18 +85,26 @@ String intervalliCsv(List<IntervalloFatto> l) => [
       i.secondi,
       i.metri.round(),
       i.fcMedia,
+      i.wattMedi,
+      i.previstoS,
+      i.fase.replaceAll(RegExp(r'[,\n\r]'), ' '),
+      i.nome.replaceAll(RegExp(r'[\n\r]'), ' '),
     ].join(','),
 ].join('\n');
 
 List<IntervalloFatto> intervalliDaCsv(String testo) => [
   for (final riga in testo.split('\n'))
-    if (riga.split(',') case final c when c.length >= 5)
+    if (riga.trimRight().split(',') case final c when c.length >= 5)
       IntervalloFatto(
         recupero: c[0] == 'r',
         inizioS: int.tryParse(c[1]) ?? 0,
         secondi: int.tryParse(c[2]) ?? 0,
         metri: double.tryParse(c[3]) ?? 0,
         fcMedia: int.tryParse(c[4]) ?? 0,
+        wattMedi: c.length > 5 ? int.tryParse(c[5]) ?? 0 : 0,
+        previstoS: c.length > 6 ? int.tryParse(c[6]) ?? 0 : 0,
+        fase: c.length > 7 ? c[7] : '',
+        nome: c.length > 8 ? c.sublist(8).join(',') : '',
       ),
 ];
 
@@ -149,16 +180,26 @@ String passoIntervallo(IntervalloFatto i, String sport) {
   return '${_minSec(i.secondi / i.metri * 1000)}/km';
 }
 
-/// "200 m · 5:32 · 2:46/100 m · FC 109"; i recuperi "Recupero 0:52".
+/// Il tempo fatto e, se si è staccato di più di 10 secondi da quello
+/// previsto (un blocco da 8 minuti chiuso dopo 2), anche quello:
+/// "2:00 (previsti 8:00)".
+String _tempoConPrevisto(IntervalloFatto i) =>
+    i.previstoS > 0 && (i.secondi - i.previstoS).abs() > 10
+    ? '${_minSec(i.secondi)} (previsti ${_minSec(i.previstoS)})'
+    : _minSec(i.secondi);
+
+/// "200 m · 5:32 · 2:46/100 m · FC 109"; i recuperi "Recupero 0:52". In bici
+/// anche i watt medi: "· 210 W".
 String rigaIntervallo(IntervalloFatto i, String sport) {
-  if (i.recupero) return 'Recupero ${_minSec(i.secondi)}';
+  if (i.recupero) return 'Recupero ${_tempoConPrevisto(i)}';
   final metri = i.metri >= 1000 && !stessoSport(sport, 'Nuoto')
       ? '${(i.metri / 1000).toStringAsFixed(2).replaceAll('.', ',')} km'
       : '${i.metri.round()} m';
   return [
     if (i.metri > 0) metri,
-    _minSec(i.secondi),
+    _tempoConPrevisto(i),
     passoIntervallo(i, sport),
+    if (i.wattMedi > 0) '${i.wattMedi} W',
     if (i.fcMedia > 0) 'FC ${i.fcMedia}',
   ].where((x) => x.isNotEmpty).join(' · ');
 }
@@ -179,6 +220,9 @@ const intervalliModificatiHeader = [
   'metri',
   'fc',
   'nome',
+  'watt',
+  'previsto',
+  'fase',
 ];
 
 /// Le righe di una sessione per intervalli_modificati.csv.
@@ -195,6 +239,9 @@ List<List<String>> righeIntervalli(
       '${i.metri.round()}',
       '${i.fcMedia}',
       i.nome,
+      '${i.wattMedi}',
+      '${i.previstoS}',
+      i.fase,
     ],
 ];
 
@@ -214,6 +261,9 @@ Map<String, List<IntervalloFatto>> intervalliModificatiDa(Tabella t) {
         metri: double.tryParse(t.v(r, 'metri')) ?? 0,
         fcMedia: int.tryParse(t.v(r, 'fc')) ?? 0,
         nome: t.v(r, 'nome'),
+        wattMedi: int.tryParse(t.v(r, 'watt')) ?? 0,
+        previstoS: int.tryParse(t.v(r, 'previsto')) ?? 0,
+        fase: t.v(r, 'fase'),
       ),
     ));
   }
@@ -293,6 +343,186 @@ List<String> fasiDegliIntervalli(
 
   return [
     for (final i in intervalli)
-      if (i.recupero) ultima else ultima = i.nome.trim().isEmpty ? '' : fase(i),
+      if (i.fase.isNotEmpty)
+        ultima = i.fase
+      else if (i.recupero)
+        ultima
+      else
+        ultima = i.nome.trim().isEmpty ? '' : fase(i),
+  ];
+}
+
+/// Un tratto previsto della seduta, per l'abbinamento a tempo.
+typedef _Tratto = ({
+  String nome,
+  bool recupero,
+  int secondi, // 0 se si misura a metri
+  double metri, // 0 se si misura a tempo
+  bool facoltativo, // il recupero dopo l'ultima ripetizione
+});
+
+/// Corsa, bici, camminata: i tratti previsti, uno per ripetizione e uno per
+/// ogni recupero, come i blocchi del player ("6 × 3 min, rec 2 min").
+List<_Tratto> _trattiDelPiano(List<WorkoutStep> passi) {
+  final ordinati = [...passi]..sort((a, b) => a.ordine.compareTo(b.ordine));
+  final out = <_Tratto>[];
+  for (final p in ordinati) {
+    final min = double.tryParse(p.durataMin.replaceAll(',', '.')) ?? 0;
+    final secondi = (min * 60).round();
+    final metri = double.tryParse(p.distanzaM.trim()) ?? 0;
+    if (secondi <= 0 && metri <= 0) continue;
+    final n = (int.tryParse(p.serie.trim()) ?? 1).clamp(1, 100);
+    final rec = int.tryParse(p.recuperoS.trim()) ?? 0;
+    for (var k = 1; k <= n; k++) {
+      out.add((
+        nome: n > 1 ? '${p.descrizione.trim()} $k/$n' : p.descrizione.trim(),
+        recupero: false,
+        secondi: metri > 0 ? 0 : secondi,
+        metri: metri,
+        facoltativo: false,
+      ));
+      // Come nel player: anche dopo l'ultima ripetizione, se c'è un altro
+      // passo; quello però può mancare (si riparte subito).
+      if (rec > 0 && !(k == n && p == ordinati.last)) {
+        out.add((
+          nome: '',
+          recupero: true,
+          secondi: rec,
+          metri: 0,
+          facoltativo: k == n,
+        ));
+      }
+    }
+  }
+  return out;
+}
+
+/// Un giro fatto corrisponde al tratto previsto: stessa durata (entro 15
+/// secondi o il 10%) o stessa distanza (entro 20 metri o il 5%).
+bool _combacia(IntervalloFatto f, _Tratto t) {
+  if (t.metri > 0) {
+    final tolleranza = t.metri * 0.05 < 20 ? 20 : t.metri * 0.05;
+    return (f.metri - t.metri).abs() <= tolleranza;
+  }
+  final tolleranza = t.secondi * 0.1 < 15 ? 15 : t.secondi * 0.1;
+  return (f.secondi - t.secondi).abs() <= tolleranza;
+}
+
+/// Corsa, bici e camminata dall'orologio (allenamento ricostruito sul Garmin:
+/// un giro per passo): ogni giro prende il nome del tratto previsto, in
+/// ordine, finché durata o distanza combaciano. Un recupero dopo l'ultima
+/// ripetizione si può saltare. Al primo che non torna ci si ferma: meglio
+/// nessun nome che un nome sbagliato.
+List<IntervalloFatto> conNomiATempo(
+  List<IntervalloFatto> fatti,
+  List<WorkoutStep> passi,
+) {
+  final previsti = _trattiDelPiano(passi);
+  if (previsti.isEmpty) return fatti;
+  final out = <IntervalloFatto>[];
+  var j = 0;
+  var perso = false;
+  for (final f in fatti) {
+    if (!perso && j < previsti.length && !_combacia(f, previsti[j])) {
+      // Il recupero dopo l'ultima ripetizione può non esserci.
+      if (previsti[j].facoltativo &&
+          j + 1 < previsti.length &&
+          _combacia(f, previsti[j + 1])) {
+        j++;
+      } else {
+        perso = true;
+      }
+    }
+    if (perso || j >= previsti.length) {
+      out.add(f);
+      continue;
+    }
+    final t = previsti[j];
+    out.add(
+      f.copia(
+        recupero: t.recupero,
+        nome: t.nome,
+        previstoS: t.secondi > 0 ? t.secondi : null,
+      ),
+    );
+    j++;
+  }
+  return out;
+}
+
+/// I nomi dei passi in programma, come li si abbina nello sport: a metri nel
+/// nuoto (anche un passo in più tratti), a tempo o distanza negli altri.
+List<IntervalloFatto> abbinaAlPiano(
+  String sport,
+  List<IntervalloFatto> fatti,
+  List<WorkoutStep> passi,
+) => stessoSport(sport, 'Nuoto')
+    ? conNomiDelPiano(fatti, passi)
+    : conNomiATempo(fatti, passi);
+
+/// Un blocco del player com'è andato: quando è iniziato e finito, quanto è
+/// durato davvero (senza le pause) e i metri fatti.
+typedef TrattoApp = ({
+  int blocco,
+  DateTime inizio,
+  DateTime fine,
+  int secondi,
+  double metri,
+});
+
+/// La media dei valori tra [da] e [a]; 0 se non ce ne sono.
+int _mediaTra(List<Campione> serie, DateTime da, DateTime a) {
+  var somma = 0.0;
+  var n = 0;
+  for (final c in serie) {
+    if (c.t.isBefore(da) || !c.t.isBefore(a)) continue;
+    somma += c.v;
+    n++;
+  }
+  return n == 0 ? 0 : (somma / n).round();
+}
+
+/// Sedute registrate con l'app: ogni blocco fatto diventa un tratto, con il
+/// nome, la sezione e il tempo previsto del passo, e battito e watt medi
+/// presi dalle serie al secondo. Così nel riepilogo si vede anche un blocco
+/// da 8 minuti chiuso dopo 2.
+List<IntervalloFatto> intervalliDaTratti(
+  List<Blocco> blocchi,
+  List<TrattoApp> tratti, {
+  List<Campione> fc = const [],
+  List<Campione> potenza = const [],
+}) {
+  if (tratti.isEmpty) return const [];
+  final partenza = tratti.first.inizio;
+  // Quante ripetizioni ha ogni passo, per "Ripetuta 2/6".
+  final ripetizioni = <int, int>{};
+  for (final b in blocchi) {
+    if (b.tipo == TipoBlocco.lavoro) {
+      ripetizioni[b.passo] = (ripetizioni[b.passo] ?? 0) + 1;
+    }
+  }
+  return [
+    for (final t in tratti)
+      if (t.blocco >= 0 && t.blocco < blocchi.length && t.secondi > 0)
+        () {
+          final b = blocchi[t.blocco];
+          final recupero = b.tipo == TipoBlocco.recupero;
+          final n = ripetizioni[b.passo] ?? 1;
+          return IntervalloFatto(
+            recupero: recupero,
+            inizioS: t.inizio.difference(partenza).inSeconds,
+            secondi: t.secondi,
+            metri: t.metri,
+            fcMedia: _mediaTra(fc, t.inizio, t.fine),
+            wattMedi: _mediaTra(potenza, t.inizio, t.fine),
+            previstoS: b.secondi ?? 0,
+            fase: b.fase,
+            nome: recupero
+                ? ''
+                : n > 1
+                ? '${b.titolo} ${b.serie}/$n'
+                : b.titolo,
+          );
+        }(),
   ];
 }

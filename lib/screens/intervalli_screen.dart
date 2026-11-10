@@ -202,6 +202,9 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
         metri: _recupero ? 0 : double.tryParse(_metri.text.trim()) ?? 0,
         fcMedia: i?.fcMedia ?? 0,
         nome: _recupero ? '' : _nome.text.trim(),
+        wattMedi: i?.wattMedi ?? 0,
+        previstoS: i?.previstoS ?? 0,
+        fase: i?.fase ?? '',
       ),
     );
   }

@@ -69,7 +69,7 @@ lib/
   calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
   intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
-  intervalli.dart      intervalli di un'attività da intervals.icu (lavoro e recuperi), nomi dai passi in programma
+  intervalli.dart      intervalli di un'attività (lavoro e recuperi): giri da intervals.icu abbinati ai passi in programma (a metri nel nuoto, a tempo o distanza negli altri), blocchi delle sedute registrate con l'app, sezioni della seduta
   invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
   esporta.dart         sessioni dell'app → GPX o attività di intervals.icu (sessioni_inviate.csv)
   serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
@@ -118,7 +118,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
-- `intervalli_<id>.csv` (intervalli già letti da intervals.icu, per le nuotate);
+- `intervalli_<id>.csv` (tratti di un'attività: giri già letti da intervals.icu, oppure i blocchi di una seduta registrata con l'app, con tempo previsto, watt e sezione);
 - `intervalli_modificati.csv` (intervalli corretti a mano: valgono al posto di quelli dell'orologio);
 - `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
 - `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);

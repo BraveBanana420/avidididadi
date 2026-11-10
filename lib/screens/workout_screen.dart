@@ -931,9 +931,9 @@ class _DatiSessione extends StatelessWidget {
                 ],
               ),
             ),
-            // Nuoto dall'orologio: i tratti segnati, con i nomi dei passi in
-            // programma se i metri combaciano.
-            if (stessoSport(s.sport, 'Nuoto') && s.id.startsWith(prefissoIcu))
+            // I tratti della seduta: dall'orologio (giri, con i nomi dei passi
+            // in programma se combaciano) o dai blocchi registrati con l'app.
+            if (s.id.startsWith(prefissoIcu) || s.id.startsWith('app-'))
               _Intervalli(
                 key: ValueKey('int-${s.id}'),
                 state: state,
@@ -1166,7 +1166,18 @@ class _IntervalliState extends State<_Intervalli> {
           previsto?.tipo ?? s.tipo,
         );
         // Quelli corretti a mano valgono al posto di quelli dell'orologio.
-        final lista = aMano ?? conNomiDelPiano(letti, passi);
+        // Quelli registrati con l'app hanno già nome e sezione.
+        final dallApp = letti.any((i) => i.fase.isNotEmpty);
+        final lista =
+            aMano ?? (dallApp ? letti : abbinaAlPiano(s.sport, letti, passi));
+        // Corsa e bici dall'orologio: i giri di 1 km non dicono niente di
+        // più dei totali; si mostrano solo se combaciano con la seduta.
+        if (aMano == null &&
+            !dallApp &&
+            !stessoSport(s.sport, 'Nuoto') &&
+            !lista.any((i) => i.nome.isNotEmpty)) {
+          return const SizedBox.shrink();
+        }
         // Abbinati alla seduta prevista: le sue sezioni e i suoi pallini.
         final fasi = fasiDegliIntervalli(lista, passi);
         final conSezioni = fasi.any((f) => f.isNotEmpty);

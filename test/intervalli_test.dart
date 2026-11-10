@@ -1,6 +1,8 @@
 import 'package:allenamenti_app/csv.dart';
+import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/models.dart';
+import 'package:allenamenti_app/serie_sessione.dart';
 import 'package:allenamenti_app/sincronizzazione.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -333,4 +335,206 @@ void main() {
     ]);
     expect(fasiDegliIntervalli(l, const []), ['', '', '', '', '']);
   });
+
+  group('corsa e bici a tempo', () {
+    // Fartlek ricostruito sul Garmin: 15 min, 6 × 2 min con 1 min di
+    // recupero, 10 min di defaticamento.
+    final fartlek = [
+      _passoCorsa(1, 'riscaldamento', 'Riscaldamento', minuti: '15'),
+      _passoCorsa(
+        2,
+        'principale',
+        'Veloce',
+        minuti: '2',
+        serie: 6,
+        recupero: '60',
+      ),
+      _passoCorsa(3, 'defaticamento', 'Defaticamento', minuti: '10'),
+    ];
+
+    test('ogni giro prende il nome del suo passo, anche i recuperi', () {
+      final giri = [
+        _giro(903, metri: 2700),
+        for (var k = 0; k < 6; k++) ...[
+          _giro(118 + k, metri: 520),
+          if (k < 5) _giro(61, metri: 180, recupero: k.isEven),
+        ],
+        // Il recupero dopo l'ultima ripetizione non c'è: si riparte subito.
+        _giro(596, metri: 1700),
+      ];
+      final l = abbinaAlPiano('Corsa', giri, fartlek);
+      expect(l.first.nome, 'Riscaldamento');
+      expect(l[1].nome, 'Veloce 1/6');
+      expect(l[2].recupero, isTrue); // anche se l'orologio lo dava "lavoro"
+      expect(l[2].previstoS, 60);
+      expect(l[11].nome, 'Veloce 6/6');
+      expect(l.last.nome, 'Defaticamento');
+      expect(fasiDegliIntervalli(l, fartlek).last, 'defaticamento');
+      expect(rigaIntervallo(l[1], 'Corsa'), '520 m · 1:58 · 3:47/km');
+    });
+
+    test('un giro che non torna ferma i nomi: niente nomi sbagliati', () {
+      final giri = [
+        _giro(900),
+        _giro(120),
+        _giro(60),
+        _giro(300), // ripetuta lasciata a metà, poi corsa libera
+        _giro(120),
+      ];
+      final l = abbinaAlPiano('Corsa', giri, fartlek);
+      expect(l.take(3).map((i) => i.nome), ['Riscaldamento', 'Veloce 1/6', '']);
+      expect(l.skip(3).every((i) => i.nome.isEmpty), isTrue);
+    });
+
+    test('corsa con i giri automatici di 1 km: nessun abbinamento', () {
+      final giri = [for (var k = 0; k < 8; k++) _giro(330, metri: 1000)];
+      final l = abbinaAlPiano('Corsa', giri, fartlek);
+      expect(l.every((i) => i.nome.isEmpty), isTrue);
+    });
+
+    test('passi a distanza: 4 × 1 km', () {
+      final passi = [
+        _passoCorsa(1, 'principale', 'Ripetuta', metri: '1000', serie: 4),
+      ];
+      final l = abbinaAlPiano('Corsa', [
+        for (var k = 0; k < 4; k++) _giro(240 + k, metri: 1004),
+      ], passi);
+      expect(l.map((i) => i.nome), [
+        'Ripetuta 1/4',
+        'Ripetuta 2/4',
+        'Ripetuta 3/4',
+        'Ripetuta 4/4',
+      ]);
+    });
+  });
+
+  group("sedute registrate con l'app", () {
+    // Rulli in ERG: 10 min, 3 × 8 min con 2 min di recupero.
+    final passi = [
+      _passoCorsa(
+        1,
+        'riscaldamento',
+        'Riscaldamento',
+        minuti: '10',
+        sport: 'Bici',
+      ),
+      _passoCorsa(
+        2,
+        'principale',
+        'Soglia',
+        minuti: '8',
+        serie: 3,
+        recupero: '120',
+        sport: 'Bici',
+      ),
+    ];
+    final blocchi = blocchiDa(passi);
+    final t0 = DateTime(2026, 11, 10, 7);
+    TrattoApp tratto(int blocco, int da, int secondi) => (
+      blocco: blocco,
+      inizio: t0.add(Duration(seconds: da)),
+      fine: t0.add(Duration(seconds: da + secondi)),
+      secondi: secondi,
+      metri: secondi * 8.0,
+    );
+
+    test('un blocco da 8 minuti chiuso dopo 2 si vede', () {
+      final fc = [
+        for (var s = 0; s < 1500; s += 5)
+          Campione(t0.add(Duration(seconds: s)), s < 600 ? 120 : 160),
+      ];
+      final potenza = [
+        for (var s = 0; s < 1500; s += 5)
+          Campione(t0.add(Duration(seconds: s)), s < 600 ? 150 : 230),
+      ];
+      final l = intervalliDaTratti(
+        blocchi,
+        [
+          tratto(0, 0, 600),
+          tratto(1, 600, 480),
+          tratto(2, 1080, 120),
+          tratto(3, 1200, 120), // cambiato dopo 2 minuti
+        ],
+        fc: fc,
+        potenza: potenza,
+      );
+      expect(l.map((i) => i.nome), [
+        'Riscaldamento',
+        'Soglia 1/3',
+        '',
+        'Soglia 2/3',
+      ]);
+      expect(l.map((i) => i.fase), [
+        'riscaldamento',
+        'principale',
+        'principale',
+        'principale',
+      ]);
+      expect(l[2].recupero, isTrue);
+      expect(l[1].wattMedi, 230);
+      expect(l[1].fcMedia, 160);
+      expect(l.last.inizioS, 1200);
+      expect(
+        rigaIntervallo(l.last, 'Bici'),
+        '960 m · 2:00 (previsti 8:00) · 28,8 km/h · 230 W · FC 160',
+      );
+      expect(rigaIntervallo(l[1], 'Bici'), contains('8:00 · '));
+      expect(fasiDegliIntervalli(l, const []).first, 'riscaldamento');
+    });
+
+    test('salvati e riletti restano uguali, anche col nome con la virgola', () {
+      final l = intervalliDaTratti(blocchi, [
+        tratto(0, 0, 600),
+        tratto(1, 600, 120),
+      ]);
+      final conVirgola = [l.first.copia(nome: 'Riscaldamento, facile'), l.last];
+      final riletti = intervalliDaCsv(intervalliCsv(conVirgola));
+      expect(riletti.first.nome, 'Riscaldamento, facile');
+      expect(riletti.last.previstoS, 480);
+      expect(riletti.last.fase, 'principale');
+      expect(riletti.last.secondi, 120);
+    });
+
+    test('i file vecchi a 5 colonne si leggono ancora', () {
+      final l = intervalliDaCsv('l,0,332,200,109\nr,332,52,0,117');
+      expect(l.length, 2);
+      expect(l.first.metri, 200);
+      expect(l.first.previstoS, 0);
+      expect(l.last.recupero, isTrue);
+    });
+  });
 }
+
+WorkoutStep _passoCorsa(
+  int ordine,
+  String fase,
+  String nome, {
+  String minuti = '',
+  String metri = '',
+  int serie = 1,
+  String recupero = '',
+  String sport = 'Corsa',
+}) => WorkoutStep(
+  id: 'corsa_2026-11-05',
+  sport: sport,
+  nome: 'Fartlek',
+  durataTot: 50,
+  ordine: ordine,
+  fase: fase,
+  descrizione: nome,
+  serie: '$serie',
+  ripetizioni: '',
+  distanzaM: metri,
+  durataMin: minuti,
+  intensita: '',
+  recuperoS: recupero,
+  note: '',
+);
+
+IntervalloFatto _giro(int secondi, {double metri = 0, bool recupero = false}) =>
+    IntervalloFatto(
+      recupero: recupero,
+      inizioS: 0,
+      secondi: secondi,
+      metri: metri,
+    );

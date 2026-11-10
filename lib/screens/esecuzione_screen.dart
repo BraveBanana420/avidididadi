@@ -17,6 +17,7 @@ import '../esercizi.dart';
 import '../glossario.dart';
 import '../immagini.dart';
 import '../in_corso.dart';
+import '../intervalli.dart';
 import '../gps.dart';
 import '../models.dart';
 import '../notifica_allenamento.dart';
@@ -192,6 +193,33 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sesso: widget.state.profilo.sesso,
   );
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
+
+  /// I blocchi com'è andata davvero, in ordine: per il riepilogo diviso in
+  /// sezioni. Dopo una ripresa quelli di prima non ci sono più, e un elenco a
+  /// metà non si salva.
+  final _tratti = <TrattoApp>[];
+  DateTime? _inizioTratto;
+  double _metriInizio = 0;
+  late final bool _trattiCompleti = widget.ripresa == null;
+
+  /// Metri fatti finora: GPS all'aperto, sensore di velocità sui rulli.
+  double get _metriOra =>
+      gps != null && !gps!.percorso.vuoto ? gps!.km * 1000 : _metriSensore;
+
+  /// Chiude il blocco in corso: va chiamata prima di cambiare blocco.
+  void _chiudiTratto() {
+    final inizio = _inizioTratto;
+    if (inizio == null || preparati) return;
+    _tratti.add((
+      blocco: i,
+      inizio: inizio,
+      fine: DateTime.now(),
+      secondi: _tempoBlocco.inSeconds,
+      metri: (_metriOra - _metriInizio).clamp(0, double.infinity).toDouble(),
+    ));
+    _inizioTratto = null;
+  }
+
   Timer? _tic;
   int i = 0;
   bool preparati = true; // conto alla rovescia iniziale
@@ -758,6 +786,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 
   void _nuovoBlocco({required bool aMano}) {
+    _inizioTratto = DateTime.now();
+    _metriInizio = _metriOra;
     blocco
       ..reset()
       ..start();
@@ -839,6 +869,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       return;
     }
     tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+    _chiudiTratto();
     if (i >= blocchi.length - 1) {
       _fine(aMano: !daTimer);
       return;
@@ -922,6 +953,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _indietro() {
     if (preparati || i == 0) return;
+    _chiudiTratto();
     setState(() {
       i--;
       _nuovoBlocco(aMano: true);
@@ -1058,6 +1090,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
     if (r == 'termina') {
       tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+      _chiudiTratto();
       _fine();
     }
     if (r == 'esci') await cancellaInCorso();
@@ -1137,6 +1170,19 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         note: widget.nome,
       );
       await widget.state.registraSvolta(fatta);
+      // I blocchi uno per uno: nel riepilogo, divisi in sezioni come la seduta
+      // prevista. L'attività libera ha un blocco solo: non servono.
+      if (_trattiCompleti && !widget.libera) {
+        await widget.state.salvaIntervalliApp(
+          id,
+          intervalliDaTratti(
+            blocchi,
+            _tratti,
+            fc: _serieFc,
+            potenza: _seriePotenza,
+          ),
+        );
+      }
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }

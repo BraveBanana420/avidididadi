@@ -2325,13 +2325,14 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  /// Gli intervalli di un'attività di intervals.icu (lavoro e recuperi): la
-  /// copia già letta, altrimenti dalla rete. Vuoti se non ci sono.
+  /// Gli intervalli di un'attività (lavoro e recuperi): la copia sul telefono
+  /// (anche i blocchi delle sedute registrate con l'app), altrimenti per
+  /// quelle di intervals.icu dalla rete. Vuoti se non ci sono.
   Future<List<IntervalloFatto>> intervalliDi(Sessione s) async {
-    if (!s.id.startsWith(prefissoIcu)) return const [];
     final file = fileIntervalli(s.id);
     final t = await Storage.leggiTesto(file);
     if (t != null) return intervalliDaCsv(t);
+    if (!s.id.startsWith(prefissoIcu)) return const [];
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) return const [];
     try {
@@ -2343,6 +2344,18 @@ class AppState extends ChangeNotifier {
     } on ErroreIntervals {
       return const [];
     }
+  }
+
+  /// I blocchi di una seduta registrata con l'app, com'è andata davvero.
+  Future<void> salvaIntervalliApp(
+    String idSessione,
+    List<IntervalloFatto> intervalli,
+  ) async {
+    if (intervalli.isEmpty) return;
+    await Storage.scriviTesto(
+      fileIntervalli(idSessione),
+      intervalliCsv(intervalli),
+    );
   }
 
   /// Salva gli intervalli corretti a mano di una sessione; con [nuovi] null
