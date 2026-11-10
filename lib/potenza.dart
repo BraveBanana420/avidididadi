@@ -227,32 +227,92 @@ int wattErg((int, int) range, {double scala = 1}) {
 }
 
 /// Il range in parole: "181-210 W" o "200 W".
+/// La zona di battito (1-5) che corrisponde a una quota dell'FTP: serve
+/// quando i watt non arrivano (all'aperto senza misuratore). È una stima: il
+/// battito sale in ritardo e cambia con caldo e stanchezza.
+int zonaBattitoDaQuota(double percento) => percento <= 55
+    ? 1
+    : percento <= 75
+    ? 2
+    : percento <= 90
+    ? 3
+    : percento <= 105
+    ? 4
+    : 5;
+
+/// La zona di battito di un passo di bici: quella scritta ("zona 2"),
+/// altrimenti quella che corrisponde alla % dell'FTP o ai watt (questi solo
+/// se si conosce l'FTP). Null se il passo non dice l'intensità.
+int? zonaBattitoDi(String intensita, ZonePotenza? p) {
+  // Le zone di potenza 6 e 7 non hanno un battito loro: è il massimo.
+  if (_zona.firstMatch(intensita) case final z?) {
+    return int.parse(z[1]!).clamp(1, 5);
+  }
+  double? quota;
+  if (rangeWattScritti(intensita) case (final da, final a)) {
+    if (p == null || p.ftp <= 0) return null;
+    quota = (da + a) / 2 / p.ftp * 100;
+  } else if (_percentuale.firstMatch(intensita) case final q?) {
+    quota = q[3] != null
+        ? double.parse(q[3]!)
+        : (int.parse(q[1]!) + int.parse(q[2]!)) / 2;
+  }
+  return quota == null ? null : zonaBattitoDaQuota(quota);
+}
+
+/// Con il battito al posto dei watt non si avvisa "spingi di più" prima di
+/// questo tempo dall'inizio del passo: il cuore ci mette un po' a salire.
+const ritardoBattito = Duration(seconds: 90);
+
 String fmtRange((int, int) r) =>
     r.$1 == r.$2 ? '${r.$1} W' : '${r.$1}-${r.$2} W';
 
 /// "zona 2" in un testo di bici diventa "zona 2 (150-200 W · 125-137 bpm)":
-/// i watt per chi ha il rullo o il misuratore, il battito per chi no.
+/// i watt per chi ha il rullo o il misuratore, il battito per chi no. Anche
+/// le % dell'FTP e i watt scritti mostrano il battito che gli corrisponde.
 String conWatt(String testo, ZonePotenza? p, Zone z) {
-  if (p == null) return conBpm(testo, z);
-  return testo
-      .replaceAllMapped(RegExp(r'zona ([1-5])(?! \()', caseSensitive: false), (
-        m,
-      ) {
-        final n = int.parse(m[1]!);
-        final (da, a) = z.zona(n);
-        return '${m[0]} (${p.testo(n)} · $da-$a bpm)';
-      })
-      // "88-94%" dell'FTP: anche in watt.
-      .replaceAllMapped(
-        RegExp(r'(\d{2,3})(?:\s*-\s*(\d{2,3}))?\s*%(?:\s*FTP)?(?! \()'),
-        (m) {
-          int w(String x) => (p.ftp * int.parse(x) / 100).round();
-          final da = w(m[1]!);
-          return m[2] == null
-              ? '${m[0]} ($da W)'
-              : '${m[0]} ($da-${w(m[2]!)} W)';
-        },
-      );
+  String bpm(double quota) {
+    final (da, a) = z.zona(zonaBattitoDaQuota(quota));
+    return '$da-$a bpm';
+  }
+
+  var t = testo;
+  // "200-220 W": anche il battito (serve l'FTP per sapere quanto è duro).
+  if (p != null && p.ftp > 0) {
+    t = t.replaceAllMapped(
+      RegExp('(?:${_wattScritti.pattern})(?! \\()', caseSensitive: false),
+      (m) {
+        // Dentro una parentesi è già una spiegazione ("zona 2 (150-200 W…").
+        final prima = m.input.substring(0, m.start);
+        if (prima.lastIndexOf('(') > prima.lastIndexOf(')')) return m[0]!;
+        final (da, a) = rangeWattScritti(m[0]!)!;
+        return '${m[0]} (${bpm((da + a) / 2 / p.ftp * 100)})';
+      },
+    );
+  }
+  t = p == null
+      ? conBpm(t, z)
+      : t.replaceAllMapped(
+          RegExp(r'zona ([1-5])(?! \()', caseSensitive: false),
+          (m) {
+            final n = int.parse(m[1]!);
+            final (da, a) = z.zona(n);
+            return '${m[0]} (${p.testo(n)} · $da-$a bpm)';
+          },
+        );
+  // "88-94%" dell'FTP: in watt (se c'è l'FTP) e in battito.
+  return t.replaceAllMapped(
+    RegExp(r'(\d{2,3})(?:\s*-\s*(\d{2,3}))?\s*%(?:\s*FTP)?(?! \()'),
+    (m) {
+      final da = int.parse(m[1]!);
+      final a = int.parse(m[2] ?? m[1]!);
+      final battito = bpm((da + a) / 2);
+      if (p == null) return '${m[0]} ($battito)';
+      int w(int x) => (p.ftp * x / 100).round();
+      final watt = m[2] == null ? '${w(da)} W' : '${w(da)}-${w(a)} W';
+      return '${m[0]} ($watt · $battito)';
+    },
+  );
 }
 
 /// L'intensità con watt e battito in bici, solo battito negli altri sport.

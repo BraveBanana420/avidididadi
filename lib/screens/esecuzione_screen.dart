@@ -863,7 +863,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         );
       }
     }
-    final zona = zonaObiettivo(b.intensita);
+    // In bici senza watt (all'aperto senza misuratore) i passi in % dell'FTP
+    // o in watt si seguono col battito della zona che gli corrisponde.
+    final zonaScritta = zonaObiettivo(b.intensita);
+    final zona =
+        zonaScritta ??
+        (_bici ? zonaBattitoDi(b.intensita, _zonePotenza) : null);
     final r = _rangeBlocco;
     final w = _watt;
     if (r != null && w != null && _zonePotenza != null) {
@@ -881,7 +886,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final bpm = sensoreBattito.bpm;
     if (zona != null && bpm != null) {
       final n = _zone.zonaDi(bpm);
-      final verso = versoZona(n, zona);
+      var verso = versoZona(n, zona);
+      // Zona ricavata dai watt: all'inizio del passo il battito deve ancora
+      // salire, non è il momento di dire "spingi di più".
+      if (zonaScritta == null && verso < 0 && _tempoBlocco < ritardoBattito) {
+        verso = 0;
+      }
       if (ritmo.controlla(verso, ora)) {
         voce.di(fraseZona(n, verso), valida: const Duration(seconds: 20));
       }

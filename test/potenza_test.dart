@@ -287,8 +287,44 @@ void main() {
     });
 
     test('le % del piano mostrano anche i watt', () {
-      expect(conWatt('88-94%', zp, fc), '88-94% (176-188 W)');
-      expect(conWatt('Ripetute al 105% FTP', zp, fc), contains('(210 W)'));
+      final (z4da, z4a) = fc.zona(4);
+      expect(conWatt('88-94%', zp, fc), '88-94% (176-188 W · $z4da-$z4a bpm)');
+      expect(conWatt('Ripetute al 105% FTP', zp, fc), contains('(210 W · '));
+    });
+
+    test('senza watt: il passo si segue col battito che gli corrisponde', () {
+      // Le quote dell'FTP e le zone di battito.
+      expect([50, 65, 85, 100, 110].map((q) => zonaBattitoDaQuota(q * 1.0)), [
+        1,
+        2,
+        3,
+        4,
+        5,
+      ]);
+      // La zona scritta vale così com'è; quelle di potenza 6 e 7 sono la 5.
+      expect(zonaBattitoDi('zona 2', zp), 2);
+      expect(zonaBattitoDi('Z6', zp), 5);
+      // Ripetute scritte dall'assistente in % dell'FTP: anche senza FTP.
+      expect(zonaBattitoDi('106-112%', null), 5);
+      expect(zonaBattitoDi('88-94%', zp), 4);
+      expect(zonaBattitoDi('55-65%', zp), 2);
+      // In watt serve l'FTP (qui 200): 130-150 W è il 70%.
+      expect(zonaBattitoDi('130-150 W', zp), 2);
+      expect(zonaBattitoDi('130-150 W', null), isNull);
+      expect(zonaBattitoDi('', zp), isNull);
+      expect(zonaBattitoDi('85-90 rpm', zp), isNull);
+    });
+
+    test('a schermo: watt scritti e % anche in battito, una volta sola', () {
+      final (da, a) = fc.zona(2);
+      final scritto = conWatt('130-150 W', zp, fc);
+      expect(scritto, '130-150 W ($da-$a bpm)');
+      // Ripassato non cambia, e i watt delle zone non prendono altro battito.
+      expect(conWatt(scritto, zp, fc), scritto);
+      final zona = conWatt('zona 2', zp, fc);
+      expect(conWatt(zona, zp, fc), zona);
+      // Senza FTP le % mostrano almeno il battito.
+      expect(conWatt('60-70%', null, fc), '60-70% ($da-$a bpm)');
     });
 
     test('comandi per il rullo (FTMS)', () {
