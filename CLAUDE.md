@@ -119,6 +119,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `intervalli_<id>.csv` (intervalli già letti da intervals.icu, per le nuotate);
+- `intervalli_modificati.csv` (intervalli corretti a mano: valgono al posto di quelli dell'orologio);
 - `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
 - `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
 - `serie.csv` (ripetizioni e kg della forza, o secondi per le serie a tempo); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);

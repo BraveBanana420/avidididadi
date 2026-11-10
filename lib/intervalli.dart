@@ -1,3 +1,4 @@
+import 'csv.dart';
 import 'models.dart';
 
 // Gli intervalli di un'attività dell'orologio (da intervals.icu): ogni tratto
@@ -165,3 +166,73 @@ String rigaIntervallo(IntervalloFatto i, String sport) {
 /// File in cui restano gli intervalli di un'attività, già letti.
 String fileIntervalli(String idSessione) =>
     'intervalli_${idSessione.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_')}.csv';
+
+// Intervalli corretti a mano: il nome sbagliato (una ripetuta al posto del
+// defaticamento), un tratto in più o in meno. Valgono al posto di quelli
+// letti dall'orologio, finché non si torna agli originali.
+
+const intervalliModificatiHeader = [
+  'sessione',
+  'ordine',
+  'recupero',
+  'secondi',
+  'metri',
+  'fc',
+  'nome',
+];
+
+/// Le righe di una sessione per intervalli_modificati.csv.
+List<List<String>> righeIntervalli(
+  String idSessione,
+  List<IntervalloFatto> l,
+) => [
+  for (final (n, i) in l.indexed)
+    [
+      idSessione,
+      '${n + 1}',
+      i.recupero ? '1' : '0',
+      '${i.secondi}',
+      '${i.metri.round()}',
+      '${i.fcMedia}',
+      i.nome,
+    ],
+];
+
+/// Dal CSV: per ogni sessione i suoi intervalli, in ordine.
+Map<String, List<IntervalloFatto>> intervalliModificatiDa(Tabella t) {
+  final righe = <String, List<(int, IntervalloFatto)>>{};
+  for (final r in t.righe) {
+    final id = t.v(r, 'sessione');
+    final secondi = int.tryParse(t.v(r, 'secondi')) ?? 0;
+    if (id.isEmpty || secondi <= 0) continue;
+    (righe[id] ??= []).add((
+      int.tryParse(t.v(r, 'ordine')) ?? 0,
+      IntervalloFatto(
+        recupero: t.v(r, 'recupero') == '1',
+        inizioS: 0,
+        secondi: secondi,
+        metri: double.tryParse(t.v(r, 'metri')) ?? 0,
+        fcMedia: int.tryParse(t.v(r, 'fc')) ?? 0,
+        nome: t.v(r, 'nome'),
+      ),
+    ));
+  }
+  return {
+    for (final e in righe.entries)
+      e.key: [
+        for (final x in e.value..sort((a, b) => a.$1.compareTo(b.$1))) x.$2,
+      ],
+  };
+}
+
+/// I nomi dei passi in programma, senza doppioni: da proporre quando si
+/// corregge il nome di un tratto.
+List<String> nomiDeiPassi(List<WorkoutStep> passi) {
+  final ordinati = [...passi]..sort((a, b) => a.ordine.compareTo(b.ordine));
+  final visti = <String>{};
+  return [
+    for (final p in ordinati)
+      if (p.descrizione.trim().isNotEmpty && visti.add(p.descrizione.trim()))
+        p.descrizione.trim(),
+  ];
+}

@@ -1,3 +1,4 @@
+import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/sincronizzazione.dart';
@@ -197,4 +198,48 @@ void main() {
       isTrue,
     );
   });
+
+  test(
+    'corretti a mano: una ripetuta in meno, l\'ultimo è il defaticamento',
+    () {
+      // In programma 3 × 200 e poi il defaticamento da 200: fatte 2 ripetute.
+      final fatti = [
+        for (final m in [200.0, 50.0, 50.0, 50.0, 50.0, 200.0, 200.0, 200.0])
+          IntervalloFatto(recupero: false, inizioS: 0, secondi: 300, metri: m),
+      ];
+      final auto = conNomiDelPiano(fatti, piano);
+      // Da sola l'app non può saperlo: lo chiama terza ripetuta.
+      expect(auto.last.nome, 'Stile libero 3/3');
+      expect(nomiDeiPassi(piano), [
+        'Riscaldamento',
+        'Gambe con tavoletta',
+        'Stile libero',
+        'Defaticamento',
+      ]);
+      // A mano: nome corretto e un recupero aggiunto; salvato e riletto.
+      final corretti = [
+        ...auto.take(7),
+        const IntervalloFatto(recupero: true, inizioS: 0, secondi: 45),
+        auto.last.conNome('Defaticamento'),
+      ];
+      final t = Tabella.da(
+        [
+          intervalliModificatiHeader.join(','),
+          for (final r in righeIntervalli('icu-i1', corretti)) r.join(','),
+          for (final r in righeIntervalli('icu-i2', auto.take(2).toList()))
+            r.join(','),
+        ].join('\n'),
+      );
+      final letti = intervalliModificatiDa(t!);
+      expect(letti.keys, ['icu-i1', 'icu-i2']);
+      expect(letti['icu-i1']!.length, 9);
+      expect(letti['icu-i1']!.last.nome, 'Defaticamento');
+      expect(letti['icu-i1']![7].recupero, isTrue);
+      expect(rigaIntervallo(letti['icu-i1']![7], 'Nuoto'), 'Recupero 0:45');
+      expect(letti['icu-i2']!.map((i) => i.nome), [
+        'Riscaldamento',
+        'Gambe con tavoletta 1/4',
+      ]);
+    },
+  );
 }

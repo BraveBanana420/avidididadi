@@ -90,6 +90,9 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
+
+  /// Intervalli corretti a mano, per id della sessione.
+  Map<String, List<IntervalloFatto>> intervalliModificati = {};
   List<SedutaArrampicata> arrampicate = []; // vie, blocchi e gradi
   List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<Scheda> schede = []; // schede scritte a mano (personal trainer)
@@ -243,6 +246,8 @@ class AppState extends ChangeNotifier {
               .map((r) => SerieFatta.da(tSerie, r))
               .whereType<SerieFatta>()
               .toList();
+    final tInt = await Storage.readTabella('intervalli_modificati.csv');
+    intervalliModificati = tInt == null ? {} : intervalliModificatiDa(tInt);
     final tNuoto = await Storage.readTabella('nuoto.csv');
     nuotate = tNuoto == null
         ? []
@@ -2338,6 +2343,25 @@ class AppState extends ChangeNotifier {
     } on ErroreIntervals {
       return const [];
     }
+  }
+
+  /// Salva gli intervalli corretti a mano di una sessione; con [nuovi] null
+  /// si torna a quelli dell'orologio.
+  Future<void> salvaIntervalli(
+    String idSessione,
+    List<IntervalloFatto>? nuovi,
+  ) async {
+    intervalliModificati = {...intervalliModificati}..remove(idSessione);
+    if (nuovi != null) intervalliModificati[idSessione] = nuovi;
+    await Storage.write(
+      'intervalli_modificati.csv',
+      intervalliModificatiHeader,
+      [
+        for (final e in intervalliModificati.entries)
+          ...righeIntervalli(e.key, e.value),
+      ],
+    );
+    notifyListeners();
   }
 
   Future<void> ritoccaSessione(RitoccoSessione r) async {

@@ -35,6 +35,7 @@ import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'allenamenti_arrampicata_screen.dart';
 import 'grafici_screen.dart';
+import 'intervalli_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
@@ -1185,23 +1186,51 @@ class _IntervalliState extends State<_Intervalli> {
       future: _intervalli,
       builder: (context, snap) {
         final letti = snap.data ?? const <IntervalloFatto>[];
+        final aMano = state.intervalliModificati[s.id];
         // Un tratto solo non dice niente di più dei totali.
-        if (letti.where((i) => !i.recupero).length < 2) {
+        if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
           return const SizedBox.shrink();
         }
         final previsto = state.piano
             .where((r) => r.data == s.data && stessoSport(r.sport, s.sport))
             .firstOrNull;
-        final lista = conNomiDelPiano(
-          letti,
-          state.passiSeduta(s.data, s.sport, previsto?.tipo ?? s.tipo),
+        final passi = state.passiSeduta(
+          s.data,
+          s.sport,
+          previsto?.tipo ?? s.tipo,
         );
+        // Quelli corretti a mano valgono al posto di quelli dell'orologio.
+        final lista = aMano ?? conNomiDelPiano(letti, passi);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 16),
-            Text('Intervalli', style: t.titleSmall),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    aMano == null
+                        ? 'Intervalli'
+                        : 'Intervalli (corretti a mano)',
+                    style: t.titleSmall,
+                  ),
+                ),
+                TextButton.icon(
+                  icon: const Icon(Icons.edit_outlined, size: 18),
+                  label: const Text('Modifica'),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => IntervalliScreen(
+                        state: state,
+                        sessione: s,
+                        iniziali: lista,
+                        nomi: nomiDeiPassi(passi),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             for (final i in lista)
               Padding(
                 padding: EdgeInsets.only(
