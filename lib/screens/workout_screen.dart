@@ -225,7 +225,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       if (f.dolore) 'dolore segnalato',
                     ].join(' · '),
             ),
-            trailing: Text(f == null ? 'Rispondi' : 'Modifica'),
+            // Come per il nome e gli intervalli: la matita vuol dire modifica.
+            trailing: f == null
+                ? const Text('Rispondi')
+                : const Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    semanticLabel: 'Modifica',
+                  ),
             onTap: () =>
                 apriFeedback(context, state, data, sport, svolte.firstOrNull),
           ),
@@ -1215,9 +1222,9 @@ class _IntervalliState extends State<_Intervalli> {
                     style: t.titleSmall,
                   ),
                 ),
-                TextButton.icon(
-                  icon: const Icon(Icons.edit_outlined, size: 18),
-                  label: const Text('Modifica'),
+                IconButton(
+                  tooltip: 'Modifica gli intervalli',
+                  icon: const Icon(Icons.edit_outlined, size: 20),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => IntervalliScreen(
