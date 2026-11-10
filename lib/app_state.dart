@@ -23,6 +23,7 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
+import 'intervalli.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
@@ -2316,6 +2317,26 @@ class AppState extends ChangeNotifier {
           .serie(s.id.substring(prefissoIcu.length), s.inizio!);
     } on ErroreIntervals {
       return null;
+    }
+  }
+
+  /// Gli intervalli di un'attività di intervals.icu (lavoro e recuperi): la
+  /// copia già letta, altrimenti dalla rete. Vuoti se non ci sono.
+  Future<List<IntervalloFatto>> intervalliDi(Sessione s) async {
+    if (!s.id.startsWith(prefissoIcu)) return const [];
+    final file = fileIntervalli(s.id);
+    final t = await Storage.leggiTesto(file);
+    if (t != null) return intervalliDaCsv(t);
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) return const [];
+    try {
+      final l = await ClientIntervals(chiave)
+          .intervalli(s.id.substring(prefissoIcu.length));
+      // Appena finita l'attività possono non esserci ancora: si riprova.
+      if (l.isNotEmpty) await Storage.scriviTesto(file, intervalliCsv(l));
+      return l;
+    } on ErroreIntervals {
+      return const [];
     }
   }
 

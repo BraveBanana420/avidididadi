@@ -10,6 +10,7 @@ import 'health_connect.dart';
 import 'in_corso.dart';
 import 'models.dart';
 import 'pulse.dart';
+import 'sincronizzazione.dart';
 import 'screens/esecuzione_screen.dart';
 import 'widget_home.dart';
 import 'screens/assistente_screen.dart';
@@ -65,14 +66,34 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final state = AppState();
+
+  /// Ultima sincronizzazione (avvio o ritorno nell'app); null finché l'avvio
+  /// non ha finito.
+  DateTime? _sincronizzataIl;
+
+  /// Tornando nell'app dopo un allenamento con l'orologio le sessioni nuove
+  /// arrivano da sole, senza doverla chiudere e riaprire.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState stato) {
+    if (stato != AppLifecycleState.resumed) return;
+    final ora = DateTime.now();
+    if (!daRisincronizzare(_sincronizzataIl, ora)) return;
+    _sincronizzataIl = ora;
+    () async {
+      await state.sincronizzaHc();
+      await state.sincronizzaIntervals();
+    }();
+  }
+
   final pagine = PageController();
   int tab = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Il giro guidato passa da una sezione all'altra.
     vaiAllaSezione = (i) {
       if (!mounted) return;
@@ -129,6 +150,7 @@ class _HomePageState extends State<HomePage> {
     // nessuna richiesta di permessi senza che l'utente lo chieda.
     await state.sincronizzaHc();
     await state.sincronizzaIntervals();
+    _sincronizzataIl = DateTime.now();
     // Dopo la sincronizzazione, così il backup ha anche le sessioni nuove.
     await state.backupAutomatico();
   }
@@ -222,6 +244,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _attesaWidget?.cancel();
     state.removeListener(_aggiornaWidget);
     tema.removeListener(_aggiornaWidget);

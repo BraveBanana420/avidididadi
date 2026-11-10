@@ -6,6 +6,8 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 - Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
 - Bici all'aperto senza misuratore di potenza: i passi in watt o in % dell'FTP si seguono col battito della zona corrispondente, con avvisi a voce; a schermo vedi watt e bpm.
+- Nuoto dall'orologio (con intervals.icu): nel dettaglio vedi gli intervalli con metri, tempo, passo e battito, e i recuperi; se i metri combaciano con la seduta in programma prendono i nomi dei passi. Nei grafici passo ogni 100 m e bracciate al minuto.
+- Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
 - Lungo: se lo fai più lungo del previsto conta comunque come lungo, e i prossimi lunghi partono da quello che hai fatto davvero.
 - Altra attività: le dai tu il nome (es. Kayak), che resta sulla sessione, e scegli all'inizio se registrare il percorso GPS.
 - Tasto "+": "Allenamento libero" diventa "Forza"; alla fine scrivi tutti gli esercizi fatti, con ripetizioni e kg (o corpo libero), anche dopo dal dettaglio della seduta; per plank e tenute scegli "Tempo" e scrivi i secondi. Arrampicata passa in fondo, prima di "Altra attività".

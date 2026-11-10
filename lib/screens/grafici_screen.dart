@@ -188,7 +188,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
                   const SizedBox.shrink()
               else if (serie.cadenza.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Cadenza',
+                  titolo: stessoSport(s.sport, 'Nuoto')
+                      ? 'Bracciate al minuto'
+                      : 'Cadenza',
                   serie: serie.cadenza,
                   inizio: _inizio(serie),
                   unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto',
@@ -377,7 +379,9 @@ class _Velocita extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bici = stessoSport(sport, 'Bici');
-    final inMoto = serie.where((c) => c.v >= 0.5).toList();
+    final nuoto = stessoSport(sport, 'Nuoto');
+    // In acqua si va piano: gli esercizi di tecnica stanno sotto 0,5 m/s.
+    final inMoto = serie.where((c) => c.v >= (nuoto ? 0.2 : 0.5)).toList();
     final r = ricampiona(inMoto.isEmpty ? serie : inMoto);
     final colore = coloreSport(sport);
     if (bici) {
@@ -395,6 +399,27 @@ class _Velocita extends StatelessWidget {
           dettagli: [
             for (final c in r)
               '${(c.v * 3.6).toStringAsFixed(1)} km/h\n${_dal(inizio, c.t)}',
+          ],
+        ),
+      );
+    }
+    if (nuoto) {
+      // Passo ogni 100 m: più in alto = più veloce.
+      double passo(double v) => v < 0.2 ? 0 : 100 / v;
+      return _Riquadro(
+        titolo: 'Passo',
+        numeri: [
+          ('Medio', '${fmtMinSec(passo(media(inMoto)))} /100 m'),
+          ('Migliore', '${fmtMinSec(passo(massimo(inMoto)))} /100 m'),
+        ],
+        grafico: GraficoLinea(
+          ys: [for (final c in r) -passo(c.v).clamp(0, 600).toDouble()],
+          etichette: [for (final c in r) _dal(inizio, c.t)],
+          fmt: (v) => fmtMinSec(-v),
+          colore: colore,
+          dettagli: [
+            for (final c in r)
+              '${fmtMinSec(passo(c.v))} /100 m\n${_dal(inizio, c.t)}',
           ],
         ),
       );

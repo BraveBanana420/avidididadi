@@ -15,6 +15,8 @@ import '../figura.dart';
 import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
+import '../intervalli.dart';
+import '../intervals.dart';
 import '../modifica_sessione.dart';
 import '../attivita_libera.dart';
 import '../models.dart';
@@ -962,6 +964,14 @@ class _DatiSessione extends StatelessWidget {
                 ],
               ),
             ),
+            // Nuoto dall'orologio: i tratti segnati, con i nomi dei passi in
+            // programma se i metri combaciano.
+            if (stessoSport(s.sport, 'Nuoto') && s.id.startsWith(prefissoIcu))
+              _Intervalli(
+                key: ValueKey('int-${s.id}'),
+                state: state,
+                sessione: s,
+              ),
             // I pezzi da cui è stata ricomposta (blocchi Freeletics, ripartenze):
             // visibili solo qui, nel calendario la sessione è una sola.
             if (s.parti.isNotEmpty) ...[
@@ -1147,6 +1157,77 @@ class _DatiSessione extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Gli intervalli di una nuotata: lavoro e recuperi, come sull'orologio.
+class _Intervalli extends StatefulWidget {
+  final AppState state;
+  final Sessione sessione;
+  const _Intervalli({super.key, required this.state, required this.sessione});
+
+  @override
+  State<_Intervalli> createState() => _IntervalliState();
+}
+
+class _IntervalliState extends State<_Intervalli> {
+  late final Future<List<IntervalloFatto>> _intervalli = widget.state
+      .intervalliDi(widget.sessione);
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.sessione;
+    final state = widget.state;
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    return FutureBuilder<List<IntervalloFatto>>(
+      future: _intervalli,
+      builder: (context, snap) {
+        final letti = snap.data ?? const <IntervalloFatto>[];
+        // Un tratto solo non dice niente di più dei totali.
+        if (letti.where((i) => !i.recupero).length < 2) {
+          return const SizedBox.shrink();
+        }
+        final previsto = state.piano
+            .where((r) => r.data == s.data && stessoSport(r.sport, s.sport))
+            .firstOrNull;
+        final lista = conNomiDelPiano(
+          letti,
+          state.passiSeduta(s.data, s.sport, previsto?.tipo ?? s.tipo),
+        );
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 16),
+            Text('Intervalli', style: t.titleSmall),
+            const SizedBox(height: 4),
+            for (final i in lista)
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 3,
+                  bottom: 3,
+                  left: i.recupero ? 16 : 0,
+                ),
+                child: i.recupero
+                    ? Text(
+                        rigaIntervallo(i, s.sport),
+                        style: t.bodySmall?.copyWith(
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (i.nome.isNotEmpty)
+                            Text(i.nome, style: t.labelMedium),
+                          Text(rigaIntervallo(i, s.sport)),
+                        ],
+                      ),
+              ),
+          ],
+        );
+      },
     );
   }
 }

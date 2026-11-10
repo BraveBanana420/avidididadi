@@ -1,3 +1,5 @@
+import 'intervalli.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -348,6 +350,11 @@ class ClientIntervals {
     final j = await _get('/api/v1/activity/$id/streams.json');
     return j is List ? serieDaIcu(j, inizio) : const SerieSessione();
   }
+
+  /// Gli intervalli dell'attività: lavoro e recuperi con metri, tempo e
+  /// battito (nel nuoto quelli segnati sull'orologio).
+  Future<List<IntervalloFatto>> intervalli(String id) async =>
+      intervalliDaIcu(await _get('/api/v1/activity/$id/intervals'));
 
   /// Crea gli allenamenti nel calendario; restituisce external_id e id di
   /// quelli creati. Con upsert, uno con lo stesso external_id si aggiorna.
