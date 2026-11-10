@@ -321,21 +321,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         final ultimo = k == steps.length - 1;
         if (s.fase != faseCorrente) {
           faseCorrente = s.fase;
-          if (s.fase.isNotEmpty) {
-            children.add(
-              Padding(
-                padding: const EdgeInsets.only(top: 18, bottom: 8),
-                child: Text(
-                  s.fase.toUpperCase(),
-                  style: t.labelMedium?.copyWith(
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.w800,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            );
-          }
+          if (s.fase.isNotEmpty) children.add(_TitoloFase(s.fase));
         }
         final esercizio = perId[s.esercizio];
         final scelto = selezionato == s.ordine;
@@ -363,34 +349,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             if (s.note.isNotEmpty) Text(s.note, style: t.bodySmall),
           ],
         );
-        // Il percorso: un punto per passo, uniti da una linea. Pieno e nel
-        // colore del tema per la parte principale, vuoto per il resto.
-        final principale = s.fase == 'principale';
-        final segno = Column(
-          children: [
-            const SizedBox(height: 4),
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: principale ? Pulse.di(context).primario : null,
-                border: principale
-                    ? null
-                    : Border.all(
-                        width: 3,
-                        color: s.fase == 'mobilità'
-                            ? coloreSport('Mobilità')
-                            : scheme.outline,
-                      ),
-              ),
-            ),
-            if (!ultimo)
-              Expanded(
-                child: Container(width: 2, color: scheme.outlineVariant),
-              ),
-          ],
-        );
+        final segno = _SegnoFase(fase: s.fase, ultimo: ultimo);
         Widget riga(Widget contenuto) => IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1208,6 +1167,58 @@ class _IntervalliState extends State<_Intervalli> {
         );
         // Quelli corretti a mano valgono al posto di quelli dell'orologio.
         final lista = aMano ?? conNomiDelPiano(letti, passi);
+        // Abbinati alla seduta prevista: le sue sezioni e i suoi pallini.
+        final fasi = fasiDegliIntervalli(lista, passi);
+        final conSezioni = fasi.any((f) => f.isNotEmpty);
+        Widget voce(IntervalloFatto i) => i.recupero
+            ? Text(
+                rigaIntervallo(i, s.sport),
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (i.nome.isNotEmpty)
+                    Text(
+                      i.nome,
+                      style: conSezioni ? t.titleSmall : t.labelMedium,
+                    ),
+                  Text(rigaIntervallo(i, s.sport)),
+                ],
+              );
+        // Un titolo a ogni cambio di sezione, poi la riga sulla linea.
+        final conLinea = <Widget>[];
+        String? sezione;
+        for (var k = 0; k < lista.length; k++) {
+          final i = lista[k];
+          if (!i.recupero && fasi[k] != sezione) {
+            sezione = fasi[k];
+            conLinea.add(
+              _TitoloFase(sezione.isEmpty ? 'Fuori programma' : sezione),
+            );
+          }
+          conLinea.add(
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _SegnoFase(
+                    fase: fasi[k],
+                    ultimo: k == lista.length - 1,
+                    punto: !i.recupero,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: i.recupero ? 10 : 12),
+                      child: voce(i),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1238,32 +1249,89 @@ class _IntervalliState extends State<_Intervalli> {
                 ),
               ],
             ),
-            for (final i in lista)
-              Padding(
-                padding: EdgeInsets.only(
-                  top: 3,
-                  bottom: 3,
-                  left: i.recupero ? 16 : 0,
-                ),
-                child: i.recupero
-                    ? Text(
-                        rigaIntervallo(i, s.sport),
-                        style: t.bodySmall?.copyWith(
-                          color: scheme.onSurfaceVariant,
-                        ),
-                      )
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (i.nome.isNotEmpty)
-                            Text(i.nome, style: t.labelMedium),
-                          Text(rigaIntervallo(i, s.sport)),
-                        ],
-                      ),
-              ),
+            if (!conSezioni)
+              for (final i in lista)
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 3,
+                    bottom: 3,
+                    left: i.recupero ? 16 : 0,
+                  ),
+                  child: voce(i),
+                )
+            else
+              ...conLinea,
           ],
         );
       },
+    );
+  }
+}
+
+/// Il titolo di una sezione della seduta ("RISCALDAMENTO"): uguale nella
+/// seduta prevista e negli intervalli fatti.
+class _TitoloFase extends StatelessWidget {
+  final String testo;
+  const _TitoloFase(this.testo);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 18, bottom: 8),
+    child: Text(
+      testo.toUpperCase(),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w800,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
+}
+
+/// Il percorso della seduta: un punto per passo, uniti da una linea. Pieno e
+/// nel colore del tema per la parte principale, vuoto per il resto. Senza
+/// [punto] solo la linea (i recuperi tra un tratto e l'altro).
+class _SegnoFase extends StatelessWidget {
+  final String fase;
+  final bool ultimo;
+  final bool punto;
+  const _SegnoFase({
+    required this.fase,
+    required this.ultimo,
+    this.punto = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final principale = fase == 'principale';
+    return SizedBox(
+      width: 14,
+      child: Column(
+        children: [
+          if (punto) ...[
+            const SizedBox(height: 4),
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: principale ? Pulse.di(context).primario : null,
+                border: principale
+                    ? null
+                    : Border.all(
+                        width: 3,
+                        color: fase == 'mobilità'
+                            ? coloreSport('Mobilità')
+                            : scheme.outline,
+                      ),
+              ),
+            ),
+          ],
+          if (!ultimo)
+            Expanded(child: Container(width: 2, color: scheme.outlineVariant)),
+        ],
+      ),
     );
   }
 }

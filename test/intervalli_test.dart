@@ -46,23 +46,28 @@ void main() {
     ],
   };
 
-  WorkoutStep passo(int ordine, String nome, int metri, {int serie = 1}) =>
-      WorkoutStep(
-        id: 'nuoto_2026-11-10',
-        sport: 'Nuoto',
-        nome: 'Tecnica',
-        durataTot: 40,
-        ordine: ordine,
-        fase: 'principale',
-        descrizione: nome,
-        serie: '$serie',
-        ripetizioni: '',
-        distanzaM: '$metri',
-        durataMin: '',
-        intensita: '',
-        recuperoS: '20',
-        note: '',
-      );
+  WorkoutStep passo(
+    int ordine,
+    String nome,
+    int metri, {
+    int serie = 1,
+    String fase = 'principale',
+  }) => WorkoutStep(
+    id: 'nuoto_2026-11-10',
+    sport: 'Nuoto',
+    nome: 'Tecnica',
+    durataTot: 40,
+    ordine: ordine,
+    fase: fase,
+    descrizione: nome,
+    serie: '$serie',
+    ripetizioni: '',
+    distanzaM: '$metri',
+    durataMin: '',
+    intensita: '',
+    recuperoS: '20',
+    note: '',
+  );
 
   final piano = [
     passo(1, 'Riscaldamento', 200),
@@ -242,4 +247,90 @@ void main() {
       ]);
     },
   );
+  test(
+    'ogni tratto prende la sezione del suo passo, i recuperi quella di prima',
+    () {
+      final passi = [
+        passo(1, 'Riscaldamento', 200, fase: 'riscaldamento'),
+        passo(2, 'Gambe con tavoletta', 50, serie: 4),
+        passo(3, 'Stile libero', 200, serie: 3),
+        passo(4, 'Defaticamento', 200, fase: 'defaticamento'),
+      ];
+      final l = conNomiDelPiano(intervalliDaIcu(risposta), passi);
+      final fasi = fasiDegliIntervalli(l, passi);
+      expect(fasi.length, l.length);
+      expect(fasi.first, 'riscaldamento'); // 200 m
+      expect(fasi[1], 'principale'); // Gambe 1/4
+      expect(fasi[2], 'principale'); // recupero dopo Gambe
+      expect(fasi[13], 'principale'); // Stile libero 3/3
+      expect(fasi[15], 'defaticamento'); // ultimi 200 m
+      expect(fasi.last, 'defaticamento'); // il recupero finale
+    },
+  );
+
+  test('stesso nome in due sezioni: vale quella che viene dopo', () {
+    final passi = [
+      passo(1, 'Stile libero', 100, fase: 'riscaldamento'),
+      passo(2, 'Stile libero', 100, serie: 2),
+    ];
+    const l = [
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 0,
+        secondi: 120,
+        metri: 100,
+        nome: 'Stile libero',
+      ),
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 130,
+        secondi: 110,
+        metri: 100,
+        nome: 'Stile libero 1/2',
+      ),
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 250,
+        secondi: 110,
+        metri: 100,
+        nome: 'Stile libero 2/2',
+      ),
+    ];
+    expect(fasiDegliIntervalli(l, passi), [
+      'riscaldamento',
+      'principale',
+      'principale',
+    ]);
+  });
+
+  test('i tratti senza nome o fuori programma restano senza sezione', () {
+    final passi = [passo(1, 'Riscaldamento', 200, fase: 'riscaldamento')];
+    const l = [
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 0,
+        secondi: 300,
+        metri: 200,
+        nome: 'Riscaldamento',
+      ),
+      IntervalloFatto(recupero: true, inizioS: 300, secondi: 30),
+      IntervalloFatto(recupero: false, inizioS: 330, secondi: 300, metri: 200),
+      IntervalloFatto(recupero: true, inizioS: 630, secondi: 30),
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 660,
+        secondi: 90,
+        metri: 50,
+        nome: 'Farfalla',
+      ),
+    ];
+    expect(fasiDegliIntervalli(l, passi), [
+      'riscaldamento',
+      'riscaldamento',
+      '',
+      '',
+      '',
+    ]);
+    expect(fasiDegliIntervalli(l, const []), ['', '', '', '', '']);
+  });
 }

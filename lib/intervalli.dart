@@ -236,3 +236,63 @@ List<String> nomiDeiPassi(List<WorkoutStep> passi) {
         p.descrizione.trim(),
   ];
 }
+
+/// "Gambe 2/4" → "Gambe": il nome del passo senza il numero di ripetizione.
+String _nomeDelPasso(String nome) =>
+    nome.trim().replaceFirst(RegExp(r'\s+\d+/\d+$'), '');
+
+/// La sezione della seduta prevista (riscaldamento, principale…) di ogni
+/// tratto, dal nome del passo che porta: così il riepilogo si divide come
+/// l'allenamento in programma. Si cerca prima il nome completo della
+/// ripetizione ("Stile libero 1/2"), poi quello del passo (i nomi scritti a
+/// mano), andando avanti nell'ordine: con due passi dallo stesso nome vale
+/// quello che viene dopo. I recuperi stanno nella sezione del tratto prima; i
+/// tratti senza nome (fuori programma) restano senza: ''.
+List<String> fasiDegliIntervalli(
+  List<IntervalloFatto> intervalli,
+  List<WorkoutStep> passi,
+) {
+  final ordinati = [...passi]..sort((a, b) => a.ordine.compareTo(b.ordine));
+  // Una voce per ripetizione, come in ripetizioniDelPiano: (completo, passo, fase).
+  final voci = [
+    for (final p in ordinati)
+      for (
+        var k = 1, n = (int.tryParse(p.serie.trim()) ?? 1).clamp(1, 100);
+        k <= n;
+        k++
+      )
+        (
+          n > 1 ? '${p.descrizione.trim()} $k/$n' : p.descrizione.trim(),
+          p.descrizione.trim(),
+          p.fase.trim(),
+        ),
+  ];
+  var da = 0; // voce a cui si è arrivati
+  var ultima = '';
+  int? cerca(bool Function((String, String, String)) uguale, int inizio) {
+    for (var k = inizio; k < voci.length; k++) {
+      if (uguale(voci[k])) return k;
+    }
+    return null;
+  }
+
+  String fase(IntervalloFatto i) {
+    final nome = i.nome.trim();
+    final passo = _nomeDelPasso(nome);
+    bool completo((String, String, String) v) => v.$1 == nome;
+    bool delPasso((String, String, String) v) => v.$2 == passo;
+    final k =
+        cerca(completo, da) ??
+        cerca(delPasso, da) ??
+        cerca(completo, 0) ??
+        cerca(delPasso, 0);
+    if (k == null) return '';
+    da = k;
+    return voci[k].$3;
+  }
+
+  return [
+    for (final i in intervalli)
+      if (i.recupero) ultima else ultima = i.nome.trim().isEmpty ? '' : fase(i),
+  ];
+}
