@@ -9,7 +9,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Altra attività: le dai tu il nome (es. Kayak), che resta sulla sessione, e scegli all'inizio se registrare il percorso GPS.
 - Riepilogo della seduta: i tratti fatti sono divisi nelle sezioni della seduta prevista (riscaldamento, principale, defaticamento), con gli stessi titoli e pallini; una riga per passo, e i tratti in più a fine seduta in una riga sola.
 - Corsa e bici dall'orologio (con intervals.icu): i tratti sono i giri veri del Garmin, anche con il giro automatico di 1 km; compaiono solo se la seduta ha una struttura (ripetute, più passi), mentre lungo, lento e uscite continue mostrano solo i totali.
-- Sedute registrate con l'app: ogni blocco viene salvato con tempo fatto e previsto, battito e watt, così vedi anche un blocco chiuso prima del previsto; per il rullo valgono anche le sedute fatte prima, ricostruite dal programma.
+- Sedute registrate con l'app: ogni blocco viene salvato con tempo fatto e previsto, battito e watt, così vedi anche un blocco chiuso prima del previsto.
 - Nuoto dall'orologio (con intervals.icu): nel dettaglio vedi gli intervalli con metri, tempo, passo e battito, e i recuperi; se i metri combaciano con la seduta in programma prendono i nomi dei passi. Nei grafici passo ogni 100 m e bracciate al minuto. Gli intervalli si correggono a mano: nome, metri, tempo, ordine, tratti da togliere o aggiungere.
 - Bici all'aperto senza misuratore di potenza: i passi in watt o in % dell'FTP si seguono col battito della zona corrispondente, con avvisi a voce; a schermo vedi watt e bpm.
 - Lungo: se lo fai più lungo del previsto conta comunque come lungo, e i prossimi lunghi partono da quello che hai fatto davvero.
