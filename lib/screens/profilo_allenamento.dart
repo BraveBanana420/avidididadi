@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../esecuzione.dart';
+import '../intervalli.dart';
 import '../potenza.dart';
 
 /// Una barra del diagramma: quanto dura e che watt chiede.
@@ -20,6 +21,21 @@ List<BarraAllenamento> barreDa(List<Blocco> blocchi, ZonePotenza p) => [
       b.obiettivo2,
     ),
 ];
+
+/// Le barre della seduta com'è andata: una per tratto fatto, larga quanto è
+/// durato e alta quanto i suoi watt medi (grigia se i watt mancano). Vuote
+/// se nessun tratto ha i watt: senza non c'è niente da disegnare.
+List<BarraAllenamento> barreFatte(List<IntervalloFatto> tratti) {
+  final conTempo = tratti.where((i) => i.secondi > 0).toList();
+  if (!conTempo.any((i) => i.wattMedi > 0)) return const [];
+  return [
+    for (final i in conTempo)
+      BarraAllenamento(
+        i.secondi,
+        i.wattMedi > 0 ? (i.wattMedi, i.wattMedi) : null,
+      ),
+  ];
+}
 
 /// Il diagramma dell'allenamento, come quello di Garmin: una barra per
 /// blocco, larga quanto dura, alta quanti watt chiede e colorata con la sua

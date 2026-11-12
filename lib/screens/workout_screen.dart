@@ -39,6 +39,7 @@ import 'intervalli_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
+import 'profilo_allenamento.dart';
 import 'serie_a_mano_screen.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
@@ -715,8 +716,8 @@ class _DatiSessione extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     stessoSport(s.sport, 'Bici')
-                        ? 'Al chiuso (rulli, Tacx)'
-                        : 'Al chiuso (tapis roulant)',
+                        ? 'Indoor (rulli, Tacx)'
+                        : 'Indoor (tapis roulant)',
                   ),
                   subtitle: const Text('Niente mappa né GPX'),
                   value: chiuso,
@@ -887,11 +888,12 @@ class _DatiSessione extends StatelessWidget {
                     style: t.titleMedium,
                   ),
                 ),
-                if (state.alChiuso(s))
-                  const Padding(
-                    padding: EdgeInsets.only(right: 4),
+                // Corsa, bici e camminata: dove è stata fatta.
+                if (state.alChiuso(s) || sportConPercorso(s.sport, s.tipo))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
                     child: Chip(
-                      label: Text('Al chiuso'),
+                      label: Text(state.alChiuso(s) ? 'Indoor' : 'Outdoor'),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
@@ -1161,9 +1163,36 @@ class _IntervalliState extends State<_Intervalli> {
       builder: (context, snap) {
         final letti = snap.data ?? const <IntervalloFatto>[];
         final aMano = state.intervalliModificati[s.id];
+        // Bici con i watt: lo schema della seduta com'è andata, con le barre
+        // colorate per zona come durante l'allenamento. C'è anche quando i
+        // tratti non si elencano (un blocco solo).
+        final zp = state.zonePotenza;
+        final barre = stessoSport(s.sport, 'Bici') && zp != null
+            ? barreFatte(letti)
+            : const <BarraAllenamento>[];
+        final diagramma = barre.isEmpty || zp == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(top: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 6,
+                  children: [
+                    Text("Com'è andata", style: t.titleSmall),
+                    ProfiloAllenamento(barre: barre, zone: zp, altezza: 56),
+                    Text(
+                      'Una barra per blocco: larga quanto è durato, alta e '
+                      'colorata secondo i watt medi. La linea è la tua FTP.',
+                      style: t.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              );
         // Un tratto solo non dice niente di più dei totali.
         if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
-          return const SizedBox.shrink();
+          return diagramma ?? const SizedBox.shrink();
         }
         final passi = _passi;
         final nuoto = stessoSport(s.sport, 'Nuoto');
@@ -1171,7 +1200,7 @@ class _IntervalliState extends State<_Intervalli> {
         // solo, e i giri dell'orologio non dicono niente di più dei totali.
         // I tratti si mostrano solo se la seduta ha una struttura.
         if (aMano == null && !nuoto && !sedutaStrutturata(passi)) {
-          return const SizedBox.shrink();
+          return diagramma ?? const SizedBox.shrink();
         }
         // Quelli corretti a mano valgono al posto di quelli dell'orologio.
         // Quelli registrati con l'app hanno già nome e sezione.
@@ -1186,7 +1215,7 @@ class _IntervalliState extends State<_Intervalli> {
             !dallApp &&
             !stessoSport(s.sport, 'Nuoto') &&
             !lista.any((i) => i.nome.isNotEmpty)) {
-          return const SizedBox.shrink();
+          return diagramma ?? const SizedBox.shrink();
         }
         // Abbinati alla seduta prevista: le sue sezioni e i suoi pallini.
         final fasi = fasiDegliIntervalli(lista, passi);
@@ -1243,6 +1272,7 @@ class _IntervalliState extends State<_Intervalli> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ?diagramma,
             const SizedBox(height: 8),
             Row(
               children: [

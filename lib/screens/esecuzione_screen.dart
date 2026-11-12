@@ -1861,9 +1861,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           ? Icons.pedal_bike
                           : Icons.directions_run,
                     ),
-                    title: Text(
-                      'Al chiuso (${attrezzoAlChiuso(widget.sport)})',
-                    ),
+                    title: Text('Indoor (${attrezzoAlChiuso(widget.sport)})'),
                     subtitle: Text(
                       _bici && sensoreBici.rulloInUso
                           ? 'Senza GPS: velocità e km arrivano dal rullo.'
