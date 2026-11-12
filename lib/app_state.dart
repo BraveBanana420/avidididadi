@@ -2311,6 +2311,49 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Tutte le serie di una sessione per i grafici: da intervals.icu se c'è,
+  /// altrimenti da Health Connect, con i sensori collegati all'app e la
+  /// velocità dal GPS se manca.
+  Future<SerieSessione> serieDi(Sessione s) async {
+    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
+    final icu = await serieIcu(s);
+    if (icu != null && !icu.vuota) return icu;
+    var serie = const SerieSessione();
+    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
+      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
+      serie = await hc.serie(
+        s.inizio!,
+        s.fine!,
+        origine: daFreeletics(s) ? '' : s.origine,
+        conPassi: siCammina(s.sport),
+      );
+    }
+    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
+    // (rulli, misuratore di potenza, fascia cardio).
+    final app = await serieApp(s);
+    if (!app.vuota) {
+      serie = SerieSessione(
+        fc: serie.fc.isEmpty ? app.fc : serie.fc,
+        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
+        potenza: app.potenza,
+        // Quella di Health Connect resta, se i sensori non ne hanno una.
+        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
+      );
+    }
+    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
+      final r = await percorsoDi(s);
+      if (r.stato == StatoPercorso.dati && r.percorso != null) {
+        serie = SerieSessione(
+          fc: serie.fc,
+          velocita: velocitaDaPercorso(r.percorso!),
+          potenza: serie.potenza,
+          cadenza: serie.cadenza,
+        );
+      }
+    }
+    return serie;
+  }
+
   /// Battito, velocità, altitudine e potenza di un'attività di intervals.icu.
   Future<SerieSessione?> serieIcu(Sessione s) async {
     final chiave = await ChiaveIntervals.leggi();

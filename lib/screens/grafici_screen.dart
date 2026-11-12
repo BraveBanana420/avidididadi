@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../charts.dart';
-import '../health_connect.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
-import '../sincronizzazione.dart';
 import '../widgets.dart';
 
 /// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
@@ -23,48 +21,9 @@ class GraficiScreen extends StatefulWidget {
 }
 
 class _GraficiScreenState extends State<GraficiScreen> {
-  late final Future<SerieSessione> _serie = _carica();
-
-  Future<SerieSessione> _carica() async {
-    final s = widget.sessione;
-    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
-    final icu = await widget.state.serieIcu(s);
-    if (icu != null && !icu.vuota) return icu;
-    var serie = const SerieSessione();
-    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
-      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
-      serie = await widget.state.hc.serie(
-        s.inizio!,
-        s.fine!,
-        origine: daFreeletics(s) ? '' : s.origine,
-        conPassi: siCammina(s.sport),
-      );
-    }
-    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
-    // (rulli, misuratore di potenza, fascia cardio).
-    final app = await widget.state.serieApp(s);
-    if (!app.vuota) {
-      serie = SerieSessione(
-        fc: serie.fc.isEmpty ? app.fc : serie.fc,
-        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
-        potenza: app.potenza,
-        // Quella di Health Connect resta, se i sensori non ne hanno una.
-        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
-      );
-    }
-    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
-      final r = await widget.state.percorsoDi(s);
-      if (r.stato == StatoPercorso.dati && r.percorso != null) {
-        serie = SerieSessione(
-          fc: serie.fc,
-          velocita: velocitaDaPercorso(r.percorso!),
-          potenza: serie.potenza,
-          cadenza: serie.cadenza,
-        );
-      }
-    }
-    return serie;
-  }
+  late final Future<SerieSessione> _serie = widget.state.serieDi(
+    widget.sessione,
+  );
 
   @override
   Widget build(BuildContext context) {

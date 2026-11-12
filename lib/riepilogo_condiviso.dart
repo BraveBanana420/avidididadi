@@ -1,5 +1,13 @@
+import 'dart:math' as math;
+
+import 'arrampicata.dart';
+import 'attivita.dart';
 import 'carico.dart';
+import 'intervalli.dart';
 import 'models.dart';
+import 'percorso.dart';
+import 'registro_forza.dart';
+import 'serie_sessione.dart';
 
 // I dati delle immagini da condividere (WhatsApp, Instagram…): una sessione
 // o la settimana. Qui solo numeri e testi; il disegno è in
@@ -50,14 +58,290 @@ List<(String, String, String)> numeriSessione(
   ];
 }
 
-/// Le tre grafiche da condividere per una sessione.
-enum GraficaCondivisa { classica, mappa, poster }
+/// Le grafiche da condividere: tre per ogni sport, più la tua foto.
+enum GraficaCondivisa {
+  classica,
+  mappa,
+  poster,
+  kmPerKm,
+  profilo,
+  ripetute,
+  esercizi,
+  muscoli,
+  seduta,
+  progressi,
+  foto,
+}
 
 const nomiGrafiche = {
   GraficaCondivisa.classica: 'Classica',
   GraficaCondivisa.mappa: 'Mappa',
   GraficaCondivisa.poster: 'Poster',
+  GraficaCondivisa.kmPerKm: 'Km per km',
+  GraficaCondivisa.profilo: 'Salita',
+  GraficaCondivisa.ripetute: 'Ripetute',
+  GraficaCondivisa.esercizi: 'Esercizi',
+  GraficaCondivisa.muscoli: 'Muscoli',
+  GraficaCondivisa.seduta: 'Seduta',
+  GraficaCondivisa.progressi: 'Progressi',
+  GraficaCondivisa.foto: 'La tua foto',
 };
+
+/// Cosa c'è nei dati della sessione: senza, la grafica che ne ha bisogno
+/// non si propone.
+typedef DatiCondivisi = ({
+  bool mappa, // percorso GPS all'aperto
+  bool giri, // almeno 2 km dal GPS
+  bool quota, // altitudine dall'orologio
+  bool ripetute, // almeno 2 tratti di nuoto con metri e tempo
+  bool esercizi, // esercizi scritti (forza) o blocchi (mobilità)
+  bool muscoli, // esercizi del catalogo con i muscoli
+  bool arrampicata, // la scheda della seduta di arrampicata
+});
+
+/// Le grafiche di uno sport, nell'ordine: le tre sue (la classica al posto
+/// di quelle senza dati, una volta sola), poi la tua foto.
+List<GraficaCondivisa> grafichePer(String sport, DatiCondivisi d) {
+  const g = GraficaCondivisa.values;
+  final desiderate = switch (sport.trim().toLowerCase()) {
+    'bici' => [g[0], if (d.mappa) GraficaCondivisa.mappa, g[2]],
+    'corsa' => [
+      if (d.mappa) GraficaCondivisa.mappa,
+      if (d.giri) GraficaCondivisa.kmPerKm,
+      GraficaCondivisa.poster,
+    ],
+    'camminata' => [
+      if (d.mappa) GraficaCondivisa.mappa,
+      if (d.quota) GraficaCondivisa.profilo,
+      GraficaCondivisa.poster,
+    ],
+    'nuoto' => [
+      if (d.ripetute) GraficaCondivisa.ripetute,
+      GraficaCondivisa.poster,
+    ],
+    'forza' => [
+      if (d.esercizi) GraficaCondivisa.esercizi,
+      if (d.muscoli) GraficaCondivisa.muscoli,
+      GraficaCondivisa.poster,
+    ],
+    'mobilità' => [
+      if (d.esercizi) GraficaCondivisa.esercizi,
+      GraficaCondivisa.poster,
+    ],
+    'arrampicata' => [
+      if (d.arrampicata) GraficaCondivisa.seduta,
+      if (d.arrampicata) GraficaCondivisa.progressi,
+      GraficaCondivisa.poster,
+    ],
+    _ => [g[0], if (d.mappa) GraficaCondivisa.mappa, g[2]],
+  };
+  final tre = [
+    if (!desiderate.contains(GraficaCondivisa.classica) &&
+        desiderate.length < 3)
+      GraficaCondivisa.classica,
+    ...desiderate,
+  ];
+  return [...tre, GraficaCondivisa.foto];
+}
+
+/// I tempi di ogni chilometro intero, in secondi, dal percorso GPS. I buchi
+/// di più di un minuto tra due punti sono pause: i metri contano, il tempo no.
+List<int> tempiPerKm(Percorso p) {
+  final out = <int>[];
+  var metri = 0.0, secondi = 0.0;
+  for (var i = 1; i < p.punti.length; i++) {
+    final a = p.punti[i - 1], b = p.punti[i];
+    final d = distanzaM(a, b);
+    final t = b.t.difference(a.t).inMilliseconds / 1000;
+    final tempo = t > 60 ? 0.0 : t;
+    if (metri + d >= 1000 && d > 0) {
+      // Il chilometro finisce dentro questo tratto: si divide in proporzione.
+      final parte = (1000 - metri) / d;
+      out.add((secondi + tempo * parte).round());
+      metri = d * (1 - parte);
+      secondi = tempo * (1 - parte);
+    } else {
+      metri += d;
+      secondi += tempo;
+    }
+  }
+  return out;
+}
+
+/// Le righe "km per km": una per chilometro fino a 15, oltre si raggruppano
+/// (2 km per riga, poi 3…) con il passo medio. (etichetta, secondi al km).
+List<(String, int)> righeKm(List<int> tempi) {
+  if (tempi.isEmpty) return const [];
+  final passo = (tempi.length / 15).ceil();
+  return [
+    for (var i = 0; i < tempi.length; i += passo)
+      () {
+        final pezzo = tempi.sublist(i, math.min(i + passo, tempi.length));
+        final media = pezzo.fold(0, (a, b) => a + b) / pezzo.length;
+        final etichetta = pezzo.length == 1
+            ? '${i + 1}'
+            : '${i + 1}-${i + pezzo.length}';
+        return (etichetta, media.round());
+      }(),
+  ];
+}
+
+/// I metri di salita dalla quota: si ammorbidisce prima (150 punti), così
+/// il rumore del GPS e del barometro non gonfia il totale.
+int salitaTotale(List<Campione> quota) {
+  final r = ricampiona(quota, punti: 150);
+  var su = 0.0;
+  for (var i = 1; i < r.length; i++) {
+    final d = r[i].v - r[i - 1].v;
+    if (d > 0) su += d;
+  }
+  return su.round();
+}
+
+/// Nuoto: il passo ai 100 m di ogni tratto nuotato (secondi), saltando
+/// recuperi e tratti senza metri.
+List<int> passiRipetute(List<IntervalloFatto> tratti) => [
+  for (final i in tratti)
+    if (!i.recupero && i.metri >= 25 && i.secondi > 0)
+      (i.secondi / i.metri * 100).round(),
+];
+
+/// Mobilità registrata con l'app: un esercizio per riga con il tempo fatto,
+/// le serie dello stesso esercizio ("Piccione 1/2", "Piccione 2/2") unite.
+List<(String, int)> eserciziDaTratti(List<IntervalloFatto> tratti) {
+  final tempi = <String, int>{};
+  for (final i in tratti) {
+    if (i.recupero || i.nome.isEmpty || i.secondi <= 0) continue;
+    final nome = i.nome.replaceFirst(RegExp(r' \d+/\d+$'), '');
+    tempi[nome] = (tempi[nome] ?? 0) + i.secondi;
+  }
+  return [for (final e in tempi.entries) (e.key, e.value)];
+}
+
+/// Forza: il record battuto oggi, "Squat 60 kg (prima 55 kg)". Null se oggi
+/// nessun esercizio supera i kg di tutte le volte prima.
+String? recordDelGiorno(List<SerieFatta> tutte, DateTime giorno) {
+  final d = soloData(giorno);
+  String? migliore;
+  var salto = 0.0;
+  final oggi = tutte.where((s) => s.data == d && s.kg > 0);
+  for (final chiave in {for (final s in oggi) s.chiave}) {
+    final mie = oggi.where((s) => s.chiave == chiave);
+    final prima = tutte.where(
+      (s) => s.chiave == chiave && s.data.isBefore(d) && s.kg > 0,
+    );
+    if (prima.isEmpty) continue;
+    final kgOggi = mie.map((s) => s.kg).reduce(math.max);
+    final kgPrima = prima.map((s) => s.kg).reduce(math.max);
+    if (kgOggi > kgPrima && kgOggi - kgPrima > salto) {
+      salto = kgOggi - kgPrima;
+      migliore =
+          '${mie.first.nome} ${fmtKg(kgOggi)} kg '
+          '(prima ${fmtKg(kgPrima)} kg)';
+    }
+  }
+  return migliore;
+}
+
+/// Arrampicata: il grado più alto delle ultime sedute della stessa
+/// disciplina, fino a quella di oggi compresa. (grado, livello, è oggi).
+List<(String, int, bool)> progressiArrampicata(
+  List<SedutaArrampicata> tutte,
+  SedutaArrampicata oggi, {
+  int quante = 8,
+}) {
+  final mie =
+      tutte
+          .where(
+            (a) =>
+                a.disciplina == oggi.disciplina &&
+                a.gradoMax.isNotEmpty &&
+                !a.data.isAfter(oggi.data),
+          )
+          .toList()
+        ..sort((a, b) => a.data.compareTo(b.data));
+  final ultime = mie.length > quante ? mie.sublist(mie.length - quante) : mie;
+  return [
+    for (final a in ultime)
+      (
+        a.gradoMax,
+        livello(a.disciplina, a.gradoMax),
+        a.idSessione == oggi.idSessione,
+      ),
+  ];
+}
+
+/// Il poster: la scritta in alto, il numero gigante, cosa vuol dire e i tre
+/// numeri sotto. Forza: i kg sollevati; arrampicata: il grado più alto;
+/// altra attività: il nome; gli altri la distanza o il tempo.
+typedef DatiPoster = ({
+  String etichetta,
+  String grande,
+  String sotto,
+  List<(String, String, String)> numeri,
+});
+
+DatiPoster posterDi(
+  Sessione s, {
+  double kgTotali = 0,
+  SedutaArrampicata? arrampicata,
+}) {
+  final etichetta = titoloSessione(
+    s.sport,
+    s.tipo,
+  ).replaceAll(': ', ' · ').toUpperCase();
+  final tempo = s.durataMin >= 60
+      ? ('Tempo', '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'ore')
+      : ('Tempo', '${s.durataMin}', 'min');
+  List<(String, String, String)> senza(String nome) => [
+    for (final n in numeriSessione(s, kgTotali: kgTotali))
+      if (n.$1 != nome) n,
+  ].take(3).toList();
+  if (stessoSport(s.sport, 'Forza') && kgTotali > 0) {
+    return (
+      etichetta: etichetta,
+      grande: fmtNum(kgTotali.roundToDouble()),
+      sotto: 'kg sollevati in tutto',
+      numeri: senza('Sollevati'),
+    );
+  }
+  if (arrampicata case final a? when a.gradoMax.isNotEmpty) {
+    return (
+      etichetta: [
+        'ARRAMPICATA',
+        a.ambiente == Ambiente.indoor ? 'INDOOR' : 'OUTDOOR',
+      ].join(' · '),
+      grande: a.gradoMax,
+      sotto: [
+        'il grado più alto di oggi',
+        if (a.stile.isNotEmpty) a.stile.toLowerCase(),
+      ].join(' · '),
+      numeri: [
+        if (a.chiuse > 0) (a.falesia ? 'Vie' : 'Blocchi', '${a.chiuse}', ''),
+        if (a.metri > 0) ('Saliti', '${a.metri}', 'm'),
+        if (s.durataMin > 0) tempo,
+      ].take(3).toList(),
+    );
+  }
+  if (stessoSport(s.sport, sportAttivitaLibera)) {
+    final nome = s.tipo.isEmpty || s.tipo == 'Altra attività'
+        ? 'Attività'
+        : s.tipo;
+    return (
+      etichetta: 'ALTRA ATTIVITÀ',
+      grande: nome.toUpperCase(),
+      sotto: s.durataMin >= 60 ? '${tempo.$2} ore' : '${s.durataMin} minuti',
+      numeri: senza('Tempo'),
+    );
+  }
+  final (grande, sotto) = numeroGrande(s);
+  return (
+    etichetta: etichetta,
+    grande: grande,
+    sotto: sotto,
+    numeri: numeriPoster(s),
+  );
+}
 
 /// Il numero gigante del poster: la distanza se c'è (metri nel nuoto),
 /// altrimenti il tempo. (valore, sotto) es. ("42,2", "km"), ("1:02", "ore").
