@@ -1,6 +1,7 @@
 import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/potenza.dart';
 import 'package:allenamenti_app/screens/profilo_allenamento.dart';
+import 'package:allenamenti_app/serie_sessione.dart';
 import 'package:allenamenti_app/tema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -41,6 +42,64 @@ void main() {
     expect(barreFatte([tratto(600, 150), tratto(60, 0)]).last.range, isNull);
   });
 
+  test(
+    'con i watt previsti: la barra è il range, il trattino i watt tenuti',
+    () {
+      final barre = barreFatte([
+        const IntervalloFatto(
+          recupero: false,
+          inizioS: 0,
+          secondi: 600,
+          wattMedi: 124,
+          wattPrevisti: (110, 130),
+        ),
+        const IntervalloFatto(
+          recupero: true,
+          inizioS: 600,
+          secondi: 240,
+          wattMedi: 0,
+          wattPrevisti: (90, 110),
+        ),
+      ]);
+      expect(barre.first.range, (110, 130));
+      expect(barre.first.fatto, 124);
+      expect(barre.last.fatto, isNull);
+    },
+  );
+
+  test('le fasce dei watt previsti finiscono dove inizia il tratto dopo', () {
+    final fasce = fasceDaTratti(const [
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 0,
+        secondi: 600,
+        wattPrevisti: (110, 130),
+      ),
+      // Dopo una pausa di 30 secondi.
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 630,
+        secondi: 480,
+        wattPrevisti: (170, 185),
+      ),
+      IntervalloFatto(recupero: true, inizioS: 1110, secondi: 240),
+    ]);
+    expect(fasce.length, 2);
+    expect((fasce[0].da, fasce[0].a), (0, 630));
+    expect((fasce[1].da, fasce[1].a, fasce[1].range), (630, 1110, (170, 185)));
+  });
+
+  test('i watt di tutta la seduta, media ogni 10 secondi', () {
+    final t0 = DateTime(2026, 11, 12, 18);
+    final serie = [
+      for (var s = 0; s < 30; s++)
+        Campione(t0.add(Duration(seconds: s)), s < 10 ? 100 : 200),
+    ];
+    final punti = wattMediati(serie, t0);
+    expect(punti.map((p) => p.w), [100, 200, 200]);
+    expect(punti.first.s, 5);
+  });
+
   for (final tema in [
     for (final b in Brightness.values)
       for (final neon in [false, true]) creaTema(b, neon: neon),
@@ -61,6 +120,30 @@ void main() {
         ),
       );
       expect(find.byType(ProfiloAllenamento), findsOneWidget);
+      expect(tester.takeException(), isNull);
+
+      // Il grafico di tutta la seduta, con le fasce e la linea.
+      final t0 = DateTime(2026, 11, 12, 18);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: tema,
+          home: Scaffold(
+            body: GraficoPotenzaSeduta(
+              serie: [
+                for (var s = 0; s < 1200; s++)
+                  Campione(t0.add(Duration(seconds: s)), s < 600 ? 120 : 178),
+              ],
+              fasce: const [
+                (da: 0, a: 600, range: (110, 130)),
+                (da: 600, a: 1200, range: (170, 185)),
+              ],
+              inizio: t0,
+              zone: const ZonePotenza(200),
+            ),
+          ),
+        ),
+      );
+      expect(find.text('20:00'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

@@ -5,6 +5,9 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 ## 0.1.0
 
 - Bici con i watt: nel riepilogo lo schema della seduta com'è andata, con le barre colorate per zona come durante l'allenamento, anche per un blocco solo.
+- Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti, e il grafico di tutta la seduta con le fasce previste e la linea dei watt veri.
+- Mappa durante l'allenamento: al posto della "i" c'è il tasto dei livelli, anche nella minimappa.
+- Condividi: tre grafiche da scegliere (Classica, Mappa con la mappa vera Pulse, Strade o Satellite, Poster con il numero grande e il grafico); marchio "#avidididadi" in alto.
 - Sessioni di corsa e bici: l'etichetta dice "Indoor" o "Outdoor" (prima "Al chiuso").
 - Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
 - Tasto "+": "Allenamento libero" diventa "Forza"; alla fine scrivi tutti gli esercizi fatti, con ripetizioni e kg (o corpo libero), anche dopo dal dettaglio della seduta; per plank e tenute scegli "Tempo" e scrivi i secondi. Arrampicata passa in fondo, prima di "Altra attività".

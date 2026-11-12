@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:maplibre_gl/maplibre_gl.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../avviso.dart';
@@ -11,6 +13,7 @@ import '../app_state.dart';
 import '../carico.dart';
 import '../condivisione.dart';
 import '../health_connect.dart';
+import '../intervalli.dart';
 import '../models.dart';
 import '../percorso.dart';
 import '../pulse.dart';
@@ -18,6 +21,8 @@ import '../registro_forza.dart';
 import '../riepilogo_condiviso.dart';
 import '../tema.dart';
 import '../widgets.dart';
+import 'mappa_percorso.dart';
+import 'profilo_allenamento.dart';
 
 // Immagini da condividere su WhatsApp, Instagram…: una sessione o la
 // settimana, nei colori del tema. Si crea sul telefono e parte solo verso
@@ -78,12 +83,19 @@ class _Pagina extends StatelessWidget {
   final Widget immagine;
   final List<Widget> scelte;
   final String testo;
+
+  /// Prima della foto (es. la mappa diventa un'immagine): false se non è
+  /// pronta. [dopo] rimette com'era.
+  final Future<bool> Function()? prima;
+  final VoidCallback? dopo;
   const _Pagina({
     required this.titolo,
     required this.chiave,
     required this.immagine,
     required this.scelte,
     required this.testo,
+    this.prima,
+    this.dopo,
   });
 
   @override
@@ -115,7 +127,18 @@ class _Pagina extends StatelessWidget {
           PulsantePrincipale(
             onPressed: () async {
               final messenger = ScaffoldMessenger.of(context);
-              final ok = await _condividi(chiave, testo);
+              if (prima != null && !await prima!()) {
+                messenger.showSnackBar(
+                  avviso(content: Text('La mappa non è pronta: riprova.')),
+                );
+                return;
+              }
+              final bool ok;
+              try {
+                ok = await _condividi(chiave, testo);
+              } finally {
+                dopo?.call();
+              }
               if (!ok) {
                 messenger.showSnackBar(
                   avviso(content: Text('Immagine non riuscita: riprova.')),
@@ -151,9 +174,17 @@ class _CondividiSessione extends StatefulWidget {
 
 class _CondividiSessioneState extends State<_CondividiSessione> {
   final _chiave = GlobalKey();
+  final _mappa = GlobalKey<_MappaCondivisaState>();
   Percorso? _percorso;
   // Spento di base: il percorso dice da dove si parte (spesso casa).
   bool _conPercorso = false;
+  GraficaCondivisa _grafica = GraficaCondivisa.classica;
+  TipoMappa _tipo = tipoMappa.value;
+  List<IntervalloFatto> _tratti = const [];
+
+  /// La mappa fotografata subito prima di condividere: le mappe vere non
+  /// finiscono da sole nell'immagine.
+  Uint8List? _foto;
 
   @override
   void initState() {
@@ -167,6 +198,26 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         }
       });
     }
+    leggiTipoMappa().then((_) {
+      if (mounted) setState(() => _tipo = tipoMappa.value);
+    });
+    // Bici: i blocchi per il grafico del poster.
+    if (stessoSport(s.sport, 'Bici')) {
+      widget.state.intervalliDi(s).then((l) {
+        if (mounted) setState(() => _tratti = l);
+      });
+    }
+  }
+
+  Future<bool> _fotografa() async {
+    if (_grafica != GraficaCondivisa.mappa) return true;
+    final foto = await _mappa.currentState?.istantanea();
+    if (foto == null || !mounted) return false;
+    final immagine = MemoryImage(foto);
+    await precacheImage(immagine, context);
+    setState(() => _foto = foto);
+    await WidgetsBinding.instance.endOfFrame;
+    return true;
   }
 
   @override
@@ -178,20 +229,107 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final kg = serie.values
         .expand((x) => x)
         .fold(0.0, (t, x) => t + x.ripetizioni * x.kg);
+    final percorso = _conPercorso ? _percorso : null;
+    final zp = widget.state.zonePotenza;
+    final barre = zp == null ? const <BarraAllenamento>[] : barreFatte(_tratti);
+    final grafiche = [
+      GraficaCondivisa.classica,
+      if (_percorso != null) GraficaCondivisa.mappa,
+      GraficaCondivisa.poster,
+    ];
+    final grafica = grafiche.contains(_grafica)
+        ? _grafica
+        : GraficaCondivisa.classica;
+    final t = Theme.of(context).textTheme;
     return _Pagina(
       titolo: 'Condividi la sessione',
       chiave: _chiave,
       testo: testoSessione(s),
-      immagine: ImmagineSessione(
-        sessione: s,
-        percorso: _conPercorso ? _percorso : null,
-        kgTotali: kg,
-        esercizi: [
-          for (final e in serie.entries.take(5)) (e.key, fmtSerie(e.value)),
-        ],
-      ),
+      prima: _fotografa,
+      dopo: () {
+        if (mounted) setState(() => _foto = null);
+      },
+      immagine: switch (grafica) {
+        GraficaCondivisa.mappa => ImmagineMappa(
+          sessione: s,
+          mappa: Stack(
+            fit: StackFit.expand,
+            children: [
+              _MappaCondivisa(
+                key: _mappa,
+                percorso: _percorso!,
+                sport: s.sport,
+                tipo: _tipo,
+              ),
+              if (_foto case final f?) Image.memory(f, fit: BoxFit.cover),
+            ],
+          ),
+          crediti: creditiMappe[_tipo]!,
+        ),
+        GraficaCondivisa.poster => ImmaginePoster(
+          sessione: s,
+          indoor: widget.state.alChiuso(s),
+          grafico: barre.isNotEmpty && zp != null
+              ? ProfiloAllenamento(barre: barre, zone: zp, altezza: 96)
+              : percorso == null
+              ? null
+              : CustomPaint(
+                  size: const Size(double.infinity, 110),
+                  painter: _Giro(percorso, coloreSport(s.sport)),
+                ),
+        ),
+        GraficaCondivisa.classica => ImmagineSessione(
+          sessione: s,
+          percorso: percorso,
+          kgTotali: kg,
+          esercizi: [
+            for (final e in serie.entries.take(5)) (e.key, fmtSerie(e.value)),
+          ],
+        ),
+      },
       scelte: [
-        if (_percorso != null)
+        Text('Grafica', style: t.titleSmall),
+        const SizedBox(height: 8),
+        SegmentedButton<GraficaCondivisa>(
+          segments: [
+            for (final g in grafiche)
+              ButtonSegment(
+                value: g,
+                label: Text(nomiGrafiche[g]!),
+                icon: Icon(switch (g) {
+                  GraficaCondivisa.classica => Icons.view_agenda_outlined,
+                  GraficaCondivisa.mappa => Icons.map_outlined,
+                  GraficaCondivisa.poster => Icons.bar_chart,
+                }),
+              ),
+          ],
+          selected: {grafica},
+          showSelectedIcon: false,
+          onSelectionChanged: (v) => setState(() => _grafica = v.first),
+        ),
+        const SizedBox(height: 12),
+        if (grafica == GraficaCondivisa.mappa) ...[
+          Text('Tipo di mappa', style: t.titleSmall),
+          const SizedBox(height: 8),
+          SegmentedButton<TipoMappa>(
+            segments: [
+              for (final m in TipoMappa.values)
+                ButtonSegment(
+                  value: m,
+                  label: Text(nomiMappe[m]!),
+                  icon: Icon(iconeMappe[m]),
+                ),
+            ],
+            selected: {_tipo},
+            showSelectedIcon: false,
+            onSelectionChanged: (v) => setState(() => _tipo = v.first),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'La mappa fa vedere dove sei passato: occhio se parti da casa.',
+            style: t.bodySmall,
+          ),
+        ] else if (_percorso != null)
           Material(
             type: MaterialType.transparency,
             child: SwitchListTile(
@@ -209,17 +347,30 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   }
 }
 
-/// Il fondo comune: colore del tema con i bagliori, marchio e data in alto,
-/// firma in basso.
+/// Il marchio dell'app in cima alle immagini: "#avidididadi", minuscolo,
+/// nel colore del testo (bianco sul fondo scuro).
+class _Marchio extends StatelessWidget {
+  const _Marchio();
+
+  @override
+  Widget build(BuildContext context) => Text(
+    '#avidididadi',
+    maxLines: 1,
+    softWrap: false,
+    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontFamily: famigliaTitoli,
+      fontWeight: FontWeight.w700,
+      letterSpacing: -0.3,
+      color: Theme.of(context).colorScheme.onSurface,
+    ),
+  );
+}
+
+/// Il fondo comune: colore del tema con i bagliori, marchio e data in alto.
 class _Cornice extends StatelessWidget {
-  final String sopra;
   final String data;
   final Widget child;
-  const _Cornice({
-    required this.sopra,
-    required this.data,
-    required this.child,
-  });
+  const _Cornice({required this.data, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -235,42 +386,350 @@ class _Cornice extends StatelessWidget {
               child: DecoratedBox(decoration: BoxDecoration(gradient: g)),
             ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 22, 24, 18),
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 22),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
+                    const _Marchio(),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        sopra.toUpperCase(),
+                        data,
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: t.labelMedium?.copyWith(
-                          color: scheme.primary,
-                          letterSpacing: 1.6,
-                          fontWeight: FontWeight.w800,
+                          color: scheme.onSurfaceVariant,
                         ),
-                      ),
-                    ),
-                    Text(
-                      data,
-                      style: t.labelMedium?.copyWith(
-                        color: scheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
                 Expanded(child: child),
-                Text(
-                  'Allenato con Avidididadi',
-                  style: t.labelSmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    letterSpacing: 0.6,
-                  ),
-                ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// La mappa vera dietro l'immagine: il tipo scelto, il percorso inquadrato,
+/// nessun tocco. Lo stile sta in un file perché la foto della mappa
+/// (MapSnapshotter) sa leggerlo solo così.
+class _MappaCondivisa extends StatefulWidget {
+  final Percorso percorso;
+  final String sport;
+  final TipoMappa tipo;
+  const _MappaCondivisa({
+    super.key,
+    required this.percorso,
+    required this.sport,
+    required this.tipo,
+  });
+
+  @override
+  State<_MappaCondivisa> createState() => _MappaCondivisaState();
+}
+
+class _MappaCondivisaState extends State<_MappaCondivisa> {
+  MapLibreMapController? _controllo;
+  bool _pronta = false;
+  final _stili = <(TipoMappa, bool), Future<String>>{};
+
+  Future<String> _stile(TipoMappa tipo, bool scuro) async {
+    final json = await stileConPercorso(
+      tipo: tipo,
+      scuro: scuro,
+      colore: esadecimale(coloreSport(widget.sport)),
+      percorso: widget.percorso.geoJson(),
+      estremi: widget.percorso.geoJsonEstremi(),
+    );
+    final f = File(
+      '${(await getTemporaryDirectory()).path}/'
+      'stile_condivisa_${tipo.name}_${scuro ? 's' : 'c'}.json',
+    );
+    await f.writeAsString(json, flush: true);
+    return f.path;
+  }
+
+  LatLngBounds get _limiti {
+    final (a, b, c, d) = widget.percorso.limiti;
+    return LatLngBounds(southwest: LatLng(a, b), northeast: LatLng(c, d));
+  }
+
+  /// La mappa com'è adesso, in PNG; null se non è ancora pronta.
+  Future<Uint8List?> istantanea() async {
+    final c = _controllo;
+    if (c == null || !_pronta) return null;
+    try {
+      await c.waitUntilMapTilesAreLoaded().timeout(const Duration(seconds: 8));
+    } catch (_) {
+      // si fotografa quello che c'è
+    }
+    try {
+      return await c.takeSnapshot();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scuro = Theme.of(context).brightness == Brightness.dark;
+    final scheme = Theme.of(context).colorScheme;
+    final chiave = (widget.tipo, scuro);
+    final (a, b, c, d) = widget.percorso.limiti;
+    return FutureBuilder<String>(
+      future: _stili.putIfAbsent(chiave, () => _stile(widget.tipo, scuro)),
+      builder: (context, snap) {
+        if (!snap.hasData) return ColoredBox(color: scheme.surface);
+        return IgnorePointer(
+          child: MapLibreMap(
+            key: ValueKey(chiave),
+            styleString: snap.data!,
+            initialCameraPosition: CameraPosition(
+              target: LatLng((a + c) / 2, (b + d) / 2),
+              zoom: 12,
+            ),
+            onMapCreated: (m) {
+              _controllo = m;
+              _pronta = false;
+            },
+            onStyleLoadedCallback: () {
+              // Il percorso nella parte alta: sotto c'è la fascia dei numeri.
+              _controllo?.moveCamera(
+                CameraUpdate.newLatLngBounds(
+                  _limiti,
+                  left: 40,
+                  top: 70,
+                  right: 40,
+                  bottom: 170,
+                ),
+              );
+              _pronta = true;
+            },
+            compassEnabled: false,
+            rotateGesturesEnabled: false,
+            tiltGesturesEnabled: false,
+            scrollGesturesEnabled: false,
+            zoomGesturesEnabled: false,
+            doubleClickZoomEnabled: false,
+            logoEnabled: false,
+            // I crediti sono scritti nell'immagine.
+            attributionButtonMargins: const math.Point(-200, -200),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// La grafica con la mappa a tutta pagina: marchio e data in alto, sotto
+/// una fascia con sport, titolo e tre numeri.
+class ImmagineMappa extends StatelessWidget {
+  final Sessione sessione;
+  final Widget mappa;
+  final String crediti;
+  const ImmagineMappa({
+    super.key,
+    required this.sessione,
+    required this.mappa,
+    required this.crediti,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final s = sessione;
+    final colore = coloreSport(s.sport);
+    final numeri = numeriSessione(s).take(3).toList();
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ColoredBox(color: scheme.surface, child: mappa),
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          height: 84,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  scheme.surface.withValues(alpha: 0.9),
+                  scheme.surface.withValues(alpha: 0),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          top: 16,
+          child: Row(
+            children: [
+              const _Marchio(),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  dataLunga(s.data),
+                  textAlign: TextAlign.end,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.labelMedium?.copyWith(color: scheme.onSurface),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 12,
+          right: 12,
+          bottom: 12,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: scheme.surface.withValues(alpha: 0.86),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(18, 14, 18, 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      Icon(iconaSport(s.sport), color: colore, size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          titoloSessione(s.sport, s.tipo),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: t.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      for (final n in numeri) Expanded(child: _Numero(n)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    crediti,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: t.labelSmall?.copyWith(
+                      fontSize: 8,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Il poster: un numero gigante (distanza o tempo), il grafico della seduta
+/// se c'è (bici: i blocchi per zona) e tre numeri. Va bene anche indoor,
+/// dove non c'è mappa.
+class ImmaginePoster extends StatelessWidget {
+  final Sessione sessione;
+  final bool indoor;
+  final Widget? grafico;
+  const ImmaginePoster({
+    super.key,
+    required this.sessione,
+    this.indoor = false,
+    this.grafico,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final s = sessione;
+    final (grande, sotto) = numeroGrande(s);
+    final numeri = numeriPoster(s);
+    return _Cornice(
+      data: dataLunga(s.data),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(iconaSport(s.sport), color: coloreSport(s.sport), size: 18),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  titoloSessione(s.sport, s.tipo).toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.labelLarge?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+              ),
+              if (indoor)
+                DecoratedBox(
+                  decoration: ShapeDecoration(
+                    shape: const StadiumBorder(),
+                    color: scheme.surfaceContainerHighest,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    child: Text('Indoor', style: t.labelSmall),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text(
+              grande,
+              maxLines: 1,
+              style: t.displayLarge?.copyWith(
+                fontFamily: famigliaTitoli,
+                fontSize: 104,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -4,
+                height: 1,
+              ),
+            ),
+          ),
+          Text(
+            sotto,
+            style: t.titleSmall?.copyWith(color: scheme.onSurfaceVariant),
+          ),
+          const Spacer(),
+          ?grafico,
+          const SizedBox(height: 16),
+          Row(children: [for (final n in numeri) Expanded(child: _Numero(n))]),
         ],
       ),
     );
@@ -348,7 +807,6 @@ class ImmagineSessione extends StatelessWidget {
     final colore = coloreSport(s.sport);
     final numeri = numeriSessione(s, kgTotali: kgTotali).take(6).toList();
     return _Cornice(
-      sopra: 'Avidididadi',
       data: dataLunga(s.data),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -568,8 +1026,7 @@ class ImmagineSettimana extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final r = riepilogo;
     return _Cornice(
-      sopra: 'La mia settimana',
-      data: periodoSettimana(r.lunedi),
+      data: 'Settimana ${periodoSettimana(r.lunedi)}',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,7 +1,9 @@
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/percorso.dart';
+import 'package:allenamenti_app/potenza.dart';
 import 'package:allenamenti_app/riepilogo_condiviso.dart';
 import 'package:allenamenti_app/screens/condividi_screen.dart';
+import 'package:allenamenti_app/screens/profilo_allenamento.dart';
 import 'package:allenamenti_app/tema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -100,6 +102,25 @@ void main() {
     });
   });
 
+  test('il numero grande del poster: distanza, altrimenti tempo', () {
+    expect(numeroGrande(corsa), ('10,24', 'km'));
+    expect(numeroGrande(nuoto), ('1500', 'm'));
+    expect(numeroGrande(bici), ('1:15', 'ore'));
+    expect(
+      numeroGrande(
+        Sessione(id: 'm', data: oggi, sport: 'Mobilità', durataMin: 25),
+      ),
+      ('25', 'minuti'),
+    );
+    // Sotto, gli altri numeri senza quello già in grande.
+    expect(numeriPoster(corsa).map((n) => n.$1), [
+      'Tempo',
+      'Passo',
+      'Battito medio',
+    ]);
+    expect(numeriPoster(bici).map((n) => n.$1), ['Potenza']);
+  });
+
   group('immagini', () {
     Future<void> disegna(WidgetTester t, Widget w, ThemeData tema) async {
       await t.pumpWidget(
@@ -135,7 +156,8 @@ void main() {
           tema,
         );
         expect(find.text('Corsa: Lento'), findsOneWidget);
-        expect(find.text('Allenato con Avidididadi'), findsOneWidget);
+        expect(find.text('#avidididadi'), findsOneWidget);
+        expect(find.text('Allenato con Avidididadi'), findsNothing);
         expect(t.takeException(), isNull);
 
         await disegna(
@@ -171,6 +193,41 @@ void main() {
           tema,
         );
         expect(find.text('3/4'), findsOneWidget);
+        expect(t.takeException(), isNull);
+
+        // Il poster di una seduta indoor, con il grafico dei blocchi.
+        await disegna(
+          t,
+          ImmaginePoster(
+            sessione: bici,
+            indoor: true,
+            grafico: ProfiloAllenamento(
+              barre: const [
+                BarraAllenamento(600, (110, 130), '', 124),
+                BarraAllenamento(480, (170, 185), '', 179),
+              ],
+              zone: const ZonePotenza(200),
+              altezza: 96,
+            ),
+          ),
+          tema,
+        );
+        expect(find.text('1:15'), findsOneWidget);
+        expect(find.text('Indoor'), findsOneWidget);
+        expect(t.takeException(), isNull);
+
+        // La mappa: qui al posto della mappa vera un riquadro.
+        await disegna(
+          t,
+          ImmagineMappa(
+            sessione: corsa,
+            mappa: const ColoredBox(color: Colors.grey),
+            crediti: '© OpenStreetMap',
+          ),
+          tema,
+        );
+        expect(find.text('Corsa: Lento'), findsOneWidget);
+        expect(find.text('#avidididadi'), findsOneWidget);
         expect(t.takeException(), isNull);
       });
     }

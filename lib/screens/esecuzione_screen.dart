@@ -1180,6 +1180,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             _tratti,
             fc: _serieFc,
             potenza: _seriePotenza,
+            // Bici: i watt da tenere di ogni blocco, per il riepilogo.
+            zone: _bici ? _zonePotenza : null,
           ),
         );
       }

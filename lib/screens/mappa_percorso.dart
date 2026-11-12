@@ -109,19 +109,32 @@ Future<Map<String, dynamic>?> _scaricaStrade() async {
   }
 }
 
-/// Pulsante con i livelli, in alto a destra: si sceglie il tipo di mappa.
-class PulsanteLivelli extends StatelessWidget {
-  const PulsanteLivelli({super.key});
+/// Le icone dei tipi di mappa, nel foglio dei livelli e nei chip.
+const iconeMappe = {
+  TipoMappa.pulse: Icons.auto_awesome_outlined,
+  TipoMappa.strade: Icons.map_outlined,
+  TipoMappa.satellite: Icons.satellite_alt_outlined,
+};
 
-  static const _icone = {
-    TipoMappa.pulse: Icons.auto_awesome_outlined,
-    TipoMappa.strade: Icons.map_outlined,
-    TipoMappa.satellite: Icons.satellite_alt_outlined,
-  };
+/// Da dove vengono i dati di ogni tipo di mappa: vanno sempre citati.
+const creditiMappe = {
+  TipoMappa.pulse: '© OpenFreeMap · © OpenMapTiles · dati © OpenStreetMap',
+  TipoMappa.strade: '© OpenFreeMap · © OpenMapTiles · dati © OpenStreetMap',
+  TipoMappa.satellite:
+      'Tiles © Esri — Esri, Maxar, Earthstar Geographics, GIS User Community',
+};
+
+/// Pulsante con i livelli: si sceglie il tipo di mappa. [piccolo] per la
+/// minimappa durante l'allenamento.
+class PulsanteLivelli extends StatelessWidget {
+  final bool piccolo;
+  const PulsanteLivelli({super.key, this.piccolo = false});
 
   @override
   Widget build(BuildContext context) => IconButton.filledTonal(
     tooltip: 'Tipo di mappa',
+    visualDensity: piccolo ? VisualDensity.compact : null,
+    iconSize: piccolo ? 20 : null,
     onPressed: () => showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -130,10 +143,11 @@ class PulsanteLivelli extends StatelessWidget {
           valueListenable: tipoMappa,
           builder: (c, attuale, _) => Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               for (final t in TipoMappa.values)
                 ListTile(
-                  leading: Icon(_icone[t]),
+                  leading: Icon(iconeMappe[t]),
                   title: Text(nomiMappe[t]!),
                   trailing: t == attuale ? const Icon(Icons.check) : null,
                   onTap: () {
@@ -141,6 +155,15 @@ class PulsanteLivelli extends StatelessWidget {
                     Navigator.pop(c);
                   },
                 ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                child: Text(
+                  creditiMappe[attuale]!,
+                  style: Theme.of(c).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(c).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
             ],
           ),
         ),

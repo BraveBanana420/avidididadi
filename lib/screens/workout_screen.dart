@@ -24,6 +24,7 @@ import '../potenza.dart';
 import '../percorso.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
+import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
@@ -1144,6 +1145,78 @@ class _IntervalliState extends State<_Intervalli> {
   late final Future<List<IntervalloFatto>> _intervalli = widget.state
       .intervalliDi(widget.sessione);
 
+  /// I watt al secondo delle sedute di bici registrate con l'app (sul
+  /// telefono, senza rete): per il grafico di tutta la seduta.
+  late final Future<SerieSessione> _serie =
+      widget.sessione.id.startsWith('app-') &&
+          stessoSport(widget.sessione.sport, 'Bici')
+      ? widget.state.serieApp(widget.sessione)
+      : Future.value(const SerieSessione());
+
+  /// Bici con i watt: il diagramma dei blocchi (range previsto e watt tenuti)
+  /// e il grafico di tutta la seduta. Null se non c'è niente da disegnare.
+  Widget? _schemaBici(List<IntervalloFatto> letti) {
+    final s = widget.sessione;
+    if (!stessoSport(s.sport, 'Bici')) return null;
+    final zp = widget.state.zonePotenza;
+    final barre = zp == null ? const <BarraAllenamento>[] : barreFatte(letti);
+    final previsti = barre.any((b) => b.fatto != null);
+    final fasce = fasceDaTratti(letti);
+    return FutureBuilder<SerieSessione>(
+      future: _serie,
+      builder: (context, snap) {
+        final t = Theme.of(context).textTheme;
+        final scheme = Theme.of(context).colorScheme;
+        final watt = snap.data?.potenza ?? const <Campione>[];
+        final conGrafico = watt.length >= 60;
+        if (barre.isEmpty && !conGrafico) return const SizedBox.shrink();
+        final nota = t.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
+        return Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Text("Com'è andata", style: t.titleSmall),
+              if (barre.isNotEmpty && zp != null) ...[
+                ProfiloAllenamento(barre: barre, zone: zp, altezza: 64),
+                Text(
+                  previsti
+                      ? 'Una barra per blocco, larga quanto è durato: alta e '
+                            'colorata secondo i watt da tenere; il trattino '
+                            'sono i watt medi che hai tenuto. La linea è la '
+                            'tua FTP.'
+                      : 'Una barra per blocco: larga quanto è durato, alta e '
+                            'colorata secondo i watt medi. La linea è la tua '
+                            'FTP.',
+                  style: nota,
+                ),
+              ],
+              if (conGrafico) ...[
+                const SizedBox(height: 8),
+                GraficoPotenzaSeduta(
+                  serie: watt,
+                  fasce: fasce,
+                  inizio: s.inizio ?? watt.first.t,
+                  zone: zp,
+                ),
+                Text(
+                  fasce.isEmpty
+                      ? 'I tuoi watt in tutta la seduta (media ogni 10 '
+                            'secondi).'
+                      : 'Le fasce colorate sono i watt da tenere blocco per '
+                            'blocco; la linea sono i watt che hai tenuto '
+                            '(media ogni 10 secondi).',
+                  style: nota,
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   List<WorkoutStep> get _passi {
     final s = widget.sessione;
     final previsto = widget.state.piano
@@ -1164,32 +1237,10 @@ class _IntervalliState extends State<_Intervalli> {
         final letti = snap.data ?? const <IntervalloFatto>[];
         final aMano = state.intervalliModificati[s.id];
         // Bici con i watt: lo schema della seduta com'è andata, con le barre
-        // colorate per zona come durante l'allenamento. C'è anche quando i
-        // tratti non si elencano (un blocco solo).
-        final zp = state.zonePotenza;
-        final barre = stessoSport(s.sport, 'Bici') && zp != null
-            ? barreFatte(letti)
-            : const <BarraAllenamento>[];
-        final diagramma = barre.isEmpty || zp == null
-            ? null
-            : Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  spacing: 6,
-                  children: [
-                    Text("Com'è andata", style: t.titleSmall),
-                    ProfiloAllenamento(barre: barre, zone: zp, altezza: 56),
-                    Text(
-                      'Una barra per blocco: larga quanto è durato, alta e '
-                      'colorata secondo i watt medi. La linea è la tua FTP.',
-                      style: t.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              );
+        // colorate per zona come durante l'allenamento, e sotto i watt di
+        // tutta la seduta sulle fasce da tenere. C'è anche quando i tratti
+        // non si elencano (un blocco solo).
+        final diagramma = _schemaBici(letti);
         // Un tratto solo non dice niente di più dei totali.
         if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
           return diagramma ?? const SizedBox.shrink();
@@ -1199,12 +1250,14 @@ class _IntervalliState extends State<_Intervalli> {
         // Corsa e bici: un lungo, un lento o un'uscita continua sono un passo
         // solo, e i giri dell'orologio non dicono niente di più dei totali.
         // I tratti si mostrano solo se la seduta ha una struttura.
-        if (aMano == null && !nuoto && !sedutaStrutturata(passi)) {
+        // Quelli registrati con l'app sono i blocchi veri del player: si
+        // vedono sempre, anche se la seduta in calendario è cambiata.
+        final dallApp = letti.any((i) => i.fase.isNotEmpty);
+        if (aMano == null && !nuoto && !dallApp && !sedutaStrutturata(passi)) {
           return diagramma ?? const SizedBox.shrink();
         }
         // Quelli corretti a mano valgono al posto di quelli dell'orologio.
         // Quelli registrati con l'app hanno già nome e sezione.
-        final dallApp = letti.any((i) => i.fase.isNotEmpty);
         final abbinati = dallApp ? letti : abbinaAlPiano(s.sport, letti, passi);
         // I chilometri in più a fine seduta: una riga sola.
         final lista =
@@ -1234,6 +1287,13 @@ class _IntervalliState extends State<_Intervalli> {
                       style: conSezioni ? t.titleSmall : t.labelMedium,
                     ),
                   Text(rigaIntervallo(i, s.sport)),
+                  if (i.wattPrevisti case final r?)
+                    Text(
+                      'Da tenere ${fmtRange(r)}',
+                      style: t.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
                 ],
               );
         // Un titolo a ogni cambio di sezione, poi la riga sulla linea.

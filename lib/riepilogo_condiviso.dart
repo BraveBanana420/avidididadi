@@ -50,6 +50,38 @@ List<(String, String, String)> numeriSessione(
   ];
 }
 
+/// Le tre grafiche da condividere per una sessione.
+enum GraficaCondivisa { classica, mappa, poster }
+
+const nomiGrafiche = {
+  GraficaCondivisa.classica: 'Classica',
+  GraficaCondivisa.mappa: 'Mappa',
+  GraficaCondivisa.poster: 'Poster',
+};
+
+/// Il numero gigante del poster: la distanza se c'è (metri nel nuoto),
+/// altrimenti il tempo. (valore, sotto) es. ("42,2", "km"), ("1:02", "ore").
+(String, String) numeroGrande(Sessione s) {
+  if (s.distanzaKm > 0) {
+    final d = fmtDistanza(s.sport, s.distanzaKm).split(' ');
+    return (d.first, d.last);
+  }
+  if (s.durataMin >= 60) {
+    return ('${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'ore');
+  }
+  return ('${s.durataMin}', 'minuti');
+}
+
+/// I numeri piccoli sotto il poster: quelli della sessione senza quello già
+/// in grande, al massimo tre.
+List<(String, String, String)> numeriPoster(Sessione s) {
+  final grande = s.distanzaKm > 0 ? 'Distanza' : 'Tempo';
+  return [
+    for (final n in numeriSessione(s))
+      if (n.$1 != grande) n,
+  ].take(3).toList();
+}
+
 /// Il testo che accompagna l'immagine: "Corsa · 10,2 km in 52 min".
 String testoSessione(Sessione s) => [
   titoloSessione(s.sport, s.tipo),

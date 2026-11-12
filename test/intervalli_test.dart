@@ -2,6 +2,7 @@ import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/esecuzione.dart';
 import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/models.dart';
+import 'package:allenamenti_app/potenza.dart';
 import 'package:allenamenti_app/serie_sessione.dart';
 import 'package:allenamenti_app/sincronizzazione.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -593,6 +594,44 @@ void main() {
       expect(riletti.last.previstoS, 480);
       expect(riletti.last.fase, 'principale');
       expect(riletti.last.secondi, 120);
+    });
+
+    test('bici: i watt da tenere di ogni blocco si salvano e si rileggono', () {
+      const sweetSpot = [
+        Blocco(
+          tipo: TipoBlocco.lavoro,
+          titolo: 'Sweet spot',
+          intensita: '88-94%',
+          fase: 'principale',
+          secondi: 480,
+          passo: 0,
+        ),
+        Blocco(tipo: TipoBlocco.recupero, titolo: 'Recupero', passo: 0),
+      ];
+      final l = intervalliDaTratti(sweetSpot, [
+        tratto(0, 0, 480),
+        tratto(1, 480, 240),
+      ], zone: const ZonePotenza(200));
+      expect(l.first.wattPrevisti, (176, 188));
+      // Recupero senza obiettivo: piano, 45-55%.
+      expect(l.last.wattPrevisti, (90, 110));
+      // Con una virgola nel nome, e una riga senza watt previsti.
+      final riletti = intervalliDaCsv(
+        intervalliCsv([
+          l.first.copia(nome: 'Sweet spot, 1/3'),
+          l.last,
+          const IntervalloFatto(recupero: false, inizioS: 720, secondi: 60),
+        ]),
+      );
+      expect(riletti[0].wattPrevisti, (176, 188));
+      expect(riletti[0].nome, 'Sweet spot, 1/3');
+      expect(riletti[1].wattPrevisti, (90, 110));
+      expect(riletti[2].wattPrevisti, isNull);
+      // Senza zone (non bici) niente watt previsti.
+      expect(
+        intervalliDaTratti(sweetSpot, [tratto(0, 0, 480)]).first.wattPrevisti,
+        isNull,
+      );
     });
 
     test('i file vecchi a 5 colonne si leggono ancora', () {

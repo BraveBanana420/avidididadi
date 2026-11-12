@@ -2,6 +2,7 @@ import 'csv.dart';
 import 'esecuzione.dart';
 import 'fit.dart';
 import 'models.dart';
+import 'potenza.dart';
 import 'serie_sessione.dart';
 
 // Gli intervalli di un'attività: ogni tratto di lavoro o di recupero con
@@ -21,6 +22,10 @@ class IntervalloFatto {
   final int wattMedi; // 0 se mancano
   final int previstoS; // durata prevista dal passo; 0 se non si sa
   final String fase; // sezione della seduta, se già nota (sedute dell'app)
+
+  /// I watt da tenere previsti dal blocco (sedute di bici dell'app); null se
+  /// il blocco non li chiedeva o la seduta è di prima.
+  final (int, int)? wattPrevisti;
   const IntervalloFatto({
     required this.recupero,
     required this.inizioS,
@@ -31,6 +36,7 @@ class IntervalloFatto {
     this.wattMedi = 0,
     this.previstoS = 0,
     this.fase = '',
+    this.wattPrevisti,
   });
 
   IntervalloFatto copia({
@@ -49,6 +55,7 @@ class IntervalloFatto {
     wattMedi: wattMedi,
     previstoS: previstoS ?? this.previstoS,
     fase: fase,
+    wattPrevisti: wattPrevisti,
   );
 
   IntervalloFatto conNome(String n) => copia(nome: n);
@@ -77,7 +84,8 @@ List<IntervalloFatto> intervalliDaIcu(Object? risposta) {
 
 /// Per tenerli sul telefono: una riga per intervallo. Le colonne nuove stanno
 /// in fondo (le righe vecchie ne hanno 5) e il nome è l'ultima, perché può
-/// contenere virgole.
+/// contenere virgole. I watt previsti, se ci sono, vanno prima del nome come
+/// "@da-a": le righe senza restano come prima.
 String intervalliCsv(List<IntervalloFatto> l) => [
   for (final i in l)
     [
@@ -89,25 +97,31 @@ String intervalliCsv(List<IntervalloFatto> l) => [
       i.wattMedi,
       i.previstoS,
       i.fase.replaceAll(RegExp(r'[,\n\r]'), ' '),
+      if (i.wattPrevisti case (final da, final a)) '@$da-$a',
       i.nome.replaceAll(RegExp(r'[\n\r]'), ' '),
     ].join(','),
 ].join('\n');
 
+final _wattPrevisti = RegExp(r'^@(\d+)-(\d+)$');
+
 List<IntervalloFatto> intervalliDaCsv(String testo) => [
   for (final riga in testo.split('\n'))
     if (riga.trimRight().split(',') case final c when c.length >= 5)
-      IntervalloFatto(
-        recupero: c[0] == 'r',
-        inizioS: int.tryParse(c[1]) ?? 0,
-        secondi: int.tryParse(c[2]) ?? 0,
-        metri: double.tryParse(c[3]) ?? 0,
-        fcMedia: int.tryParse(c[4]) ?? 0,
-        wattMedi: c.length > 5 ? int.tryParse(c[5]) ?? 0 : 0,
-        previstoS: c.length > 6 ? int.tryParse(c[6]) ?? 0 : 0,
-        fase: c.length > 7 ? c[7] : '',
-        nome: c.length > 8 ? c.sublist(8).join(',') : '',
-      ),
+      _daRiga(c, c.length > 9 ? _wattPrevisti.firstMatch(c[8]) : null),
 ];
+
+IntervalloFatto _daRiga(List<String> c, RegExpMatch? w) => IntervalloFatto(
+  recupero: c[0] == 'r',
+  inizioS: int.tryParse(c[1]) ?? 0,
+  secondi: int.tryParse(c[2]) ?? 0,
+  metri: double.tryParse(c[3]) ?? 0,
+  fcMedia: int.tryParse(c[4]) ?? 0,
+  wattMedi: c.length > 5 ? int.tryParse(c[5]) ?? 0 : 0,
+  previstoS: c.length > 6 ? int.tryParse(c[6]) ?? 0 : 0,
+  fase: c.length > 7 ? c[7] : '',
+  wattPrevisti: w == null ? null : (int.parse(w[1]!), int.parse(w[2]!)),
+  nome: c.length > 8 ? c.sublist(w == null ? 8 : 9).join(',') : '',
+);
 
 /// I passi in programma, una voce per ogni ripetizione: (nome, metri).
 /// "4 × 50 m Gambe" diventa quattro voci "Gambe 1/4"… da 50 m.
@@ -557,6 +571,7 @@ List<IntervalloFatto> intervalliDaTratti(
   List<TrattoApp> tratti, {
   List<Campione> fc = const [],
   List<Campione> potenza = const [],
+  ZonePotenza? zone,
 }) {
   if (tratti.isEmpty) return const [];
   final partenza = tratti.first.inizio;
@@ -583,6 +598,9 @@ List<IntervalloFatto> intervalliDaTratti(
             wattMedi: _mediaTra(potenza, t.inizio, t.fine),
             previstoS: b.secondi ?? 0,
             fase: b.fase,
+            wattPrevisti: zone == null
+                ? null
+                : rangeWatt(b.intensita, zone, recupero: recupero),
             nome: recupero
                 ? ''
                 : n > 1
