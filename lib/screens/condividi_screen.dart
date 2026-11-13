@@ -260,6 +260,9 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   Widget build(BuildContext context) {
     final state = widget.state;
     final s = widget.sessione;
+    // I tratti corretti a mano (pause e ripetute sistemate dopo) valgono
+    // più di quelli dell'orologio, come nel riepilogo.
+    final tratti = state.intervalliModificati[s.id] ?? _tratti;
     final forza = stessoSport(s.sport, 'Forza');
     final serie = forza
         ? state.serieDel(s.data)
@@ -270,7 +273,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final esercizi = forza
         ? [for (final e in serie.entries) (e.key, fmtSerie(e.value))]
         : [
-            for (final (nome, sec) in eserciziDaTratti(_tratti))
+            for (final (nome, sec) in eserciziDaTratti(tratti))
               (nome, fmtSecondi(sec)),
           ];
     final ids = {for (final x in serie.values.expand((x) => x)) x.esercizio};
@@ -285,7 +288,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         ? const <int>[]
         : tempiPerKm(_percorso!);
     final ripetute = stessoSport(s.sport, 'Nuoto')
-        ? passiRipetute(_tratti)
+        ? passiRipetute(tratti)
         : const <int>[];
     final grafiche = grafichePer(s.sport, (
       mappa: _percorso != null,
@@ -301,7 +304,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final zp = state.zonePotenza;
     final barre = zp == null || !stessoSport(s.sport, 'Bici')
         ? const <BarraAllenamento>[]
-        : barreFatte(_tratti);
+        : barreFatte(tratti);
     final record = forza ? recordDelGiorno(state.serieFatte, s.data) : null;
     final t = Theme.of(context).textTheme;
     return _Pagina(
