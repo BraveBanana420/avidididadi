@@ -46,8 +46,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
           final aMano = stessoSport(s.sport, 'Nuoto')
               ? widget.state.intervalliModificati[s.id]
               : null;
-          final inizio =
-              s.inizio ?? (serie.vuota ? s.data : _inizio(serie));
+          final inizio = s.inizio ?? (serie.vuota ? s.data : _inizio(serie));
           final velocita = aMano == null
               ? serie.velocita
               : velocitaDaTratti(aMano, inizio);
@@ -70,11 +69,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 const SizedBox(height: 12),
               ],
               if (velocita.isNotEmpty) ...[
-                _Velocita(
-                  serie: velocita,
-                  inizio: inizio,
-                  sport: s.sport,
-                ),
+                _Velocita(serie: velocita, inizio: inizio, sport: s.sport),
                 const SizedBox(height: 12),
               ],
               if (serie.altitudine.isNotEmpty) ...[

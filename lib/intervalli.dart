@@ -653,10 +653,7 @@ int? passoNuotatoDaTratti(List<IntervalloFatto> tratti) {
 /// La velocità nel tempo (un campione al secondo) ricostruita dai tratti,
 /// uno dopo l'altro: per i grafici quando i tratti sono corretti a mano e la
 /// velocità dell'orologio (con i suoi errori) non vale più. Pause a zero.
-List<Campione> velocitaDaTratti(
-  List<IntervalloFatto> tratti,
-  DateTime inizio,
-) {
+List<Campione> velocitaDaTratti(List<IntervalloFatto> tratti, DateTime inizio) {
   final out = <Campione>[];
   var t = tratti.isEmpty ? 0 : tratti.first.inizioS;
   for (final i in tratti) {
