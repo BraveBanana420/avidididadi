@@ -4,7 +4,7 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-08.1';
+const versioneTermini = '2026-11-13.1';
 const aggiornamentoTermini = '30 ottobre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
@@ -122,11 +122,13 @@ class PrivacyScreen extends StatelessWidget {
       ),
       (
         'Sensori Bluetooth (battito e bici)',
-        "Solo se lo scegli tu, durante la modalità allenamento l'app si "
+        "Solo se lo scegli tu, durante la modalità allenamento o dalla "
+            "pagina \"I miei sensori\" del Profilo, l'app si "
             "collega via Bluetooth a una fascia cardio, a un orologio che "
             "trasmette il battito o ai sensori della bici (rulli, potenza, "
-            "velocità e cadenza), per mostrarteli mentre ti alleni. Alla fine "
-            "salva nella sessione battito medio e massimo, potenza e cadenza "
+            "velocità e cadenza), per mostrarteli mentre ti alleni. Chiusa "
+            "quella pagina o finito l'allenamento, si scollega. Alla fine "
+            "della seduta salva nella sessione battito medio e massimo, potenza e cadenza "
             "medie e, per i grafici, un valore al secondo di battito, potenza, "
             "cadenza e velocità: tutto sul telefono. Nome e indirizzo Bluetooth dei sensori (e "
             "la circonferenza della ruota) restano sul telefono per "

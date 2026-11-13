@@ -22,6 +22,7 @@ import 'obiettivo_screen.dart';
 import 'opzioni_allenamento_screen.dart';
 import 'percorsi_screen.dart';
 import 'schede_screen.dart';
+import 'sensori_screen.dart';
 import 'tour.dart';
 import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
@@ -365,6 +366,12 @@ class ProfileScreen extends StatelessWidget {
                         value: neon.value,
                         onChanged: (_) => cambiaNeon(),
                       ),
+                    ),
+                    voce(
+                      Icons.bluetooth,
+                      'I miei sensori',
+                      'Fascia cardio, rullo e sensori della bici',
+                      SensoriScreen(state: state),
                     ),
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.speed),

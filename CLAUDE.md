@@ -9,7 +9,7 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 Funzioni principali:
 - **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
 - **Primo avvio**: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lun-mer-ven, senza seduta lunga, app in modo semplice); le altre domande sono facoltative.
-- **Modo semplice / Funzioni avanzate** (Profilo, `profilo.modoAvanzato`): in modo semplice restano nascosti "Le mie zone", le icone dei sensori in allenamento, intervals.icu e l'import da file. Chi usava già l'app vede tutto.
+- **Modo semplice / Funzioni avanzate** (Profilo, `profilo.modoAvanzato`): in modo semplice restano nascosti "Le mie zone", le icone dei sensori in allenamento, intervals.icu e l'import da file. Chi usava già l'app vede tutto. "I miei sensori" (Profilo) c'è sempre: collegando un sensore si passa alle funzioni avanzate, con un avviso.
 - **Backup proposto in Oggi**: invito ad attivare il backup automatico ("Non ora": torna dopo 14 giorni, poi 30) e avviso se l'ultimo non è riuscito.
 - **Attività libera** (dal "+"): forza libera con esercizi, serie e kg scritti alla fine; "Altra attività" col nome scritto dall'utente (es. Kayak) e GPS facoltativo scelto all'inizio.
 - **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
@@ -238,7 +238,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth del battito solo con la modalità allenamento aperta.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth (battito e sensori della bici) solo con la modalità allenamento o la pagina "I miei sensori" aperta.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.
