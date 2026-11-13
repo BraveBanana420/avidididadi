@@ -123,10 +123,10 @@ List<Spinta> spinte({
     out.add(
       Spinta(
         TipoSpinta.fila,
+        // Un invito, non un ordine: niente scadenze né "devi".
         settimanaFatta(sessioni, oggi)
-            ? '$fila settimane di fila'
-            : '$fila settimane di fila: allenati entro domenica per '
-                  'continuare',
+            ? '$fila settimane di fila: grande!'
+            : '$fila settimane di fila. Vai per la ${fila + 1}?',
       ),
     );
   }

@@ -112,7 +112,17 @@ void main() {
       expect(spinte(sessioni: x, serie: const [], oggi: oggi), isEmpty);
     });
 
-    test('fila con la settimana ancora da fare: invita ad allenarsi', () {
+    test('fila con la settimana già fatta: un complimento', () {
+      final x = [
+        s(DateTime(2026, 11, 10)),
+        s(DateTime(2026, 11, 4)),
+        s(DateTime(2026, 10, 1)),
+      ];
+      final r = spinte(sessioni: x, serie: const [], oggi: oggi);
+      expect(r.single.testo, '2 settimane di fila: grande!');
+    });
+
+    test('fila con la settimana ancora da fare: un invito gentile', () {
       final x = [
         s(DateTime(2026, 11, 4)),
         s(DateTime(2026, 10, 30)),
@@ -120,7 +130,7 @@ void main() {
       ];
       final r = spinte(sessioni: x, serie: const [], oggi: oggi);
       expect(r.single.tipo, TipoSpinta.fila);
-      expect(r.single.testo, contains('entro domenica'));
+      expect(r.single.testo, '2 settimane di fila. Vai per la 3?');
     });
 
     test('primo allenamento', () {

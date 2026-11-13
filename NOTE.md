@@ -97,5 +97,47 @@
 - [ ] **Da installare sul telefono**: la versione con intervals.icu, mappa a
   livelli e grafici (telefono scollegato il 30/10).
 
+## In sospeso dal 13/11/2026: rendere l'app più facile per tutti
+
+Partito da una recensione dell'app (voto 7/10: ottima per chi ha già un
+orologio, difficile da ottenere e da iniziare per gli altri).
+
+Fatto (su `staging`, da provare sul telefono e nei 4 temi):
+- [x] **"Inizia oggi"** al primo avvio: scelti gli sport, piano pronto con
+  3 sedute da 30 minuti (lun-mer-ven, weekend libero), livello principiante,
+  senza seduta lunga; la prima seduta è anticipata a oggi.
+- [x] **Seduta lunga** di corsa e bici: si spegne da Prepara le sedute →
+  "come crescere".
+- [x] **Backup proposto in Oggi**, con "Non ora" (torna dopo 14 giorni, poi
+  30) e avviso se l'ultimo backup non è riuscito.
+- [x] **Motivazione in Oggi**: settimane di fila, traguardi, record.
+- [x] **Modo semplice** (Profilo → Funzioni avanzate): nasconde "Le mie
+  zone", le icone dei sensori in allenamento, intervals.icu e l'import da file.
+
+Da riprendere, forse:
+- [ ] **Provare il primo avvio** su un telefono pulito (o dopo un backup):
+  "Inizia oggi", il riquadro del backup, le righe di motivazione.
+- [ ] **Modo semplice, resto**: le scritte "zona 2" nelle sedute, i grafici e
+  la pagina Progressi non sono stati toccati. In modo semplice la fascia
+  cardio non si può collegare finché non si accendono le funzioni avanzate:
+  decidere se va bene.
+- [ ] **Chi parte con "Inizia oggi" salta la pagina sull'orologio**: forse
+  riproporla dopo, in Oggi.
+- [ ] **Chi sceglie le domande complete** ha ancora lo schema con il sabato
+  (lun-mer-sab) e la seduta lunga accesa: decidere se allinearlo.
+- [ ] **Salvataggio su Google Drive**: la cartella del backup automatico
+  resta sul telefono (Drive di solito non compare nella scelta della
+  cartella: da verificare). Un vero backup su Drive chiede l'accesso con
+  Google: da fare insieme al Play Store.
+- [ ] **Play Store** (se si decide di pubblicare): account sviluppatore
+  (25 $), informativa privacy su una pagina web (GitHub Pages, dal testo di
+  `privacy_screen.dart`), modulo "Sicurezza dei dati", dichiarazioni per
+  Health Connect e per il GPS a schermo spento. Il DPO non serve: i dati
+  restano sul telefono (parere non legale).
+- [ ] **Inglese**: per ultimo, i testi sono sparsi in tutta l'app.
+- Scartati per ora: parte social e classifiche, app per l'orologio, iOS,
+  coach senza chiave (servirebbe un server), Strava diretto (basta
+  intervals.icu), cambio del nome.
+
 ## Appunti
 
