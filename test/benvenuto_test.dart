@@ -25,47 +25,69 @@ void main() {
       expect(s.map((x) => x.sport).toSet().length, 2);
     });
 
-    test('"Inizia oggi": oggi è sempre un giorno di allenamento', () {
-      for (var giorni = 1; giorni <= 6; giorni++) {
-        for (var oggi = 1; oggi <= 7; oggi++) {
-          final s = settimanaDa(
-            sport: ['Corsa', 'Forza'],
-            giorni: giorni,
-            minuti: 30,
-            oggi: oggi,
-          );
-          expect(s.length, giorni);
-          expect(s.map((x) => x.giorno).toSet().length, giorni);
-          expect(s.any((x) => x.giorno == oggi), true, reason: '$giorni/$oggi');
-        }
+    test('"Inizia oggi": lunedì, mercoledì e venerdì, weekend libero', () {
+      final s = settimanaDa(
+        sport: ['Forza', 'Corsa'],
+        giorni: 3,
+        minuti: 30,
+        feriali: true,
+      );
+      expect(
+        [for (final x in s) (x.giorno, x.sport)],
+        [(1, 'Corsa'), (3, 'Forza'), (5, 'Corsa')],
+      );
+    });
+
+    test('"Inizia oggi" con 4 o 5 sport: ancora niente weekend', () {
+      for (final n in [4, 5]) {
+        final s = settimanaDa(
+          sport: ['Corsa', 'Forza', 'Nuoto', 'Bici', 'Mobilità'],
+          giorni: n,
+          minuti: 30,
+          feriali: true,
+        );
+        expect(s.length, n);
+        expect(s.every((x) => x.giorno <= 5), true);
       }
     });
 
-    test('"Inizia oggi" di venerdì: lunedì, mercoledì e venerdì', () {
-      final s = settimanaDa(
-        sport: ['Corsa', 'Forza'],
-        giorni: 3,
-        minuti: 30,
-        oggi: 5,
+    group('"Inizia oggi": la prima seduta è oggi', () {
+      // Lunedì 16, mercoledì 18 e venerdì 20 novembre 2026, poi lunedì 23.
+      PianoRiga riga(int giorno, String sport) => PianoRiga(
+        data: DateTime(2026, 11, giorno),
+        fascia: 'Mattina',
+        sport: sport,
+        durataMin: 30,
       );
-      expect(s.map((x) => x.giorno), [1, 3, 5]);
-    });
+      final piano = [
+        riga(16, 'Corsa'),
+        riga(18, 'Forza'),
+        riga(20, 'Corsa'),
+        riga(23, 'Corsa'),
+      ];
+      List<int> giorni(DateTime oggi) => [
+        for (final r in conPrimaSedutaOggi(piano, oggi)) r.data.day,
+      ];
 
-    test(
-      '"Inizia oggi" in un giorno già previsto: la settimana non cambia',
-      () {
-        final s = settimanaDa(
-          sport: ['Forza', 'Corsa'],
-          giorni: 3,
-          minuti: 30,
-          oggi: 3,
-        );
-        expect(
-          [for (final x in s) (x.giorno, x.sport)],
-          [(1, 'Corsa'), (3, 'Forza'), (6, 'Corsa')],
-        );
-      },
-    );
+      test('oggi è già un giorno di allenamento: niente cambia', () {
+        expect(giorni(DateTime(2026, 11, 18)), [16, 18, 20, 23]);
+      });
+
+      test('di martedì: la seduta di mercoledì passa a oggi', () {
+        final p = conPrimaSedutaOggi(piano, DateTime(2026, 11, 17));
+        expect([for (final r in p) r.data.day], [16, 17, 20, 23]);
+        expect(p[1].sport, 'Forza');
+        expect(p[1].durataMin, 30);
+      });
+
+      test('di sabato: la seduta di lunedì passa a oggi, il resto resta', () {
+        expect(giorni(DateTime(2026, 11, 21)), [16, 18, 20, 21]);
+      });
+
+      test('piano finito: niente da anticipare', () {
+        expect(giorni(DateTime(2026, 11, 25)), [16, 18, 20, 23]);
+      });
+    });
 
     test('"Inizia oggi": tre giorni, o uno per sport se sono di più', () {
       expect(giorniSubito(1), 3);

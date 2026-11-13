@@ -15,6 +15,7 @@ import '../tema.dart';
 import '../widgets.dart';
 import '../workout_base.dart';
 import 'altra_attivita_sheet.dart';
+import 'backup_card.dart';
 import 'energia.dart';
 import 'esecuzione_screen.dart';
 import 'modifica_sessione_screen.dart';
@@ -243,6 +244,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ? null
                           : () => _seleziona(oggi),
                     ),
+                    // Sotto la seduta del giorno: non la spinge in basso.
+                    if (!state.primaVolta) PromemoriaBackup(state: state),
                     Padding(
                       key: ChiaviTour.settimana,
                       padding: const EdgeInsets.symmetric(horizontal: 8),

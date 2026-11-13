@@ -882,7 +882,8 @@ class AppState extends ChangeNotifier {
 
   /// Configurazione guidata: settimana tipo, piano di 3 mesi e sedute pronte
   /// per gli sport scelti. Restituisce quante sedute ci sono da oggi.
-  /// Con [daOggi] la settimana è messa in modo che oggi ci sia una seduta.
+  /// Con [daOggi] ("Inizia oggi") i giorni sono dal lunedì al venerdì e la
+  /// prima seduta è anticipata a oggi.
   Future<int> configuraDaZero({
     required String nome,
     required List<String> sport,
@@ -900,10 +901,14 @@ class AppState extends ChangeNotifier {
       sport: sport,
       giorni: giorni,
       minuti: minuti,
-      oggi: daOggi ? oggi.weekday : null,
+      feriali: daOggi,
     );
     await Storage.writeSettimana(settimana);
     await genera(oggi, 3);
+    if (daOggi) {
+      piano = conPrimaSedutaOggi(piano, oggi);
+      await Storage.writePiano(piano);
+    }
     if (sport.contains('Forza')) await creaPianoForza('generale', livello);
     final resistenza = {
       for (final s in sport)
@@ -1134,6 +1139,28 @@ class AppState extends ChangeNotifier {
     await salvaImpostazioniBackup(b);
     notifyListeners();
   }
+
+  /// Accende il backup automatico: fa scegliere la cartella e scrive subito
+  /// il primo. Falso se la scelta è stata annullata.
+  Future<bool> accendiBackupAuto() async {
+    final c = await scegliCartellaBackup();
+    if (c == null) return false;
+    await impostaBackupAuto(
+      backupAuto.copyWith(cartella: c.$1, nomeCartella: c.$2, errore: ''),
+    );
+    await backupAutomatico(subito: true);
+    return true;
+  }
+
+  /// "Non ora" alla proposta del backup: torna più avanti.
+  /// Con [aLungo] (spento apposta dal Profilo) aspetta subito il tempo lungo.
+  Future<void> rimandaBackup({bool aLungo = false}) => impostaBackupAuto(
+    ImpostazioniBackup(
+      frequenza: backupAuto.frequenza,
+      rimandato: DateTime.now(),
+      rimandi: aLungo ? 2 : backupAuto.rimandi + 1,
+    ),
+  );
 
   /// All'apertura: scrive il backup se è ora. Con [subito], comunque.
   Future<void> backupAutomatico({bool subito = false}) async {

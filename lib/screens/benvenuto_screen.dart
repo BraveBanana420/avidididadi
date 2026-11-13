@@ -61,7 +61,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
 
   /// Crea il piano con le risposte date. Con [subito] ("Inizia oggi") le
   /// altre domande si saltano: 30 minuti, livello principiante, tre giorni
-  /// (o uno per sport), messi in modo che oggi ci sia già una seduta.
+  /// (o uno per sport) dal lunedì al venerdì, con la prima seduta già oggi.
   Future<void> _crea({bool subito = false}) async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
@@ -149,8 +149,9 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                     t,
                     'Cosa ti piacerebbe fare?',
                     'Puoi sceglierne più di uno. Con "Inizia oggi" parti con '
-                        '3 sedute da 30 minuti a settimana, adatte a chi '
-                        'comincia: potrai cambiare tutto quando vuoi.',
+                        '3 sedute da 30 minuti a settimana (lunedì, mercoledì '
+                        'e venerdì), adatte a chi comincia, e la prima è già '
+                        'oggi. Potrai cambiare tutto quando vuoi.',
                     // Riquadri grandi da toccare, due per riga; la mobilità
                     // (l'opzione più dolce) da sola, in fondo.
                     LayoutBuilder(

@@ -25,12 +25,18 @@ class ImpostazioniBackup {
   final DateTime? ultimo;
   final String errore;
 
+  /// Quando si è detto "Non ora" alla proposta in Oggi, e quante volte.
+  final DateTime? rimandato;
+  final int rimandi;
+
   const ImpostazioniBackup({
     this.cartella = '',
     this.nomeCartella = '',
     this.frequenza = FrequenzaBackup.settimana,
     this.ultimo,
     this.errore = '',
+    this.rimandato,
+    this.rimandi = 0,
   });
 
   bool get attivo => cartella.isNotEmpty;
@@ -41,12 +47,16 @@ class ImpostazioniBackup {
     FrequenzaBackup? frequenza,
     DateTime? ultimo,
     String? errore,
+    DateTime? rimandato,
+    int? rimandi,
   }) => ImpostazioniBackup(
     cartella: cartella ?? this.cartella,
     nomeCartella: nomeCartella ?? this.nomeCartella,
     frequenza: frequenza ?? this.frequenza,
     ultimo: ultimo ?? this.ultimo,
     errore: errore ?? this.errore,
+    rimandato: rimandato ?? this.rimandato,
+    rimandi: rimandi ?? this.rimandi,
   );
 
   String toText() =>
@@ -54,7 +64,9 @@ class ImpostazioniBackup {
       'nome=$nomeCartella\n'
       'frequenza=${frequenza.name}\n'
       'ultimo=${ultimo?.toIso8601String() ?? ''}\n'
-      'errore=$errore\n';
+      'errore=$errore\n'
+      'rimandato=${rimandato?.toIso8601String() ?? ''}\n'
+      'rimandi=$rimandi\n';
 
   static ImpostazioniBackup da(String testo) {
     final v = <String, String>{};
@@ -70,8 +82,28 @@ class ImpostazioniBackup {
           : FrequenzaBackup.settimana,
       ultimo: DateTime.tryParse(v['ultimo'] ?? ''),
       errore: v['errore'] ?? '',
+      rimandato: DateTime.tryParse(v['rimandato'] ?? ''),
+      rimandi: int.tryParse(v['rimandi'] ?? '') ?? 0,
     );
   }
+}
+
+/// Cosa dire in Oggi sul backup automatico.
+enum AvvisoBackup { nessuno, proponi, errore }
+
+/// Spento: si propone subito, poi dopo ogni "Non ora" si aspetta (14 giorni
+/// la prima volta, 30 le successive: un promemoria, non un assillo).
+/// Acceso: si avvisa solo se l'ultimo backup non è riuscito.
+AvvisoBackup avvisoBackup(ImpostazioniBackup b, DateTime ora) {
+  if (b.attivo) {
+    return b.errore.isEmpty ? AvvisoBackup.nessuno : AvvisoBackup.errore;
+  }
+  final r = b.rimandato;
+  if (r == null) return AvvisoBackup.proponi;
+  final attesa = Duration(days: b.rimandi <= 1 ? 14 : 30);
+  return ora.difference(r) >= attesa
+      ? AvvisoBackup.proponi
+      : AvvisoBackup.nessuno;
 }
 
 /// È ora di un backup? Un po' di margine: aprendo l'app ogni mattina
