@@ -121,6 +121,12 @@ Da riprendere, forse:
   la pagina Progressi non sono stati toccati. In modo semplice la fascia
   cardio non si può collegare finché non si accendono le funzioni avanzate:
   decidere se va bene.
+- [ ] **"I miei sensori" nel Profilo** (idea del 13/11): voce sempre
+  visibile, anche in modo semplice, che apre le finestre di battito, sensori
+  della bici e rullo. Al primo sensore collegato si accendono le funzioni
+  avanzate, con un avviso e il tasto Annulla. Attenzione: usa il Bluetooth
+  fuori dall'allenamento, quindi va aggiornata l'informativa
+  (`privacy_screen.dart`) e alzata `versioneTermini`.
 - [ ] **Chi parte con "Inizia oggi" salta la pagina sull'orologio**: forse
   riproporla dopo, in Oggi.
 - [ ] **Chi sceglie le domande complete** ha ancora lo schema con il sabato
