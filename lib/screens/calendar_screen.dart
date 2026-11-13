@@ -19,6 +19,7 @@ import 'backup_card.dart';
 import 'energia.dart';
 import 'esecuzione_screen.dart';
 import 'modifica_sessione_screen.dart';
+import 'motivazione_card.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
 import 'schede_screen.dart';
@@ -262,6 +263,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         verso: _verso,
                       ),
                     ),
+                    Motivazione(state: state),
                     Center(
                       child: TextButton.icon(
                         onPressed: () =>
