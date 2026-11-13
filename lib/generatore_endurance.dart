@@ -133,6 +133,7 @@ PianoEndurance generaPianoEndurance({
   Map<String, String> progressione =
       const {}, // per sport: durata, intensità, auto
   bool principiante = false, // si parte da zero: prima solo corse facili
+  bool lungo = true, // falso: niente seduta lunga, durano tutte uguale
 }) {
   final passi = <WorkoutStep>[];
   final programma = <ProgrammaRiga>[];
@@ -215,6 +216,7 @@ PianoEndurance generaPianoEndurance({
           obiettivo,
           principiante,
           lungoFatto,
+          lungo,
         ))
           (
             s,
@@ -343,12 +345,16 @@ List<_Seduta> _ruoli(
   Obiettivo? obiettivo,
   bool principiante,
   int lungoFatto,
+  bool conLungo,
 ) {
   final n = righe.length;
   // L'ultima della settimana è il lungo (la corsa anche se è l'unica); la
   // qualità è l'ultima ad almeno due giorni dal lungo; le altre sono facili.
   // Con una sola seduta di nuoto o bici, qualità a settimane alterne.
-  final lungo = sport == 'Nuoto' || (sport == 'Bici' && n < 2) ? -1 : n - 1;
+  // Senza lungo (scelta dell'utente) tutte le sedute durano quanto lo slot.
+  final lungo = !conLungo || sport == 'Nuoto' || (sport == 'Bici' && n < 2)
+      ? -1
+      : n - 1;
   var qualita = -1;
   if (n == 1 && lungo < 0) {
     if (settimane.isOdd) qualita = 0;

@@ -28,6 +28,8 @@ class Profilo {
   Map<String, int> regolazioneEndurance = {}; // per sport, dai feedback
   Map<String, String> progressione = {}; // per sport: durata, intensita, auto
   bool benvenuto = false; // configurazione guidata già fatta (o saltata)
+  // Niente seduta lunga di corsa e bici: durano tutte quanto scelto.
+  bool senzaLungo = false;
   String terminiAccettati = ''; // versione di termini e informativa accettata
   // Gara obiettivo (vuota = nessuna).
   String garaSport = '';
@@ -105,6 +107,7 @@ class Profilo {
     ['ftp', ftpManuale == 0 ? '' : '$ftpManuale'],
     ['ftp_corsa', ftpCorsaManuale == 0 ? '' : '$ftpCorsaManuale'],
     ['attivita', attivita.join(',')],
+    ['senza_lungo', senzaLungo ? 'si' : ''],
   ];
 
   static Profilo da(Tabella? t) {
@@ -134,6 +137,7 @@ class Profilo {
         .toSet();
     p.inizioEndurance = parseData(m['inizio_endurance'] ?? '');
     p.benvenuto = m['benvenuto'] == 'si';
+    p.senzaLungo = m['senza_lungo'] == 'si';
     p.terminiAccettati = m['termini'] ?? '';
     for (final x in (m['regolazione_endurance'] ?? '').split(',')) {
       final kv = x.split(':');

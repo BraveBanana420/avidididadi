@@ -136,6 +136,32 @@ void main() {
     },
   );
 
+  test('senza seduta lunga: nessun lungo, durano tutte quanto scelto', () {
+    final lunedi = DateTime(2026, 11, 16);
+    final piano = [
+      for (var w = 0; w < 8; w++)
+        for (final g in [0, 4])
+          PianoRiga(
+            data: lunedi.add(Duration(days: 7 * w + g)),
+            fascia: 'Mattina',
+            sport: 'Corsa',
+            durataMin: 30,
+          ),
+    ];
+    PianoEndurance genera(bool lungo) => generaPianoEndurance(
+      piano: piano,
+      storico: const [],
+      sport: {'Corsa'},
+      inizio: lunedi,
+      da: lunedi,
+      principiante: true,
+      lungo: lungo,
+    );
+    expect(genera(true).tipi.values, contains('Lungo'));
+    expect(genera(false).tipi.values, isNot(contains('Lungo')));
+    expect(genera(false).tipi.length, piano.length);
+  });
+
   test('ogni tipo di seduta generato ha una spiegazione', () {
     for (final t in [
       'Lento',

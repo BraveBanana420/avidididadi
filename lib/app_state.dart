@@ -896,6 +896,8 @@ class AppState extends ChangeNotifier {
     if (nome.trim().isNotEmpty) profilo.nome = nome.trim();
     profilo.benvenuto = true;
     profilo.attivita = sport.toSet();
+    // "Inizia oggi": sedute tutte uguali, senza quella lunga che cresce.
+    profilo.senzaLungo = daOggi;
     await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
     settimana = settimanaDa(
       sport: sport,
@@ -919,6 +921,14 @@ class AppState extends ChangeNotifier {
     }
     notifyListeners();
     return piano.where((r) => !r.data.isBefore(oggi)).length;
+  }
+
+  /// Seduta lunga di corsa e bici accesa o spenta.
+  Future<void> impostaLungo(bool acceso) async {
+    profilo.senzaLungo = !acceso;
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    await _aggiornaEndurance();
+    notifyListeners();
   }
 
   /// Come cresce il carico di uno sport: durata, intensità o automatico.
@@ -1057,6 +1067,7 @@ class AppState extends ChangeNotifier {
             regolazione: profilo.regolazioneEndurance,
             progressione: profilo.progressione,
             principiante: profilo.livello == 'principiante',
+            lungo: !profilo.senzaLungo,
           );
     // Le schede scritte a mano, dove valgono, al posto delle sedute preparate.
     var nuovo = generato;
