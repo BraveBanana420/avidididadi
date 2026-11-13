@@ -301,14 +301,16 @@ class ProfileScreen extends StatelessWidget {
                       'Esercizi',
                       'Come si fanno, con immagini e muscoli usati',
                       CatalogoScreen(state: state),
+                      linea: p.modoAvanzato,
                     ),
-                    voce(
-                      Icons.monitor_heart_outlined,
-                      'Le mie zone',
-                      'Quanto spingere: battiti al minuto e watt in bici',
-                      ZoneScreen(state: state),
-                      linea: false,
-                    ),
+                    if (p.modoAvanzato)
+                      voce(
+                        Icons.monitor_heart_outlined,
+                        'Le mie zone',
+                        'Quanto spingere: battiti al minuto e watt in bici',
+                        ZoneScreen(state: state),
+                        linea: false,
+                      ),
                   ],
                 ),
                 TitoloSezione(
@@ -362,6 +364,16 @@ class ProfileScreen extends StatelessWidget {
                       fine: Switch(
                         value: neon.value,
                         onChanged: (_) => cambiaNeon(),
+                      ),
+                    ),
+                    RigaPulse(
+                      segno: const IconaQuadrata(Icons.speed),
+                      titolo: 'Funzioni avanzate',
+                      sottotitolo: 'Zone, watt, sensori Bluetooth, rullo e intervals.icu',
+                      onTap: () => state.impostaAvanzata(!p.modoAvanzato),
+                      fine: Switch(
+                        value: p.modoAvanzato,
+                        onChanged: state.impostaAvanzata,
                       ),
                     ),
                     voce(

@@ -8,6 +8,9 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 
 Funzioni principali:
 - **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
+- **Primo avvio**: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lun-mer-ven, senza seduta lunga, app in modo semplice); le altre domande sono facoltative.
+- **Modo semplice / Funzioni avanzate** (Profilo, `profilo.modoAvanzato`): in modo semplice restano nascosti "Le mie zone", le icone dei sensori in allenamento, intervals.icu e l'import da file. Chi usava già l'app vede tutto.
+- **Backup proposto in Oggi**: invito ad attivare il backup automatico ("Non ora": torna dopo 14 giorni, poi 30) e avviso se l'ultimo non è riuscito.
 - **Attività libera** (dal "+"): forza libera con esercizi, serie e kg scritti alla fine; "Altra attività" col nome scritto dall'utente (es. Kayak) e GPS facoltativo scelto all'inizio.
 - **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
@@ -79,6 +82,8 @@ lib/
   avvisi.dart          bip, vibrazione, voce, pausa automatica e passo medio (avvisi.txt)
   voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
   attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
+  benvenuto.dart       primo avvio: settimana dalle risposte, "Inizia oggi" (lun-mer-ven, prima seduta anticipata a oggi)
+  motivazione.dart     righe in Oggi: settimane di fila, traguardi, record di forza e di distanza
   sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
   navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
   mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre

@@ -77,6 +77,8 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
       minuti: subito ? 30 : minuti,
       livello: subito ? 'principiante' : livello,
       daOggi: subito,
+      // Con un orologio o una fascia servono zone, sensori e collegamenti.
+      avanzata: !subito && orologio == true,
     );
     navigator.pop();
     messenger.showSnackBar(

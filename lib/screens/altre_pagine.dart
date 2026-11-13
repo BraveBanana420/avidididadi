@@ -34,11 +34,16 @@ class DatiCollegamentiScreen extends StatelessWidget {
           const SizedBox(height: 12),
           SezioneHealthConnect(state: state),
           const SizedBox(height: 12),
-          SezioneIntervals(state: state),
-          const SizedBox(height: 12),
+          // intervals.icu e l'import da file: solo con le funzioni avanzate.
+          if (state.profilo.modoAvanzato) ...[
+            SezioneIntervals(state: state),
+            const SizedBox(height: 12),
+          ],
           SezioneBackup(state: state),
-          const SizedBox(height: 12),
-          ImportCsvAvanzato(state: state),
+          if (state.profilo.modoAvanzato) ...[
+            const SizedBox(height: 12),
+            ImportCsvAvanzato(state: state),
+          ],
           const SizedBox(height: 8),
           TextButton.icon(
             onPressed: () => Navigator.of(context)

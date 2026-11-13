@@ -891,6 +891,7 @@ class AppState extends ChangeNotifier {
     required int minuti,
     required String livello,
     bool daOggi = false,
+    bool avanzata = false,
   }) async {
     final oggi = soloData(DateTime.now());
     if (nome.trim().isNotEmpty) profilo.nome = nome.trim();
@@ -898,6 +899,8 @@ class AppState extends ChangeNotifier {
     profilo.attivita = sport.toSet();
     // "Inizia oggi": sedute tutte uguali, senza quella lunga che cresce.
     profilo.senzaLungo = daOggi;
+    // Chi comincia vede l'app semplice; con un orologio, tutto.
+    profilo.avanzata = avanzata ? 'si' : 'no';
     await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
     settimana = settimanaDa(
       sport: sport,
@@ -921,6 +924,12 @@ class AppState extends ChangeNotifier {
     }
     notifyListeners();
     return piano.where((r) => !r.data.isBefore(oggi)).length;
+  }
+
+  /// Funzioni avanzate (zone, watt, sensori, intervals.icu) in vista o no.
+  Future<void> impostaAvanzata(bool accesa) async {
+    profilo.avanzata = accesa ? 'si' : 'no';
+    await salvaProfilo();
   }
 
   /// Seduta lunga di corsa e bici accesa o spenta.

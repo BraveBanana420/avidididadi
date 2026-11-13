@@ -1337,7 +1337,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   ],
                 ),
               ),
-              if (_bici)
+              // In modo semplice i sensori restano nascosti (Profilo →
+              // Funzioni avanzate), a meno che uno sia già collegato.
+              if (_bici &&
+                  (widget.state.profilo.modoAvanzato ||
+                      sensoreBici.stato == StatoSensore.collegato))
                 ListenableBuilder(
                   listenable: sensoreBici,
                   builder: (_, _) => IconButton(
@@ -1350,18 +1354,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ),
                   ),
                 ),
-              ListenableBuilder(
-                listenable: sensoreBattito,
-                builder: (_, _) => IconButton(
-                  tooltip: 'Battito dal sensore',
-                  onPressed: () => mostraBattito(context),
-                  icon: Icon(
-                    sensoreBattito.stato == StatoSensore.collegato
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+              if (widget.state.profilo.modoAvanzato ||
+                  sensoreBattito.stato == StatoSensore.collegato)
+                ListenableBuilder(
+                  listenable: sensoreBattito,
+                  builder: (_, _) => IconButton(
+                    tooltip: 'Battito dal sensore',
+                    onPressed: () => mostraBattito(context),
+                    icon: Icon(
+                      sensoreBattito.stato == StatoSensore.collegato
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                    ),
                   ),
                 ),
-              ),
               IconButton(
                 tooltip: 'Bip e vibrazione',
                 onPressed: _apriOpzioni,
