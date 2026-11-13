@@ -32,11 +32,16 @@ String _virgola(double v, int decimali) => v
     .replaceAll('.', ',');
 
 /// I numeri grandi dell'immagine di una sessione: (etichetta, valore, unità).
+/// [passoNuoto] (secondi ai 100 m, scritto a mano o dai tratti corretti)
+/// vale più del passo calcolato sulla durata, che comprende le pause.
 List<(String, String, String)> numeriSessione(
   Sessione s, {
   double kgTotali = 0,
+  int passoNuoto = 0,
 }) {
-  final r = ritmo(s);
+  final r = passoNuoto > 0 && stessoSport(s.sport, 'Nuoto')
+      ? passoNuoto / 60
+      : ritmo(s);
   final bici = stessoSport(s.sport, 'Bici');
   return [
     if (s.durataMin >= 60)
@@ -285,6 +290,7 @@ DatiPoster posterDi(
   Sessione s, {
   double kgTotali = 0,
   SedutaArrampicata? arrampicata,
+  int passoNuoto = 0,
 }) {
   final etichetta = titoloSessione(
     s.sport,
@@ -294,7 +300,11 @@ DatiPoster posterDi(
       ? ('Tempo', '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'ore')
       : ('Tempo', '${s.durataMin}', 'min');
   List<(String, String, String)> senza(String nome) => [
-    for (final n in numeriSessione(s, kgTotali: kgTotali))
+    for (final n in numeriSessione(
+      s,
+      kgTotali: kgTotali,
+      passoNuoto: passoNuoto,
+    ))
       if (n.$1 != nome) n,
   ].take(3).toList();
   if (stessoSport(s.sport, 'Forza') && kgTotali > 0) {

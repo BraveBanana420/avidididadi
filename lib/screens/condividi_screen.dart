@@ -262,7 +262,16 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final s = widget.sessione;
     // I tratti corretti a mano (pause e ripetute sistemate dopo) valgono
     // più di quelli dell'orologio, come nel riepilogo.
-    final tratti = state.intervalliModificati[s.id] ?? _tratti;
+    final aMano = state.intervalliModificati[s.id];
+    final tratti = aMano ?? _tratti;
+    // Nuoto: il passo scritto a mano, altrimenti quello delle vasche
+    // corrette a mano (senza le pause); 0 = calcolato sulla durata.
+    final scritto = state.nuotoDi(s.id)?.passo100S ?? 0;
+    final passoNuoto = !stessoSport(s.sport, 'Nuoto')
+        ? 0
+        : scritto > 0
+        ? scritto
+        : (aMano == null ? null : passoNuotatoDaTratti(aMano)) ?? 0;
     final forza = stessoSport(s.sport, 'Forza');
     final serie = forza
         ? state.serieDel(s.data)
@@ -335,7 +344,12 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         GraficaCondivisa.poster => ImmaginePoster(
           sessione: s,
           indoor: state.alChiuso(s),
-          dati: posterDi(s, kgTotali: kg, arrampicata: arrampicata),
+          dati: posterDi(
+            s,
+            kgTotali: kg,
+            arrampicata: arrampicata,
+            passoNuoto: passoNuoto,
+          ),
           grafico: barre.isNotEmpty && zp != null
               ? ProfiloAllenamento(barre: barre, zone: zp, altezza: 96)
               : record != null
@@ -360,6 +374,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         GraficaCondivisa.ripetute => ImmagineRipetute(
           sessione: s,
           passi: ripetute,
+          passoMedio: passoNuoto,
         ),
         GraficaCondivisa.muscoli => ImmagineMuscoli(
           sessione: s,
@@ -377,13 +392,18 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
           seduta: arrampicata!,
           punti: progressiArrampicata(state.arrampicate, arrampicata),
         ),
-        GraficaCondivisa.foto => ImmagineFoto(sessione: s, foto: _foto!),
+        GraficaCondivisa.foto => ImmagineFoto(
+          sessione: s,
+          foto: _foto!,
+          passoNuoto: passoNuoto,
+        ),
         GraficaCondivisa.classica ||
         GraficaCondivisa.esercizi => ImmagineSessione(
           sessione: s,
           percorso: percorso,
           kgTotali: kg,
           esercizi: esercizi.take(5).toList(),
+          passoNuoto: passoNuoto,
         ),
       },
       scelte: [
@@ -1169,10 +1189,12 @@ class _Quota extends CustomPainter {
 class ImmagineRipetute extends StatelessWidget {
   final Sessione sessione;
   final List<int> passi; // secondi ai 100 m
+  final int passoMedio; // secondi ai 100 m; 0 = media delle ripetute
   const ImmagineRipetute({
     super.key,
     required this.sessione,
     required this.passi,
+    this.passoMedio = 0,
   });
 
   @override
@@ -1182,7 +1204,9 @@ class ImmagineRipetute extends StatelessWidget {
     final s = sessione;
     final colore = coloreSport(s.sport);
     final veloce = passi.reduce(math.min);
-    final medio = passi.fold(0, (a, b) => a + b) ~/ passi.length;
+    final medio = passoMedio > 0
+        ? passoMedio
+        : passi.fold(0, (a, b) => a + b) ~/ passi.length;
     return _Cornice(
       data: dataLunga(s.data),
       child: Column(
@@ -1473,7 +1497,13 @@ class ImmagineProgressi extends StatelessWidget {
 class ImmagineFoto extends StatelessWidget {
   final Sessione sessione;
   final Uint8List foto;
-  const ImmagineFoto({super.key, required this.sessione, required this.foto});
+  final int passoNuoto; // secondi ai 100 m; 0 = dalla durata
+  const ImmagineFoto({
+    super.key,
+    required this.sessione,
+    required this.foto,
+    this.passoNuoto = 0,
+  });
 
   static const _testo = Colors.white;
   static const _velo = Colors.black;
@@ -1482,7 +1512,7 @@ class ImmagineFoto extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final s = sessione;
-    final numeri = numeriSessione(s).take(3).toList();
+    final numeri = numeriSessione(s, passoNuoto: passoNuoto).take(3).toList();
     TextStyle? chiaro(TextStyle? x, [double alfa = 1]) =>
         x?.copyWith(color: _testo.withValues(alpha: alfa));
     return Stack(
@@ -1667,12 +1697,14 @@ class ImmagineSessione extends StatelessWidget {
   final Percorso? percorso;
   final double kgTotali;
   final List<(String, String)> esercizi; // nome, serie fatte
+  final int passoNuoto; // secondi ai 100 m; 0 = dalla durata
   const ImmagineSessione({
     super.key,
     required this.sessione,
     this.percorso,
     this.kgTotali = 0,
     this.esercizi = const [],
+    this.passoNuoto = 0,
   });
 
   @override
@@ -1681,7 +1713,11 @@ class ImmagineSessione extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final s = sessione;
     final colore = coloreSport(s.sport);
-    final numeri = numeriSessione(s, kgTotali: kgTotali).take(6).toList();
+    final numeri = numeriSessione(
+      s,
+      kgTotali: kgTotali,
+      passoNuoto: passoNuoto,
+    ).take(6).toList();
     return _Cornice(
       data: dataLunga(s.data),
       child: Column(

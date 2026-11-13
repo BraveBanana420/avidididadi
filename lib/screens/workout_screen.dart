@@ -825,6 +825,10 @@ class _DatiSessione extends StatelessWidget {
     final nuoto = s.sport.toLowerCase() == 'nuoto';
     final r = ritmo(s);
     final vasca = nuoto ? state.nuotoDi(s.id) : null;
+    // Tratti corretti a mano: il passo è quello delle sole vasche nuotate,
+    // senza le pause spostate dove andavano.
+    final aMano = nuoto ? state.intervalliModificati[s.id] : null;
+    final passoTratti = aMano == null ? null : passoNuotatoDaTratti(aMano);
     final dati = <(String, String)>[
       if (s.inizio != null && s.fine != null)
         ('Orario', '${_ora(s.inizio!)} – ${_ora(s.fine!)}'),
@@ -843,6 +847,8 @@ class _DatiSessione extends StatelessWidget {
       // anche le pause a bordo vasca.
       if (vasca != null && vasca.passo100S > 0)
         ('Tempo medio', '${tempoScritto(vasca.passo100S)} /100 m')
+      else if (passoTratti != null)
+        ('Tempo medio', '${fmtMinSec(passoTratti.toDouble())} /100 m')
       else if (r != null)
         (
           s.sport.toLowerCase() == 'bici' ? 'Velocità media' : 'Ritmo medio',

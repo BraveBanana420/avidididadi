@@ -79,6 +79,16 @@ void main() {
       expect(numeriSessione(bici)[1], ('Potenza', '198', 'W'));
     });
 
+    test('nuoto: il passo delle vasche corrette vale più della durata', () {
+      // 40 min per 1500 m, pause comprese: 2:40 /100 m.
+      expect(numeriSessione(nuoto)[2].$2, '2:40');
+      // Dai tratti corretti a mano: 2:05 /100 m.
+      final n = numeriSessione(nuoto, passoNuoto: 125);
+      expect(n[2], ('Passo', '2:05', 'min/100 m'));
+      // Agli altri sport non cambia niente.
+      expect(numeriSessione(corsa, passoNuoto: 125)[2].$2, '5:05');
+    });
+
     test('la settimana: sedute fatte, tempo, km senza il nuoto', () {
       final r = riepilogoSettimana(piano, [corsa, bici, nuoto], lunedi, oggi);
       // Corsa e bici previste e fatte, il nuoto in più.

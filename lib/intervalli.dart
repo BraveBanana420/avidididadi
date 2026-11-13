@@ -637,3 +637,36 @@ List<IntervalloFatto> conFuoriProgrammaUniti(List<IntervalloFatto> lista) {
     )),
   ];
 }
+
+/// Nuoto: il passo medio dei soli tratti nuotati (secondi ai 100 m), senza
+/// le pause a bordo vasca. Null se i metri non bastano per dirlo.
+int? passoNuotatoDaTratti(List<IntervalloFatto> tratti) {
+  var metri = 0.0, secondi = 0;
+  for (final i in tratti) {
+    if (i.recupero || i.metri <= 0 || i.secondi <= 0) continue;
+    metri += i.metri;
+    secondi += i.secondi;
+  }
+  return metri < 25 ? null : (secondi / metri * 100).round();
+}
+
+/// La velocità nel tempo (un campione al secondo) ricostruita dai tratti,
+/// uno dopo l'altro: per i grafici quando i tratti sono corretti a mano e la
+/// velocità dell'orologio (con i suoi errori) non vale più. Pause a zero.
+List<Campione> velocitaDaTratti(
+  List<IntervalloFatto> tratti,
+  DateTime inizio,
+) {
+  final out = <Campione>[];
+  var t = tratti.isEmpty ? 0 : tratti.first.inizioS;
+  for (final i in tratti) {
+    final v = i.recupero || i.metri <= 0 || i.secondi <= 0
+        ? 0.0
+        : i.metri / i.secondi;
+    for (var k = 0; k < i.secondi; k++) {
+      out.add(Campione(inizio.add(Duration(seconds: t + k)), v));
+    }
+    t += i.secondi;
+  }
+  return out;
+}

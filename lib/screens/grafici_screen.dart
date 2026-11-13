@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../charts.dart';
+import '../intervalli.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
@@ -40,7 +41,17 @@ class _GraficiScreenState extends State<GraficiScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final serie = snap.data!;
-          if (serie.vuota) {
+          // Nuoto con i tratti corretti a mano: il passo si rifà da quelli,
+          // senza gli errori dell'orologio (una vasca segnata in 11").
+          final aMano = stessoSport(s.sport, 'Nuoto')
+              ? widget.state.intervalliModificati[s.id]
+              : null;
+          final inizio =
+              s.inizio ?? (serie.vuota ? s.data : _inizio(serie));
+          final velocita = aMano == null
+              ? serie.velocita
+              : velocitaDaTratti(aMano, inizio);
+          if (serie.vuota && velocita.isEmpty) {
             return const Padding(
               padding: EdgeInsets.all(24),
               child: Text(
@@ -58,10 +69,10 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 _Zone(fc: serie.fc, zone: widget.state.zone),
                 const SizedBox(height: 12),
               ],
-              if (serie.velocita.isNotEmpty) ...[
+              if (velocita.isNotEmpty) ...[
                 _Velocita(
-                  serie: serie.velocita,
-                  inizio: _inizio(serie),
+                  serie: velocita,
+                  inizio: inizio,
                   sport: s.sport,
                 ),
                 const SizedBox(height: 12),
