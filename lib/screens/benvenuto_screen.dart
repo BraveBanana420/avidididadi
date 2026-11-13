@@ -8,7 +8,8 @@ import '../pulse.dart';
 import '../tema.dart';
 import '../widgets.dart';
 
-/// Configurazione guidata: cinque domande semplici e il piano è pronto.
+/// Configurazione guidata: scelti gli sport si parte subito ("Inizia oggi"),
+/// oppure si risponde a qualche domanda in più e il piano è su misura.
 /// Pensata per chi non si è mai allenato e non ha mai usato un'app così.
 class BenvenutoScreen extends StatefulWidget {
   final AppState state;
@@ -58,9 +59,13 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
     navigator.pop();
   }
 
-  Future<void> _crea() async {
+  /// Crea il piano con le risposte date. Con [subito] ("Inizia oggi") le
+  /// altre domande si saltano: 30 minuti, livello principiante, tre giorni
+  /// (o uno per sport), messi in modo che oggi ci sia già una seduta.
+  Future<void> _crea({bool subito = false}) async {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    FocusScope.of(context).unfocus();
     setState(() => inCorso = true);
     await widget.state.configuraDaZero(
       nome: _nome.text,
@@ -68,15 +73,19 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
         for (final s in sportBenvenuto.keys)
           if (sport.contains(s)) s,
       ],
-      giorni: giorni,
-      minuti: minuti,
-      livello: livello,
+      giorni: subito ? giorniSubito(sport.length) : giorni,
+      minuti: subito ? 30 : minuti,
+      livello: subito ? 'principiante' : livello,
+      daOggi: subito,
     );
     navigator.pop();
     messenger.showSnackBar(
       avviso(
         content: Text(
-          'Il tuo piano è pronto! In "Oggi" trovi cosa fare ogni giorno.',
+          subito
+              ? 'Il tuo piano è pronto! La prima seduta è qui, in "Oggi". '
+                    'Giorni e durata li cambi quando vuoi dal Profilo.'
+              : 'Il tuo piano è pronto! In "Oggi" trovi cosa fare ogni giorno.',
         ),
       ),
     );
@@ -139,7 +148,9 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   _domanda(
                     t,
                     'Cosa ti piacerebbe fare?',
-                    'Puoi sceglierne più di uno. Potrai cambiare idea quando vuoi.',
+                    'Puoi sceglierne più di uno. Con "Inizia oggi" parti con '
+                        '3 sedute da 30 minuti a settimana, adatte a chi '
+                        'comincia: potrai cambiare tutto quando vuoi.',
                     // Riquadri grandi da toccare, due per riga; la mobilità
                     // (l'opzione più dolce) da sola, in fondo.
                     LayoutBuilder(
@@ -233,6 +244,27 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                         height: 60,
                         child: Center(child: CircularProgressIndicator()),
                       )
+                    : passo == 2 && sport.isNotEmpty
+                    // Scelti gli sport si può partire subito: le altre
+                    // domande restano per chi vuole decidere tutto.
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          PulsantePrincipale(
+                            onPressed: () => _crea(subito: true),
+                            icona: Icons.play_arrow,
+                            testo: 'Inizia oggi',
+                          ),
+                          const SizedBox(height: 4),
+                          TextButton(
+                            onPressed: () => _vai(3),
+                            child: const Text(
+                              'Prima scelgo giorni, durata e livello',
+                            ),
+                          ),
+                        ],
+                      )
                     : PulsantePrincipale(
                         onPressed: !_puoiAndare
                             ? null
@@ -291,7 +323,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Bastano 5 domande.',
+            'Scegli i tuoi sport e parti subito.',
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),

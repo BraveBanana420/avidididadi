@@ -40,10 +40,15 @@ const _giorni = {
 
 /// Settimana tipo dalle risposte. Gli sport si alternano partendo dall'ultimo
 /// giorno, così la corsa (se c'è) cade il sabato, il giorno del lungo.
+///
+/// Con [oggi] (1 = lunedì) i giorni scorrono in avanti del minimo che serve
+/// perché oggi sia un giorno di allenamento: chi tocca "Inizia oggi" trova
+/// subito una seduta, senza aspettare il lunedì.
 List<Slot> settimanaDa({
   required List<String> sport,
   required int giorni,
   required int minuti,
+  int? oggi,
 }) {
   if (sport.isEmpty) return [];
   final ordine = [
@@ -52,11 +57,19 @@ List<Slot> settimanaDa({
       if (s != 'Corsa') s,
   ];
   final g = _giorni[giorni.clamp(1, 6)]!;
+  var sposta = 0;
+  if (oggi != null) {
+    sposta = 7;
+    for (final d in g) {
+      final k = (oggi - d) % 7;
+      if (k < sposta) sposta = k;
+    }
+  }
   final out = <Slot>[];
   for (var i = 0; i < g.length; i++) {
     out.add(
       Slot(
-        giorno: g[g.length - 1 - i],
+        giorno: (g[g.length - 1 - i] - 1 + sposta) % 7 + 1,
         fascia: 'Mattina',
         sport: ordine[i % ordine.length],
         durataMin: minuti,
@@ -65,3 +78,6 @@ List<Slot> settimanaDa({
   }
   return out..sort((a, b) => a.giorno.compareTo(b.giorno));
 }
+
+/// Giorni a settimana di "Inizia oggi": tre, o uno per sport se sono di più.
+int giorniSubito(int sport) => sport.clamp(3, 6);

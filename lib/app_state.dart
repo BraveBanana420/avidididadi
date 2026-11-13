@@ -882,19 +882,26 @@ class AppState extends ChangeNotifier {
 
   /// Configurazione guidata: settimana tipo, piano di 3 mesi e sedute pronte
   /// per gli sport scelti. Restituisce quante sedute ci sono da oggi.
+  /// Con [daOggi] la settimana è messa in modo che oggi ci sia una seduta.
   Future<int> configuraDaZero({
     required String nome,
     required List<String> sport,
     required int giorni,
     required int minuti,
     required String livello,
+    bool daOggi = false,
   }) async {
     final oggi = soloData(DateTime.now());
     if (nome.trim().isNotEmpty) profilo.nome = nome.trim();
     profilo.benvenuto = true;
     profilo.attivita = sport.toSet();
     await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
-    settimana = settimanaDa(sport: sport, giorni: giorni, minuti: minuti);
+    settimana = settimanaDa(
+      sport: sport,
+      giorni: giorni,
+      minuti: minuti,
+      oggi: daOggi ? oggi.weekday : null,
+    );
     await Storage.writeSettimana(settimana);
     await genera(oggi, 3);
     if (sport.contains('Forza')) await creaPianoForza('generale', livello);

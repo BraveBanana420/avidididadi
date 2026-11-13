@@ -25,6 +25,54 @@ void main() {
       expect(s.map((x) => x.sport).toSet().length, 2);
     });
 
+    test('"Inizia oggi": oggi è sempre un giorno di allenamento', () {
+      for (var giorni = 1; giorni <= 6; giorni++) {
+        for (var oggi = 1; oggi <= 7; oggi++) {
+          final s = settimanaDa(
+            sport: ['Corsa', 'Forza'],
+            giorni: giorni,
+            minuti: 30,
+            oggi: oggi,
+          );
+          expect(s.length, giorni);
+          expect(s.map((x) => x.giorno).toSet().length, giorni);
+          expect(s.any((x) => x.giorno == oggi), true, reason: '$giorni/$oggi');
+        }
+      }
+    });
+
+    test('"Inizia oggi" di venerdì: lunedì, mercoledì e venerdì', () {
+      final s = settimanaDa(
+        sport: ['Corsa', 'Forza'],
+        giorni: 3,
+        minuti: 30,
+        oggi: 5,
+      );
+      expect(s.map((x) => x.giorno), [1, 3, 5]);
+    });
+
+    test(
+      '"Inizia oggi" in un giorno già previsto: la settimana non cambia',
+      () {
+        final s = settimanaDa(
+          sport: ['Forza', 'Corsa'],
+          giorni: 3,
+          minuti: 30,
+          oggi: 3,
+        );
+        expect(
+          [for (final x in s) (x.giorno, x.sport)],
+          [(1, 'Corsa'), (3, 'Forza'), (6, 'Corsa')],
+        );
+      },
+    );
+
+    test('"Inizia oggi": tre giorni, o uno per sport se sono di più', () {
+      expect(giorniSubito(1), 3);
+      expect(giorniSubito(4), 4);
+      expect(giorniSubito(9), 6);
+    });
+
     test('nessuno sport, nessun giorno', () {
       expect(settimanaDa(sport: [], giorni: 3, minuti: 30), isEmpty);
     });
