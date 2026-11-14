@@ -1478,6 +1478,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                         tempo: _tempoMedia,
                                         ultimo: giri!.giri.lastOrNull,
                                         zone: _zone,
+                                        // Pagina dei soli dati, senza testo
+                                        // sotto: numeri grandi, da leggere
+                                        // con un colpo d'occhio.
+                                        grande:
+                                            _senzaTesto &&
+                                            vistaMappa.value ==
+                                                VistaMappa.pagine,
                                       )
                                     else if (bici)
                                       // Rulli: velocità e km dal sensore.
@@ -2535,12 +2542,17 @@ class _GrigliaLive extends StatelessWidget {
   final Duration tempo;
   final Giro? ultimo;
   final Zone zone;
+
+  /// Un dato per riga, con i numeri grandi: riempie la pagina quando sotto
+  /// non c'è altro.
+  final bool grande;
   const _GrigliaLive({
     required this.sport,
     required this.gps,
     required this.tempo,
     required this.ultimo,
     required this.zone,
+    this.grande = false,
   });
 
   @override
@@ -2567,39 +2579,47 @@ class _GrigliaLive extends StatelessWidget {
                     ultimo.metri / (ultimo.tempo.inMilliseconds / 1000),
                   ),
             unita: unita,
+            grande: grande,
           );
+    final distanza = _Dato(
+      etichetta: 'Distanza',
+      valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
+      unita: 'km',
+      grande: grande,
+    );
+    final adessoDato = _Dato(
+      etichetta: bici ? 'Velocità' : 'Passo',
+      valore: fmtVelocita(sport, adesso),
+      unita: unita,
+      grande: grande,
+    );
+    final mediaDato = _Dato(
+      etichetta: bici ? 'Velocità media' : 'Passo medio',
+      valore: fmtVelocita(sport, media),
+      unita: unita,
+      grande: grande,
+    );
+    if (grande) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 8,
+        children: [distanza, adessoDato, mediaDato, quarto],
+      );
+    }
     return Column(
       spacing: 8,
       children: [
         Row(
           spacing: 8,
           children: [
-            Expanded(
-              child: _Dato(
-                etichetta: 'Distanza',
-                valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
-                unita: 'km',
-              ),
-            ),
-            Expanded(
-              child: _Dato(
-                etichetta: bici ? 'Velocità' : 'Passo',
-                valore: fmtVelocita(sport, adesso),
-                unita: unita,
-              ),
-            ),
+            Expanded(child: distanza),
+            Expanded(child: adessoDato),
           ],
         ),
         Row(
           spacing: 8,
           children: [
-            Expanded(
-              child: _Dato(
-                etichetta: bici ? 'Velocità media' : 'Passo medio',
-                valore: fmtVelocita(sport, media),
-                unita: unita,
-              ),
-            ),
+            Expanded(child: mediaDato),
             Expanded(child: quarto),
           ],
         ),
@@ -2617,6 +2637,7 @@ class _Dato extends StatelessWidget {
   final VoidCallback? onTap;
   final String? nota; // sotto il valore, es. il range da tenere
   final bool notaFuori; // fuori dal range: la nota si colora
+  final bool grande; // numero grande, per la pagina dei soli dati
   const _Dato({
     required this.etichetta,
     required this.valore,
@@ -2625,6 +2646,7 @@ class _Dato extends StatelessWidget {
     this.onTap,
     this.nota,
     this.notaFuori = false,
+    this.grande = false,
   });
 
   @override
@@ -2638,7 +2660,9 @@ class _Dato extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          padding: grande
+              ? const EdgeInsets.fromLTRB(18, 12, 18, 12)
+              : const EdgeInsets.fromLTRB(14, 10, 14, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2670,17 +2694,19 @@ class _Dato extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: valore,
-                        style: t.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: (grande ? t.displayMedium : t.headlineMedium)
+                            ?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                       ),
                       if (unita.isNotEmpty)
                         TextSpan(
                           text: ' $unita',
-                          style: t.bodySmall?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
+                          style: (grande ? t.titleMedium : t.bodySmall)
+                              ?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                     ],
                   ),

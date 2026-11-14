@@ -76,4 +76,19 @@ void main() {
     expect(conFuoriProgrammaUniti(lista.take(2).toList()).length, 2);
     expect(conFuoriProgrammaUniti(lista.skip(1).toList()).length, 5);
   });
+
+  test('il pezzetto tra ultimo giro e stop non è un tratto', () {
+    // Caso reale: dopo lo sciolto restano "4 m · 0:00".
+    final lista = [
+      giro(1800, 5000, nome: 'Corsa lenta'),
+      giro(180, 322, nome: 'Sciolto'),
+      giro(0, 4),
+    ];
+    expect(senzaCodaBreve(lista).length, 2);
+    expect(conFuoriProgrammaUniti(lista).last.nome, 'Sciolto');
+    // Un tratto in più vero resta, e senza nomi non si tocca niente.
+    final conGiro = [...lista.take(2), giro(300, 800)];
+    expect(senzaCodaBreve(conGiro).length, 3);
+    expect(senzaCodaBreve([giro(5, 10), giro(3, 4)]).length, 2);
+  });
 }

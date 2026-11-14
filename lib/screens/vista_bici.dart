@@ -388,22 +388,29 @@ class _Piccolo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: piano,
         ),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: valore,
-                  style: t.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+        // Altezza fissa: un valore largo si stringe, ma l'etichetta sopra
+        // resta alla stessa altezza di quelle accanto.
+        SizedBox(
+          height: MediaQuery.textScalerOf(context).scale(
+            (t.titleLarge?.fontSize ?? 22) * (t.titleLarge?.height ?? 1.3),
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: valore,
+                    style: t.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
-                ),
-                TextSpan(text: ' $unita', style: piano),
-              ],
+                  TextSpan(text: ' $unita', style: piano),
+                ],
+              ),
+              maxLines: 1,
             ),
-            maxLines: 1,
           ),
         ),
       ],

@@ -10,11 +10,14 @@ import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:allenamenti_app/app_state.dart';
+import 'package:allenamenti_app/attivita_libera.dart';
+import 'package:allenamenti_app/avvisi.dart';
 import 'package:allenamenti_app/feedback.dart';
 import 'package:allenamenti_app/main.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/profilo.dart';
 import 'package:allenamenti_app/recupero.dart';
+import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/screens/privacy_screen.dart';
 import 'package:allenamenti_app/screens/tour.dart';
 import 'package:allenamenti_app/storage.dart';
@@ -213,8 +216,26 @@ void main() {
       'plugins.it_nomads.com/flutter_secure_storage',
       'flutter_health',
       'dev.fluttercommunity.plus/package_info',
+      'flutter.baseflow.com/geolocator_updates',
+      'flutter.baseflow.com/geolocator_updates_android',
+      'flutter.baseflow.com/geolocator_service_updates',
+      'flutter.baseflow.com/geolocator_service_updates_android',
     ]) {
       m.setMockMethodCallHandler(MethodChannel(c), (_) async => null);
+    }
+    // Il GPS finto: acceso e con il permesso, ma senza posizioni.
+    for (final c in const [
+      'flutter.baseflow.com/geolocator_android',
+      'flutter.baseflow.com/geolocator',
+    ]) {
+      m.setMockMethodCallHandler(
+        MethodChannel(c),
+        (chiamata) async => switch (chiamata.method) {
+          'isLocationServiceEnabled' => true,
+          'checkPermission' || 'requestPermission' => 3,
+          _ => null,
+        },
+      );
     }
     await _caricaCaratteri();
     await _preparaDati();
@@ -321,6 +342,58 @@ void main() {
         }
 
         // Chiude l'app e lascia scadere i timer rimasti.
+        await t.pumpWidget(const SizedBox());
+        await t.pump(const Duration(seconds: 3));
+      } finally {
+        debugDisableShadows = true;
+      }
+    });
+  }
+
+  // La pagina dei dati della bici all'aperto (senza mappa: nei test non c'è).
+  for (final (nome, scuro, conNeon) in const [
+    ('scuro_neon', true, true),
+    ('chiaro_rosso', false, false),
+  ]) {
+    testWidgets('bici all\'aperto: $nome', (t) async {
+      t.view.physicalSize = const Size(1080, 2340);
+      t.view.devicePixelRatio = 3;
+      t.view.padding = const FakeViewPadding(top: 84, bottom: 48);
+      addTearDown(t.view.reset);
+      final prima = vistaMappa.value;
+      vistaMappa.value = VistaMappa.pagine;
+      addTearDown(() => vistaMappa.value = prima);
+      temaScuroAttivo = scuro;
+      neonAttivo = conNeon;
+      debugDisableShadows = false;
+      try {
+        await t.pumpWidget(
+          RepaintBoundary(
+            key: _cornice,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: creaTema(
+                scuro ? Brightness.dark : Brightness.light,
+                neon: conNeon,
+              ),
+              home: EsecuzioneScreen(
+                state: AppState(),
+                sport: 'Bici',
+                tipo: 'Uscita',
+                nome: 'Uscita in bici',
+                libera: true,
+                passi: passiLiberi('Bici', 'Uscita in bici'),
+              ),
+            ),
+          ),
+        );
+        await _assesta(t, 6);
+        final inizia = find.textContaining('Inizia');
+        if (inizia.evaluate().isNotEmpty) {
+          await t.tap(inizia.first);
+          await _assesta(t, 6);
+        }
+        await _foto(t, nome, '30_bici_dati');
         await t.pumpWidget(const SizedBox());
         await t.pump(const Duration(seconds: 3));
       } finally {
