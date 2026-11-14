@@ -114,6 +114,17 @@ Fatto (su `staging`, da provare sul telefono e nei 4 temi):
 - [x] **Modo semplice** (Profilo → Funzioni avanzate): nasconde "Le mie
   zone", le icone dei sensori in allenamento, intervals.icu e l'import da file.
 
+- [x] **Riepilogo della sessione** (14/11): accanto all'icona solo il nome
+  della seduta (anche nel Condividi); la matita apre una pagina sola (nome,
+  indoor, dati, esercizi della forza, cestino, "Torna ai dati originali");
+  in basso "Grafici" e il Condividi tondo.
+- [x] **Previsto e fatto** (14/11): corsa strutturata in un grafico solo, in
+  zone (`intensita.dart`: battito dove l'obiettivo è una zona, passo dove è
+  un passo, con la soglia stimata dalla corsa più veloce di almeno 20 minuti
+  degli ultimi sei mesi); bici in un grafico solo (fasce e linea dei watt,
+  le barre restano solo senza i watt al secondo). Da guardare con sedute
+  vere: i nomi dei tratti devono combaciare con i passi in programma.
+
 Da riprendere, forse:
 - [ ] **Provare il primo avvio** su un telefono pulito (o dopo un backup):
   "Inizia oggi", il riquadro del backup, le righe di motivazione.

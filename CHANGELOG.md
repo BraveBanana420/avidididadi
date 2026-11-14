@@ -4,8 +4,17 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 ## 0.1.0
 
-- Bici con i watt: nel riepilogo lo schema della seduta com'è andata, con le barre colorate per zona come durante l'allenamento, anche per un blocco solo.
-- Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti, e il grafico di tutta la seduta con le fasce previste e la linea dei watt veri.
+- Corsa strutturata: nel riepilogo "Previsto e fatto", un grafico solo con le fasce dell'intensità da tenere e la linea di quella tenuta, in zone (battito o passo secondo l'obiettivo del blocco).
+- Bici con i watt: nel riepilogo un grafico solo, con le fasce dei watt previsti e sopra la linea dei watt veri; senza i watt al secondo restano le barre colorate per zona.
+- Riepilogo della sessione: la matita apre una pagina sola per nome, indoor/outdoor, dati, esercizi della forza ed eliminazione; in basso "Grafici" e accanto il tasto tondo per condividere.
+- Riepilogo e immagini da condividere: accanto all'icona dello sport c'è solo il nome della seduta.
+- Primo avvio: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lunedì, mercoledì e venerdì); le altre domande sono facoltative.
+- Modo semplice (Profilo → Funzioni avanzate): zone, icone dei sensori, intervals.icu e import da file restano nascosti finché non servono; chi usava già l'app vede tutto.
+- Profilo: "I miei sensori" per collegare fascia cardio e sensori della bici, anche in modo semplice.
+- Oggi: invito ad attivare il backup automatico, avviso se l'ultimo non è riuscito, e sotto la settimana le settimane di fila, i traguardi e i record.
+- Seduta lunga di corsa e bici: si può spegnere da "Prepara le sedute".
+- Nuoto: le vasche corrette a mano valgono nel riepilogo, nei grafici e nelle immagini da condividere.
+- Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti.
 - Mappa durante l'allenamento: al posto della "i" c'è il tasto dei livelli, anche nella minimappa.
 - Condividi: tre grafiche per ogni sport (es. corsa: Mappa, Km per km, Poster; forza: Esercizi, Muscoli, Poster con il record; arrampicata: Seduta, Progressi, Poster col grado), più "La tua foto" dalla galleria con i numeri sopra; mappa vera Pulse, Strade o Satellite; marchio "#avidididadi" in alto.
 - Sessioni di corsa e bici: l'etichetta dice "Indoor" o "Outdoor" (prima "Al chiuso").
@@ -22,7 +31,6 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
 - Avvisi in basso più brevi: si chiudono scorrendo in qualsiasi direzione e "Annulla" ha il bordo, per non confonderlo con la chiusura.
 - Menu del "+" e altri fogli dal basso: non finiscono più sotto i tasti del telefono.
-- Riepilogo della seduta: per modificare basta la matita, come per il nome.
 - All'apertura riaccetta l'informativa (posizione per "Altra attività").
 
 ## 1.12.3
