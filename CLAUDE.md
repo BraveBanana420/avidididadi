@@ -6,46 +6,12 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 
 **Avidididadi** è un'app Android personale (Flutter) per pianificare e seguire gli allenamenti di forza, corsa, nuoto, bici, mobilità e arrampicata. Tutti i dati restano sul telefono: niente server, account o pubblicità.
 
-Funzioni principali:
-- **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
-- **Primo avvio**: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lun-mer-ven, senza seduta lunga, app in modo semplice); le altre domande sono facoltative.
-- **Modo semplice / Funzioni avanzate** (Profilo, `profilo.modoAvanzato`): in modo semplice restano nascosti "Le mie zone", le icone dei sensori in allenamento, intervals.icu e l'import da file. Chi usava già l'app vede tutto. "I miei sensori" (Profilo) c'è sempre: collegando un sensore si passa alle funzioni avanzate, con un avviso.
-- **Backup proposto in Oggi**: invito ad attivare il backup automatico ("Non ora": torna dopo 14 giorni, poi 30) e avviso se l'ultimo non è riuscito.
-- **Attività libera** (dal "+"): forza libera con esercizi, serie e kg scritti alla fine; "Altra attività" col nome scritto dall'utente (es. Kayak) e GPS facoltativo scelto all'inizio.
-- **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
-- **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
-- **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
-- **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
-- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin), e le sedute registrate con l'app partono da sole appena finite.
-- **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
-- **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
-- **Progressi**: carico, grafici, report per sport.
-- **Arrampicata**: vie, blocchi e gradi di ogni seduta; allenamenti scritti a mano o dall'assistente, senza generatore.
-- **Rullo smart**: collegato il rullo la bici passa da sola al chiuso; in ERG l'app manda al rullo (FTMS, es. Tacx Flux S) i watt di ogni blocco; calibrazione dall'app, con promemoria ogni 2 settimane; diagramma dell'allenamento a barre colorate per zona.
-- **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
-- **Condividi**: immagine della sessione o della settimana per WhatsApp, Instagram… (percorso solo se scelto).
-- **Altro**: catalogo esercizi con animazioni, figura dei muscoli, widget per la schermata home, backup e ripristino su file.
+Le funzioni sono elencate in `README.md`.
 
 ## 2. Stack tecnico
 
 - **Flutter 3.47** (stable), **Dart 3.13**, solo **Android** (non c'è la cartella `ios/`).
 - `applicationId`: `it.avidididadi.app`. `minSdk` 26 (per Health Connect).
-- Dipendenze principali:
-
-| Pacchetto | Uso |
-|---|---|
-| `health` | Health Connect (lettura) |
-| `flutter_secure_storage` | chiavi API cifrate |
-| `maplibre_gl` | mappe |
-| `geolocator` | GPS con notifica in primo piano |
-| `path_provider` | cartella privata dei dati |
-| `file_picker` | backup, CSV, GPX |
-| `image_picker` | foto del profilo |
-| `path_drawing` | figura dei muscoli (tracciati SVG) |
-| `package_info_plus` | versione dell'app |
-| `flutter_localizations` | tutta l'app in italiano |
-| `flutter_reactive_ble` | battito e sensori bici live (Bluetooth) |
-
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
   - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
@@ -53,89 +19,10 @@ Funzioni principali:
 
 ## 3. Struttura
 
-```
-lib/
-  main.dart            avvio, tema, barra in basso (Oggi, Progressi, Coach, Profilo)
-  app_state.dart       stato unico: carica e salva i CSV, sincronizza, rigenera il piano
-  models.dart          PianoRiga, Sessione, WorkoutStep, Slot e funzioni di data e formato
-  storage.dart         lettura e scrittura dei CSV (path_provider)
-  tema.dart            temi (chiaro o scuro × rosso o neon), estensione Pulse
-  pulse.dart           componenti grafici dello stile Pulse
-  widgets.dart         coloreSport, iconaSport, card comuni
-  avviso.dart          avvisi in basso (usare `avviso(...)`, non `SnackBar`): durata breve, si chiudono scorrendo, tasto Annulla
-  generator*.dart      generatori del piano (forza, endurance, mobilità)
-  adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
-  feedback.dart        feedback e regole di carico
-  recupero.dart        energia e prontezza dai dati di recupero
-  potenza.dart         zone di potenza dall'FTP (bici e corsa, separate), watt nelle sedute di bici, avvisi, test FTP di corsa, serie dei sensori
-  riepilogo_condiviso.dart  numeri e testi delle immagini da condividere (sessione, settimana)
-  calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
-  sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
-  intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
-  intervalli.dart      intervalli di un'attività (lavoro e recuperi): giri da intervals.icu abbinati ai passi in programma (a metri nel nuoto, a tempo o distanza negli altri), blocchi delle sedute registrate con l'app, sezioni della seduta
-  fit.dart             giri (lap) letti dal file FIT originale dell'orologio, scaricato da intervals.icu
-  invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
-  esporta.dart         sessioni dell'app → GPX o attività di intervals.icu (sessioni_inviate.csv)
-  serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
-  registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
-  scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
-  avvisi.dart          bip, vibrazione, voce, pausa automatica e passo medio (avvisi.txt)
-  voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
-  attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
-  benvenuto.dart       primo avvio: settimana dalle risposte, "Inizia oggi" (lun-mer-ven, prima seduta anticipata a oggi)
-  motivazione.dart     righe in Oggi: settimane di fila, traguardi, record di forza e di distanza
-  sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
-  navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
-  mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre
-  assistente.dart / llm.dart / agente_esterno.dart   coach AI
-  attivita.dart        attività scelte dall'utente, attività libere dall'orologio, sedute aggiunte al calendario
-  arrampicata.dart     scheda di una seduta di arrampicata: vie, blocchi, gradi (arrampicata.csv)
-  allenamento_arrampicata.dart  allenamenti di arrampicata: modello, passi per il player, formato dell'assistente
-  modifica_sessione.dart  dati di una seduta scritti a mano dopo la fine (nuoto.csv, sessioni_modificate.csv)
-  allenamento_agente.dart  allenamenti passo per passo scritti dall'assistente, nel calendario al posto della seduta
-  percorso.dart / gps.dart   GPS, GPX, stile della mappa
-  dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
-  sensore_ble.dart     base dei sensori Bluetooth: ricerca, ricollegamento, sensore ricordato
-  battito.dart         battito live (sensore_battito.txt)
-  sensori_bici.dart    rulli FTMS (anche comandati in ERG e calibrati), potenza, velocità/cadenza (sensore_bici.txt: circonferenza ruota, ultima calibrazione)
-  in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
-  notifica_allenamento.dart  notifica dell'allenamento (anche a schermo bloccato), tasto Pausa
-  backup.dart          backup in .gz (JSON di tutti i CSV)
-  backup_auto.dart     backup automatico in una cartella scelta (backup_auto.txt, fuori dal backup)
-  screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
-  screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
-  screens/condividi_screen.dart  immagine 4:5 di sessione o settimana, condivisa con FileProvider (cache/condivisi)
-  screens/colonna_dati.dart  colonna dei dati in allenamento: la minimappa prende lo spazio che resta
-  screens/riepilogo_bici.dart  la parte del riepilogo solo della bici: barre del programma e linea dei watt in un grafico (ogni sport avrà il suo file, la cornice resta in workout_screen.dart)
-  screens/vista_bici.dart  bici al chiuso durante l'allenamento: dati, blocco in corso, ERG, grafico e diagramma in una pagina
-  screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
-assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
-test/                  un file *_test.dart per area
-tool/                  script Python (catalogo esercizi, icona), git-hooks/pre-commit
-android/               progetto Android, firma, manifest, widget
-NOTE.md                appunti e lavori in sospeso (pubblico)
-CHANGELOG.md           novità di ogni versione distribuita
-NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo locale, ignorato da git
-```
-
-**Dati dell'app** (CSV nella cartella privata):
-- `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
-- `sessioni.csv`, `health_connect_sessioni.csv`;
-- `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
-- `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
-- `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
-- `intervalli_<id>.csv` (tratti di un'attività: giri già letti da intervals.icu, oppure i blocchi di una seduta registrata con l'app, con tempo previsto, watt e sezione);
-- `giri_<id>.csv` (giri veri dell'orologio letti dal file FIT, per corsa e bici; vuoto se il file non ne ha);
-- `intervalli_modificati.csv` (intervalli corretti a mano: valgono al posto di quelli dell'orologio);
-- `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
-- `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
-- `serie.csv` (ripetizioni e kg della forza, o secondi per le serie a tempo); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
-- `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
-- `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
-- `percorsi_salvati.csv`, `traccia_<id>.csv`, `percorsi_piano.csv` (percorsi da seguire e sedute a cui sono assegnati).
-
-I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
+- `lib/screens/`: una schermata o un foglio per file (`*_screen.dart`, `*_sheet.dart`).
+- Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
+- `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita.
+- **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
 ## 4. Comandi
 
@@ -166,66 +53,9 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ## 5. Linee guida grafiche (stile "Pulse")
 
-**Temi**: due scelte indipendenti nel Profilo.
-- **Fondo**: scuro grafite `#0B0B0D` oppure chiaro `#F6F6FA` (`tema`, salvato in `tema.txt`).
-- **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
-- Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
-- **Ogni modifica grafica va controllata nelle 4 combinazioni.**
-
-**Colori degli sport** (uguali nel chiaro e nello scuro, tranne la camminata):
-
-| Sport | Standard | Neon |
-|---|---|---|
-| Forza | `#8E8E96` | `#9D4DFF` |
-| Corsa | `#FF3B47` | `#FF2E93` |
-| Nuoto | `#FF8A3D` | `#00B2FF` |
-| Bici | `#B3123A` | `#00E0B8` |
-| Mobilità | `#F48FB1` | `#FF7A00` |
-| Arrampicata | `#4FA3A5` | `#FFE600` |
-| Attività libera | `#7C83FD` | `#7C83FD` |
-| Camminata (fondo scuro) | `#E0A33A` | `#C6FF3D` |
-| Camminata (fondo chiaro) | `#B87A0F` | `#5F9400` |
-
-- Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
-- **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).
-
-**Caratteri**:
-- **Space Grotesk** w700 per titoli e numeri (letterSpacing negativo);
-- **Manrope** (400–800) per i testi;
-- dimensioni di Material 3 (`Typography.englishLike2021`).
-
-**Componenti** (`pulse.dart`):
-- `SuperficiePulse`: riquadro in rilievo, raggio 24, padding 16;
-- `PulsantePrincipale`: pillola con sfumatura, altezza 60;
-- `AnelloPulse`: anello sfumato con alone;
-- `RigaPulse`: riga di elenco con icona, titolo, sottotitolo e linea;
-- `IconaQuadrata`, `PallinoPulse`, `PillolaPulse`, `BarraAvanzamento`, `TitoloSezione`;
-- `SfondoPulse`: fondo con bagliori;
-- `BarraPulse`: barra di navigazione fluttuante.
-
-**Forme**:
-- card raggio 24, dialoghi 28, campi di testo 16;
-- pulsanti, chip e segmenti a pillola (`StadiumBorder`);
-- immagini degli esercizi raggio 14;
-- i `Card` hanno elevazione 0.
-
-**Spaziature**:
-- margine laterale delle pagine 16–20;
-- spazi tra blocchi 8, 12, 16 o 24;
-- nei moduli, `spacing: 12–14` tra i campi;
-- in basso `spazioBarra(context)`, perché la barra fluttua sopra il contenuto (`extendBody`).
-
-**Rilievo**: sfumature e ombre morbide colorate **solo** su seduta di oggi, pulsanti principali, anelli e barra. Testi ed elenchi stanno su fondi piatti.
-
-**UX per principianti**:
-- parole semplici;
-- dettagli tecnici dentro sezioni da aprire;
-- spiegazioni brevi ("Cos'è" chiuso di default);
-- distinguere con forma e icona, non solo con il colore;
-- la figura dei muscoli resta.
-
-**Sopra `SfondoPulse`**, `CheckboxListTile` e `ListTile` vanno dentro `Material(type: MaterialType.transparency)`, altrimenti l'effetto al tocco non si vede.
+- **Ogni modifica grafica va controllata nelle 4 combinazioni** (fondo chiaro o scuro × accento rosso o neon).
+- Il resto (colori, caratteri, componenti, forme, spaziature, UX) è in `.claude/rules/stile-pulse.md`: si carica da solo quando lavori sull'interfaccia; se serve altrove, leggilo.
 
 ## 6. Convenzioni di codice
 
