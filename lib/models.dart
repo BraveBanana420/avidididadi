@@ -145,6 +145,10 @@ String dataLunga(DateTime d) =>
 DateTime soloData(DateTime d) => DateTime(d.year, d.month, d.day);
 String titoloSessione(String sport, String tipo) =>
     tipo.isEmpty ? sport : '$sport: $tipo';
+
+/// Il titolo accanto all'icona dello sport: basta il nome della seduta,
+/// lo sport lo dice già l'icona.
+String nomeSessione(String sport, String tipo) => tipo.isEmpty ? sport : tipo;
 bool stessoSport(String a, String b) =>
     a.trim().toLowerCase() == b.trim().toLowerCase();
 String maiuscola(String s) =>

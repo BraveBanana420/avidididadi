@@ -64,6 +64,11 @@ void main() {
       expect(fmtDistanza('Nuoto', 1.5), '1500 m');
     });
 
+    test('accanto all\'icona basta il nome della seduta', () {
+      expect(nomeSessione('Corsa', 'Lungo'), 'Lungo');
+      expect(nomeSessione('Corsa', ''), 'Corsa');
+    });
+
     test('la sessione: tempo, distanza, passo, battito, calorie', () {
       expect(testoSessione(corsa), 'Corsa: Lento · 10,24 km in 52 min');
       final n = numeriSessione(corsa);
@@ -165,7 +170,7 @@ void main() {
           ImmagineSessione(sessione: corsa, percorso: giro),
           tema,
         );
-        expect(find.text('Corsa: Lento'), findsOneWidget);
+        expect(find.text('Lento'), findsOneWidget);
         expect(find.text('#avidididadi'), findsOneWidget);
         expect(find.text('Allenato con Avidididadi'), findsNothing);
         expect(t.takeException(), isNull);
@@ -236,7 +241,7 @@ void main() {
           ),
           tema,
         );
-        expect(find.text('Corsa: Lento'), findsOneWidget);
+        expect(find.text('Lento'), findsOneWidget);
         expect(find.text('#avidididadi'), findsOneWidget);
         expect(t.takeException(), isNull);
       });

@@ -762,7 +762,7 @@ class ImmagineMappa extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          titoloSessione(s.sport, s.tipo),
+                          nomeSessione(s.sport, s.tipo),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: t.titleLarge?.copyWith(
@@ -966,7 +966,7 @@ class _Titolo extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: Text(
-            titoloSessione(s.sport, s.tipo),
+            nomeSessione(s.sport, s.tipo),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: t.titleLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -1737,7 +1737,7 @@ class ImmagineSessione extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  titoloSessione(s.sport, s.tipo),
+                  nomeSessione(s.sport, s.tipo),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: t.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
