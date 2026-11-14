@@ -203,6 +203,18 @@ List<FasciaWatt> fasceDaTratti(List<IntervalloFatto> tratti) {
   ];
 }
 
+/// Le sedute senza watt previsti (quelle di prima, o i blocchi "a
+/// sensazione"): una barra per tratto alta quanto i watt medi tenuti.
+List<FasciaWatt> fasceDaMedie(List<IntervalloFatto> tratti) => [
+  for (final i in tratti)
+    if (i.wattMedi > 0 && i.secondi > 0)
+      (
+        da: i.inizioS,
+        a: i.inizioS + i.secondi,
+        range: (i.wattMedi, i.wattMedi),
+      ),
+];
+
 /// I watt di tutta la seduta, un valore ogni [passo] secondi (media dei
 /// campioni dentro): la linea resta leggibile anche in un'ora di rullo.
 List<({double s, double w})> wattMediati(
@@ -225,8 +237,9 @@ List<({double s, double w})> wattMediati(
   ];
 }
 
-/// Tutta la seduta: dietro le fasce dei watt da tenere, colorate per zona,
-/// sopra la linea dei watt tenuti davvero. Come il grafico durante
+/// Tutta la seduta: dietro le barre dei watt da tenere, colorate per zona e
+/// piene fino in basso (in ERG il range è un numero solo: una fascia sottile
+/// sparirebbe sotto la linea), sopra la linea dei watt tenuti davvero. Come il grafico durante
 /// l'allenamento, ma dall'inizio alla fine.
 class GraficoPotenzaSeduta extends StatelessWidget {
   final List<Campione> serie;
@@ -340,6 +353,11 @@ class _Seduta extends CustomPainter {
         basso = m + 3;
       }
       final r = Rect.fromLTRB(x(f.da), alto, x(f.a) - 1, basso);
+      // La barra del blocco, dal basso fino ai watt da tenere.
+      canvas.drawRect(
+        Rect.fromLTRB(r.left, r.bottom, r.right, size.height),
+        Paint()..color = colore.withValues(alpha: 0.20),
+      );
       canvas.drawRect(r, Paint()..color = colore.withValues(alpha: 0.32));
       canvas.drawRect(
         Rect.fromLTWH(r.left, r.top, r.width, 2),

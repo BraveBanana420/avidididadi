@@ -89,6 +89,23 @@ void main() {
     expect((fasce[1].da, fasce[1].a, fasce[1].range), (630, 1110, (170, 185)));
   });
 
+  test('senza watt previsti le barre sono i watt medi di ogni tratto', () {
+    final fasce = fasceDaMedie(const [
+      IntervalloFatto(recupero: false, inizioS: 0, secondi: 600, wattMedi: 118),
+      // Senza watt (sensore staccato): niente barra.
+      IntervalloFatto(recupero: true, inizioS: 600, secondi: 120),
+      IntervalloFatto(
+        recupero: false,
+        inizioS: 720,
+        secondi: 480,
+        wattMedi: 176,
+      ),
+    ]);
+    expect(fasce.length, 2);
+    expect((fasce[0].da, fasce[0].a, fasce[0].range), (0, 600, (118, 118)));
+    expect(fasce[1].range, (176, 176));
+  });
+
   test('i watt di tutta la seduta, media ogni 10 secondi', () {
     final t0 = DateTime(2026, 11, 12, 18);
     final serie = [

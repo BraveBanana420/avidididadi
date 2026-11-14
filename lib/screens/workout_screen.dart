@@ -42,7 +42,7 @@ import 'intervalli_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
-import 'profilo_allenamento.dart';
+import 'riepilogo_bici.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -1043,83 +1043,6 @@ class _IntervalliState extends State<_Intervalli> {
   late final Future<List<IntervalloFatto>> _intervalli = widget.state
       .intervalliDi(widget.sessione);
 
-  /// I watt al secondo delle sedute di bici registrate con l'app (sul
-  /// telefono, senza rete): per il grafico di tutta la seduta.
-  late final Future<SerieSessione> _serie =
-      widget.sessione.id.startsWith('app-') &&
-          stessoSport(widget.sessione.sport, 'Bici')
-      ? widget.state.serieApp(widget.sessione)
-      : Future.value(const SerieSessione());
-
-  /// Bici con i watt: un grafico solo. Se ci sono i watt al secondo, quello
-  /// di tutta la seduta (fasce previste e linea dei watt tenuti); altrimenti
-  /// il diagramma dei blocchi con le medie. Null se non c'è niente da
-  /// disegnare.
-  Widget? _schemaBici(List<IntervalloFatto> letti) {
-    final s = widget.sessione;
-    if (!stessoSport(s.sport, 'Bici')) return null;
-    final zp = widget.state.zonePotenza;
-    final barre = zp == null ? const <BarraAllenamento>[] : barreFatte(letti);
-    final previsti = barre.any((b) => b.fatto != null);
-    final fasce = fasceDaTratti(letti);
-    return FutureBuilder<SerieSessione>(
-      future: _serie,
-      builder: (context, snap) {
-        final t = Theme.of(context).textTheme;
-        final scheme = Theme.of(context).colorScheme;
-        final watt = snap.data?.potenza ?? const <Campione>[];
-        final conGrafico = watt.length >= 60;
-        // Finché i watt non sono letti non si sa quale dei due disegnare.
-        if (snap.connectionState != ConnectionState.done ||
-            (barre.isEmpty && !conGrafico)) {
-          return const SizedBox.shrink();
-        }
-        final nota = t.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
-        return Padding(
-          padding: const EdgeInsets.only(top: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 6,
-            children: [
-              Text("Com'è andata", style: t.titleSmall),
-              if (!conGrafico && barre.isNotEmpty && zp != null) ...[
-                ProfiloAllenamento(barre: barre, zone: zp, altezza: 64),
-                Text(
-                  previsti
-                      ? 'Una barra per blocco, larga quanto è durato: alta e '
-                            'colorata secondo i watt da tenere; il trattino '
-                            'sono i watt medi che hai tenuto. La linea è la '
-                            'tua FTP.'
-                      : 'Una barra per blocco: larga quanto è durato, alta e '
-                            'colorata secondo i watt medi. La linea è la tua '
-                            'FTP.',
-                  style: nota,
-                ),
-              ],
-              if (conGrafico) ...[
-                GraficoPotenzaSeduta(
-                  serie: watt,
-                  fasce: fasce,
-                  inizio: s.inizio ?? watt.first.t,
-                  zone: zp,
-                ),
-                Text(
-                  fasce.isEmpty
-                      ? 'I tuoi watt in tutta la seduta (media ogni 10 '
-                            'secondi).'
-                      : 'Le fasce colorate sono i watt da tenere blocco per '
-                            'blocco; la linea sono i watt che hai tenuto '
-                            '(media ogni 10 secondi).',
-                  style: nota,
-                ),
-              ],
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   /// Battito e passo di tutta la corsa: si leggono solo se c'è qualcosa da
   /// confrontare, e una volta sola.
   Future<SerieSessione>? _serieCorsa;
@@ -1208,7 +1131,9 @@ class _IntervalliState extends State<_Intervalli> {
         // colorate per zona come durante l'allenamento, e sotto i watt di
         // tutta la seduta sulle fasce da tenere. C'è anche quando i tratti
         // non si elencano (un blocco solo).
-        final diagramma = _schemaBici(letti);
+        final diagramma = stessoSport(s.sport, 'Bici')
+            ? RiepilogoBici(state: state, sessione: s, tratti: letti)
+            : null;
         // Un tratto solo non dice niente di più dei totali.
         if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
           return diagramma ?? const SizedBox.shrink();

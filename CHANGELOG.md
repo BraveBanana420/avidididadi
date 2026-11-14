@@ -5,7 +5,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 ## 0.1.0
 
 - Corsa strutturata: nel riepilogo "Previsto e fatto", un grafico solo con le fasce dell'intensità da tenere e la linea di quella tenuta, in zone (battito o passo secondo l'obiettivo del blocco).
-- Bici con i watt: nel riepilogo un grafico solo, con le fasce dei watt previsti e sopra la linea dei watt veri; senza i watt al secondo restano le barre colorate per zona.
+- Bici con i watt: nel riepilogo un grafico solo, con le barre colorate del programma e sopra la linea dei watt veri.
 - Riepilogo della sessione: la matita apre una pagina sola per nome, indoor/outdoor, dati, esercizi della forza ed eliminazione; in basso "Grafici" e accanto il tasto tondo per condividere.
 - Riepilogo e immagini da condividere: accanto all'icona dello sport c'è solo il nome della seduta.
 - Primo avvio: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lunedì, mercoledì e venerdì); le altre domande sono facoltative.

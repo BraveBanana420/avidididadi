@@ -106,6 +106,7 @@ lib/
   screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
   screens/condividi_screen.dart  immagine 4:5 di sessione o settimana, condivisa con FileProvider (cache/condivisi)
   screens/colonna_dati.dart  colonna dei dati in allenamento: la minimappa prende lo spazio che resta
+  screens/riepilogo_bici.dart  la parte del riepilogo solo della bici: barre del programma e linea dei watt in un grafico (ogni sport avrà il suo file, la cornice resta in workout_screen.dart)
   screens/vista_bici.dart  bici al chiuso durante l'allenamento: dati, blocco in corso, ERG, grafico e diagramma in una pagina
   screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
 assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
