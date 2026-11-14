@@ -213,7 +213,7 @@ class Pulse extends ThemeExtension<Pulse> {
       end: Alignment.bottomCenter,
       colors: [Color(0xFF2A2A33), Color(0xFF121218)],
     ),
-    anello: [Color(0xFFEEA82F), Color(0xFFFF3B47), Color(0xFFB3122A)],
+    anello: [Color(0xFFFF8A70), Color(0xFFFF3B47), Color(0xFFB3122A)],
     sfondo: [
       RadialGradient(
         center: Alignment(1, -1),
@@ -274,7 +274,7 @@ class Pulse extends ThemeExtension<Pulse> {
       end: Alignment.bottomCenter,
       colors: [Color(0xFF26262D), Color(0xFF131317)],
     ),
-    anello: [Color(0xFFEEA82F), Color(0xFFFF3B47), Color(0xFFB3122A)],
+    anello: [Color(0xFFFF8A70), Color(0xFFFF3B47), Color(0xFFB3122A)],
     sfondo: [
       RadialGradient(
         center: Alignment(1, -1),

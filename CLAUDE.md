@@ -152,23 +152,23 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 **Temi**: due scelte indipendenti nel Profilo.
 - **Fondo**: scuro grafite `#0B0B0D` oppure chiaro `#F6F6FA` (`tema`, salvato in `tema.txt`).
-- **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`; anello e barra di avanzamento da oro `#EEA82F` a rosso) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
+- **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
 - Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
 - **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna le quattro sezioni, le pagine interne principali (sport, sessione, seduta, catalogo, zone) e l'avvio dell'allenamento guidato con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
 
-**Colori degli sport**: stessa tinta nel chiaro e nello scuro, ma ogni colore deve staccare dal fondo (contrasto di almeno 3, lo controlla `test/tema_test.dart`). Dove il colore è uno solo vale per i due fondi; altrimenti "scuro / chiaro". Nel tema rosso la coppia è **rosso e oro** (corsa e bici); gli altri sport hanno tinte lontane, scelte con il controllo dei colori della skill dei grafici perché si distinguano anche per chi confonde rosso e verde.
+**Colori degli sport**: stessa tinta nel chiaro e nello scuro, ma ogni colore deve staccare dal fondo (contrasto di almeno 3, lo controlla `test/tema_test.dart`). Dove il colore è uno solo vale per i due fondi; altrimenti "scuro / chiaro".
 
 | Sport | Standard | Neon |
 |---|---|---|
-| Forza | `#787882` / `#76767F` | `#9D4DFF` |
+| Forza | `#8E8E96` / `#7B7B85` | `#9D4DFF` |
 | Corsa | `#FF3B47` | `#FF2E93` |
-| Nuoto | `#44E4C9` / `#189DAA` | `#00B2FF` / `#0090DB` |
-| Bici | `#EEA82F` / `#A57909` | `#00E0B8` / `#009C82` |
-| Mobilità | `#FBF8DA` / `#36634D` | `#FF7A00` / `#E66400` |
-| Arrampicata | `#7E44E4` / `#561BBB` | `#FFE600` / `#A38500` |
-| Attività libera | `#D795E4` / `#C432E2` | `#7C83FD` / `#6C73F5` |
-| Camminata | `#E444A9` / `#6F2A56` | `#C6FF3D` / `#5F9400` |
+| Nuoto | `#FF8A3D` / `#E0660A` | `#00B2FF` / `#0090DB` |
+| Bici | `#CF2450` / `#B3123A` | `#00E0B8` / `#009C82` |
+| Mobilità | `#F48FB1` / `#DB5C8E` | `#FF7A00` / `#E66400` |
+| Arrampicata | `#4FA3A5` / `#3A8C8E` | `#FFE600` / `#A38500` |
+| Attività libera | `#7C83FD` / `#6C73F5` | `#7C83FD` / `#6C73F5` |
+| Camminata | `#E0A33A` / `#B87A0F` | `#C6FF3D` / `#5F9400` |
 
 - Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
 - **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).

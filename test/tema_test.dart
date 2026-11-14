@@ -79,11 +79,11 @@ void main() {
         }
       }
     }
-    // Tema rosso: rosso e oro davanti, gli altri sport in tinte lontane.
+    // Sul fondo scuro restano i colori di sempre (tranne la bici, più chiara).
     neonAttivo = false;
     temaScuroAttivo = true;
-    expect(coloreSport('Forza'), const Color(0xFF787882));
-    expect(coloreSport('Bici'), const Color(0xFFEEA82F));
+    expect(coloreSport('Forza'), const Color(0xFF8E8E96));
+    expect(coloreSport('Nuoto'), const Color(0xFFFF8A3D));
     neonAttivo = true;
     expect(coloreSport('Arrampicata'), const Color(0xFFFFE600));
   });
@@ -113,7 +113,7 @@ void main() {
       );
       expect(
         coloreSport('Camminata'),
-        n ? const Color(0xFFC6FF3D) : const Color(0xFFE444A9),
+        n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A),
       );
     }
   });
