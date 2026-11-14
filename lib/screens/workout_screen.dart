@@ -15,6 +15,7 @@ import '../figura.dart';
 import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
+import '../intensita.dart';
 import '../intervalli.dart';
 import '../intervals.dart';
 import '../modifica_sessione.dart';
@@ -36,6 +37,7 @@ import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'allenamenti_arrampicata_screen.dart';
 import 'grafici_screen.dart';
+import 'grafico_intensita.dart';
 import 'intervalli_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
@@ -1049,8 +1051,10 @@ class _IntervalliState extends State<_Intervalli> {
       ? widget.state.serieApp(widget.sessione)
       : Future.value(const SerieSessione());
 
-  /// Bici con i watt: il diagramma dei blocchi (range previsto e watt tenuti)
-  /// e il grafico di tutta la seduta. Null se non c'è niente da disegnare.
+  /// Bici con i watt: un grafico solo. Se ci sono i watt al secondo, quello
+  /// di tutta la seduta (fasce previste e linea dei watt tenuti); altrimenti
+  /// il diagramma dei blocchi con le medie. Null se non c'è niente da
+  /// disegnare.
   Widget? _schemaBici(List<IntervalloFatto> letti) {
     final s = widget.sessione;
     if (!stessoSport(s.sport, 'Bici')) return null;
@@ -1065,7 +1069,11 @@ class _IntervalliState extends State<_Intervalli> {
         final scheme = Theme.of(context).colorScheme;
         final watt = snap.data?.potenza ?? const <Campione>[];
         final conGrafico = watt.length >= 60;
-        if (barre.isEmpty && !conGrafico) return const SizedBox.shrink();
+        // Finché i watt non sono letti non si sa quale dei due disegnare.
+        if (snap.connectionState != ConnectionState.done ||
+            (barre.isEmpty && !conGrafico)) {
+          return const SizedBox.shrink();
+        }
         final nota = t.bodySmall?.copyWith(color: scheme.onSurfaceVariant);
         return Padding(
           padding: const EdgeInsets.only(top: 16),
@@ -1074,7 +1082,7 @@ class _IntervalliState extends State<_Intervalli> {
             spacing: 6,
             children: [
               Text("Com'è andata", style: t.titleSmall),
-              if (barre.isNotEmpty && zp != null) ...[
+              if (!conGrafico && barre.isNotEmpty && zp != null) ...[
                 ProfiloAllenamento(barre: barre, zone: zp, altezza: 64),
                 Text(
                   previsti
@@ -1089,7 +1097,6 @@ class _IntervalliState extends State<_Intervalli> {
                 ),
               ],
               if (conGrafico) ...[
-                const SizedBox(height: 8),
                 GraficoPotenzaSeduta(
                   serie: watt,
                   fasce: fasce,
@@ -1106,6 +1113,71 @@ class _IntervalliState extends State<_Intervalli> {
                   style: nota,
                 ),
               ],
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Battito e passo di tutta la corsa: si leggono solo se c'è qualcosa da
+  /// confrontare, e una volta sola.
+  Future<SerieSessione>? _serieCorsa;
+
+  /// Corsa strutturata: previsto e fatto in un grafico solo, in zone, anche
+  /// se l'obiettivo dei blocchi passa dal battito al passo. Null se nessun
+  /// blocco ha un obiettivo da disegnare.
+  Widget? _schemaCorsa(List<IntervalloFatto> lista, List<WorkoutStep> passi) {
+    final s = widget.sessione;
+    final inizio = s.inizio;
+    if (!stessoSport(s.sport, 'Corsa') || inizio == null) return null;
+    final state = widget.state;
+    final soglia = sogliaCorsa(state.sessioni, s.data);
+    final fasce = fasceIntensita(lista, passi, soglia: soglia);
+    if (fasce.isEmpty) return null;
+    return FutureBuilder<SerieSessione>(
+      future: _serieCorsa ??= state.serieDi(s),
+      builder: (context, snap) {
+        final serie = snap.data;
+        if (serie == null) return const SizedBox.shrink();
+        final punti = lineaIntensita(
+          serie,
+          inizio,
+          fasce,
+          state.zone,
+          soglia: soglia,
+        );
+        // Senza battito né passo non c'è niente da confrontare.
+        if (punti.length < 6) return const SizedBox.shrink();
+        final t = Theme.of(context).textTheme;
+        final scheme = Theme.of(context).colorScheme;
+        final aPasso = fasce.any((f) => f.passo);
+        final aZone = fasce.any((f) => !f.passo);
+        return Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Text('Previsto e fatto', style: t.titleSmall),
+              GraficoIntensitaSeduta(
+                punti: punti,
+                fasce: fasce,
+                colore: coloreSport(s.sport),
+              ),
+              Text(
+                'Le fasce colorate sono l\'intensità da tenere blocco per '
+                'blocco, la linea quella che hai tenuto: dentro la fascia '
+                'eri nell\'obiettivo, sopra andavi più forte, sotto più '
+                'piano.'
+                '${aPasso && aZone
+                    ? ' Dove l\'obiettivo era una zona si guarda il '
+                          'battito, dove era un passo si guarda il passo.'
+                    : aPasso
+                    ? ' Si guarda il passo.'
+                    : ' Si guarda il battito.'}',
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              ),
             ],
           ),
         );
@@ -1268,6 +1340,7 @@ class _IntervalliState extends State<_Intervalli> {
                 )
             else
               ...conLinea,
+            ?_schemaCorsa(lista, passi),
           ],
         );
       },
