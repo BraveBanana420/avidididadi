@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../avviso.dart';
 import '../agente_esterno.dart';
 import '../allenamento_agente.dart';
 import '../allenamento_arrampicata.dart';
@@ -102,7 +103,7 @@ class SchedaAllenamenti extends StatelessWidget {
                           da: messaggio,
                         );
                         messenger.showSnackBar(
-                          SnackBar(
+                          avviso(
                             content: Text(
                               n == 0
                                   ? 'Niente da mettere: le date sono passate.'
@@ -198,7 +199,7 @@ class SchedaPiano extends StatelessWidget {
                         ),
                       );
                       messenger.showSnackBar(
-                        SnackBar(
+                        avviso(
                           content: Text(
                             'Copiato: incollalo in $app per correggere.',
                           ),
@@ -219,7 +220,7 @@ class SchedaPiano extends StatelessWidget {
                         da: messaggio,
                       );
                       messenger.showSnackBar(
-                        SnackBar(
+                        avviso(
                           content: Text(
                             n == 0
                                 ? 'Il piano non è più applicabile: riprova.'
@@ -321,7 +322,7 @@ class SchedaArrampicata extends StatelessWidget {
                   final (salvati, messi) = await state
                       .applicaProposteArrampicata(proposte, da: messaggio);
                   messenger.showSnackBar(
-                    SnackBar(
+                    avviso(
                       content: Text(
                         [
                           salvati == 1

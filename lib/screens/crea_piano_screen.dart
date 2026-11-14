@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../generatore_endurance.dart';
@@ -129,7 +130,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
     if (!mounted) return;
     navigator.pop();
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           scelti.isEmpty
               ? 'Sedute preparate tolte.'
@@ -231,10 +232,24 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
         shape: const Border(),
         leading: const Icon(Icons.trending_up),
         title: Text('${sport.join(', ')}: come crescere'),
-        subtitle: const Text('Quando le sedute ti sembrano facili'),
+        subtitle: const Text('Seduta lunga, e cosa fare se è facile'),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (sport.contains('Corsa') || sport.contains('Bici'))
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Seduta lunga'),
+              subtitle: const Text(
+                "L'ultima corsa o uscita in bici della settimana dura di più "
+                'e cresce col tempo. Spenta, durano tutte quanto hai scelto.',
+              ),
+              value: !widget.state.profilo.senzaLungo,
+              onChanged: (v) async {
+                await widget.state.impostaLungo(v);
+                if (mounted) setState(() {});
+              },
+            ),
           for (final sp in sport) ...[
             Text(sp, style: t.labelLarge),
             const SizedBox(height: 4),

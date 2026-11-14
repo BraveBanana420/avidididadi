@@ -101,6 +101,24 @@ void main() {
     expect(r.progressoPercorso, isNull);
   });
 
+  test('altra attività col GPS scelto: alla ripresa resta acceso', () {
+    final j = seduta.toJson()
+      ..['sport'] = 'Attività libera'
+      ..['tipo'] = 'Kayak'
+      ..['gps'] = true;
+    final r = AllenamentoInCorso.daJson(
+      jsonDecode(jsonEncode(j)) as Map<String, dynamic>,
+    )!;
+    expect(r.conGps, isTrue);
+    expect(r.tipo, 'Kayak');
+    // File di prima: senza la chiave il GPS scelto è spento.
+    final vecchio = AllenamentoInCorso.daJson(
+      jsonDecode(jsonEncode(seduta.toJson()..remove('gps')))
+          as Map<String, dynamic>,
+    )!;
+    expect(vecchio.conGps, isFalse);
+  });
+
   test('file rovinato: non si propone', () {
     expect(AllenamentoInCorso.daJson({'sport': 'Corsa'}), isNull);
   });

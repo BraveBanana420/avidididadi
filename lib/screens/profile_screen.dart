@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../charts.dart';
 import '../figura.dart';
@@ -21,6 +22,7 @@ import 'obiettivo_screen.dart';
 import 'opzioni_allenamento_screen.dart';
 import 'percorsi_screen.dart';
 import 'schede_screen.dart';
+import 'sensori_screen.dart';
 import 'tour.dart';
 import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
@@ -43,7 +45,7 @@ class ProfileScreen extends StatelessWidget {
       await state.impostaFoto(x.path);
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Impossibile caricare la foto: $e')),
+        avviso(content: Text('Impossibile caricare la foto: $e')),
       );
     }
   }
@@ -300,14 +302,16 @@ class ProfileScreen extends StatelessWidget {
                       'Esercizi',
                       'Come si fanno, con immagini e muscoli usati',
                       CatalogoScreen(state: state),
+                      linea: p.modoAvanzato,
                     ),
-                    voce(
-                      Icons.monitor_heart_outlined,
-                      'Le mie zone',
-                      'Quanto spingere: battiti al minuto e watt in bici',
-                      ZoneScreen(state: state),
-                      linea: false,
-                    ),
+                    if (p.modoAvanzato)
+                      voce(
+                        Icons.monitor_heart_outlined,
+                        'Le mie zone',
+                        'Quanto spingere: battiti al minuto e watt in bici',
+                        ZoneScreen(state: state),
+                        linea: false,
+                      ),
                   ],
                 ),
                 TitoloSezione(
@@ -361,6 +365,22 @@ class ProfileScreen extends StatelessWidget {
                       fine: Switch(
                         value: neon.value,
                         onChanged: (_) => cambiaNeon(),
+                      ),
+                    ),
+                    voce(
+                      Icons.bluetooth,
+                      'I miei sensori',
+                      'Fascia cardio, rullo e sensori della bici',
+                      SensoriScreen(state: state),
+                    ),
+                    RigaPulse(
+                      segno: const IconaQuadrata(Icons.speed),
+                      titolo: 'Funzioni avanzate',
+                      sottotitolo: 'Zone, watt, sensori Bluetooth, rullo e intervals.icu',
+                      onTap: () => state.impostaAvanzata(!p.modoAvanzato),
+                      fine: Switch(
+                        value: p.modoAvanzato,
+                        onChanged: state.impostaAvanzata,
                       ),
                     ),
                     voce(

@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../backup.dart';
 import '../backup_auto.dart';
@@ -19,8 +20,7 @@ class _SezioneBackupState extends State<SezioneBackup> {
   bool inCorso = false;
 
   void _messaggio(String testo) =>
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(testo)));
+      ScaffoldMessenger.of(context).showSnackBar(avviso(content: Text(testo)));
 
   Future<void> _salva() async {
     setState(() => inCorso = true);
@@ -105,7 +105,8 @@ class _SezioneBackupState extends State<SezioneBackup> {
   Future<void> _accendiAutomatico(bool acceso) async {
     final s = widget.state;
     if (!acceso) {
-      await s.impostaBackupAuto(const ImpostazioniBackup());
+      // Spento apposta: la proposta in Oggi non torna subito.
+      await s.rimandaBackup(aLungo: true);
       return;
     }
     final c = await scegliCartellaBackup();
@@ -233,6 +234,102 @@ class _SezioneBackupState extends State<SezioneBackup> {
             ListenableBuilder(
               listenable: widget.state,
               builder: (context, _) => _automatico(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// In Oggi: propone il backup automatico finché è spento (con "Non ora"
+/// torna più avanti), e avvisa se l'ultimo non è riuscito.
+class PromemoriaBackup extends StatefulWidget {
+  final AppState state;
+  const PromemoriaBackup({super.key, required this.state});
+
+  @override
+  State<PromemoriaBackup> createState() => _PromemoriaBackupState();
+}
+
+class _PromemoriaBackupState extends State<PromemoriaBackup> {
+  bool inCorso = false;
+
+  Future<void> _accendi() async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => inCorso = true);
+    final fatto = await widget.state.accendiBackupAuto();
+    if (mounted) setState(() => inCorso = false);
+    if (!fatto) return;
+    final b = widget.state.backupAuto;
+    messenger.showSnackBar(
+      avviso(
+        content: Text(
+          b.errore.isEmpty
+              ? 'Backup attivo: da ora si salva da solo ogni settimana.'
+              : b.errore,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    final cosa = avvisoBackup(state.backupAuto, DateTime.now());
+    // Si propone solo a chi ha già qualcosa da perdere.
+    if (cosa == AvvisoBackup.nessuno ||
+        (cosa == AvvisoBackup.proponi &&
+            state.piano.isEmpty &&
+            state.sessioni.isEmpty)) {
+      return const SizedBox.shrink();
+    }
+    final scheme = Theme.of(context).colorScheme;
+    final errore = cosa == AvvisoBackup.errore;
+    final colore = errore ? scheme.onErrorContainer : scheme.onPrimaryContainer;
+    return Card(
+      color: errore ? scheme.errorContainer : scheme.primaryContainer,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  errore ? Icons.error_outline : Icons.shield_outlined,
+                  color: colore,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    errore
+                        ? state.backupAuto.errore
+                        : "Metti al sicuro i tuoi allenamenti: l'app ne salva "
+                              'da sola una copia in una cartella che scegli '
+                              "tu. Resta anche se disinstalli l'app.",
+                    style: TextStyle(color: colore),
+                  ),
+                ),
+              ],
+            ),
+            Wrap(
+              spacing: 4,
+              children: [
+                TextButton(
+                  onPressed: inCorso ? null : _accendi,
+                  child: Text(
+                    errore ? 'Scegli di nuovo la cartella' : 'Attiva il backup',
+                  ),
+                ),
+                if (!errore)
+                  TextButton(
+                    onPressed: inCorso ? null : state.rimandaBackup,
+                    child: const Text('Non ora'),
+                  ),
+              ],
             ),
           ],
         ),

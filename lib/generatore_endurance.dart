@@ -107,8 +107,7 @@ Set<String> sportDaAttivare(
 /// Ruolo di una seduta dal suo tipo (per quelle decise dall'assistente).
 String _ruoloDi(String sport, String tipo) {
   final t = tipo.toLowerCase();
-  // "Allunghi" contiene "lung", ma non è un lungo.
-  if (t.contains('lung') && !t.contains('allungh')) return 'lungo';
+  if (tipoLungo(t)) return 'lungo';
   return switch (sport) {
     'Corsa' =>
       t.isEmpty || t.contains('lento') || t.contains('recupero')
@@ -134,6 +133,7 @@ PianoEndurance generaPianoEndurance({
   Map<String, String> progressione =
       const {}, // per sport: durata, intensità, auto
   bool principiante = false, // si parte da zero: prima solo corse facili
+  bool lungo = true, // falso: niente seduta lunga, durano tutte uguale
 }) {
   final passi = <WorkoutStep>[];
   final programma = <ProgrammaRiga>[];
@@ -160,6 +160,10 @@ PianoEndurance generaPianoEndurance({
     );
     final inizioBlocco = lunInizio.add(Duration(days: 28 * bloccoDa));
     final base = _base(storico, sp, inizioBlocco);
+    // Il lungo però segue quello fatto davvero: se nelle ultime 4 settimane
+    // la seduta più lunga ha superato il riferimento del blocco, si riparte
+    // da lì (anche oltre il tetto della gara, perché l'hai già fatto).
+    final lungoFatto = _base(storico, sp, da).lungoMin;
     // Con dei feedback la progressione viene solo dall'adattamento (contano
     // quelli del blocco in corso: la base riparte dai dati recenti).
     final esitiSp = esiti[sp] ?? const [];
@@ -211,6 +215,8 @@ PianoEndurance generaPianoEndurance({
           base,
           obiettivo,
           principiante,
+          lungoFatto,
+          lungo,
         ))
           (
             s,
@@ -338,12 +344,17 @@ List<_Seduta> _ruoli(
   ({int lungoMin, int metri}) base,
   Obiettivo? obiettivo,
   bool principiante,
+  int lungoFatto,
+  bool conLungo,
 ) {
   final n = righe.length;
   // L'ultima della settimana è il lungo (la corsa anche se è l'unica); la
   // qualità è l'ultima ad almeno due giorni dal lungo; le altre sono facili.
   // Con una sola seduta di nuoto o bici, qualità a settimane alterne.
-  final lungo = sport == 'Nuoto' || (sport == 'Bici' && n < 2) ? -1 : n - 1;
+  // Senza lungo (scelta dell'utente) tutte le sedute durano quanto lo slot.
+  final lungo = !conLungo || sport == 'Nuoto' || (sport == 'Bici' && n < 2)
+      ? -1
+      : n - 1;
   var qualita = -1;
   if (n == 1 && lungo < 0) {
     if (settimane.isOdd) qualita = 0;
@@ -385,10 +396,11 @@ List<_Seduta> _ruoli(
           );
         }
         if (i == lungo) {
-          final tetto = sport == 'Corsa'
-              ? (_tettoLungo[obiettivo?.gara] ?? 90)
-              : 240;
-          final partenza = math.max(slot, base.lungoMin);
+          final tetto = math.max(
+            sport == 'Corsa' ? (_tettoLungo[obiettivo?.gara] ?? 90) : 240,
+            lungoFatto,
+          );
+          final partenza = math.max(math.max(slot, base.lungoMin), lungoFatto);
           return _Seduta(
             r.data,
             sport,

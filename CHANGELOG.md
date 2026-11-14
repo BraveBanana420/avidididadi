@@ -2,6 +2,37 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 0.1.0
+
+- Corsa strutturata: nel riepilogo "Previsto e fatto", un grafico solo con le fasce dell'intensità da tenere e la linea di quella tenuta, in zone (battito o passo secondo l'obiettivo del blocco).
+- Bici con i watt: nel riepilogo un grafico solo, con le barre colorate del programma e sopra la linea dei watt veri.
+- Riepilogo della sessione: la matita apre una pagina sola per nome, indoor/outdoor, dati, esercizi della forza ed eliminazione; in basso "Grafici" e accanto il tasto tondo per condividere.
+- Riepilogo e immagini da condividere: accanto all'icona dello sport c'è solo il nome della seduta.
+- Primo avvio: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lunedì, mercoledì e venerdì); le altre domande sono facoltative.
+- Modo semplice (Profilo → Funzioni avanzate): zone, icone dei sensori, intervals.icu e import da file restano nascosti finché non servono; chi usava già l'app vede tutto.
+- Profilo: "I miei sensori" per collegare fascia cardio e sensori della bici, anche in modo semplice.
+- Oggi: invito ad attivare il backup automatico, avviso se l'ultimo non è riuscito, e sotto la settimana le settimane di fila, i traguardi e i record.
+- Seduta lunga di corsa e bici: si può spegnere da "Prepara le sedute".
+- Nuoto: le vasche corrette a mano valgono nel riepilogo, nei grafici e nelle immagini da condividere.
+- Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti.
+- Mappa durante l'allenamento: al posto della "i" c'è il tasto dei livelli, anche nella minimappa.
+- Condividi: tre grafiche per ogni sport (es. corsa: Mappa, Km per km, Poster; forza: Esercizi, Muscoli, Poster con il record; arrampicata: Seduta, Progressi, Poster col grado), più "La tua foto" dalla galleria con i numeri sopra; mappa vera Pulse, Strade o Satellite; marchio "#avidididadi" in alto.
+- Sessioni di corsa e bici: l'etichetta dice "Indoor" o "Outdoor" (prima "Al chiuso").
+- Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
+- Tasto "+": "Allenamento libero" diventa "Forza"; alla fine scrivi tutti gli esercizi fatti, con ripetizioni e kg (o corpo libero), anche dopo dal dettaglio della seduta; per plank e tenute scegli "Tempo" e scrivi i secondi. Arrampicata passa in fondo, prima di "Altra attività".
+- Altra attività: le dai tu il nome (es. Kayak), che resta sulla sessione, e scegli all'inizio se registrare il percorso GPS.
+- Riepilogo della seduta: i tratti fatti sono divisi nelle sezioni della seduta prevista (riscaldamento, principale, defaticamento), con gli stessi titoli e pallini; una riga per passo, e i tratti in più a fine seduta in una riga sola.
+- Corsa e bici dall'orologio (con intervals.icu): i tratti sono i giri veri del Garmin, anche con il giro automatico di 1 km; compaiono solo se la seduta ha una struttura (ripetute, più passi), mentre lungo, lento e uscite continue mostrano solo i totali.
+- Sedute registrate con l'app: ogni blocco viene salvato con tempo fatto e previsto, battito e watt, così vedi anche un blocco chiuso prima del previsto.
+- Nuoto dall'orologio (con intervals.icu): nel dettaglio vedi gli intervalli con metri, tempo, passo e battito, e i recuperi; se i metri combaciano con la seduta in programma prendono i nomi dei passi. Nei grafici passo ogni 100 m e bracciate al minuto. Gli intervalli si correggono a mano: nome, metri, tempo, ordine, tratti da togliere o aggiungere.
+- Bici all'aperto senza misuratore di potenza: i passi in watt o in % dell'FTP si seguono col battito della zona corrispondente, con avvisi a voce; a schermo vedi watt e bpm.
+- Lungo: se lo fai più lungo del previsto conta comunque come lungo, e i prossimi lunghi partono da quello che hai fatto davvero.
+- Allenamento senza sensori: il movimento dell'esercizio si vede in grande sotto il tempo; il riquadro del battito compare solo quando il battito arriva davvero.
+- Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
+- Avvisi in basso più brevi: si chiudono scorrendo in qualsiasi direzione e "Annulla" ha il bordo, per non confonderlo con la chiusura.
+- Menu del "+" e altri fogli dal basso: non finiscono più sotto i tasti del telefono.
+- All'apertura riaccetta l'informativa (posizione per "Altra attività").
+
 ## 1.12.3
 
 - Le mie attività: al primo avvio scegli i tuoi sport e vedi solo quelli; dal Profilo ne aggiungi o togli e il calendario si aggiorna.

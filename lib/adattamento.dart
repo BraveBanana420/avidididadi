@@ -14,10 +14,20 @@ enum StatoSeduta { svolta, sostituita, nonSvolta }
 /// seduta in programma, ma un'altra al suo posto.
 const scartoSostituita = 0.4;
 
+/// Vero se il tipo (o il nome di un passo) è un lungo. "Allunghi" contiene
+/// "lung", ma non è un lungo.
+bool tipoLungo(String tipo) {
+  final t = tipo.toLowerCase();
+  return t.contains('lung') && !t.contains('allungh');
+}
+
+/// [lungo]: la seduta in programma è un lungo, e allora farlo più lungo del
+/// previsto è sempre il lungo (conta solo se è stato molto più corto).
 StatoSeduta statoSeduta({
   required PianoRiga previsto,
   required List<Sessione> fatte,
   int metriPrevisti = 0,
+  bool lungo = false,
 }) {
   final stesse = fatte
       .where(
@@ -29,7 +39,8 @@ StatoSeduta statoSeduta({
   bool diversa(double fatto, double atteso) =>
       atteso > 0 &&
       fatto > 0 &&
-      (fatto - atteso).abs() / atteso > scartoSostituita;
+      (lungo ? atteso - fatto : (fatto - atteso).abs()) / atteso >
+          scartoSostituita;
   if (diversa(s.durataMin.toDouble(), previsto.durataMin.toDouble()) ||
       diversa(s.distanzaKm * 1000, metriPrevisti.toDouble())) {
     return StatoSeduta.sostituita;

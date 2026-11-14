@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../models.dart';
@@ -211,7 +212,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
     final vuoti = s.giorni.every((g) => g.esercizi.isEmpty);
     if (vuoti) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        avviso(
           content: Text(
             _forza
                 ? 'Aggiungi almeno un esercizio.'
@@ -256,9 +257,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
     await state.salvaSettimana(prima: prima);
     if (!mounted) return;
     setState(() {});
-    messenger.showSnackBar(
-      const SnackBar(content: Text('Settimana tipo aggiornata.')),
-    );
+    messenger.showSnackBar(avviso(content: Text('Settimana tipo aggiornata.')));
   }
 
   /// true: sostituisci; false: aggiungi accanto; null: lascia com'è.
@@ -772,12 +771,7 @@ Future<EsercizioScheda?> modificaEsercizio(
     showDragHandle: true,
     builder: (c) => StatefulBuilder(
       builder: (c, aggiorna) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          0,
-          20,
-          20 + MediaQuery.viewInsetsOf(c).bottom,
-        ),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + spazioInBasso(c)),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -1029,12 +1023,7 @@ Future<EsercizioScheda?> modificaPasso(
       builder: (c, aggiorna) {
         final t = Theme.of(c).textTheme;
         return Padding(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            0,
-            20,
-            20 + MediaQuery.viewInsetsOf(c).bottom,
-          ),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + spazioInBasso(c)),
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -1194,7 +1183,7 @@ Future<EsercizioScheda?> modificaPasso(
                     final q = quanto.text.trim().replaceAll(',', '.');
                     if ((double.tryParse(q) ?? 0) <= 0) {
                       ScaffoldMessenger.of(c).showSnackBar(
-                        SnackBar(
+                        avviso(
                           content: Text(
                             aDistanza ? 'Scrivi i metri.' : 'Scrivi i minuti.',
                           ),
@@ -1205,7 +1194,7 @@ Future<EsercizioScheda?> modificaPasso(
                     final wattScritti = obiettivoWatt(watt.text);
                     if (scelta == 'watt' && wattScritti.isEmpty) {
                       ScaffoldMessenger.of(c).showSnackBar(
-                        const SnackBar(
+                        avviso(
                           content: Text(
                             'Scrivi i watt: per esempio 200, 190-210 o 88-94%.',
                           ),

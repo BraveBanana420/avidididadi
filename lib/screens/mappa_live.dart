@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
@@ -167,9 +169,11 @@ class _MappaLiveState extends State<MappaLive> {
                   zoomGesturesEnabled: false,
                   doubleClickZoomEnabled: false,
                   logoEnabled: false,
+                  // La "i" dei crediti va fuori dallo schermo: al suo posto
+                  // c'è il tasto dei livelli, e i crediti sono nel suo foglio.
                   attributionButtonPosition:
                       AttributionButtonPosition.bottomRight,
-                  attributionButtonColor: scheme.onSurfaceVariant,
+                  attributionButtonMargins: const math.Point(-200, -200),
                 ),
               ),
               // La posizione: sempre al centro, la freccia punta avanti.
@@ -182,8 +186,12 @@ class _MappaLiveState extends State<MappaLive> {
                   ),
                 ),
               ),
-              if (!widget.compatta)
-                const Positioned(top: 8, right: 8, child: PulsanteLivelli()),
+              // I livelli, dove prima c'era la "i": anche nella minimappa.
+              Positioned(
+                right: 6,
+                bottom: 6,
+                child: PulsanteLivelli(piccolo: widget.compatta),
+              ),
             ],
           );
         },

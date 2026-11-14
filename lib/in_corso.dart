@@ -20,6 +20,7 @@ class AllenamentoInCorso {
   final String tipo;
   final String nome;
   final bool libera;
+  final bool conGps; // GPS scelto a mano (altra attività)
   final List<WorkoutStep> passi;
   final int indice; // blocco a cui si era arrivati
   final bool finito; // già al riepilogo
@@ -50,6 +51,7 @@ class AllenamentoInCorso {
     required this.tipo,
     required this.nome,
     required this.libera,
+    this.conGps = false,
     required this.passi,
     required this.indice,
     required this.finito,
@@ -81,6 +83,7 @@ class AllenamentoInCorso {
     'tipo': tipo,
     'nome': nome,
     'libera': libera,
+    'gps': conGps,
     // I passi come righe di workout.csv: si rileggono con lo stesso codice.
     'passi': [for (final p in passi) p.toRow()],
     'indice': indice,
@@ -135,6 +138,7 @@ class AllenamentoInCorso {
         tipo: j['tipo'] as String,
         nome: j['nome'] as String,
         libera: j['libera'] as bool,
+        conGps: j['gps'] == true,
         passi: passi,
         indice: (j['indice'] as num).toInt(),
         finito: j['finito'] as bool,

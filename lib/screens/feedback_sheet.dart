@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../feedback.dart';
@@ -144,9 +145,7 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
       );
       return;
     }
-    messenger.showSnackBar(
-      SnackBar(content: Text(messaggio), duration: const Duration(seconds: 6)),
-    );
+    messenger.showSnackBar(avviso(content: Text(messaggio)));
   }
 
   @override

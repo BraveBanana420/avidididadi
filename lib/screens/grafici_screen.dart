@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../assi.dart';
 import '../charts.dart';
-import '../health_connect.dart';
+import '../intervalli.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
-import '../sincronizzazione.dart';
 import '../widgets.dart';
 
 /// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
@@ -24,48 +23,9 @@ class GraficiScreen extends StatefulWidget {
 }
 
 class _GraficiScreenState extends State<GraficiScreen> {
-  late final Future<SerieSessione> _serie = _carica();
-
-  Future<SerieSessione> _carica() async {
-    final s = widget.sessione;
-    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
-    final icu = await widget.state.serieIcu(s);
-    if (icu != null && !icu.vuota) return icu;
-    var serie = const SerieSessione();
-    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
-      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
-      serie = await widget.state.hc.serie(
-        s.inizio!,
-        s.fine!,
-        origine: daFreeletics(s) ? '' : s.origine,
-        conPassi: siCammina(s.sport),
-      );
-    }
-    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
-    // (rulli, misuratore di potenza, fascia cardio).
-    final app = await widget.state.serieApp(s);
-    if (!app.vuota) {
-      serie = SerieSessione(
-        fc: serie.fc.isEmpty ? app.fc : serie.fc,
-        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
-        potenza: app.potenza,
-        // Quella di Health Connect resta, se i sensori non ne hanno una.
-        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
-      );
-    }
-    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
-      final r = await widget.state.percorsoDi(s);
-      if (r.stato == StatoPercorso.dati && r.percorso != null) {
-        serie = SerieSessione(
-          fc: serie.fc,
-          velocita: velocitaDaPercorso(r.percorso!),
-          potenza: serie.potenza,
-          cadenza: serie.cadenza,
-        );
-      }
-    }
-    return serie;
-  }
+  late final Future<SerieSessione> _serie = widget.state.serieDi(
+    widget.sessione,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +42,16 @@ class _GraficiScreenState extends State<GraficiScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final serie = snap.data!;
-          if (serie.vuota) {
+          // Nuoto con i tratti corretti a mano: il passo si rifà da quelli,
+          // senza gli errori dell'orologio (una vasca segnata in 11").
+          final aMano = stessoSport(s.sport, 'Nuoto')
+              ? widget.state.intervalliModificati[s.id]
+              : null;
+          final inizio = s.inizio ?? (serie.vuota ? s.data : _inizio(serie));
+          final velocita = aMano == null
+              ? serie.velocita
+              : velocitaDaTratti(aMano, inizio);
+          if (serie.vuota && velocita.isEmpty) {
             return const Padding(
               padding: EdgeInsets.all(24),
               child: Text(
@@ -100,12 +69,8 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 _Zone(fc: serie.fc, zone: widget.state.zone),
                 const SizedBox(height: 12),
               ],
-              if (serie.velocita.isNotEmpty) ...[
-                _Velocita(
-                  serie: serie.velocita,
-                  inizio: _inizio(serie),
-                  sport: s.sport,
-                ),
+              if (velocita.isNotEmpty) ...[
+                _Velocita(serie: velocita, inizio: inizio, sport: s.sport),
                 const SizedBox(height: 12),
               ],
               if (serie.altitudine.isNotEmpty) ...[
@@ -189,7 +154,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
                   const SizedBox.shrink()
               else if (serie.cadenza.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Cadenza',
+                  titolo: stessoSport(s.sport, 'Nuoto')
+                      ? 'Bracciate al minuto'
+                      : 'Cadenza',
                   serie: serie.cadenza,
                   inizio: _inizio(serie),
                   unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto',
@@ -378,7 +345,9 @@ class _Velocita extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bici = stessoSport(sport, 'Bici');
-    final inMoto = serie.where((c) => c.v >= 0.5).toList();
+    final nuoto = stessoSport(sport, 'Nuoto');
+    // In acqua si va piano: gli esercizi di tecnica stanno sotto 0,5 m/s.
+    final inMoto = serie.where((c) => c.v >= (nuoto ? 0.2 : 0.5)).toList();
     final r = ricampiona(inMoto.isEmpty ? serie : inMoto);
     final colore = coloreSport(sport);
     if (bici) {
@@ -396,6 +365,27 @@ class _Velocita extends StatelessWidget {
           dettagli: [
             for (final c in r)
               '${(c.v * 3.6).toStringAsFixed(1)} km/h\n${_dal(inizio, c.t)}',
+          ],
+        ),
+      );
+    }
+    if (nuoto) {
+      // Passo ogni 100 m: più in alto = più veloce.
+      double passo(double v) => v < 0.2 ? 0 : 100 / v;
+      return _Riquadro(
+        titolo: 'Passo',
+        numeri: [
+          ('Medio', '${fmtMinSec(passo(media(inMoto)))} /100 m'),
+          ('Migliore', '${fmtMinSec(passo(massimo(inMoto)))} /100 m'),
+        ],
+        grafico: GraficoLinea(
+          ys: [for (final c in r) -passo(c.v).clamp(0, 600).toDouble()],
+          etichette: [for (final c in r) _dal(inizio, c.t)],
+          fmt: (v) => fmtMinSec(-v),
+          colore: colore,
+          dettagli: [
+            for (final c in r)
+              '${fmtMinSec(passo(c.v))} /100 m\n${_dal(inizio, c.t)}',
           ],
         ),
       );

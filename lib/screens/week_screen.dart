@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../models.dart';
 import '../widgets.dart';
@@ -62,7 +63,7 @@ class WeekScreen extends StatelessWidget {
     final n = await state.salvaSettimana(prima: prima);
     final fine = state.ultimoGiornoPiano;
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           fine == null || fine.isBefore(soloData(DateTime.now()))
               ? 'Settimana salvata. Il calendario è vuoto: allungalo da Oggi.'

@@ -34,11 +34,16 @@ class DatiCollegamentiScreen extends StatelessWidget {
           const SizedBox(height: 12),
           SezioneHealthConnect(state: state),
           const SizedBox(height: 12),
-          SezioneIntervals(state: state),
-          const SizedBox(height: 12),
+          // intervals.icu e l'import da file: solo con le funzioni avanzate.
+          if (state.profilo.modoAvanzato) ...[
+            SezioneIntervals(state: state),
+            const SizedBox(height: 12),
+          ],
           SezioneBackup(state: state),
-          const SizedBox(height: 12),
-          ImportCsvAvanzato(state: state),
+          if (state.profilo.modoAvanzato) ...[
+            const SizedBox(height: 12),
+            ImportCsvAvanzato(state: state),
+          ],
           const SizedBox(height: 8),
           TextButton.icon(
             onPressed: () => Navigator.of(context)
@@ -109,6 +114,10 @@ class GlossarioScreen extends StatelessWidget {
   }
 }
 
+/// Commit da cui è stato fatto l'APK (`--dart-define=COMMIT=...`): distingue
+/// le prove di staging senza alzare la versione.
+const _commit = String.fromEnvironment('COMMIT');
+
 /// Nome e versione dell'app, sotto informativa e termini.
 class _Versione extends StatelessWidget {
   const _Versione();
@@ -122,7 +131,8 @@ class _Versione extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Text(
-          'Avidididadi · versione ${v.version} (${v.buildNumber})',
+          'Avidididadi · versione ${v.version} (${v.buildNumber})'
+          '${_commit.isEmpty ? '' : ' · prova $_commit'}',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall
               ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),

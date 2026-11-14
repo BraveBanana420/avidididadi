@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
+import '../attivita.dart';
 import '../dati_live.dart';
 import '../esercizi.dart';
 import '../esporta.dart';
@@ -13,6 +15,9 @@ import '../figura.dart';
 import '../generatore_endurance.dart';
 import '../generatore_forza.dart';
 import '../glossario.dart';
+import '../intensita.dart';
+import '../intervalli.dart';
+import '../intervals.dart';
 import '../modifica_sessione.dart';
 import '../attivita_libera.dart';
 import '../models.dart';
@@ -20,6 +25,7 @@ import '../potenza.dart';
 import '../percorso.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
+import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
 import '../tema.dart';
 import '../widgets.dart';
@@ -31,9 +37,12 @@ import 'esecuzione_screen.dart';
 import 'feedback_sheet.dart';
 import 'allenamenti_arrampicata_screen.dart';
 import 'grafici_screen.dart';
+import 'grafico_intensita.dart';
+import 'intervalli_screen.dart';
 import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
+import 'riepilogo_bici.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -147,7 +156,12 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     for (final s in svolte) {
       // Il percorso GPS (registrato dall'app o letto da Health Connect).
       // Al chiuso (rulli, Tacx, tapis roulant) non c'è un percorso.
-      if (sportConPercorso(s.sport, s.tipo) && !state.alChiuso(s)) {
+      // Altra attività (es. kayak) registrata con l'app: il percorso, se si
+      // è scelto il GPS (senza, la mappa non compare).
+      final liberaApp =
+          stessoSport(s.sport, sportAttivitaLibera) && s.fonte == fonteApp;
+      if ((sportConPercorso(s.sport, s.tipo) || liberaApp) &&
+          !state.alChiuso(s)) {
         children.add(
           AnteprimaPercorso(key: ValueKey(s.id), state: state, sessione: s),
         );
@@ -214,7 +228,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                       if (f.dolore) 'dolore segnalato',
                     ].join(' · '),
             ),
-            trailing: Text(f == null ? 'Rispondi' : 'Modifica'),
+            // Come per il nome e gli intervalli: la matita vuol dire modifica.
+            trailing: f == null
+                ? const Text('Rispondi')
+                : const Icon(
+                    Icons.edit_outlined,
+                    size: 20,
+                    semanticLabel: 'Modifica',
+                  ),
             onTap: () =>
                 apriFeedback(context, state, data, sport, svolte.firstOrNull),
           ),
@@ -303,21 +324,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         final ultimo = k == steps.length - 1;
         if (s.fase != faseCorrente) {
           faseCorrente = s.fase;
-          if (s.fase.isNotEmpty) {
-            children.add(
-              Padding(
-                padding: const EdgeInsets.only(top: 18, bottom: 8),
-                child: Text(
-                  s.fase.toUpperCase(),
-                  style: t.labelMedium?.copyWith(
-                    letterSpacing: 1.2,
-                    fontWeight: FontWeight.w800,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            );
-          }
+          if (s.fase.isNotEmpty) children.add(_TitoloFase(s.fase));
         }
         final esercizio = perId[s.esercizio];
         final scelto = selezionato == s.ordine;
@@ -345,34 +352,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             if (s.note.isNotEmpty) Text(s.note, style: t.bodySmall),
           ],
         );
-        // Il percorso: un punto per passo, uniti da una linea. Pieno e nel
-        // colore del tema per la parte principale, vuoto per il resto.
-        final principale = s.fase == 'principale';
-        final segno = Column(
-          children: [
-            const SizedBox(height: 4),
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: principale ? Pulse.di(context).primario : null,
-                border: principale
-                    ? null
-                    : Border.all(
-                        width: 3,
-                        color: s.fase == 'mobilità'
-                            ? coloreSport('Mobilità')
-                            : scheme.outline,
-                      ),
-              ),
-            ),
-            if (!ultimo)
-              Expanded(
-                child: Container(width: 2, color: scheme.outlineVariant),
-              ),
-          ],
-        );
+        final segno = _SegnoFase(fase: s.fase, ultimo: ultimo);
         Widget riga(Widget contenuto) => IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -667,13 +647,11 @@ class _DatiSessione extends StatelessWidget {
 
   Future<void> _inviaIntervals(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(
-      const SnackBar(content: Text('Invio a intervals.icu…')),
-    );
+    messenger.showSnackBar(avviso(content: Text('Invio a intervals.icu…')));
     final esito = await state.inviaSessioneIntervals(sessione);
     messenger
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(esito)));
+      ..showSnackBar(avviso(content: Text(esito)));
   }
 
   /// Il percorso in un file GPX, per Strava, Garmin Connect o altre app.
@@ -682,7 +660,7 @@ class _DatiSessione extends StatelessWidget {
     final gpx = await state.gpxSessione(sessione);
     if (gpx == null) {
       messenger.showSnackBar(
-        const SnackBar(
+        avviso(
           content: Text("Per questa sessione l'app non ha un percorso GPS."),
         ),
       );
@@ -697,7 +675,7 @@ class _DatiSessione extends StatelessWidget {
       );
       if (uri != null) {
         messenger.showSnackBar(
-          const SnackBar(
+          avviso(
             content: Text(
               'GPX salvato: puoi caricarlo su Strava o Garmin Connect.',
             ),
@@ -705,98 +683,22 @@ class _DatiSessione extends StatelessWidget {
         );
       }
     } catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text('GPX non salvato: $e')));
+      messenger.showSnackBar(avviso(content: Text('GPX non salvato: $e')));
     }
   }
 
-  /// Nome e "al chiuso", che l'orologio non manda.
-  Future<void> _ritocca(BuildContext context) async {
-    final s = sessione;
-    final prima = state.ritocchi[s.id];
-    final nome = TextEditingController(text: prima?.nome ?? '');
-    var chiuso = prima?.alChiuso ?? false;
-    final scelta = await showDialog<String>(
-      context: context,
-      builder: (c) => StatefulBuilder(
-        builder: (c, aggiorna) => AlertDialog(
-          title: const Text('Modifica la sessione'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 12,
-            children: [
-              TextField(
-                controller: nome,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'Nome dell\'allenamento',
-                  hintText: stessoSport(s.sport, 'Bici')
-                      ? 'es. Test FTP'
-                      : 'es. Ripetute in pista',
-                  helperText: 'Vuoto = quello dell\'orologio',
-                ),
-              ),
-              if (sportConPercorso(s.sport, s.tipo))
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    stessoSport(s.sport, 'Bici')
-                        ? 'Al chiuso (rulli, Tacx)'
-                        : 'Al chiuso (tapis roulant)',
-                  ),
-                  subtitle: const Text('Niente mappa né GPX'),
-                  value: chiuso,
-                  onChanged: (v) => aggiorna(() => chiuso = v),
-                ),
-            ],
-          ),
-          actions: [
-            // Una riga sola: il cestino a sinistra, lontano da "Salva" e nel
-            // colore degli errori, così non si tocca per sbaglio.
-            Row(
-              children: [
-                IconButton(
-                  tooltip: 'Elimina la sessione',
-                  color: Theme.of(c).colorScheme.error,
-                  onPressed: () => Navigator.pop(c, 'elimina'),
-                  icon: const Icon(Icons.delete_outline),
-                ),
-                // Con il testo grande si rimpiccioliscono invece di andare a capo.
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(c),
-                            child: const Text('Annulla'),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(c, 'salva'),
-                            child: const Text('Salva'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+  /// Nome, luogo e dati: tutto in una pagina sola, dalla matita.
+  Future<void> _modifica(BuildContext context) async {
+    final scelta = await Navigator.of(context).push(
+      MaterialPageRoute<String>(
+        builder: (_) => ModificaSessioneScreen(
+          state: state,
+          sessione: sessione,
+          completa: true,
         ),
       ),
     );
-    final testo = nome.text.trim();
-    nome.dispose();
-    if (scelta == 'salva') {
-      await state.ritoccaSessione(
-        RitoccoSessione(s.id, nome: testo, alChiuso: chiuso),
-      );
-    } else if (scelta == 'elimina' && context.mounted) {
-      await _elimina(context);
-    }
+    if (scelta == 'elimina' && context.mounted) await _elimina(context);
   }
 
   /// Toglie la sessione dallo storico, dopo aver chiesto conferma.
@@ -835,10 +737,7 @@ class _DatiSessione extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final ripristina = await state.eliminaSessione(s);
     messenger.showSnackBar(
-      SnackBar(
-        content: const Text('Sessione eliminata'),
-        action: SnackBarAction(label: 'Annulla', onPressed: ripristina),
-      ),
+      avviso(content: const Text('Sessione eliminata'), annulla: ripristina),
     );
   }
 
@@ -851,6 +750,10 @@ class _DatiSessione extends StatelessWidget {
     final nuoto = s.sport.toLowerCase() == 'nuoto';
     final r = ritmo(s);
     final vasca = nuoto ? state.nuotoDi(s.id) : null;
+    // Tratti corretti a mano: il passo è quello delle sole vasche nuotate,
+    // senza le pause spostate dove andavano.
+    final aMano = nuoto ? state.intervalliModificati[s.id] : null;
+    final passoTratti = aMano == null ? null : passoNuotatoDaTratti(aMano);
     final dati = <(String, String)>[
       if (s.inizio != null && s.fine != null)
         ('Orario', '${_ora(s.inizio!)} – ${_ora(s.fine!)}'),
@@ -869,6 +772,8 @@ class _DatiSessione extends StatelessWidget {
       // anche le pause a bordo vasca.
       if (vasca != null && vasca.passo100S > 0)
         ('Tempo medio', '${tempoScritto(vasca.passo100S)} /100 m')
+      else if (passoTratti != null)
+        ('Tempo medio', '${fmtMinSec(passoTratti.toDouble())} /100 m')
       else if (r != null)
         (
           s.sport.toLowerCase() == 'bici' ? 'Velocità media' : 'Ritmo medio',
@@ -911,21 +816,22 @@ class _DatiSessione extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    titoloSessione(s.sport, s.tipo),
+                    nomeSessione(s.sport, s.tipo),
                     style: t.titleMedium,
                   ),
                 ),
-                if (state.alChiuso(s))
-                  const Padding(
-                    padding: EdgeInsets.only(right: 4),
+                // Corsa, bici e camminata: dove è stata fatta.
+                if (state.alChiuso(s) || sportConPercorso(s.sport, s.tipo))
+                  Padding(
+                    padding: const EdgeInsets.only(right: 4),
                     child: Chip(
-                      label: Text('Al chiuso'),
+                      label: Text(state.alChiuso(s) ? 'Indoor' : 'Outdoor'),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
                 IconButton(
-                  tooltip: 'Modifica nome e luogo',
-                  onPressed: () => _ritocca(context),
+                  tooltip: 'Modifica la sessione',
+                  onPressed: () => _modifica(context),
                   icon: const Icon(Icons.edit_outlined, size: 20),
                 ),
               ],
@@ -959,6 +865,14 @@ class _DatiSessione extends StatelessWidget {
                 ],
               ),
             ),
+            // I tratti della seduta: dall'orologio (giri, con i nomi dei passi
+            // in programma se combaciano) o dai blocchi registrati con l'app.
+            if (s.id.startsWith(prefissoIcu) || s.id.startsWith('app-'))
+              _Intervalli(
+                key: ValueKey('int-${s.id}'),
+                state: state,
+                sessione: s,
+              ),
             // I pezzi da cui è stata ricomposta (blocchi Freeletics, ripartenze):
             // visibili solo qui, nel calendario la sessione è una sola.
             if (s.parti.isNotEmpty) ...[
@@ -1039,31 +953,8 @@ class _DatiSessione extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                // Si corregge tutto, anche quello che arriva dall'orologio:
-                // quanto scritto a mano resta quando i dati arrivano di nuovo.
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          ModificaSessioneScreen(state: state, sessione: s),
-                    ),
-                  ),
-                  icon: const Icon(Icons.edit_note),
-                  label: const Text('Modifica i dati'),
-                ),
-                if (state.sessioniModificate.containsKey(s.id))
-                  OutlinedButton.icon(
-                    onPressed: () => state.annullaCorrezioni(s.id),
-                    icon: const Icon(Icons.undo),
-                    label: const Text('Torna ai dati originali'),
-                  ),
-                // Un'immagine della sessione per WhatsApp, Instagram…
-                OutlinedButton.icon(
-                  onPressed: () => apriCondividiSessione(context, state, s),
-                  icon: const Icon(Icons.share_outlined),
-                  label: const Text('Condividi'),
-                ),
                 // Battito, zone e passo nel tempo: in una pagina a parte.
                 if (s.inizio != null && s.fine != null)
                   OutlinedButton.icon(
@@ -1076,6 +967,12 @@ class _DatiSessione extends StatelessWidget {
                     icon: const Icon(Icons.show_chart),
                     label: const Text('Grafici'),
                   ),
+                // Un'immagine della sessione per WhatsApp, Instagram…
+                IconButton.outlined(
+                  tooltip: 'Condividi',
+                  onPressed: () => apriCondividiSessione(context, state, s),
+                  icon: const Icon(Icons.share_outlined),
+                ),
                 // Solo quelle registrate dall'app: quelle dell'orologio
                 // sono già su Garmin Connect, intervals.icu e simili.
                 // Il tasto resta solo dove l'invio non pensa da solo.
@@ -1127,6 +1024,318 @@ class _DatiSessione extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Gli intervalli di una nuotata: lavoro e recuperi, come sull'orologio.
+class _Intervalli extends StatefulWidget {
+  final AppState state;
+  final Sessione sessione;
+  const _Intervalli({super.key, required this.state, required this.sessione});
+
+  @override
+  State<_Intervalli> createState() => _IntervalliState();
+}
+
+class _IntervalliState extends State<_Intervalli> {
+  late final Future<List<IntervalloFatto>> _intervalli = widget.state
+      .intervalliDi(widget.sessione);
+
+  /// Battito e passo di tutta la corsa: si leggono solo se c'è qualcosa da
+  /// confrontare, e una volta sola.
+  Future<SerieSessione>? _serieCorsa;
+
+  /// Corsa strutturata: previsto e fatto in un grafico solo, in zone, anche
+  /// se l'obiettivo dei blocchi passa dal battito al passo. Null se nessun
+  /// blocco ha un obiettivo da disegnare.
+  Widget? _schemaCorsa(List<IntervalloFatto> lista, List<WorkoutStep> passi) {
+    final s = widget.sessione;
+    final inizio = s.inizio;
+    if (!stessoSport(s.sport, 'Corsa') || inizio == null) return null;
+    final state = widget.state;
+    final soglia = sogliaCorsa(state.sessioni, s.data);
+    final fasce = fasceIntensita(lista, passi, soglia: soglia);
+    if (fasce.isEmpty) return null;
+    return FutureBuilder<SerieSessione>(
+      future: _serieCorsa ??= state.serieDi(s),
+      builder: (context, snap) {
+        final serie = snap.data;
+        if (serie == null) return const SizedBox.shrink();
+        final punti = lineaIntensita(
+          serie,
+          inizio,
+          fasce,
+          state.zone,
+          soglia: soglia,
+        );
+        // Senza battito né passo non c'è niente da confrontare.
+        if (punti.length < 6) return const SizedBox.shrink();
+        final t = Theme.of(context).textTheme;
+        final scheme = Theme.of(context).colorScheme;
+        final aPasso = fasce.any((f) => f.passo);
+        final aZone = fasce.any((f) => !f.passo);
+        return Padding(
+          padding: const EdgeInsets.only(top: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 6,
+            children: [
+              Text('Previsto e fatto', style: t.titleSmall),
+              GraficoIntensitaSeduta(
+                punti: punti,
+                fasce: fasce,
+                colore: coloreSport(s.sport),
+              ),
+              Text(
+                'Le fasce colorate sono l\'intensità da tenere blocco per '
+                'blocco, la linea quella che hai tenuto: dentro la fascia '
+                'eri nell\'obiettivo, sopra andavi più forte, sotto più '
+                'piano.'
+                '${aPasso && aZone
+                    ? ' Dove l\'obiettivo era una zona si guarda il '
+                          'battito, dove era un passo si guarda il passo.'
+                    : aPasso
+                    ? ' Si guarda il passo.'
+                    : ' Si guarda il battito.'}',
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  List<WorkoutStep> get _passi {
+    final s = widget.sessione;
+    final previsto = widget.state.piano
+        .where((r) => r.data == s.data && stessoSport(r.sport, s.sport))
+        .firstOrNull;
+    return widget.state.passiSeduta(s.data, s.sport, previsto?.tipo ?? s.tipo);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.sessione;
+    final state = widget.state;
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    return FutureBuilder<List<IntervalloFatto>>(
+      future: _intervalli,
+      builder: (context, snap) {
+        final letti = snap.data ?? const <IntervalloFatto>[];
+        final aMano = state.intervalliModificati[s.id];
+        // Bici con i watt: lo schema della seduta com'è andata, con le barre
+        // colorate per zona come durante l'allenamento, e sotto i watt di
+        // tutta la seduta sulle fasce da tenere. C'è anche quando i tratti
+        // non si elencano (un blocco solo).
+        final diagramma = stessoSport(s.sport, 'Bici')
+            ? RiepilogoBici(state: state, sessione: s, tratti: letti)
+            : null;
+        // Un tratto solo non dice niente di più dei totali.
+        if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
+          return diagramma ?? const SizedBox.shrink();
+        }
+        final passi = _passi;
+        final nuoto = stessoSport(s.sport, 'Nuoto');
+        // Corsa e bici: un lungo, un lento o un'uscita continua sono un passo
+        // solo, e i giri dell'orologio non dicono niente di più dei totali.
+        // I tratti si mostrano solo se la seduta ha una struttura.
+        // Quelli registrati con l'app sono i blocchi veri del player: si
+        // vedono sempre, anche se la seduta in calendario è cambiata.
+        final dallApp = letti.any((i) => i.fase.isNotEmpty);
+        if (aMano == null && !nuoto && !dallApp && !sedutaStrutturata(passi)) {
+          return diagramma ?? const SizedBox.shrink();
+        }
+        // Quelli corretti a mano valgono al posto di quelli dell'orologio.
+        // Quelli registrati con l'app hanno già nome e sezione.
+        final abbinati = dallApp ? letti : abbinaAlPiano(s.sport, letti, passi);
+        // I chilometri in più a fine seduta: una riga sola.
+        final lista =
+            aMano ?? (nuoto ? abbinati : conFuoriProgrammaUniti(abbinati));
+        // Corsa e bici dall'orologio: i giri di 1 km non dicono niente di
+        // più dei totali; si mostrano solo se combaciano con la seduta.
+        if (aMano == null &&
+            !dallApp &&
+            !stessoSport(s.sport, 'Nuoto') &&
+            !lista.any((i) => i.nome.isNotEmpty)) {
+          return diagramma ?? const SizedBox.shrink();
+        }
+        // Abbinati alla seduta prevista: le sue sezioni e i suoi pallini.
+        final fasi = fasiDegliIntervalli(lista, passi);
+        final conSezioni = fasi.any((f) => f.isNotEmpty);
+        Widget voce(IntervalloFatto i) => i.recupero
+            ? Text(
+                rigaIntervallo(i, s.sport),
+                style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+              )
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (i.nome.isNotEmpty)
+                    Text(
+                      i.nome,
+                      style: conSezioni ? t.titleSmall : t.labelMedium,
+                    ),
+                  Text(rigaIntervallo(i, s.sport)),
+                  if (i.wattPrevisti case final r?)
+                    Text(
+                      'Da tenere ${fmtRange(r)}',
+                      style: t.bodySmall?.copyWith(
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              );
+        // Un titolo a ogni cambio di sezione, poi la riga sulla linea.
+        final conLinea = <Widget>[];
+        String? sezione;
+        for (var k = 0; k < lista.length; k++) {
+          final i = lista[k];
+          if (!i.recupero && fasi[k] != sezione) {
+            sezione = fasi[k];
+            conLinea.add(
+              _TitoloFase(sezione.isEmpty ? 'Fuori programma' : sezione),
+            );
+          }
+          conLinea.add(
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _SegnoFase(
+                    fase: fasi[k],
+                    ultimo: k == lista.length - 1,
+                    punto: !i.recupero,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: i.recupero ? 10 : 12),
+                      child: voce(i),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ?diagramma,
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    aMano == null
+                        ? 'Intervalli'
+                        : 'Intervalli (corretti a mano)',
+                    style: t.titleSmall,
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Modifica gli intervalli',
+                  icon: const Icon(Icons.edit_outlined, size: 20),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => IntervalliScreen(
+                        state: state,
+                        sessione: s,
+                        iniziali: lista,
+                        nomi: nomiDeiPassi(passi),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (!conSezioni)
+              for (final i in lista)
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: 3,
+                    bottom: 3,
+                    left: i.recupero ? 16 : 0,
+                  ),
+                  child: voce(i),
+                )
+            else
+              ...conLinea,
+            ?_schemaCorsa(lista, passi),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Il titolo di una sezione della seduta ("RISCALDAMENTO"): uguale nella
+/// seduta prevista e negli intervalli fatti.
+class _TitoloFase extends StatelessWidget {
+  final String testo;
+  const _TitoloFase(this.testo);
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: 18, bottom: 8),
+    child: Text(
+      testo.toUpperCase(),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w800,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
+}
+
+/// Il percorso della seduta: un punto per passo, uniti da una linea. Pieno e
+/// nel colore del tema per la parte principale, vuoto per il resto. Senza
+/// [punto] solo la linea (i recuperi tra un tratto e l'altro).
+class _SegnoFase extends StatelessWidget {
+  final String fase;
+  final bool ultimo;
+  final bool punto;
+  const _SegnoFase({
+    required this.fase,
+    required this.ultimo,
+    this.punto = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final principale = fase == 'principale';
+    return SizedBox(
+      width: 14,
+      child: Column(
+        children: [
+          if (punto) ...[
+            const SizedBox(height: 4),
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: principale ? Pulse.di(context).primario : null,
+                border: principale
+                    ? null
+                    : Border.all(
+                        width: 3,
+                        color: fase == 'mobilità'
+                            ? coloreSport('Mobilità')
+                            : scheme.outline,
+                      ),
+              ),
+            ),
+          ],
+          if (!ultimo)
+            Expanded(child: Container(width: 2, color: scheme.outlineVariant)),
+        ],
       ),
     );
   }

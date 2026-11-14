@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
+import '../attivita.dart';
 import '../attivita_libera.dart';
 import '../carico.dart';
 import '../generatore_mobilita.dart';
@@ -12,12 +14,16 @@ import '../recupero.dart';
 import '../tema.dart';
 import '../widgets.dart';
 import '../workout_base.dart';
+import 'altra_attivita_sheet.dart';
+import 'backup_card.dart';
 import 'energia.dart';
 import 'esecuzione_screen.dart';
 import 'modifica_sessione_screen.dart';
+import 'motivazione_card.dart';
 import 'feedback_sheet.dart';
 import 'health_connect_card.dart';
 import 'schede_screen.dart';
+import 'serie_a_mano_screen.dart';
 import 'tour.dart';
 import 'week_screen.dart';
 import 'workout_screen.dart';
@@ -55,19 +61,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
       sottotitolo: 'Poi scrivi durata e tutto quello che ti ricordi.',
     );
     if (scelta == null || !mounted) return;
-    await Navigator.of(context).push(
+    var tipo = scelta.$2;
+    // Altra attività: prima il nome (kayak, padel…), che resta sulla sessione.
+    if (stessoSport(scelta.$1, sportAttivitaLibera)) {
+      final altra = await chiediAltraAttivita(context, state, conGps: false);
+      if (altra == null || !mounted) return;
+      tipo = altra.$1;
+    }
+    final sessione = sessioneDaScrivere(
+      giorno,
+      scelta.$1,
+      tipo: tipo,
+      occupati: {for (final s in state.sessioni) s.id},
+    );
+    final navigator = Navigator.of(context);
+    await navigator.push(
       MaterialPageRoute<void>(
-        builder: (_) => ModificaSessioneScreen(
-          state: state,
-          sessione: sessioneDaScrivere(
-            giorno,
-            scelta.$1,
-            tipo: scelta.$2,
-            occupati: {for (final s in state.sessioni) s.id},
-          ),
-        ),
+        builder: (_) =>
+            ModificaSessioneScreen(state: state, sessione: sessione),
       ),
     );
+    // Forza: poi gli esercizi, con serie e kg.
+    if (stessoSport(scelta.$1, 'Forza') &&
+        state.sessioni.any((s) => s.id == sessione.id)) {
+      await navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => SerieAManoScreen(state: state, giorno: giorno),
+        ),
+      );
+    }
   }
 
   void _apriModifica(DateTime d) {
@@ -241,6 +263,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             ? null
                             : () => _seleziona(oggi),
                       ),
+                      // Sotto la seduta del giorno: non la spinge in basso.
+                      if (!state.primaVolta) PromemoriaBackup(state: state),
                       Padding(
                         key: ChiaviTour.settimana,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -257,6 +281,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           verso: _verso,
                         ),
                       ),
+                      Motivazione(state: state),
                       Center(
                         child: TextButton.icon(
                           onPressed: () =>
@@ -1299,7 +1324,7 @@ class _GeneraSheetState extends State<GeneraSheet> {
     await widget.state.genera(inizio, mesi.round());
     if (!mounted) return;
     Navigator.pop(context);
-    messenger.showSnackBar(const SnackBar(content: Text('Piano generato')));
+    messenger.showSnackBar(avviso(content: Text('Piano generato')));
   }
 
   @override
@@ -1426,7 +1451,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     messenger.showSnackBar(
-      SnackBar(content: Text('${dataLunga(widget.data)} aggiornato')),
+      avviso(content: Text('${dataLunga(widget.data)} aggiornato')),
     );
   }
 
@@ -1695,10 +1720,12 @@ Future<(String, String, String)?> scegliAttivitaLibera(
 }) => showModalBottomSheet<(String, String, String)>(
   context: context,
   showDragHandle: true,
+  // Senza, il foglio si ferma a 9/16 dello schermo e l'ultima riga viene tagliata.
+  isScrollControlled: true,
   builder: (c) {
     final t = Theme.of(c).textTheme;
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1743,7 +1770,15 @@ class PulsanteLibera extends StatelessWidget {
       sottotitolo: "Si aggiunge a quello che c'è in programma oggi.",
     );
     if (scelta == null || !context.mounted) return;
-    final (sport, tipo, nome) = scelta;
+    var (sport, tipo, nome) = scelta;
+    var conGps = false;
+    // Altra attività: il nome che scrivi (es. Kayak) e, se vuoi, il GPS.
+    if (stessoSport(sport, sportAttivitaLibera)) {
+      final altra = await chiediAltraAttivita(context, state);
+      if (altra == null || !context.mounted) return;
+      (tipo, conGps) = altra;
+      nome = tipo;
+    }
     avviaAllenamento(
       context,
       state,
@@ -1752,6 +1787,7 @@ class PulsanteLibera extends StatelessWidget {
       nome: nome,
       passi: passiLiberi(sport, nome),
       libera: true,
+      conGps: conGps,
     );
   }
 

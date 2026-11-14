@@ -17,6 +17,7 @@ import '../esercizi.dart';
 import '../glossario.dart';
 import '../immagini.dart';
 import '../in_corso.dart';
+import '../intervalli.dart';
 import '../gps.dart';
 import '../models.dart';
 import '../notifica_allenamento.dart';
@@ -34,6 +35,7 @@ import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'arrampicata_sheet.dart';
 import 'battito_sheet.dart';
+import 'serie_a_mano_screen.dart';
 import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
@@ -63,6 +65,7 @@ void avviaAllenamento(
   required String nome,
   required List<WorkoutStep> passi,
   bool libera = false,
+  bool conGps = false,
 }) {
   Navigator.of(context).push(
     MaterialPageRoute<void>(
@@ -74,6 +77,7 @@ void avviaAllenamento(
         nome: nome,
         passi: passi,
         libera: libera,
+        conGps: conGps,
       ),
     ),
   );
@@ -95,6 +99,7 @@ void riprendiAllenamento(
         nome: r.nome,
         passi: r.passi,
         libera: r.libera,
+        conGps: r.conGps,
         ripresa: r,
       ),
     ),
@@ -111,6 +116,10 @@ class EsecuzioneScreen extends StatefulWidget {
   final String nome;
   final List<WorkoutStep> passi;
   final bool libera; // fuori dal piano: si aggiunge a quello che c'è
+
+  /// GPS scelto a mano (altra attività, es. kayak): corsa, camminata e bici
+  /// ce l'hanno già.
+  final bool conGps;
   final AllenamentoInCorso? ripresa; // seduta interrotta da riprendere
   const EsecuzioneScreen({
     super.key,
@@ -120,6 +129,7 @@ class EsecuzioneScreen extends StatefulWidget {
     required this.nome,
     required this.passi,
     this.libera = false,
+    this.conGps = false,
     this.ripresa,
   });
 
@@ -183,6 +193,33 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sesso: widget.state.profilo.sesso,
   );
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
+
+  /// I blocchi com'è andata davvero, in ordine: per il riepilogo diviso in
+  /// sezioni. Dopo una ripresa quelli di prima non ci sono più, e un elenco a
+  /// metà non si salva.
+  final _tratti = <TrattoApp>[];
+  DateTime? _inizioTratto;
+  double _metriInizio = 0;
+  late final bool _trattiCompleti = widget.ripresa == null;
+
+  /// Metri fatti finora: GPS all'aperto, sensore di velocità sui rulli.
+  double get _metriOra =>
+      gps != null && !gps!.percorso.vuoto ? gps!.km * 1000 : _metriSensore;
+
+  /// Chiude il blocco in corso: va chiamata prima di cambiare blocco.
+  void _chiudiTratto() {
+    final inizio = _inizioTratto;
+    if (inizio == null || preparati) return;
+    _tratti.add((
+      blocco: i,
+      inizio: inizio,
+      fine: DateTime.now(),
+      secondi: _tempoBlocco.inSeconds,
+      metri: (_metriOra - _metriInizio).clamp(0, double.infinity).toDouble(),
+    ));
+    _inizioTratto = null;
+  }
+
   Timer? _tic;
   int i = 0;
   bool preparati = true; // conto alla rovescia iniziale
@@ -210,7 +247,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
   /// Corsa, camminata e bici al chiuso (tapis roulant, rulli): niente GPS,
   /// i km si scrivono alla fine.
-  late final bool _conPercorso = sportConPercorso(widget.sport, widget.tipo);
+  late final bool _conPercorso =
+      sportConPercorso(widget.sport, widget.tipo) || widget.conGps;
+
+  /// Sport con tapis roulant o rulli: solo lì c'è l'interruttore "Al chiuso".
+  late final bool _conAttrezzo = sportConPercorso(widget.sport, widget.tipo);
   late bool _alChiuso = _conPercorso && tipoAlChiuso(widget.tipo);
 
   /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
@@ -266,6 +307,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final ritmo = ControlloRitmo();
   final _ritmoCadenza = ControlloRitmo();
   StreamSubscription<int>? _battiti;
+  bool _battitoArrivato = false; // almeno un battito in questa seduta
 
   /// Percorso da seguire (GPX): mappa, curve e fuori percorso a voce.
   PercorsoSalvato? _percorso;
@@ -287,6 +329,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sensoreBattito.avvia();
     if (_bici) sensoreBici.avvia();
     _battiti = sensoreBattito.valori.stream.listen((v) {
+      _battitoArrivato = true;
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
     });
     final r = widget.ripresa;
@@ -459,6 +502,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         tipo: widget.tipo,
         nome: widget.nome,
         libera: widget.libera,
+        conGps: widget.conGps,
         passi: widget.passi,
         indice: i,
         finito: finito,
@@ -578,6 +622,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       _bici &&
       sensoreBici.stato == StatoSensore.collegato &&
       (sensoreBici.cadenza != null || _serieCadenza.isNotEmpty);
+
+  /// Il battito si vede solo con la fascia collegata e dopo il primo valore:
+  /// un sensore ricordato ma spento non lascia un riquadro vuoto.
+  bool get _conBattito =>
+      sensoreBattito.stato == StatoSensore.collegato &&
+      (sensoreBattito.bpm != null || _battitoArrivato);
 
   /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
   int? get _watt =>
@@ -736,6 +786,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }
 
   void _nuovoBlocco({required bool aMano}) {
+    _inizioTratto = DateTime.now();
+    _metriInizio = _metriOra;
     blocco
       ..reset()
       ..start();
@@ -817,6 +869,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       return;
     }
     tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+    _chiudiTratto();
     if (i >= blocchi.length - 1) {
       _fine(aMano: !daTimer);
       return;
@@ -841,7 +894,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         );
       }
     }
-    final zona = zonaObiettivo(b.intensita);
+    // In bici senza watt (all'aperto senza misuratore) i passi in % dell'FTP
+    // o in watt si seguono col battito della zona che gli corrisponde.
+    final zonaScritta = zonaObiettivo(b.intensita);
+    final zona =
+        zonaScritta ??
+        (_bici ? zonaBattitoDi(b.intensita, _zonePotenza) : null);
     final r = _rangeBlocco;
     final w = _watt;
     if (r != null && w != null && _zonePotenza != null) {
@@ -859,7 +917,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final bpm = sensoreBattito.bpm;
     if (zona != null && bpm != null) {
       final n = _zone.zonaDi(bpm);
-      final verso = versoZona(n, zona);
+      var verso = versoZona(n, zona);
+      // Zona ricavata dai watt: all'inizio del passo il battito deve ancora
+      // salire, non è il momento di dire "spingi di più".
+      if (zonaScritta == null && verso < 0 && _tempoBlocco < ritardoBattito) {
+        verso = 0;
+      }
       if (ritmo.controlla(verso, ora)) {
         voce.di(fraseZona(n, verso), valida: const Duration(seconds: 20));
       }
@@ -890,6 +953,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _indietro() {
     if (preparati || i == 0) return;
+    _chiudiTratto();
     setState(() {
       i--;
       _nuovoBlocco(aMano: true);
@@ -1026,6 +1090,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     );
     if (r == 'termina') {
       tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+      _chiudiTratto();
       _fine();
     }
     if (r == 'esci') await cancellaInCorso();
@@ -1105,6 +1170,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         note: widget.nome,
       );
       await widget.state.registraSvolta(fatta);
+      // I blocchi uno per uno: nel riepilogo, divisi in sezioni come la seduta
+      // prevista. L'attività libera ha un blocco solo: non servono.
+      if (_trattiCompleti && !widget.libera) {
+        await widget.state.salvaIntervalliApp(
+          id,
+          intervalliDaTratti(
+            blocchi,
+            _tratti,
+            fc: _serieFc,
+            potenza: _seriePotenza,
+            // Bici: i watt da tenere di ogni blocco, per il riepilogo.
+            zone: _bici ? _zonePotenza : null,
+          ),
+        );
+      }
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
@@ -1118,6 +1198,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           MaterialPageRoute<void>(
             builder: (_) =>
                 ModificaSessioneScreen(state: widget.state, sessione: fatta),
+          ),
+        );
+      }
+      // Forza libera: un passo solo, senza esercizi da segnare durante. Alla
+      // fine si scrivono quelli fatti, con serie e kg.
+      if (widget.libera && stessoSport(widget.sport, 'Forza') && mounted) {
+        await cancellaInCorso();
+        await navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => SerieAManoScreen(state: widget.state, giorno: oggi),
           ),
         );
       }
@@ -1208,6 +1298,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+    // Senza dati dei sensori sotto resterebbe solo spazio vuoto: il movimento
+    // lo riempie, in grande. Con un sensore torna piccolo accanto al nome.
+    final figuraGrande =
+        !_senzaTesto &&
+        _conAnteprima(esercizio) &&
+        gps == null &&
+        !_conBattito &&
+        !(_bici && sensoreBici.ricordato) &&
+        !_conWatt &&
+        !_conCadenza &&
+        _barre == null;
     return Column(
       children: [
         // In alto: chiudi, tempo totale, pausa.
@@ -1236,7 +1337,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   ],
                 ),
               ),
-              if (_bici)
+              // In modo semplice i sensori restano nascosti (Profilo →
+              // Funzioni avanzate), a meno che uno sia già collegato.
+              if (_bici &&
+                  (widget.state.profilo.modoAvanzato ||
+                      sensoreBici.stato == StatoSensore.collegato))
                 ListenableBuilder(
                   listenable: sensoreBici,
                   builder: (_, _) => IconButton(
@@ -1249,18 +1354,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     ),
                   ),
                 ),
-              ListenableBuilder(
-                listenable: sensoreBattito,
-                builder: (_, _) => IconButton(
-                  tooltip: 'Battito dal sensore',
-                  onPressed: () => mostraBattito(context),
-                  icon: Icon(
-                    sensoreBattito.stato == StatoSensore.collegato
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+              if (widget.state.profilo.modoAvanzato ||
+                  sensoreBattito.stato == StatoSensore.collegato)
+                ListenableBuilder(
+                  listenable: sensoreBattito,
+                  builder: (_, _) => IconButton(
+                    tooltip: 'Battito dal sensore',
+                    onPressed: () => mostraBattito(context),
+                    icon: Icon(
+                      sensoreBattito.stato == StatoSensore.collegato
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                    ),
                   ),
                 ),
-              ),
               IconButton(
                 tooltip: 'Bip e vibrazione',
                 onPressed: _apriOpzioni,
@@ -1430,7 +1537,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                             ),
                                         ],
                                       ),
-                                    if (gps == null && sensoreBattito.ricordato)
+                                    if (gps == null && _conBattito)
                                       _DatoBattito(zone: _zone),
                                     if (bici && sensoreBici.comandabile)
                                       ControlloErg(
@@ -1480,7 +1587,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           // A sinistra l'anteprima del movimento, se c'è.
                           Row(
                             children: [
-                              if (_conAnteprima(esercizio)) ...[
+                              if (_conAnteprima(esercizio) &&
+                                  !figuraGrande) ...[
                                 _AnteprimaEsercizio(
                                   esercizio: esercizio!,
                                   larghezza: 112,
@@ -1603,6 +1711,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         ],
                       ],
                     ),
+                    figura: figuraGrande
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                            // L'immagine tiene le sue proporzioni e si allarga
+                            // fin dove c'è posto.
+                            child: Center(
+                              child: _AnteprimaEsercizio(esercizio: esercizio!),
+                            ),
+                          )
+                        : null,
                   ),
                 ),
         ),
@@ -1741,7 +1859,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ),
               ],
               const SizedBox(height: 24),
-              if (_conPercorso)
+              if (_conAttrezzo)
                 Material(
                   type: MaterialType.transparency,
                   child: SwitchListTile(
@@ -1751,9 +1869,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           ? Icons.pedal_bike
                           : Icons.directions_run,
                     ),
-                    title: Text(
-                      'Al chiuso (${attrezzoAlChiuso(widget.sport)})',
-                    ),
+                    title: Text('Indoor (${attrezzoAlChiuso(widget.sport)})'),
                     subtitle: Text(
                       _bici && sensoreBici.rulloInUso
                           ? 'Senza GPS: velocità e km arrivano dal rullo.'
@@ -2856,10 +2972,11 @@ bool _conAnteprima(Esercizio? e) =>
     e != null && (animazioneDi(e.id) != null || e.immagini.isNotEmpty);
 
 /// Il movimento dell'esercizio in piccolo; un tocco lo apre in grande.
+/// Senza [larghezza] occupa tutto lo spazio che ha.
 class _AnteprimaEsercizio extends StatelessWidget {
   final Esercizio esercizio;
-  final double larghezza;
-  const _AnteprimaEsercizio({required this.esercizio, required this.larghezza});
+  final double? larghezza;
+  const _AnteprimaEsercizio({required this.esercizio, this.larghezza});
 
   @override
   Widget build(BuildContext context) {
@@ -2889,7 +3006,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
           child: AnimazioneEsercizio(
             id: e.id,
             immagini: e.immagini,
-            mini: true,
+            mini: larghezza != null,
           ),
         ),
       ),

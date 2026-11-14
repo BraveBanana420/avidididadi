@@ -6,42 +6,12 @@ Guida permanente per lavorare su questo progetto. Rispondi all'utente in **itali
 
 **Avidididadi** è un'app Android personale (Flutter) per pianificare e seguire gli allenamenti di forza, corsa, nuoto, bici, mobilità e arrampicata. Tutti i dati restano sul telefono: niente server, account o pubblicità.
 
-Funzioni principali:
-- **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
-- **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
-- **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
-- **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
-- **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
-- **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin), e le sedute registrate con l'app partono da sole appena finite.
-- **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
-- **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
-- **Progressi**: carico, grafici, report per sport.
-- **Arrampicata**: vie, blocchi e gradi di ogni seduta; allenamenti scritti a mano o dall'assistente, senza generatore.
-- **Rullo smart**: collegato il rullo la bici passa da sola al chiuso; in ERG l'app manda al rullo (FTMS, es. Tacx Flux S) i watt di ogni blocco; calibrazione dall'app, con promemoria ogni 2 settimane; diagramma dell'allenamento a barre colorate per zona.
-- **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
-- **Condividi**: immagine della sessione o della settimana per WhatsApp, Instagram… (percorso solo se scelto).
-- **Altro**: catalogo esercizi con animazioni, figura dei muscoli, widget per la schermata home, backup e ripristino su file.
+Le funzioni sono elencate in `README.md`.
 
 ## 2. Stack tecnico
 
 - **Flutter 3.47** (stable), **Dart 3.13**, solo **Android** (non c'è la cartella `ios/`).
 - `applicationId`: `it.avidididadi.app`. `minSdk` 26 (per Health Connect).
-- Dipendenze principali:
-
-| Pacchetto | Uso |
-|---|---|
-| `health` | Health Connect (lettura) |
-| `flutter_secure_storage` | chiavi API cifrate |
-| `maplibre_gl` | mappe |
-| `geolocator` | GPS con notifica in primo piano |
-| `path_provider` | cartella privata dei dati |
-| `file_picker` | backup, CSV, GPX |
-| `image_picker` | foto del profilo |
-| `path_drawing` | figura dei muscoli (tracciati SVG) |
-| `package_info_plus` | versione dell'app |
-| `flutter_localizations` | tutta l'app in italiano |
-| `flutter_reactive_ble` | battito e sensori bici live (Bluetooth) |
-
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
   - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
@@ -49,81 +19,10 @@ Funzioni principali:
 
 ## 3. Struttura
 
-```
-lib/
-  main.dart            avvio, tema, barra in basso (Oggi, Progressi, Coach, Profilo)
-  app_state.dart       stato unico: carica e salva i CSV, sincronizza, rigenera il piano
-  models.dart          PianoRiga, Sessione, WorkoutStep, Slot e funzioni di data e formato
-  storage.dart         lettura e scrittura dei CSV (path_provider)
-  tema.dart            temi (chiaro o scuro × rosso o neon), estensione Pulse
-  pulse.dart           componenti grafici dello stile Pulse
-  widgets.dart         coloreSport, iconaSport, card comuni
-  generator*.dart      generatori del piano (forza, endurance, mobilità)
-  adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
-  feedback.dart        feedback e regole di carico
-  recupero.dart        energia e prontezza dai dati di recupero
-  assi.dart            tacche su numeri tondi per gli assi dei grafici (anche tempi), percentili
-  potenza.dart         zone di potenza dall'FTP (bici e corsa, separate), watt nelle sedute di bici, avvisi, test FTP di corsa, serie dei sensori
-  riepilogo_condiviso.dart  numeri e testi delle immagini da condividere (sessione, settimana)
-  calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
-  sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
-  intervals.dart       client API intervals.icu e conversione (attività, streams, mappa)
-  invio_intervals.dart piano → allenamenti strutturati nel calendario di intervals.icu
-  esporta.dart         sessioni dell'app → GPX o attività di intervals.icu (sessioni_inviate.csv)
-  serie_sessione.dart  serie nel tempo per i grafici (battito, velocità, quota, potenza)
-  registro_forza.dart  ripetizioni e kg di ogni serie, storico e record per esercizio
-  scheda.dart          schede scritte a mano (forza, corsa, bici, nuoto): giorni, kg per serie, passi
-  avvisi.dart          bip, vibrazione, voce, pausa automatica e passo medio (avvisi.txt)
-  voce.dart            frasi parlate (per esteso), avvisi di zona e passo; zitta in chiamata
-  attivita_libera.dart attività libera dal "+" in Oggi (anche camminata), fuori dal piano
-  sessioni_eliminate.dart  sessioni tolte dallo storico (quelle dell'orologio restano nascoste)
-  navigazione.dart     percorsi da seguire: traccia GPX, curve, posizione sulla traccia, avvisi a voce
-  mappa_offline.dart   mappa dei percorsi senza rete: fascia attorno alla traccia nella cache di MapLibre
-  assistente.dart / llm.dart / agente_esterno.dart   coach AI
-  attivita.dart        attività scelte dall'utente, attività libere dall'orologio, sedute aggiunte al calendario
-  arrampicata.dart     scheda di una seduta di arrampicata: vie, blocchi, gradi (arrampicata.csv)
-  allenamento_arrampicata.dart  allenamenti di arrampicata: modello, passi per il player, formato dell'assistente
-  modifica_sessione.dart  dati di una seduta scritti a mano dopo la fine (nuoto.csv, sessioni_modificate.csv)
-  allenamento_agente.dart  allenamenti passo per passo scritti dall'assistente, nel calendario al posto della seduta
-  percorso.dart / gps.dart   GPS, GPX, stile della mappa
-  dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
-  sensore_ble.dart     base dei sensori Bluetooth: ricerca, ricollegamento, sensore ricordato
-  battito.dart         battito live (sensore_battito.txt)
-  sensori_bici.dart    rulli FTMS (anche comandati in ERG e calibrati), potenza, velocità/cadenza (sensore_bici.txt: circonferenza ruota, ultima calibrazione)
-  in_corso.dart        seduta in corso su in_corso.json, per riprenderla se l'app si chiude
-  notifica_allenamento.dart  notifica dell'allenamento (anche a schermo bloccato), tasto Pausa
-  backup.dart          backup in .gz (JSON di tutti i CSV)
-  backup_auto.dart     backup automatico in una cartella scelta (backup_auto.txt, fuori dal backup)
-  screens/             una schermata o un foglio per file (*_screen.dart, *_sheet.dart)
-  screens/schede_proposte.dart  anteprime di allenamenti e piano proposti dal coach (chat) e dall'assistente esterno
-  screens/condividi_screen.dart  immagine 4:5 di sessione o settimana, condivisa con FileProvider (cache/condivisi)
-  screens/colonna_dati.dart  colonna dei dati in allenamento: la minimappa prende lo spazio che resta
-  screens/vista_bici.dart  bici al chiuso durante l'allenamento: dati, blocco in corso, ERG, grafico e diagramma in una pagina
-  screens/tour.dart    giro guidato (10 passi, maschera con cerchio): ChiaviTour sui widget veri
-assets/                esercizi.json, fonts/ (Manrope, Space Grotesk), exercises/animated/*.webp
-test/                  un file *_test.dart per area
-tool/                  script Python (catalogo esercizi, icona), git-hooks/pre-commit
-android/               progetto Android, firma, manifest, widget
-NOTE.md                appunti e lavori in sospeso (pubblico)
-CHANGELOG.md           novità di ogni versione distribuita
-NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo locale, ignorato da git
-```
-
-**Dati dell'app** (CSV nella cartella privata):
-- `piano.csv`, `settimana_tipo.csv`, `workout.csv`, `programma.csv`;
-- `sessioni.csv`, `health_connect_sessioni.csv`;
-- `feedback.csv`, `profilo.csv`, `misure.csv`, `assistente.csv`, `recupero.csv`;
-- `ritocchi_sessioni.csv`, `percorso_*.csv`, `serie_app_*.csv` (battito, potenza, cadenza e velocità al secondo dai sensori);
-- `sessioni_nascoste.csv` (sessioni dell'orologio tolte dallo storico);
-- `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
-- `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
-- `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
-- `serie.csv` (ripetizioni e kg della forza); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
-- `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
-- `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);
-- `percorsi_salvati.csv`, `traccia_<id>.csv`, `percorsi_piano.csv` (percorsi da seguire e sedute a cui sono assegnati).
-
-I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
+- `lib/screens/`: una schermata o un foglio per file (`*_screen.dart`, `*_sheet.dart`).
+- Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
+- `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita.
+- **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
 ## 4. Comandi
 
@@ -132,85 +31,31 @@ flutter pub get
 dart format lib test                        # formattazione
 flutter analyze                             # deve dare "No issues found!"
 flutter test                                # tutti i test devono passare
-flutter build apk --release --split-per-abi # APK firmato, arm64 ~32 MB
+flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD) # APK firmato, arm64 ~32 MB
 adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
-- **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): alzala tu **solo quando installi l'app sul telefono** (o prepari l'APK per gli amici), non a ogni modifica: guarda tutte le modifiche dall'ultima installazione e scegli il salto più grande.
-  - solo correzioni o piccoli ritocchi → PATCH (1.1.0 → 1.1.1);
-  - funzioni nuove, i dati vecchi restano leggibili → MINOR (1.1.1 → 1.2.0);
-  - cambi che rompono i dati o l'app di prima → MAJOR (→ 2.0.0); chiedi prima all'utente.
-  - Il numero di build (`+N`) sale di 1 a ogni installazione. Le modifiche tra un'installazione e l'altra restano nella stessa versione.
-  - Attuale: `1.12.3+31`.
-- **APK per gli amici**: copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
+- **Versione** (`version:` in `pubspec.yaml`, `MAJOR.MINOR.PATCH+build`): **prima della pubblicazione il primo numero resta 0**. La **1.0.0** arriva solo quando l'utente pubblica l'app.
+  - **Resta ferma su `staging`**, anche a ogni installazione e negli APK dei tester: le prove si riconoscono dal **commit**, che l'APK mostra nel Profilo ("versione 0.1.0 (32) · prova a1b2c3d") grazie a `--dart-define=COMMIT=...` nel comando di build.
+  - Si alza **solo quando l'utente decide di portare `staging` su `main`**: su `staging`, subito prima dell'unione, una volta sola per tutte le modifiche dall'ultima unione:
+    - solo correzioni o piccoli ritocchi → PATCH (0.1.0 → 0.1.1);
+    - funzioni nuove → MINOR (0.1.1 → 0.2.0);
+    - prima di 1.0 anche i cambi che rompono i dati sono MINOR (chiedi prima all'utente).
+  - Il numero di build (`+N`) sale di 1 insieme alla versione e **non scende mai**: Android rifiuta di installare un numero più basso sopra uno più alto (per questo dopo la 1.12.4+32 si è ripartiti da 0.1.0+32).
+  - Attuale: `0.1.0+32` (su `staging`; `main` ha ancora la 1.12.3+31 fino alla prossima unione).
+- **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono. Prima la stessa Wi-Fi (`adb mdns services`, poi `adb connect <ip>:<porta>`), poi Tailscale. Se non è raggiungibile, dillo e installa alla prima occasione.
+- **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
 ## 5. Linee guida grafiche (stile "Pulse")
 
-**Temi**: due scelte indipendenti nel Profilo.
-- **Fondo**: scuro grafite `#0B0B0D` oppure chiaro `#F6F6FA` (`tema`, salvato in `tema.txt`).
-- **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
-- Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
-- **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna le quattro sezioni, le pagine interne principali (sport, sessione, seduta, catalogo, zone) e l'avvio dell'allenamento guidato con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
-
-**Colori degli sport**: stessa tinta nel chiaro e nello scuro, ma ogni colore deve staccare dal fondo (contrasto di almeno 3, lo controlla `test/tema_test.dart`). Dove il colore è uno solo vale per i due fondi; altrimenti "scuro / chiaro".
-
-| Sport | Standard | Neon |
-|---|---|---|
-| Forza | `#8E8E96` / `#7B7B85` | `#9D4DFF` |
-| Corsa | `#FF3B47` | `#FF2E93` |
-| Nuoto | `#FF8A3D` / `#E0660A` | `#00B2FF` / `#0090DB` |
-| Bici | `#CF2450` / `#B3123A` | `#00E0B8` / `#009C82` |
-| Mobilità | `#F48FB1` / `#DB5C8E` | `#FF7A00` / `#E66400` |
-| Arrampicata | `#4FA3A5` / `#3A8C8E` | `#FFE600` / `#A38500` |
-| Attività libera | `#7C83FD` / `#6C73F5` | `#7C83FD` / `#6C73F5` |
-| Camminata | `#E0A33A` / `#B87A0F` | `#C6FF3D` / `#5F9400` |
-
-- Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
-- **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).
-
-**Caratteri**:
-- **Space Grotesk** w700 per titoli e numeri (letterSpacing negativo);
-- **Manrope** (400–800) per i testi;
-- dimensioni di Material 3 (`Typography.englishLike2021`).
-
-**Componenti** (`pulse.dart`):
-- `durataMovimento(context)`: la durata delle animazioni, zero se sul telefono sono spente; anello e barra di avanzamento si riempiono da soli quando compaiono;
-- `SuperficiePulse`: riquadro in rilievo, raggio 24, padding 16;
-- `PulsantePrincipale`: pillola con sfumatura, altezza 60;
-- `AnelloPulse`: anello sfumato con alone;
-- `RigaPulse`: riga di elenco con icona, titolo, sottotitolo e linea;
-- `IconaQuadrata`, `PallinoPulse`, `PillolaPulse`, `BarraAvanzamento`, `TitoloSezione`;
-- `SfondoPulse`: fondo con bagliori;
-- `BarraPulse`: barra di navigazione fluttuante.
-
-**Forme**:
-- card raggio 24, dialoghi 28, campi di testo 16;
-- pulsanti, chip e segmenti a pillola (`StadiumBorder`);
-- immagini degli esercizi raggio 14;
-- i `Card` hanno elevazione 0.
-
-**Spaziature**:
-- margine laterale delle pagine 16–20;
-- spazi tra blocchi 8, 12, 16 o 24;
-- nei moduli, `spacing: 12–14` tra i campi;
-- in basso `spazioBarra(context)`, perché la barra fluttua sopra il contenuto (`extendBody`).
-
-**Rilievo**: sfumature e ombre morbide colorate **solo** su seduta di oggi, pulsanti principali, anelli e barra. Testi ed elenchi stanno su fondi piatti.
-
-**UX per principianti**:
-- parole semplici;
-- dettagli tecnici dentro sezioni da aprire;
-- spiegazioni brevi ("Cos'è" chiuso di default);
-- distinguere con forma e icona, non solo con il colore;
-- la figura dei muscoli resta.
-
-**Sopra `SfondoPulse`**, `CheckboxListTile` e `ListTile` vanno dentro `Material(type: MaterialType.transparency)`, altrimenti l'effetto al tocco non si vede.
+- **Ogni modifica grafica va controllata nelle 4 combinazioni** (fondo chiaro o scuro × accento rosso o neon).
+- Il resto (colori, caratteri, componenti, forme, spaziature, UX) è in `.claude/rules/stile-pulse.md`: si carica da solo quando lavori sull'interfaccia; se serve altrove, leggilo.
 
 ## 6. Convenzioni di codice
 
@@ -224,7 +69,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici. Bluetooth del battito solo con la modalità allenamento aperta.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth (battito e sensori della bici) solo con la modalità allenamento o la pagina "I miei sensori" aperta.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.
@@ -239,9 +84,9 @@ Repository: `https://github.com/BraveBanana420/avidididadi`, branch principale `
 
 - **Dove si lavora**:
   - **`staging`**: tutte le modifiche, piccole e grandi, si fanno qui e si installano sul telefono da qui. Commit e push su `staging`, che non si cancella mai;
-  - **`main`**: la versione stabile, destinata a diventare pubblica. Si aggiorna **solo** unendo `staging` quando l'utente dà l'ok dopo le prove (`git merge --no-ff staging`, poi push). Mai modifiche dirette su `main`;
+  - **`main`**: la versione stabile, destinata a diventare pubblica. Resta ferma finché l'utente non decide di rilasciare l'aggiornamento: solo allora si unisce `staging` (`git merge --no-ff staging`, poi push). Mai modifiche dirette su `main`;
   - **rami `funzione/<nome-breve>`**: solo se una funzione grossa va provata a parte. Nascono da `staging` e tornano in `staging`; dopo l'unione si cancellano, anche su GitHub;
-  - **APK per gli amici**: da `main`, con l'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`). Mai spostare un'etichetta già caricata.
+  - **APK per gli amici (tester)**: da `staging`, senza etichetta (si riconosce dal commit mostrato nell'app). L'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`) va sul commit di `main` a ogni unione. Mai spostare un'etichetta già caricata.
 - **Al termine di ogni modifica completata e funzionante esegui sempre**:
   1. `git add` dei file della modifica;
   2. `git commit` con un **messaggio chiaro in italiano** che descriva la modifica;

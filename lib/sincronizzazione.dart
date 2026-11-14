@@ -518,3 +518,9 @@ List<Sessione> icuSenzaDoppioniHc(List<Sessione> icu, List<Sessione> hc) {
       if (!coperta(i)) i,
   ];
 }
+
+/// Tornando nell'app si risincronizza solo se l'avvio ha già finito
+/// ([ultima] non null) e sono passati almeno 5 minuti: passare da un'app
+/// all'altra non deve far ripartire tutto ogni volta.
+bool daRisincronizzare(DateTime? ultima, DateTime ora) =>
+    ultima != null && ora.difference(ultima) >= const Duration(minutes: 5);

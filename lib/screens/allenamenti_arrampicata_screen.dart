@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../allenamento_arrampicata.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
@@ -198,7 +199,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final ok = await state.programmaArrampicata(a, data);
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           ok
               ? '${a.nome} è nel calendario: ${dataLunga(data)}.'
@@ -687,12 +688,7 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
           ),
         );
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + spazioInBasso(context)),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
