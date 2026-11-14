@@ -118,31 +118,33 @@ Color coloreSport(String sport) {
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return n ? const Color(0xFF9D4DFF) : _sulFondo(0xFF8E8E96, 0xFF7B7B85);
+      return n ? const Color(0xFF9D4DFF) : _sulFondo(0xFF787882, 0xFF76767F);
     case 'corsa':
       return n ? const Color(0xFFFF2E93) : const Color(0xFFFF3B47);
     case 'nuoto':
       return n
           ? _sulFondo(0xFF00B2FF, 0xFF0090DB)
-          : _sulFondo(0xFFFF8A3D, 0xFFE0660A);
+          : _sulFondo(0xFF44E4C9, 0xFF189DAA);
     case 'bici':
       return n
           ? _sulFondo(0xFF00E0B8, 0xFF009C82)
-          : _sulFondo(0xFFCF2450, 0xFFB3123A);
+          : _sulFondo(0xFFEEA82F, 0xFFA57909);
     case 'mobilità':
       return n
           ? _sulFondo(0xFFFF7A00, 0xFFE66400)
-          : _sulFondo(0xFFF48FB1, 0xFFDB5C8E);
+          : _sulFondo(0xFFFBF8DA, 0xFF36634D);
     case 'camminata':
       return n
           ? _sulFondo(0xFFC6FF3D, 0xFF5F9400)
-          : _sulFondo(0xFFE0A33A, 0xFFB87A0F);
+          : _sulFondo(0xFFE444A9, 0xFF6F2A56);
     case 'arrampicata':
       return n
           ? _sulFondo(0xFFFFE600, 0xFFA38500)
-          : _sulFondo(0xFF4FA3A5, 0xFF3A8C8E);
+          : _sulFondo(0xFF7E44E4, 0xFF561BBB);
     case 'attività libera':
-      return _sulFondo(0xFF7C83FD, 0xFF6C73F5);
+      return n
+          ? _sulFondo(0xFF7C83FD, 0xFF6C73F5)
+          : _sulFondo(0xFFD795E4, 0xFFC432E2);
     case 'riposo':
       return temaScuroAttivo
           ? const Color(0xFF6E6E6E)
