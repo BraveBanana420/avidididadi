@@ -627,7 +627,11 @@ class _StripSettimana extends StatelessWidget {
                           color: scheme.onSurface,
                         ),
                       ),
-                      TextSpan(text: ' di ${c.previste} fatti'),
+                      TextSpan(
+                        text: fatte > c.previste
+                            ? ' fatti'
+                            : ' di ${c.previste} fatti',
+                      ),
                     ],
                   ),
                   style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),

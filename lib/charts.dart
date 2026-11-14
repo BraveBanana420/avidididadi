@@ -3,13 +3,19 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'models.dart';
+import 'tema.dart';
 import 'widgets.dart';
 
 void _testo(Canvas canvas, String s, Offset o, Color c, {bool destra = false}) {
   final tp = TextPainter(
     text: TextSpan(
       text: s,
-      style: TextStyle(color: c, fontSize: 10),
+      style: TextStyle(
+        color: c,
+        fontSize: 10,
+        fontFamily: famigliaTesto,
+        fontFeatures: const [FontFeature.tabularFigures()],
+      ),
     ),
     textDirection: TextDirection.ltr,
   )..layout();

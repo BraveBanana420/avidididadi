@@ -98,8 +98,9 @@ class TestoUnaRiga extends StatelessWidget {
 }
 
 // Colori degli sport: standard nei toni del rosso (ben distinti per tinta e
-// luminosità) oppure neon, uguali nel tema chiaro e nello scuro. Fa eccezione
-// la camminata: i suoi colori chiari sul fondo chiaro non si vedrebbero.
+// luminosità) oppure neon. La tinta è la stessa nel tema chiaro e nello scuro,
+// ma dove serve cambia la luminosità: ogni colore deve staccare dal fondo
+// (contrasto di almeno 3), altrimenti icone e pallini non si vedono.
 const _palette = [
   Color(0xFFE57373),
   Color(0xFFFFA270),
@@ -108,29 +109,40 @@ const _palette = [
   Color(0xFFBDBDBD),
 ];
 
+/// Il colore per il fondo in uso: [scuro] sul grafite, [chiaro] sul bianco.
+Color _sulFondo(int scuro, int chiaro) =>
+    Color(temaScuroAttivo ? scuro : chiaro);
+
 Color coloreSport(String sport) {
   final n = neonAttivo;
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return n ? const Color(0xFF9D4DFF) : const Color(0xFF8E8E96);
+      return n ? const Color(0xFF9D4DFF) : _sulFondo(0xFF8E8E96, 0xFF7B7B85);
     case 'corsa':
       return n ? const Color(0xFFFF2E93) : const Color(0xFFFF3B47);
     case 'nuoto':
-      return n ? const Color(0xFF00B2FF) : const Color(0xFFFF8A3D);
+      return n
+          ? _sulFondo(0xFF00B2FF, 0xFF0090DB)
+          : _sulFondo(0xFFFF8A3D, 0xFFE0660A);
     case 'bici':
-      return n ? const Color(0xFF00E0B8) : const Color(0xFFB3123A);
+      return n
+          ? _sulFondo(0xFF00E0B8, 0xFF009C82)
+          : _sulFondo(0xFFCF2450, 0xFFB3123A);
     case 'mobilità':
-      return n ? const Color(0xFFFF7A00) : const Color(0xFFF48FB1);
+      return n
+          ? _sulFondo(0xFFFF7A00, 0xFFE66400)
+          : _sulFondo(0xFFF48FB1, 0xFFDB5C8E);
     case 'camminata':
-      if (!temaScuroAttivo) {
-        return n ? const Color(0xFF5F9400) : const Color(0xFFB87A0F);
-      }
-      return n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A);
+      return n
+          ? _sulFondo(0xFFC6FF3D, 0xFF5F9400)
+          : _sulFondo(0xFFE0A33A, 0xFFB87A0F);
     case 'arrampicata':
-      return n ? const Color(0xFFFFE600) : const Color(0xFF4FA3A5);
+      return n
+          ? _sulFondo(0xFFFFE600, 0xFFA38500)
+          : _sulFondo(0xFF4FA3A5, 0xFF3A8C8E);
     case 'attività libera':
-      return const Color(0xFF7C83FD);
+      return _sulFondo(0xFF7C83FD, 0xFF6C73F5);
     case 'riposo':
       return temaScuroAttivo
           ? const Color(0xFF6E6E6E)
