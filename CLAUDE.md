@@ -62,6 +62,7 @@ lib/
   adattamento.dart     adattamento ai feedback, passo del nuoto, riepilogo modifiche
   feedback.dart        feedback e regole di carico
   recupero.dart        energia e prontezza dai dati di recupero
+  assi.dart            tacche su numeri tondi per gli assi dei grafici (anche tempi), percentili
   potenza.dart         zone di potenza dall'FTP (bici e corsa, separate), watt nelle sedute di bici, avvisi, test FTP di corsa, serie dei sensori
   riepilogo_condiviso.dart  numeri e testi delle immagini da condividere (sessione, settimana)
   calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)

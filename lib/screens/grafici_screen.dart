@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../assi.dart';
 import '../charts.dart';
 import '../health_connect.dart';
 import '../models.dart';
@@ -400,6 +401,7 @@ class _Velocita extends StatelessWidget {
       );
     }
     // Passo: più in alto = più veloce, come su Garmin.
+    final passi = [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()];
     return _Riquadro(
       titolo: 'Passo',
       numeri: [
@@ -407,10 +409,13 @@ class _Velocita extends StatelessWidget {
         ('Migliore', '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
       ],
       grafico: GraficoLinea(
-        ys: [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()],
+        ys: passi,
         etichette: [for (final c in r) _dal(inizio, c.t)],
         fmt: (v) => fmtMinSec(-v),
         colore: colore,
+        // I tratti più lenti (soste, recuperi camminati) restano sul bordo.
+        minimoAsse: percentile(passi, 0.05),
+        passiAsse: passiTempo,
         dettagli: [
           for (final c in r)
             '${fmtMinSec(passoDa(c.v))} /km\n${_dal(inizio, c.t)}',

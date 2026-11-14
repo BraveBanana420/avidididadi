@@ -222,7 +222,8 @@ String fmtKm(double km) => '${km.toStringAsFixed(2).replaceAll('.', ',')} km';
 /// Fonte dei riquadri della mappa: OpenFreeMap (gratis, senza chiave).
 const fonteRiquadri = 'https://tiles.openfreemap.org/planet';
 
-/// Stile della mappa con i colori del tema: strade spente, percorso al neon.
+/// Stile della mappa con i colori del tema: strade in grigio (ma leggibili
+/// anche al sole), percorso al neon.
 /// Il percorso sta nella sorgente "percorso", partenza e arrivo in "estremi".
 String stileMappa({
   required bool scuro,
@@ -233,20 +234,20 @@ String stileMappa({
   final c = scuro
       ? (
           sfondo: '#0B0B0D',
-          verde: '#0F1311',
-          acqua: '#12151C',
-          edifici: '#121216',
-          strade: '#1E1E24',
-          principali: '#2A2A32',
+          verde: '#101A14',
+          acqua: '#14263A',
+          edifici: '#17171C',
+          strade: '#3D3D48',
+          principali: '#5C5C6A',
           nucleo: '#FFE3E5',
         )
       : (
           sfondo: '#F6F6FA',
-          verde: '#EEF3F1',
-          acqua: '#E4ECF5',
-          edifici: '#ECECF2',
-          strade: '#E2E2EA',
-          principali: '#D6D6E0',
+          verde: '#E2EFE7',
+          acqua: '#CADDF2',
+          edifici: '#E7E7EE',
+          strade: '#C9C9D6',
+          principali: '#ABABBC',
           nucleo: '#FFFFFF',
         );
   final vuota = {'type': 'FeatureCollection', 'features': <dynamic>[]};

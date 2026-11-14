@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'assi.dart';
 import 'models.dart';
 import 'tema.dart';
 import 'widgets.dart';
@@ -141,6 +142,13 @@ class GraficoLinea extends StatefulWidget {
   /// Testo per ogni punto (righe separate da \n, la prima in evidenza).
   /// Se manca, mostra valore ed etichetta.
   final List<String>? dettagli;
+
+  /// Sotto questo valore la linea resta sul bordo: pochi picchi isolati (una
+  /// sosta nel grafico del passo) non schiacciano tutto il resto.
+  final double? minimoAsse;
+
+  /// Passi ammessi tra le tacche (es. [passiTempo]); di solito decimali.
+  final List<double>? passiAsse;
   const GraficoLinea({
     super.key,
     required this.ys,
@@ -148,6 +156,8 @@ class GraficoLinea extends StatefulWidget {
     required this.fmt,
     required this.colore,
     this.dettagli,
+    this.minimoAsse,
+    this.passiAsse,
   });
 
   @override
@@ -239,6 +249,8 @@ class _GraficoLineaState extends State<GraficoLinea> {
                   scheme.onSurfaceVariant,
                   scheme.outlineVariant,
                   i,
+                  minimoAsse: widget.minimoAsse,
+                  passiAsse: widget.passiAsse,
                 ),
               ),
             ),
@@ -263,6 +275,8 @@ class _LineaPainter extends CustomPainter {
   final Color testoC;
   final Color grigliaC;
   final int? sel;
+  final double? minimoAsse;
+  final List<double>? passiAsse;
   _LineaPainter(
     this.ys,
     this.etichette,
@@ -270,44 +284,36 @@ class _LineaPainter extends CustomPainter {
     this.colore,
     this.testoC,
     this.grigliaC,
-    this.sel,
-  );
+    this.sel, {
+    this.minimoAsse,
+    this.passiAsse,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     const sx = 46.0, top = 10.0, bottom = 24.0, dx = 8.0;
     final w = size.width - sx - dx;
     final h = size.height - top - bottom;
-    final minReale = ys.reduce(math.min);
-    var lo = minReale;
-    var hi = ys.reduce(math.max);
-    if (hi - lo < 1e-9) {
-      lo -= 1;
-      hi += 1;
-    }
-    final pad = (hi - lo) * 0.12;
-    lo -= pad;
-    hi += pad;
-    if (lo < 0 && minReale >= 0) lo = 0;
+    final massimo = ys.reduce(math.max);
+    var minimo = ys.reduce(math.min);
+    final limite = minimoAsse;
+    if (limite != null && limite < massimo) minimo = math.max(minimo, limite);
+    // Tacche su numeri tondi: si leggono al volo.
+    final scala = scalaTonda(minimo, massimo, passi: passiAsse);
+    final lo = scala.lo, hi = scala.hi;
 
     final griglia = Paint()
       ..color = grigliaC
       ..strokeWidth = 1;
-    for (var i = 0; i <= 2; i++) {
-      final y = top + h * i / 2;
+    for (final v in tacche(scala)) {
+      final y = top + h * (hi - v) / (hi - lo);
       canvas.drawLine(Offset(sx, y), Offset(size.width - dx, y), griglia);
-      _testo(
-        canvas,
-        fmt(hi - (hi - lo) * i / 2),
-        Offset(sx - 6, y),
-        testoC,
-        destra: true,
-      );
+      _testo(canvas, fmt(v), Offset(sx - 6, y), testoC, destra: true);
     }
 
     Offset pt(int i) => Offset(
       sx + (ys.length == 1 ? w / 2 : w * i / (ys.length - 1)),
-      top + h * (1 - (ys[i] - lo) / (hi - lo)),
+      top + h * (1 - (ys[i].clamp(lo, hi) - lo) / (hi - lo)),
     );
 
     final linea = Paint()
@@ -364,8 +370,15 @@ double _massimoBarre(List<Map<String, double>> valori) {
     final tot = v.values.fold<double>(0, (a, b) => a + b);
     if (tot > m) m = tot;
   }
-  return (m <= 0 ? 1 : m) * 1.1;
+  return _scalaBarre(m).hi;
 }
+
+/// Il passo tra le tacche di un grafico a barre alto [massimo] (già tondo).
+double _passoBarre(double massimo) => scalaTonda(0, massimo).passo;
+
+/// Scala da zero al totale più alto, con le tacche su numeri tondi.
+ScalaAsse _scalaBarre(double massimo) =>
+    scalaTonda(0, massimo <= 0 ? 1 : massimo);
 
 /// Barre impilate: una barra per settimana, un colore per sport.
 /// Toccando un blocco compaiono le ore di quello sport in quella settimana.
@@ -578,16 +591,10 @@ class _BarrePainter extends CustomPainter {
     final griglia = Paint()
       ..color = grigliaC
       ..strokeWidth = 1;
-    for (var i = 0; i <= 2; i++) {
-      final y = _bTop + h * i / 2;
+    for (final v in tacche((lo: 0, hi: massimo, passo: _passoBarre(massimo)))) {
+      final y = _bTop + h * (1 - v / massimo);
       canvas.drawLine(Offset(_bSx, y), Offset(size.width - _bDx, y), griglia);
-      _testo(
-        canvas,
-        formatoAsse(massimo - massimo * i / 2),
-        Offset(_bSx - 6, y),
-        testoC,
-        destra: true,
-      );
+      _testo(canvas, formatoAsse(v), Offset(_bSx - 6, y), testoC, destra: true);
     }
 
     final n = valori.length;
