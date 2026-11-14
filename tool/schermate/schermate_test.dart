@@ -158,6 +158,45 @@ Future<void> _scorri(WidgetTester t, [double quanto = 560]) async {
   await _assesta(t, 4);
 }
 
+/// Dalla sezione [sezione] tocca [riga], fotografa la pagina che si apre
+/// ([pagine] schermate, scorrendo) e torna indietro.
+Future<void> _apri(
+  WidgetTester t,
+  String cartella,
+  int sezione,
+  Finder riga,
+  String nome, {
+  int pagine = 1,
+  bool torna = true,
+}) async {
+  await t.tap(find.byKey(ChiaviTour.voci[sezione]));
+  await _assesta(t);
+  // Le liste costruiscono solo le righe in vista: si riparte dalla cima e si
+  // scende finché la riga compare.
+  for (final l in t.stateList<ScrollableState>(find.byType(Scrollable))) {
+    if (l.position.axis == Axis.vertical) l.position.jumpTo(0);
+  }
+  await _assesta(t, 3);
+  for (var i = 0; i < 14 && riga.hitTestable().evaluate().isEmpty; i++) {
+    await _scorri(t, 260);
+  }
+  if (riga.hitTestable().evaluate().isEmpty) {
+    debugPrint('$nome: riga non trovata');
+    return;
+  }
+  await t.tap(riga.hitTestable().first, warnIfMissed: false);
+  await _assesta(t, 25);
+  for (var i = 0; i < pagine; i++) {
+    await _foto(t, cartella, i == 0 ? nome : '${nome}_$i');
+    if (i < pagine - 1) await _scorri(t);
+  }
+  final navigatore = t.state<NavigatorState>(find.byType(Navigator).first);
+  if (torna && navigatore.canPop()) {
+    navigatore.pop();
+    await _assesta(t);
+  }
+}
+
 void main() {
   late Directory dati;
 
@@ -238,6 +277,48 @@ void main() {
         await _foto(t, nome, '09_profilo_giu');
         await _scorri(t);
         await _foto(t, nome, '10_profilo_fondo');
+
+        // Le pagine interne: si aprono toccando le righe, come sul telefono.
+        await _apri(t, nome, 3, find.text('Esercizi'), '11_esercizi');
+        await _apri(t, nome, 3, find.text('Le mie zone'), '12_zone');
+        await _apri(t, nome, 3, find.text('Prepara le sedute'), '13_prepara');
+        await _apri(t, nome, 3, find.text('Le mie attività'), '14_attivita');
+        await _apri(
+          t,
+          nome,
+          1,
+          find.text('10 allenamenti'),
+          '15_sport_corsa',
+          pagine: 3,
+        );
+        await _apri(t, nome, 0, find.text('Corsa: Lento'), '18_sessione');
+        await _apri(
+          t,
+          nome,
+          0,
+          find.text('Vedi tutto il mese'),
+          '19_mese',
+          torna: false,
+        );
+        // L'allenamento guidato: la prossima seduta di forza, poi il player.
+        await t.tap(find.byKey(ChiaviTour.voci[0]));
+        await _assesta(t);
+        final forza = find.text('Forza');
+        if (forza.evaluate().isNotEmpty) {
+          await t.ensureVisible(forza.first);
+          await _assesta(t, 3);
+          await t.tap(forza.first);
+          await _assesta(t, 25);
+          await _foto(t, nome, '20_seduta');
+          await _scorri(t);
+          await _foto(t, nome, '21_seduta_giu');
+          final inizia = find.text('Inizia allenamento');
+          if (inizia.evaluate().isNotEmpty) {
+            await t.tap(inizia.first);
+            await _assesta(t, 25);
+            await _foto(t, nome, '22_allenamento');
+          }
+        }
 
         // Chiude l'app e lascia scadere i timer rimasti.
         await t.pumpWidget(const SizedBox());

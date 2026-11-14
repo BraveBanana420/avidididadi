@@ -155,7 +155,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 - **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
 - Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
-- **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna Oggi, Progressi, Coach e Profilo con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
+- **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna le quattro sezioni, le pagine interne principali (sport, sessione, seduta, catalogo, zone) e l'avvio dell'allenamento guidato con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
 
 **Colori degli sport**: stessa tinta nel chiaro e nello scuro, ma ogni colore deve staccare dal fondo (contrasto di almeno 3, lo controlla `test/tema_test.dart`). Dove il colore è uno solo vale per i due fondi; altrimenti "scuro / chiaro".
 
@@ -179,6 +179,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 - dimensioni di Material 3 (`Typography.englishLike2021`).
 
 **Componenti** (`pulse.dart`):
+- `durataMovimento(context)`: la durata delle animazioni, zero se sul telefono sono spente; anello e barra di avanzamento si riempiono da soli quando compaiono;
 - `SuperficiePulse`: riquadro in rilievo, raggio 24, padding 16;
 - `PulsantePrincipale`: pillola con sfumatura, altezza 60;
 - `AnelloPulse`: anello sfumato con alone;

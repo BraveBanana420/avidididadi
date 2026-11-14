@@ -106,7 +106,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          '${lista.where((e) => e.schema == schema).length} esercizi',
+                          quantiEsercizi(
+                            lista.where((e) => e.schema == schema).length,
+                          ),
                         ),
                         children: [
                           for (final e in lista.where(

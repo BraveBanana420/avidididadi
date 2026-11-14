@@ -111,6 +111,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
         : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
   );
 
+  /// Il "+" si vede da fermi in cima o in fondo e quando si torna su.
+  bool _piuInVista = true;
+
+  bool _seguiScorrimento(ScrollNotification n) {
+    if (n.depth != 0 || n.metrics.axis != Axis.vertical) return false;
+    var inVista = _piuInVista;
+    if (n.metrics.extentBefore <= 0 || n.metrics.extentAfter <= 0) {
+      inVista = true;
+    } else if (n is ScrollUpdateNotification && n.scrollDelta != null) {
+      if (n.scrollDelta! > 2) inVista = false;
+      if (n.scrollDelta! < -2) inVista = true;
+    }
+    if (inVista != _piuInVista) setState(() => _piuInVista = inVista);
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = Theme.of(context).textTheme;
@@ -159,192 +175,214 @@ class _CalendarScreenState extends State<CalendarScreen> {
               // Trascinando verso il basso si sincronizza con Health Connect.
               RefreshIndicator(
                 onRefresh: () => sincronizzaConMessaggio(context, state),
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  // In fondo, spazio anche per il pulsante "+".
-                  padding: EdgeInsets.fromLTRB(
-                    16,
-                    16,
-                    16,
-                    spazioBarra(context) + 76,
-                  ),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  dataLunga(oggi),
-                                  style: t.bodyMedium?.copyWith(
-                                    color: scheme.onSurfaceVariant,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: _seguiScorrimento,
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    // In fondo, spazio anche per il pulsante "+".
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      16,
+                      16,
+                      spazioBarra(context) + 76,
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    dataLunga(oggi),
+                                    style: t.bodyMedium?.copyWith(
+                                      color: scheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
-                                // Su una riga sola: se il nome è lungo, rimpicciolisce.
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    nome.isEmpty ? 'Ciao!' : 'Ciao $nome',
-                                    maxLines: 1,
-                                    style: t.headlineMedium,
+                                  // Su una riga sola: se il nome è lungo, rimpicciolisce.
+                                  FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      nome.isEmpty ? 'Ciao!' : 'Ciao $nome',
+                                      maxLines: 1,
+                                      style: t.headlineMedium,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          if (pronto != null)
-                            KeyedSubtree(
-                              key: ChiaviTour.energia,
-                              child: _PillolaEnergia(pronto),
-                            ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    if (!state.primaVolta) const InvitoTour(),
-                    PromemoriaPiano(state: state),
-                    PromemoriaScheda(state: state),
-                    KeyedSubtree(
-                      key: ChiaviTour.feedback,
-                      child: PromemoriaFeedback(state: state),
-                    ),
-                    SchedaGiorno(
-                      key: ChiaviTour.giorno,
-                      state: state,
-                      giorno: selezionato,
-                      fatti: fattiDi(selezionato),
-                      previsti: previstiDi(selezionato),
-                      onModifica: () => _apriModifica(selezionato),
-                      onOggi: selezionato == oggi
-                          ? null
-                          : () => _seleziona(oggi),
-                    ),
-                    Padding(
-                      key: ChiaviTour.settimana,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: _StripSettimana(
-                        state: state,
-                        selezionato: selezionato,
-                        lunedi: settimanaVista,
-                        oggi: oggi,
-                        fattiDi: fattiDi,
-                        previstiDi: previstiDi,
-                        icona: _icona,
-                        onTocca: _seleziona,
-                        onSettimana: _cambiaSettimana,
-                        verso: _verso,
-                      ),
-                    ),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () =>
-                            setState(() => meseAperto = !meseAperto),
-                        icon: Icon(
-                          meseAperto ? Icons.expand_less : Icons.calendar_month,
-                        ),
-                        label: Text(
-                          meseAperto ? 'Chiudi il mese' : 'Vedi tutto il mese',
-                        ),
-                      ),
-                    ),
-                    AnimatedSize(
-                      duration: const Duration(milliseconds: 250),
-                      alignment: Alignment.topCenter,
-                      child: meseAperto
-                          ? _mese(context, oggi, fattiDi, previstiDi)
-                          : const SizedBox(width: double.infinity),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (prossimi.isNotEmpty) ...[
-                            const TitoloSezione('Prossimi'),
-                            for (var i = 0; i < prossimi.length; i++)
-                              RigaPulse(
-                                segno: PallinoPulse(
-                                  coloreSport(prossimi[i].$2.sport),
-                                ),
-                                titolo: titoloSessione(
-                                  prossimi[i].$2.sport,
-                                  prossimi[i].$2.tipo,
-                                ),
-                                sottotitolo: [
-                                  maiuscola(quandoGiorno(prossimi[i].$1, oggi)),
-                                  if (prossimi[i].$2.durataMin > 0)
-                                    '${prossimi[i].$2.durataMin} min',
-                                ].join(' · '),
-                                linea: i < prossimi.length - 1,
-                                onTap: () => apriSessione(
-                                  context,
-                                  state,
-                                  prossimi[i].$2,
-                                ),
+                            if (pronto != null)
+                              KeyedSubtree(
+                                key: ChiaviTour.energia,
+                                child: _PillolaEnergia(pronto),
                               ),
                           ],
-                          const TitoloSezione('Il tuo piano'),
-                          RigaPulse(
-                            segno: const IconaQuadrata(
-                              Icons.edit_calendar_outlined,
-                            ),
-                            titolo: selezionato == oggi
-                                ? 'Cambia gli allenamenti di oggi'
-                                : 'Cambia gli allenamenti di '
-                                      '${quandoGiorno(selezionato, oggi)}',
-                            sottotitolo: 'Sposta, aggiungi o togli: solo per quel giorno',
-                            onTap: () => _apriModifica(selezionato),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      if (!state.primaVolta) const InvitoTour(),
+                      PromemoriaPiano(state: state),
+                      PromemoriaScheda(state: state),
+                      KeyedSubtree(
+                        key: ChiaviTour.feedback,
+                        child: PromemoriaFeedback(state: state),
+                      ),
+                      SchedaGiorno(
+                        key: ChiaviTour.giorno,
+                        state: state,
+                        giorno: selezionato,
+                        fatti: fattiDi(selezionato),
+                        previsti: previstiDi(selezionato),
+                        onModifica: () => _apriModifica(selezionato),
+                        onOggi: selezionato == oggi
+                            ? null
+                            : () => _seleziona(oggi),
+                      ),
+                      Padding(
+                        key: ChiaviTour.settimana,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: _StripSettimana(
+                          state: state,
+                          selezionato: selezionato,
+                          lunedi: settimanaVista,
+                          oggi: oggi,
+                          fattiDi: fattiDi,
+                          previstiDi: previstiDi,
+                          icona: _icona,
+                          onTocca: _seleziona,
+                          onSettimana: _cambiaSettimana,
+                          verso: _verso,
+                        ),
+                      ),
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: () =>
+                              setState(() => meseAperto = !meseAperto),
+                          icon: Icon(
+                            meseAperto
+                                ? Icons.expand_less
+                                : Icons.calendar_month,
                           ),
-                          if (!selezionato.isAfter(oggi))
+                          label: Text(
+                            meseAperto
+                                ? 'Chiudi il mese'
+                                : 'Vedi tutto il mese',
+                          ),
+                        ),
+                      ),
+                      AnimatedSize(
+                        duration: const Duration(milliseconds: 250),
+                        alignment: Alignment.topCenter,
+                        child: meseAperto
+                            ? _mese(context, oggi, fattiDi, previstiDi)
+                            : const SizedBox(width: double.infinity),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (prossimi.isNotEmpty) ...[
+                              const TitoloSezione('Prossimi'),
+                              for (var i = 0; i < prossimi.length; i++)
+                                RigaPulse(
+                                  segno: PallinoPulse(
+                                    coloreSport(prossimi[i].$2.sport),
+                                  ),
+                                  titolo: titoloSessione(
+                                    prossimi[i].$2.sport,
+                                    prossimi[i].$2.tipo,
+                                  ),
+                                  sottotitolo: [
+                                    maiuscola(
+                                      quandoGiorno(prossimi[i].$1, oggi),
+                                    ),
+                                    if (prossimi[i].$2.durataMin > 0)
+                                      '${prossimi[i].$2.durataMin} min',
+                                  ].join(' · '),
+                                  linea: i < prossimi.length - 1,
+                                  onTap: () => apriSessione(
+                                    context,
+                                    state,
+                                    prossimi[i].$2,
+                                  ),
+                                ),
+                            ],
+                            const TitoloSezione('Il tuo piano'),
                             RigaPulse(
-                              segno: const IconaQuadrata(Icons.edit_note),
+                              segno: const IconaQuadrata(
+                                Icons.edit_calendar_outlined,
+                              ),
                               titolo: selezionato == oggi
-                                  ? 'Scrivi un\'attività fatta oggi'
-                                  : 'Scrivi un\'attività fatta '
+                                  ? 'Cambia gli allenamenti di oggi'
+                                  : 'Cambia gli allenamenti di '
                                         '${quandoGiorno(selezionato, oggi)}',
+                              sottotitolo: 'Sposta, aggiungi o togli: solo per quel giorno',
+                              onTap: () => _apriModifica(selezionato),
+                            ),
+                            if (!selezionato.isAfter(oggi))
+                              RigaPulse(
+                                segno: const IconaQuadrata(Icons.edit_note),
+                                titolo: selezionato == oggi
+                                    ? 'Scrivi un\'attività fatta oggi'
+                                    : 'Scrivi un\'attività fatta '
+                                          '${quandoGiorno(selezionato, oggi)}',
+                                sottotitolo:
+                                    'Per quello che non hai registrato: durata, '
+                                    'distanza, battito…',
+                                onTap: () => _scriviFatta(selezionato),
+                              ),
+                            RigaPulse(
+                              key: ChiaviTour.settimanaTipo,
+                              segno: const IconaQuadrata(
+                                Icons.view_week_outlined,
+                              ),
+                              titolo: 'La mia settimana tipo',
                               sottotitolo:
-                                  'Per quello che non hai registrato: durata, '
-                                  'distanza, battito…',
-                              onTap: () => _scriviFatta(selezionato),
-                            ),
-                          RigaPulse(
-                            key: ChiaviTour.settimanaTipo,
-                            segno: const IconaQuadrata(
-                              Icons.view_week_outlined,
-                            ),
-                            titolo: 'La mia settimana tipo',
-                            sottotitolo:
-                                'Quali giorni ti alleni e per quanto tempo',
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => WeekScreen(state: state),
+                                  'Quali giorni ti alleni e per quanto tempo',
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => WeekScreen(state: state),
+                                ),
                               ),
                             ),
-                          ),
-                          RigaPulse(
-                            segno: const IconaQuadrata(Icons.auto_awesome),
-                            titolo: 'Allunga il calendario',
-                            sottotitolo:
-                                'Ripete la settimana tipo nei prossimi mesi: '
-                                'decide i giorni, non gli esercizi',
-                            linea: false,
-                            onTap: _apriGenera,
-                          ),
-                        ],
+                            RigaPulse(
+                              segno: const IconaQuadrata(Icons.auto_awesome),
+                              titolo: 'Allunga il calendario',
+                              sottotitolo:
+                                  'Ripete la settimana tipo nei prossimi mesi: '
+                                  'decide i giorni, non gli esercizi',
+                              linea: false,
+                              onTap: _apriGenera,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              // Attività libera, fuori dal piano: sempre a portata di pollice.
+              // Attività libera, fuori dal piano: a portata di pollice, ma si
+              // fa da parte mentre si scorre in giù per non coprire le righe.
               Positioned(
                 right: 20,
                 bottom: spazioBarra(context),
-                child: PulsanteLibera(state: state),
+                child: IgnorePointer(
+                  ignoring: !_piuInVista,
+                  child: AnimatedSlide(
+                    offset: _piuInVista ? Offset.zero : const Offset(0, 0.5),
+                    duration: durataMovimento(context, 220),
+                    curve: Curves.easeOut,
+                    child: AnimatedOpacity(
+                      opacity: _piuInVista ? 1 : 0,
+                      duration: durataMovimento(context, 220),
+                      child: PulsanteLibera(state: state),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

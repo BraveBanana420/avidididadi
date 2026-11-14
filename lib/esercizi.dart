@@ -293,3 +293,6 @@ Future<List<Esercizio>> caricaEsercizi() async {
       Esercizio.da(j as Map<String, dynamic>),
   ];
 }
+
+/// Il conteggio scritto bene: "1 esercizio", "6 esercizi".
+String quantiEsercizi(int n) => n == 1 ? '1 esercizio' : '$n esercizi';

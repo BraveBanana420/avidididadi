@@ -2079,7 +2079,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         Text(
           widget.libera
               ? fmtTimer(_tempoTotale)
-              : '${fmtTimer(_tempoTotale)} · ${perPasso.length} esercizi',
+              : '${fmtTimer(_tempoTotale)} · ${quantiEsercizi(perPasso.length)}',
           style: t.titleLarge,
           textAlign: TextAlign.center,
         ),
