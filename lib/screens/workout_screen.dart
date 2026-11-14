@@ -41,7 +41,6 @@ import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
 import 'profilo_allenamento.dart';
-import 'serie_a_mano_screen.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -686,94 +685,18 @@ class _DatiSessione extends StatelessWidget {
     }
   }
 
-  /// Nome e "al chiuso", che l'orologio non manda.
-  Future<void> _ritocca(BuildContext context) async {
-    final s = sessione;
-    final prima = state.ritocchi[s.id];
-    final nome = TextEditingController(text: prima?.nome ?? '');
-    var chiuso = prima?.alChiuso ?? false;
-    final scelta = await showDialog<String>(
-      context: context,
-      builder: (c) => StatefulBuilder(
-        builder: (c, aggiorna) => AlertDialog(
-          title: const Text('Modifica la sessione'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 12,
-            children: [
-              TextField(
-                controller: nome,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: InputDecoration(
-                  labelText: 'Nome dell\'allenamento',
-                  hintText: stessoSport(s.sport, 'Bici')
-                      ? 'es. Test FTP'
-                      : 'es. Ripetute in pista',
-                  helperText: 'Vuoto = quello dell\'orologio',
-                ),
-              ),
-              if (sportConPercorso(s.sport, s.tipo))
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    stessoSport(s.sport, 'Bici')
-                        ? 'Indoor (rulli, Tacx)'
-                        : 'Indoor (tapis roulant)',
-                  ),
-                  subtitle: const Text('Niente mappa né GPX'),
-                  value: chiuso,
-                  onChanged: (v) => aggiorna(() => chiuso = v),
-                ),
-            ],
-          ),
-          actions: [
-            // Una riga sola: il cestino a sinistra, lontano da "Salva" e nel
-            // colore degli errori, così non si tocca per sbaglio.
-            Row(
-              children: [
-                IconButton(
-                  tooltip: 'Elimina la sessione',
-                  color: Theme.of(c).colorScheme.error,
-                  onPressed: () => Navigator.pop(c, 'elimina'),
-                  icon: const Icon(Icons.delete_outline),
-                ),
-                // Con il testo grande si rimpiccioliscono invece di andare a capo.
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(c),
-                            child: const Text('Annulla'),
-                          ),
-                          const SizedBox(width: 8),
-                          FilledButton(
-                            onPressed: () => Navigator.pop(c, 'salva'),
-                            child: const Text('Salva'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+  /// Nome, luogo e dati: tutto in una pagina sola, dalla matita.
+  Future<void> _modifica(BuildContext context) async {
+    final scelta = await Navigator.of(context).push(
+      MaterialPageRoute<String>(
+        builder: (_) => ModificaSessioneScreen(
+          state: state,
+          sessione: sessione,
+          completa: true,
         ),
       ),
     );
-    final testo = nome.text.trim();
-    nome.dispose();
-    if (scelta == 'salva') {
-      await state.ritoccaSessione(
-        RitoccoSessione(s.id, nome: testo, alChiuso: chiuso),
-      );
-    } else if (scelta == 'elimina' && context.mounted) {
-      await _elimina(context);
-    }
+    if (scelta == 'elimina' && context.mounted) await _elimina(context);
   }
 
   /// Toglie la sessione dallo storico, dopo aver chiesto conferma.
@@ -891,7 +814,7 @@ class _DatiSessione extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    titoloSessione(s.sport, s.tipo),
+                    nomeSessione(s.sport, s.tipo),
                     style: t.titleMedium,
                   ),
                 ),
@@ -905,8 +828,8 @@ class _DatiSessione extends StatelessWidget {
                     ),
                   ),
                 IconButton(
-                  tooltip: 'Modifica nome e luogo',
-                  onPressed: () => _ritocca(context),
+                  tooltip: 'Modifica la sessione',
+                  onPressed: () => _modifica(context),
                   icon: const Icon(Icons.edit_outlined, size: 20),
                 ),
               ],
@@ -1028,47 +951,8 @@ class _DatiSessione extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                // Si corregge tutto, anche quello che arriva dall'orologio:
-                // quanto scritto a mano resta quando i dati arrivano di nuovo.
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) =>
-                          ModificaSessioneScreen(state: state, sessione: s),
-                    ),
-                  ),
-                  icon: const Icon(Icons.edit_note),
-                  label: const Text('Modifica i dati'),
-                ),
-                // Forza: esercizi, serie e kg scritti a mano.
-                if (stessoSport(s.sport, 'Forza'))
-                  OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) =>
-                            SerieAManoScreen(state: state, giorno: s.data),
-                      ),
-                    ),
-                    icon: const Icon(Icons.fitness_center),
-                    label: Text(
-                      state.serieDel(s.data).isEmpty
-                          ? 'Scrivi gli esercizi'
-                          : 'Modifica gli esercizi',
-                    ),
-                  ),
-                if (state.sessioniModificate.containsKey(s.id))
-                  OutlinedButton.icon(
-                    onPressed: () => state.annullaCorrezioni(s.id),
-                    icon: const Icon(Icons.undo),
-                    label: const Text('Torna ai dati originali'),
-                  ),
-                // Un'immagine della sessione per WhatsApp, Instagram…
-                OutlinedButton.icon(
-                  onPressed: () => apriCondividiSessione(context, state, s),
-                  icon: const Icon(Icons.share_outlined),
-                  label: const Text('Condividi'),
-                ),
                 // Battito, zone e passo nel tempo: in una pagina a parte.
                 if (s.inizio != null && s.fine != null)
                   OutlinedButton.icon(
@@ -1081,6 +965,12 @@ class _DatiSessione extends StatelessWidget {
                     icon: const Icon(Icons.show_chart),
                     label: const Text('Grafici'),
                   ),
+                // Un'immagine della sessione per WhatsApp, Instagram…
+                IconButton.outlined(
+                  tooltip: 'Condividi',
+                  onPressed: () => apriCondividiSessione(context, state, s),
+                  icon: const Icon(Icons.share_outlined),
+                ),
                 // Solo quelle registrate dall'app: quelle dell'orologio
                 // sono già su Garmin Connect, intervals.icu e simili.
                 // Il tasto resta solo dove l'invio non pensa da solo.

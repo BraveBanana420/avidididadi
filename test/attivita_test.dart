@@ -434,7 +434,7 @@ void main() {
       expect(find.textContaining('Allenamento previsto'), findsOneWidget);
       expect(find.text('Inizia allenamento'), findsNothing);
       // Anche se viene dall'orologio, i dati si correggono.
-      expect(find.text('Modifica i dati'), findsOneWidget);
+      expect(find.byTooltip('Modifica la sessione'), findsOneWidget);
       expect(find.text("L'ho già fatta: scrivi i dati"), findsNothing);
     });
 

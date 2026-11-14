@@ -4,19 +4,28 @@ import '../app_state.dart';
 import '../arrampicata.dart';
 import '../modifica_sessione.dart';
 import '../models.dart';
+import '../percorso.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'arrampicata_sheet.dart';
+import 'serie_a_mano_screen.dart';
 
-/// Tutti i dati di una seduta registrata con l'app, da scrivere o correggere
-/// dopo: durata, distanza, battito… e per il nuoto vasche e tempo medio.
+/// Tutto quello che si corregge di una seduta, in una pagina sola: nome,
+/// indoor o outdoor, durata, distanza, battito… e per il nuoto vasche e
+/// tempo medio.
 class ModificaSessioneScreen extends StatefulWidget {
   final AppState state;
   final Sessione sessione;
+
+  /// Dal riepilogo di una sessione già nello storico: ci sono anche il
+  /// cestino, gli esercizi della forza e "Torna ai dati originali". Chi
+  /// chiede di eliminare esce con 'elimina'.
+  final bool completa;
   const ModificaSessioneScreen({
     super.key,
     required this.state,
     required this.sessione,
+    this.completa = false,
   });
 
   @override
@@ -55,6 +64,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
   late final note = TextEditingController(
     text: s.note == s.sport ? '' : s.note,
   );
+  late bool chiuso = widget.state.ritocchi[s.id]?.alChiuso ?? false;
   late DateTime inizio = s.inizio ?? s.data.add(const Duration(hours: 12));
   String? erroreDurata;
 
@@ -144,9 +154,9 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
     );
     final prima = state.ritocchi[s.id];
     final testo = nome.text.trim();
-    if (testo != (prima?.nome ?? '')) {
+    if (testo != (prima?.nome ?? '') || chiuso != (prima?.alChiuso ?? false)) {
       await state.ritoccaSessione(
-        RitoccoSessione(s.id, nome: testo, alChiuso: prima?.alChiuso ?? false),
+        RitoccoSessione(s.id, nome: testo, alChiuso: chiuso),
       );
     }
     navigator.pop();
@@ -241,7 +251,20 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Modifica i dati')),
+      appBar: AppBar(
+        title: const Text('Modifica la sessione'),
+        actions: [
+          // Nel colore degli errori e lontano da "Salva": non si tocca
+          // per sbaglio, e prima di eliminare si chiede conferma.
+          if (widget.completa)
+            IconButton(
+              tooltip: 'Elimina la sessione',
+              color: Theme.of(context).colorScheme.error,
+              onPressed: () => Navigator.pop(context, 'elimina'),
+              icon: const Icon(Icons.delete_outline),
+            ),
+        ],
+      ),
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
@@ -263,6 +286,19 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                   helperText: 'Facoltativo',
                 ),
               ),
+              // Dove è stata fatta: l'orologio non lo manda.
+              if (sportConPercorso(s.sport, s.tipo))
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    stessoSport(s.sport, 'Bici')
+                        ? 'Indoor (rulli, Tacx)'
+                        : 'Indoor (tapis roulant)',
+                  ),
+                  subtitle: const Text('Niente mappa né GPX'),
+                  value: chiuso,
+                  onChanged: (v) => setState(() => chiuso = v),
+                ),
               _coppia(
                 _campo(
                   durata,
@@ -297,6 +333,18 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                   icon: const Icon(Icons.terrain),
                   label: const Text('Vie, blocchi e gradi'),
                 ),
+              // Forza: esercizi, serie e kg scritti a mano.
+              if (widget.completa && stessoSport(s.sport, 'Forza'))
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          SerieAManoScreen(state: widget.state, giorno: s.data),
+                    ),
+                  ),
+                  icon: const Icon(Icons.fitness_center),
+                  label: const Text('Esercizi, serie e kg'),
+                ),
               Text('Come è andata', style: t.titleMedium),
               _coppia(
                 _campo(fcMedia, 'Battito medio', suffisso: 'bpm'),
@@ -321,6 +369,18 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                 icona: Icons.check,
                 testo: 'Salva',
               ),
+              // Quanto scritto a mano si toglie: tornano i dati dell'orologio.
+              if (widget.completa &&
+                  widget.state.sessioniModificate.containsKey(s.id))
+                TextButton.icon(
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    await widget.state.annullaCorrezioni(s.id);
+                    navigator.pop();
+                  },
+                  icon: const Icon(Icons.undo),
+                  label: const Text('Torna ai dati originali'),
+                ),
             ],
           ),
         ],
