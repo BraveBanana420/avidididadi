@@ -30,6 +30,7 @@ import '../widgets.dart';
 import 'mappa_percorso.dart';
 import 'profilo_allenamento.dart';
 import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 // Immagini da condividere su WhatsApp, Instagram…: una sessione o la
 // settimana, nei colori del tema. Si crea sul telefono e parte solo verso
@@ -500,6 +501,7 @@ class _Marchio extends StatelessWidget {
     softWrap: false,
     style: Theme.of(context).textTheme.titleMedium?.copyWith(
       fontFamily: famigliaTitoli,
+      fontFamilyFallback: ripiegoTitoli,
       fontWeight: FontWeight.w700,
       letterSpacing: -0.3,
       color: Theme.of(context).colorScheme.onSurface,
@@ -844,7 +846,7 @@ class ImmaginePoster extends StatelessWidget {
                       horizontal: 10,
                       vertical: 3,
                     ),
-                    child: Text('Indoor', style: t.labelSmall),
+                    child: Text(mostra('Indoor'), style: t.labelSmall),
                   ),
                 ),
             ],
@@ -858,6 +860,7 @@ class ImmaginePoster extends StatelessWidget {
               maxLines: 1,
               style: t.displayLarge?.copyWith(
                 fontFamily: famigliaTitoli,
+                fontFamilyFallback: ripiegoTitoli,
                 fontSize: 104,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -4,
@@ -968,6 +971,7 @@ class _Titolo extends StatelessWidget {
             destra!,
             style: t.titleMedium?.copyWith(
               fontFamily: famigliaTitoli,
+              fontFamilyFallback: ripiegoTitoli,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -1348,6 +1352,7 @@ class ImmagineArrampicata extends StatelessWidget {
             a.gradoMax,
             style: t.displayLarge?.copyWith(
               fontFamily: famigliaTitoli,
+              fontFamilyFallback: ripiegoTitoli,
               fontWeight: FontWeight.w700,
               letterSpacing: -3,
               color: colore,
@@ -1572,6 +1577,7 @@ class ImmagineFoto extends StatelessWidget {
                   style: chiaro(
                     t.titleMedium?.copyWith(
                       fontFamily: famigliaTitoli,
+                      fontFamilyFallback: ripiegoTitoli,
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.3,
                     ),
@@ -1621,6 +1627,7 @@ class ImmagineFoto extends StatelessWidget {
                               style: chiaro(
                                 t.titleLarge?.copyWith(
                                   fontFamily: famigliaTitoli,
+                                  fontFamilyFallback: ripiegoTitoli,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),

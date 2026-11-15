@@ -8,7 +8,7 @@ that adapts to how your sessions feel, guides you step by step during the
 workout (timer, voice, GPS, smart trainer), and shows your progress.
 
 **Your data stays on your phone**: no server, no account, no ads, no tracking.
-The app is available in Italian and English.
+The app is available in Italian, English and Greek.
 
 > Screenshots coming soon.
 >
@@ -30,7 +30,7 @@ The app is available in Italian and English.
 - **Guided workout**: one step at a time with timer, rests, beeps and voice;
   GPS for running, walking and cycling (also with the screen off); routes to
   follow with turn-by-turn voice directions. The voice can speak a different
-  language from the app (Italian, English, or Greek for the voice only).
+  language from the app (Italian, English or Greek).
 - **Smart trainer** (FTMS, e.g. Tacx Flux S): ERG mode with the watts of each
   block, calibration from the app; heart rate straps and bike sensors via
   Bluetooth.

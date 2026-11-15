@@ -61,6 +61,48 @@ void main() {
       expect((it['widgetLettere'] as String).split(','), hasLength(7));
       expect((en['widgetLettere'] as String).split(','), hasLength(7));
     });
+
+    test('il greco ha tutti i testi, pieni e con gli stessi segnaposto', () {
+      final el = _arb('el');
+      final greci = el.keys.where((k) => !k.startsWith('@')).toSet();
+      expect(chiavi.difference(greci), isEmpty);
+      expect(greci.difference(chiavi), isEmpty);
+      for (final k in chiavi) {
+        expect((el[k] as String).trim(), isNotEmpty, reason: k);
+        expect(
+          _segnaposto(el[k] as String),
+          _segnaposto(en[k] as String),
+          reason: k,
+        );
+      }
+      expect((el['widgetLettere'] as String).split(','), hasLength(7));
+    });
+  });
+
+  test('in greco cambiano testi, giorni, mesi e nomi dei dati', () {
+    usaLingua('el');
+    expect(codiceLingua, 'el');
+    expect(inInglese, isFalse);
+    expect(l10n.parolaOggi, 'σήμερα');
+    // Dentro una data il mese è al genitivo, da solo al nominativo.
+    expect(dataLunga(DateTime(2026, 11, 16)), 'Δευτέρα 16 Νοεμβρίου');
+    expect(nomeMese(11), 'Νοέμβριος');
+    // Giugno e luglio non si confondono negli assi dei grafici.
+    expect(meseBreve(6), isNot(meseBreve(7)));
+    expect(inizialiGiorni.first, 'Δ');
+    expect(mostra('Corsa'), 'Τρέξιμο');
+    expect(mostra('lento'), 'χαλαρό');
+    expect(titoloSessione('Corsa', 'Lento'), 'Τρέξιμο: Χαλαρό');
+    expect(mostraTesto('zona 2'), 'ζώνη 2');
+    expect(sensazioneDi(mostraTesto('intensità zona 2')), isNotNull);
+    expect(istruzioniAssistente(''), contains('στα ελληνικά'));
+    expect(istruzioniAssistente(''), contains('"sport": "Corsa"'));
+  });
+
+  test('con l\'app in greco anche la voce parla greco', () {
+    usaLingua('el');
+    expect(codiceVocePer('app', 'it'), 'el');
+    expect(fraseProvaVoce(), 'Σε 200 μέτρα, στρίψε δεξιά.');
   });
 
   test('di base l\'app parla italiano', () {
@@ -129,12 +171,19 @@ void main() {
     ];
     for (final e in esercizi) {
       expect(e.istruzioniEn, isNotEmpty, reason: e.id);
+      expect(e.nomeEl, isNotEmpty, reason: e.id);
+      // Le frasi greche sono tradotte dall'italiano, una per una.
+      expect(e.istruzioniEl, hasLength(e.istruzioniIt.length), reason: e.id);
     }
     final e = esercizi.firstWhere((e) => e.id == 'Pushups');
     expect(e.nome, 'Piegamenti sulle braccia');
     usaLingua('en');
     expect(e.nome, 'Pushups');
     expect(e.istruzioni.first, startsWith('Lie on the floor'));
+    usaLingua('el');
+    expect(e.nome, 'Κάμψεις');
+    expect(e.istruzioni.first, startsWith('Χέρια στο πάτωμα'));
+    expect(e.descrizioneAttrezzi, isNotEmpty);
   });
 
   testWidgets('la pagina della lingua cambia i testi e la salva', (t) async {
@@ -142,6 +191,7 @@ void main() {
     await t.pumpWidget(const MaterialApp(home: LinguaScreen(primoAvvio: true)));
     expect(find.text('Italiano'), findsOneWidget);
     expect(find.text('English'), findsOneWidget);
+    expect(find.text('Ελληνικά'), findsOneWidget);
     await t.tap(find.text('English'));
     await t.pump();
     expect(codiceLingua, 'en');
@@ -173,6 +223,16 @@ void main() {
       expect(fraseZona(4, 1), 'Ζώνη 4, χαλάρωσε.');
       // Sullo schermo le curve restano nella lingua dell'app.
       expect(const Curva(0, 90).frase, 'turn right');
+    });
+
+    test('app in italiano, voce in greco: anche i nomi dei blocchi', () {
+      linguaVoceScelta.value = 'el';
+      expect(nomePerVoce('Riscaldamento'), 'Ζέσταμα');
+      expect(nomePerVoce('Defaticamento'), 'Αποθεραπεία');
+      // Sullo schermo restano in italiano.
+      expect(mostra('Riscaldamento'), 'Riscaldamento');
+      // Un nome scritto dall'utente resta com'è.
+      expect(nomePerVoce('Giro del lago'), 'Giro del lago');
     });
 
     test('in inglese i decimali col punto', () {

@@ -262,7 +262,7 @@ class ProfileScreen extends StatelessWidget {
                     voce(
                       Icons.tune_rounded,
                       l10n.mieAttivita,
-                      state.attivitaScelte.join(', '),
+                      state.attivitaScelte.map(mostra).join(', '),
                       AttivitaScreen(state: state),
                     ),
                     // "Prepara le sedute" e "Le mie schede" insieme, per il giro.
@@ -281,7 +281,7 @@ class ProfileScreen extends StatelessWidget {
                                               .toLowerCase() ??
                                           p.obiettivo,
                                     ),
-                                  ...p.sportGenerati,
+                                  ...p.sportGenerati.map(mostra),
                                 ].join(' · '),
                           CreaPianoScreen(state: state),
                           evidenza: true,
@@ -294,8 +294,9 @@ class ProfileScreen extends StatelessWidget {
                               : l10n.corso(
                                   state.schedeAttive
                                       .map(
-                                        (s) =>
-                                            s.nome.isEmpty ? s.sport : s.nome,
+                                        (s) => s.nome.isEmpty
+                                            ? mostra(s.sport)
+                                            : s.nome,
                                       )
                                       .join(', '),
                                 ),

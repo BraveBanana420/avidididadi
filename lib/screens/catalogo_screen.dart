@@ -9,6 +9,7 @@ import '../pulse.dart';
 import '../registro_forza.dart';
 import '../widgets.dart';
 import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 class CatalogoScreen extends StatefulWidget {
   final AppState state;
@@ -73,8 +74,14 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                   child: SegmentedButton<String>(
                     segments: [
                       ButtonSegment(value: 'tutti', label: Text(l10n.tutti)),
-                      ButtonSegment(value: 'forza', label: Text('Forza')),
-                      ButtonSegment(value: 'mobilita', label: Text('Mobilità')),
+                      ButtonSegment(
+                        value: 'forza',
+                        label: Text(mostra('Forza')),
+                      ),
+                      ButtonSegment(
+                        value: 'mobilita',
+                        label: Text(mostra('Mobilità')),
+                      ),
                     ],
                     selected: {tipo},
                     onSelectionChanged: (s) => setState(() => tipo = s.first),

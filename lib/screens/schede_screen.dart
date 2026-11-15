@@ -10,6 +10,7 @@ import '../registro_forza.dart';
 import '../scheda.dart';
 import '../widgets.dart';
 import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Le schede scritte a mano: forza (per esempio dal personal trainer) e
 /// corsa, bici e nuoto (per esempio dall'allenatore o dal gruppo).
@@ -696,7 +697,7 @@ class _GiornoCardState extends State<_GiornoCard> {
                     subtitle: Text(e.riassunto),
                     onTap: () => _modifica(i),
                     trailing: PopupMenuButton<String>(
-                      tooltip: 'Altro',
+                      tooltip: mostra('Altro'),
                       onSelected: (v) => switch (v) {
                         'su' => _sposta(i, -1),
                         'giu' => _sposta(i, 1),

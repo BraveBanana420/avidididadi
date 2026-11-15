@@ -255,10 +255,21 @@ String contestoAllenamento({
   return b.toString().trim();
 }
 
+/// In che lingua deve rispondere il coach: quella dell'app. I valori dei
+/// blocchi JSON restano in italiano, perché l'app li rilegge così.
+String get linguaRisposta => switch (codiceLingua) {
+  'en' =>
+    'inglese (in English), lasciando in italiano i valori dei blocchi JSON',
+  'el' =>
+    'greco (in Greek, στα ελληνικά), lasciando in italiano i valori dei '
+        'blocchi JSON',
+  _ => 'italiano',
+};
+
 /// Istruzioni di sistema: ruolo, sicurezza e formato delle proposte.
 String istruzioniAssistente(String contesto) =>
     '''Sei l'allenatore personale dell'utente nell'app Avidididadi (corsa, nuoto, bici, forza).
-Rispondi in ${inInglese ? 'inglese (in English), lasciando in italiano i valori dei blocchi JSON' : 'italiano'}, in modo breve e concreto, basandoti sui dati qui sotto.
+Rispondi in $linguaRisposta, in modo breve e concreto, basandoti sui dati qui sotto.
 Non fare diagnosi mediche: in caso di dolore che continua, consiglia di fermarsi e sentire un medico.
 
 Se proponi di cambiare il piano, un piano nuovo o un allenamento preciso, aggiungi IN FONDO alla risposta un blocco così (solo JSON valido dentro):

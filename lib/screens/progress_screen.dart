@@ -134,7 +134,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       ..sort((a, b) => perSport[b]!.length.compareTo(perSport[a]!.length));
     final etichette = [
       for (final d in chiavi)
-        perMese ? mesiNomi[d.month - 1].substring(0, 3) : '${d.day}/${d.month}',
+        perMese ? meseBreve(d.month) : '${d.day}/${d.month}',
     ];
 
     children.addAll([
@@ -199,7 +199,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 formatoAsse: fatica ? (v) => '${v.round()}' : null,
                 titoloColonna: perMese
                     ? (i) =>
-                          '${maiuscola(mesiNomi[chiavi[i].month - 1])} '
+                          '${nomeMese(chiavi[i].month)} '
                           '${chiavi[i].year}'
                     : null,
               ),
@@ -218,7 +218,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           color: coloreSport(s),
                         ),
                         const SizedBox(width: 4),
-                        Text(s),
+                        Text(mostra(s)),
                       ],
                     ),
                 ],
@@ -396,7 +396,7 @@ class _RiassuntoState extends State<_Riassunto> {
                 StatoRecupero.normale => l10n.normale,
                 StatoRecupero.basso => l10n.basso,
               },
-        'recupero',
+        l10n.etichettaRecupero,
         colore: pronto?.stato == StatoRecupero.basso
             ? scheme.primary
             : pronto?.stato == StatoRecupero.buono
@@ -523,7 +523,7 @@ class _RiassuntoState extends State<_Riassunto> {
                     ),
                   ),
                   Text(
-                    'settimana',
+                    l10n.parolaSettimana,
                     style: t.labelSmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),

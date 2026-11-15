@@ -253,6 +253,7 @@ class Esercizio {
   final String id;
   final String nomeIt;
   final String nomeEn;
+  final String nomeEl;
   final String tipo; // forza | mobilita
   final String schema;
   final String livello;
@@ -262,17 +263,26 @@ class Esercizio {
   final List<String> muscoliSecondari;
   final List<String> istruzioniIt;
   final List<String> istruzioniEn;
+  final List<String> istruzioniEl;
   final List<String> immagini;
 
-  /// Nome e istruzioni nella lingua in uso.
-  String get nome => inInglese ? nomeEn : nomeIt;
-  List<String> get istruzioni =>
-      inInglese && istruzioniEn.isNotEmpty ? istruzioniEn : istruzioniIt;
+  /// Nome e istruzioni nella lingua in uso (in italiano se mancano).
+  String get nome => switch (codiceLingua) {
+    'en' => nomeEn,
+    'el' when nomeEl.isNotEmpty => nomeEl,
+    _ => nomeIt,
+  };
+  List<String> get istruzioni => switch (codiceLingua) {
+    'en' when istruzioniEn.isNotEmpty => istruzioniEn,
+    'el' when istruzioniEl.isNotEmpty => istruzioniEl,
+    _ => istruzioniIt,
+  };
 
   Esercizio.da(Map<String, dynamic> j)
     : id = j['id'],
       nomeIt = j['nome'],
       nomeEn = j['nome_en'],
+      nomeEl = j['nome_el'] ?? '',
       tipo = j['tipo'],
       schema = j['schema'],
       livello = j['livello'],
@@ -284,6 +294,7 @@ class Esercizio {
       muscoliSecondari = List<String>.from(j['muscoli_secondari']),
       istruzioniIt = List<String>.from(j['istruzioni']),
       istruzioniEn = List<String>.from(j['istruzioni_en'] ?? const []),
+      istruzioniEl = List<String>.from(j['istruzioni_el'] ?? const []),
       immagini = List<String>.from(j['immagini']);
 
   bool get corpoLibero => attrezzi.isEmpty;
@@ -297,7 +308,7 @@ class Esercizio {
       ? mostra('Corpo libero')
       : attrezzi
             .map((g) => g.map((k) => attrezzoDa(k)?.nome ?? k).join(' + '))
-            .join(inInglese ? ' or ' : ' o ');
+            .join(l10n.oppure);
 }
 
 Future<List<Esercizio>> caricaEsercizi() async {

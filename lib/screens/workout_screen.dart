@@ -894,7 +894,7 @@ class _DatiSessione extends StatelessWidget {
             // Arrampicata: vie, blocchi e gradi, da segnare anche dopo.
             if (stessoSport(s.sport, sportArrampicata)) ...[
               const SizedBox(height: 16),
-              Text('Arrampicata', style: t.titleSmall),
+              Text(mostra('Arrampicata'), style: t.titleSmall),
               const SizedBox(height: 4),
               if (arrampicataDi(state.arrampicate, s.id, s.data)
                   case final a?) ...[

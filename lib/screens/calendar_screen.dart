@@ -432,7 +432,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final offset = primo.weekday - 1;
     final giorni = DateTime(mese.year, mese.month + 1, 0).day;
     final righe = ((offset + giorni) / 7).ceil();
-    final nomeMese = '${maiuscola(mesiNomi[mese.month - 1])} ${mese.year}';
+    final titoloMese = '${nomeMese(mese.month)} ${mese.year}';
 
     Widget cella(int n) {
       if (n < 1 || n > giorni) return const SizedBox(height: 58);
@@ -505,7 +505,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
               Expanded(
-                child: Center(child: Text(nomeMese, style: t.titleMedium)),
+                child: Center(child: Text(titoloMese, style: t.titleMedium)),
               ),
               IconButton(
                 tooltip: l10n.meseDopo,

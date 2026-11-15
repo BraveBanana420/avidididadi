@@ -92,9 +92,102 @@ const _inglese = {
   'Defaticamento': 'Cool-down',
 };
 
+/// Gli stessi nomi in greco. Nomi d'uso comune tra chi si allena in Grecia
+/// (Fartlek, Tempo run, Boulder, Lead) restano come sono.
+const _greco = {
+  'Corsa': 'Τρέξιμο',
+  'Nuoto': 'Κολύμβηση',
+  'Bici': 'Ποδήλατο',
+  'Forza': 'Δύναμη',
+  'Mobilità': 'Κινητικότητα',
+  'Arrampicata': 'Αναρρίχηση',
+  'Camminata': 'Περπάτημα',
+  'Riposo': 'Ξεκούραση',
+  'Attività libera': 'Ελεύθερη δραστηριότητα',
+  'Altra attività': 'Άλλη δραστηριότητα',
+  'Altro': 'Άλλο',
+  'Mattina': 'Πρωί',
+  'Pranzo': 'Μεσημέρι',
+  'Pomeriggio': 'Απόγευμα',
+  'Sera': 'Βράδυ',
+  'Uomo': 'Άνδρας',
+  'Donna': 'Γυναίκα',
+  // Tipi di seduta.
+  'Lento': 'Χαλαρό',
+  'Lungo': 'Μεγάλη απόσταση',
+  'Fartlek': 'Fartlek',
+  'Tempo run': 'Tempo run',
+  'Ripetute': 'Διαλειμματικά',
+  'Ritmo gara': 'Ρυθμός αγώνα',
+  'Allunghi': 'Επιταχύνσεις',
+  'Tecnica': 'Τεχνική',
+  'Soglia': 'Κατώφλι',
+  'Uscita': 'Διαδρομή',
+  'Uscita lunga': 'Μεγάλη διαδρομή',
+  'Intervalli': 'Διαλειμματικά',
+  'Recupero': 'Αποκατάσταση',
+  'Test FTP': 'Τεστ FTP',
+  'Test FTP di corsa': 'Τεστ FTP τρεξίματος',
+  'Corpo intero': 'Όλο το σώμα',
+  'Corpo intero A': 'Όλο το σώμα A',
+  'Corpo intero B': 'Όλο το σώμα B',
+  'Corpo intero C': 'Όλο το σώμα C',
+  'Parte alta': 'Πάνω μέρος',
+  'Parte bassa': 'Κάτω μέρος',
+  'Forza libera': 'Ελεύθερη δύναμη',
+  'Corsa libera': 'Ελεύθερο τρέξιμο',
+  'Uscita libera': 'Ελεύθερη διαδρομή',
+  'Uscita in bici': 'Βόλτα με ποδήλατο',
+  'Nuoto libero': 'Ελεύθερη κολύμβηση',
+  'Mobilità libera': 'Ελεύθερη κινητικότητα',
+  'Mobilità e stretching': 'Κινητικότητα και διατάσεις',
+  'Anche e gambe': 'Ισχία και πόδια',
+  'Schiena': 'Πλάτη',
+  'Spalle e petto': 'Ώμοι και στήθος',
+  'Allenamento': 'Προπόνηση',
+  'Tapis roulant': 'Διάδρομος',
+  'Rulli': 'Προπονητήριο',
+  'Cyclette': 'Στατικό ποδήλατο',
+  'Piscina': 'Πισίνα',
+  'Acque libere': 'Ανοιχτά νερά',
+  'Escursione': 'Πεζοπορία',
+  'Pesi': 'Βάρη',
+  'Corpo libero': 'Βάρος σώματος',
+  'Snowboard': 'Snowboard',
+  'Football': 'Αμερικανικό ποδόσφαιρο',
+  'Manuale': 'Χειροκίνητα',
+  // Nuoto.
+  'Stile libero': 'Ελεύθερο',
+  'Dorso': 'Ύπτιο',
+  'Rana': 'Πρόσθιο',
+  'Delfino': 'Πεταλούδα',
+  'Misti': 'Μικτή',
+  // Arrampicata.
+  'Vie': 'Διαδρομές',
+  'Boulder': 'Boulder',
+  'Indoor': 'Εσωτερικός χώρος',
+  'Outdoor': 'Εξωτερικός χώρος',
+  'A vista': 'Onsight',
+  'Flash': 'Flash',
+  'Lavorata': 'Redpoint',
+  'Da primo': 'Lead',
+  'Da secondo': 'Top rope',
+  'Capacità aerobica': 'Αερόβια ικανότητα',
+  'Potenza aerobica': 'Αερόβια ισχύς',
+  'Resistenza anaerobica': 'Αναερόβια αντοχή',
+  'Forza delle dita': 'Δύναμη δαχτύλων',
+  'Forza massima': 'Μέγιστη δύναμη',
+  'Potenza': 'Ισχύς',
+  'Riscaldamento': 'Ζέσταμα',
+  'Principale': 'Κύριο μέρος',
+  'Defaticamento': 'Αποθεραπεία',
+};
+
+/// I nomi tradotti, per lingua (in italiano restano come sono).
+const _nomi = {'en': _inglese, 'el': _greco};
+
 /// Parole dentro le intensità ("zona 2", "passo 5:00/km", "FC 120-140
-/// bpm") e nei testi corti salvati dai generatori, per lingua. Il greco serve
-/// solo alla voce.
+/// bpm") e nei testi corti salvati dai generatori, per lingua.
 final _parole = <String, List<(RegExp, String)>>{
   'en': [
     (RegExp(r'\bzona\b'), 'zone'),
@@ -144,14 +237,23 @@ final _parole = <String, List<(RegExp, String)>>{
 };
 
 /// Il nome salvato in italiano, mostrato nella lingua in uso.
-String mostra(String s) {
-  if (!inInglese || s.isEmpty) return s;
-  final esatto = _inglese[s] ?? _inglese[s.trim()];
+String mostra(String s) => traduciNome(s, codiceLingua);
+
+/// Come [mostra], per quello che dice la voce: con l'app in italiano e la
+/// voce in greco, "Riscaldamento" si sente "Ζέσταμα".
+String nomePerVoce(String s) => traduciNome(s, codiceVoce);
+
+/// [s] (un nome salvato in italiano) in [lingua], se è tra quelli noti;
+/// altrimenti con le parole note tradotte.
+String traduciNome(String s, String lingua) {
+  final nomi = _nomi[lingua];
+  if (nomi == null || s.isEmpty) return s;
+  final esatto = nomi[s] ?? nomi[s.trim()];
   if (esatto != null) return esatto;
   final maiuscolo = s[0].toUpperCase() + s.substring(1);
-  final m = _inglese[maiuscolo];
+  final m = nomi[maiuscolo];
   if (m != null) return s[0] == maiuscolo[0] ? m : m.toLowerCase();
-  return mostraTesto(s);
+  return traduciTesto(s, lingua);
 }
 
 /// Un testo corto salvato dai generatori (intensità, ripetizioni, riepilogo

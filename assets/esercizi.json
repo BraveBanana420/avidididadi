@@ -3,6 +3,7 @@
   "id": "Pushups",
   "nome": "Piegamenti sulle braccia",
   "nome_en": "Pushups",
+  "nome_el": "Κάμψεις",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -25,6 +26,11 @@
    "Now breathe out and press your upper body back up to the starting position while squeezing your chest.",
    "After a brief pause at the top contracted position, you can begin to lower yourself downward again for as many repetitions as needed."
   ],
+  "istruzioni_el": [
+   "Χέρια στο πάτωμα λίγο πιο ανοιχτά από τους ώμους, σώμα ίσιο από το κεφάλι ως τις φτέρνες.",
+   "Κατέβα λυγίζοντας τους αγκώνες περίπου στις 45° μέχρι το στήθος να αγγίξει σχεδόν το πάτωμα.",
+   "Σπρώξε για να ανέβεις, χωρίς να πέσει η λεκάνη."
+  ],
   "immagini": [
    "Pushups/0.jpg",
    "Pushups/1.jpg"
@@ -34,6 +40,7 @@
   "id": "Incline_Push-Up",
   "nome": "Piegamenti con mani rialzate",
   "nome_en": "Incline Push-Up",
+  "nome_el": "Κάμψεις με χέρια ψηλά",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -55,6 +62,11 @@
    "Position forefoot back from bench or platform with arms and body straight. Arms should be perpendicular to body. Keeping body straight, lower chest to edge of box or platform by bending arms.",
    "Push body up until arms are extended. Repeat."
   ],
+  "istruzioni_el": [
+   "Ακούμπησε τα χέρια σε ένα σταθερό ύψωμα (πάγκο, καρέκλα, σκαλί), στο πλάτος των ώμων.",
+   "Με το σώμα ίσιο, κατέβα μέχρι να αγγίξεις σχεδόν την άκρη με το στήθος.",
+   "Σπρώξε για να ανέβεις. Όσο πιο ψηλό το ύψωμα, τόσο πιο εύκολη η άσκηση."
+  ],
   "immagini": [
    "Incline_Push-Up/0.jpg",
    "Incline_Push-Up/1.jpg"
@@ -64,6 +76,7 @@
   "id": "Push-Ups_With_Feet_Elevated",
   "nome": "Piegamenti con piedi rialzati",
   "nome_en": "Push-Ups With Feet Elevated",
+  "nome_el": "Κάμψεις με πόδια ψηλά",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -87,6 +100,11 @@
    "Using your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step.",
    "After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πόδια σε ένα ύψωμα, χέρια στο πάτωμα λίγο πιο ανοιχτά από τους ώμους.",
+   "Κράτα το σώμα ίσιο και κατέβα μέχρι το στήθος να αγγίξει σχεδόν το πάτωμα.",
+   "Σπρώξε για να ανέβεις: δουλεύουν περισσότερο το πάνω στήθος και οι ώμοι."
+  ],
   "immagini": [
    "Push-Ups_With_Feet_Elevated/0.jpg",
    "Push-Ups_With_Feet_Elevated/1.jpg"
@@ -96,6 +114,7 @@
   "id": "Push-Ups_-_Close_Triceps_Position",
   "nome": "Piegamenti a presa stretta",
   "nome_en": "Push-Ups - Close Triceps Position",
+  "nome_el": "Κάμψεις με κλειστή λαβή",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "intermedio",
@@ -118,6 +137,11 @@
    "Using your triceps and some of your pectoral muscles, press your upper body back up to the starting position and squeeze your chest. Breathe out as you perform this step.",
    "After a second pause at the contracted position, repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Χέρια κάτω από το στήθος, κοντά το ένα στο άλλο.",
+   "Κατέβα κρατώντας τους αγκώνες κολλητά στο σώμα.",
+   "Σπρώξε για να ανέβεις: δουλεύουν κυρίως οι τρικέφαλοι."
+  ],
   "immagini": [
    "Push-Ups_-_Close_Triceps_Position/0.jpg",
    "Push-Ups_-_Close_Triceps_Position/1.jpg"
@@ -127,6 +151,7 @@
   "id": "Push-Up_Wide",
   "nome": "Piegamenti a presa larga",
   "nome_en": "Push-Up Wide",
+  "nome_el": "Κάμψεις με ανοιχτή λαβή",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -151,6 +176,11 @@
    "Using your pectoral muscles, press your upper body back up to the starting position by extending the elbows. Exhale as you perform this step.",
    "After pausing at the contracted position, repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Χέρια πολύ πιο ανοιχτά από τους ώμους, σώμα ίσιο.",
+   "Κατέβα μέχρι το στήθος να αγγίξει σχεδόν το πάτωμα.",
+   "Σπρώξε για να ανέβεις: δουλεύει περισσότερο το στήθος."
+  ],
   "immagini": [
    "Push-Up_Wide/0.jpg",
    "Push-Up_Wide/1.jpg"
@@ -160,6 +190,7 @@
   "id": "Push_Up_to_Side_Plank",
   "nome": "Piegamento con plank laterale",
   "nome_en": "Push Up to Side Plank",
+  "nome_el": "Κάμψη με πλάγια σανίδα",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -185,6 +216,11 @@
    "Lower the arm back to the floor for another pushup and then twist to the other side.",
    "Repeat the series, alternating each side, for 10 or more reps."
   ],
+  "istruzioni_el": [
+   "Κάνε μία κάμψη.",
+   "Καθώς ανεβαίνεις, γύρνα στο πλάι και φέρε το ελεύθερο χέρι προς το ταβάνι.",
+   "Γύρνα στη θέση της κάμψης και επανάλαβε γυρίζοντας από την άλλη πλευρά."
+  ],
   "immagini": [
    "Push_Up_to_Side_Plank/0.jpg",
    "Push_Up_to_Side_Plank/1.jpg"
@@ -194,6 +230,7 @@
   "id": "Bench_Dips",
   "nome": "Dip su panca",
   "nome_en": "Bench Dips",
+  "nome_el": "Βυθίσεις σε πάγκο",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -216,6 +253,11 @@
    "Using your triceps to bring your torso up again, lift yourself back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Χέρια στην άκρη ενός πάγκου ή μιας σταθερής καρέκλας πίσω σου, πόδια τεντωμένα μπροστά.",
+   "Κατέβα λυγίζοντας τους αγκώνες περίπου στις 90°, με την πλάτη κοντά στον πάγκο.",
+   "Σπρώξε με τους τρικέφαλους για να ανέβεις. Λύγισε τα γόνατα για να γίνει πιο εύκολο."
+  ],
   "immagini": [
    "Bench_Dips/0.jpg",
    "Bench_Dips/1.jpg"
@@ -225,6 +267,7 @@
   "id": "Dips_-_Triceps_Version",
   "nome": "Dip alle parallele",
   "nome_en": "Dips - Triceps Version",
+  "nome_el": "Βυθίσεις στο δίζυγο",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "principiante",
@@ -251,6 +294,11 @@
    "Then, exhale and push your torso back up using your triceps to bring your body back to the starting position.",
    "Repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Στηρίξου στο δίζυγο με τεντωμένα χέρια, κορμός ίσιος.",
+   "Κατέβα λυγίζοντας τους αγκώνες περίπου στις 90°, κρατώντας τους κοντά στο σώμα.",
+   "Σπρώξε για να ανέβεις με τεντωμένα χέρια."
+  ],
   "immagini": [
    "Dips_-_Triceps_Version/0.jpg",
    "Dips_-_Triceps_Version/1.jpg"
@@ -260,6 +308,7 @@
   "id": "Pullups",
   "nome": "Trazioni alla sbarra",
   "nome_en": "Pullups",
+  "nome_el": "Έλξεις στο μονόζυγο",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -286,6 +335,11 @@
    "After a second on the contracted position, start to inhale and slowly lower your torso back to the starting position when your arms are fully extended and the lats are fully stretched.",
    "Repeat this motion for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε τη μπάρα με τις παλάμες προς τα εμπρός, λίγο πιο ανοιχτά από τους ώμους, και κρεμάσου με τεντωμένα χέρια.",
+   "Τράβα φέρνοντας το στήθος προς τη μπάρα μέχρι το πηγούνι να την ξεπεράσει.",
+   "Κατέβα αργά μέχρι να τεντωθούν τα χέρια."
+  ],
   "immagini": [
    "Pullups/0.jpg",
    "Pullups/1.jpg"
@@ -295,6 +349,7 @@
   "id": "Chin-Up",
   "nome": "Trazioni a presa supina",
   "nome_en": "Chin-Up",
+  "nome_el": "Έλξεις με ανάποδη λαβή",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -322,6 +377,11 @@
    "After a second of squeezing the biceps in the contracted position, slowly lower your torso back to the starting position; when your arms are fully extended. Breathe in as you perform this portion of the movement.",
    "Repeat this motion for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε τη μπάρα με τις παλάμες προς εσένα, στο πλάτος των ώμων.",
+   "Τράβα μέχρι το πηγούνι να ξεπεράσει τη μπάρα, αγκώνες κοντά στο σώμα.",
+   "Κατέβα αργά: δουλεύουν περισσότερο οι δικέφαλοι."
+  ],
   "immagini": [
    "Chin-Up/0.jpg",
    "Chin-Up/1.jpg"
@@ -331,6 +391,7 @@
   "id": "Band_Assisted_Pull-Up",
   "nome": "Trazioni assistite con elastico",
   "nome_en": "Band Assisted Pull-Up",
+  "nome_el": "Έλξεις με βοήθεια λάστιχου",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -359,6 +420,11 @@
    "Pull yourself upward by contracting the lats as you flex the elbow. The elbow should be driven to your side. Pull to the front, attempting to get your chin over the bar. Avoid swinging or jerking movements.",
    "After a brief pause, return to the starting position."
   ],
+  "istruzioni_el": [
+   "Δέσε ένα λάστιχο στη μπάρα και βάλε ένα πόδι ή ένα γόνατο στη θηλιά.",
+   "Πιάσε τη μπάρα και τράβα μέχρι το πηγούνι να την ξεπεράσει: το λάστιχο σε βοηθά στο κάτω μέρος.",
+   "Κατέβα αργά. Χρησιμοποίησε πιο ελαφριά λάστιχα όσο βελτιώνεσαι."
+  ],
   "immagini": [
    "Band_Assisted_Pull-Up/0.jpg",
    "Band_Assisted_Pull-Up/1.jpg"
@@ -368,6 +434,7 @@
   "id": "Scapular_Pull-Up",
   "nome": "Trazioni scapolari",
   "nome_en": "Scapular Pull-Up",
+  "nome_el": "Έλξεις ωμοπλατών",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -392,6 +459,11 @@
    "From a hanging position, raise yourself a few inches without using your arms. Do this by depressing your shoulder girdle in a reverse shrugging motion.",
    "Pause at the completion of the movement, and then slowly return to the starting position before performing more repetitions."
   ],
+  "istruzioni_el": [
+   "Κρεμάσου από τη μπάρα με τεντωμένα χέρια, παλάμες προς τα εμπρός.",
+   "Χωρίς να λυγίσεις τους αγκώνες, κατέβασε τους ώμους μακριά από τα αυτιά: το σώμα ανεβαίνει λίγα εκατοστά.",
+   "Κάνε μια μικρή παύση και κατέβα αργά."
+  ],
   "immagini": [
    "Scapular_Pull-Up/0.jpg",
    "Scapular_Pull-Up/1.jpg"
@@ -401,6 +473,7 @@
   "id": "Inverted_Row",
   "nome": "Rematore inverso",
   "nome_en": "Inverted Row",
+  "nome_el": "Ανάποδη κωπηλατική",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -425,6 +498,11 @@
    "Pause at the top of the motion, and return yourself to the start position.",
    "Repeat for the desired number of repetitions."
   ],
+  "istruzioni_el": [
+   "Βάλε μια μπάρα στο ύψος της μέσης και μπες από κάτω, με λαβή πιο ανοιχτή από τους ώμους.",
+   "Σώμα ίσιο, φτέρνες στο πάτωμα, χέρια τεντωμένα.",
+   "Τράβα το στήθος προς τη μπάρα σφίγγοντας τις ωμοπλάτες, μετά κατέβα αργά."
+  ],
   "immagini": [
    "Inverted_Row/0.jpg",
    "Inverted_Row/1.jpg"
@@ -434,6 +512,7 @@
   "id": "Suspended_Row",
   "nome": "Rematore agli anelli o TRX",
   "nome_en": "Suspended Row",
+  "nome_el": "Κωπηλατική σε κρίκους ή TRX",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -458,6 +537,11 @@
    "Begin by flexing the elbow to initiate the movement. Protract your shoulder blades as you do so.",
    "At the completion of the motion pause, and then return to the starting position."
   ],
+  "istruzioni_el": [
+   "Πιάσε τις λαβές και γείρε προς τα πίσω με το σώμα ίσιο και τα χέρια τεντωμένα.",
+   "Τράβα το στήθος προς τα χέρια σφίγγοντας τις ωμοπλάτες.",
+   "Κατέβα αργά. Όσο περισσότερο γέρνεις, τόσο πιο δύσκολο."
+  ],
   "immagini": [
    "Suspended_Row/0.jpg",
    "Suspended_Row/1.jpg"
@@ -467,6 +551,7 @@
   "id": "Suspended_Push-Up",
   "nome": "Piegamenti agli anelli o TRX",
   "nome_en": "Suspended Push-Up",
+  "nome_el": "Κάμψεις σε κρίκους ή TRX",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -493,6 +578,11 @@
    "Maintaining a straight, rigid torso, descend slowly by allowing the elbows to flex.",
    "Continue until your elbows break 90 degrees, pausing before you extend to return to the starting position."
   ],
+  "istruzioni_el": [
+   "Ρύθμισε τις λαβές λίγα εκατοστά από το πάτωμα και πάρε θέση κάμψης με τα χέρια στις λαβές.",
+   "Κατέβα ελέγχοντας τις λαβές, που δεν πρέπει να ανοίξουν.",
+   "Σπρώξε για να ανέβεις."
+  ],
   "immagini": [
    "Suspended_Push-Up/0.jpg",
    "Suspended_Push-Up/1.jpg"
@@ -502,6 +592,7 @@
   "id": "Bodyweight_Squat",
   "nome": "Squat a corpo libero",
   "nome_en": "Bodyweight Squat",
+  "nome_el": "Καθίσματα με βάρος σώματος",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -523,6 +614,11 @@
    "Begin the movement by flexing your knees and hips, sitting back with your hips.",
    "Continue down to full depth if you are able,and quickly reverse the motion until you return to the starting position. As you squat, keep your head and chest up and push your knees out."
   ],
+  "istruzioni_el": [
+   "Πόδια στο πλάτος των ώμων, μύτες ελαφρώς προς τα έξω.",
+   "Κατέβα σπρώχνοντας τη λεκάνη πίσω και λυγίζοντας τα γόνατα, στήθος ψηλά και φτέρνες στο πάτωμα.",
+   "Φτάσε τουλάχιστον με τους μηρούς παράλληλους με το πάτωμα και ανέβα σπρώχνοντας με τις φτέρνες."
+  ],
   "immagini": [
    "Bodyweight_Squat/0.jpg",
    "Bodyweight_Squat/1.jpg"
@@ -532,6 +628,7 @@
   "id": "Freehand_Jump_Squat",
   "nome": "Squat jump",
   "nome_en": "Freehand Jump Squat",
+  "nome_el": "Καθίσματα με άλμα",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "intermedio",
@@ -557,6 +654,11 @@
    "When you touch the floor again, immediately squat down and jump again.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Ξεκίνα σε θέση καθίσματος, πόδια στο πλάτος των ώμων.",
+   "Σπρώξε δυνατά και πήδα όσο πιο ψηλά μπορείς.",
+   "Προσγειώσου απαλά στις μύτες και κατέβα αμέσως στο επόμενο κάθισμα."
+  ],
   "immagini": [
    "Freehand_Jump_Squat/0.jpg",
    "Freehand_Jump_Squat/1.jpg"
@@ -566,6 +668,7 @@
   "id": "Bodyweight_Walking_Lunge",
   "nome": "Affondi camminati",
   "nome_en": "Bodyweight Walking Lunge",
+  "nome_el": "Προβολές με περπάτημα",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
@@ -589,6 +692,11 @@
    "Drive through the heel of your lead foot and extend both knees to raise yourself back up.",
    "Step forward with your rear foot, repeating the lunge on the opposite leg."
   ],
+  "istruzioni_el": [
+   "Όρθιος, κάνε ένα μεγάλο βήμα μπροστά.",
+   "Κατέβα μέχρι το πίσω γόνατο να αγγίξει σχεδόν το πάτωμα, κορμός ίσιος.",
+   "Σπρώξε με το μπροστινό πόδι και φέρε το άλλο πόδι μπροστά στο επόμενο βήμα."
+  ],
   "immagini": [
    "Bodyweight_Walking_Lunge/0.jpg",
    "Bodyweight_Walking_Lunge/1.jpg"
@@ -598,6 +706,7 @@
   "id": "Step-up_with_Knee_Raise",
   "nome": "Step-up con ginocchio al petto",
   "nome_en": "Step-up with Knee Raise",
+  "nome_el": "Ανεβάσματα με γόνατο στο στήθος",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
@@ -626,6 +735,11 @@
    "Begin the movement by stepping up, putting your left foot on the top of the bench. Extend through the hip and knee of your front leg to stand up on the box. As you stand on the box with your left leg, flex your right knee and hip, bringing your knee as high as you can.",
    "Reverse this motion to step down off the box, and then repeat the sequence on the opposite leg."
   ],
+  "istruzioni_el": [
+   "Μπροστά σε ένα κουτί ή έναν πάγκο, ανέβα ακουμπώντας το ένα πόδι πάνω.",
+   "Τέντωσε το πόδι και φέρε το γόνατο του άλλου ποδιού προς το στήθος.",
+   "Κατέβα ελέγχοντας την κίνηση και άλλαζε πόδια."
+  ],
   "immagini": [
    "Step-up_with_Knee_Raise/0.jpg",
    "Step-up_with_Knee_Raise/1.jpg"
@@ -635,6 +749,7 @@
   "id": "Butt_Lift_Bridge",
   "nome": "Ponte glutei",
   "nome_en": "Butt Lift (Bridge)",
+  "nome_el": "Γέφυρα γλουτών",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -655,6 +770,11 @@
    "Pushing mainly with your heels, lift your hips off the floor while keeping your back straight. Breathe out as you perform this part of the motion and hold at the top for a second.",
    "Slowly go back to the starting position as you breathe in."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, γόνατα λυγισμένα και πέλματα στο πάτωμα κοντά στους γλουτούς.",
+   "Σπρώξε με τις φτέρνες και σήκωσε τη λεκάνη μέχρι το σώμα να σχηματίσει μια γραμμή από τους ώμους ως τα γόνατα.",
+   "Σφίξε τους γλουτούς πάνω για ένα δευτερόλεπτο και κατέβα αργά."
+  ],
   "immagini": [
    "Butt_Lift_Bridge/0.jpg",
    "Butt_Lift_Bridge/1.jpg"
@@ -664,6 +784,7 @@
   "id": "Single_Leg_Glute_Bridge",
   "nome": "Ponte glutei su una gamba",
   "nome_en": "Single Leg Glute Bridge",
+  "nome_el": "Γέφυρα γλουτών με ένα πόδι",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -685,6 +806,11 @@
    "Execute the movement by driving through the heel, extending your hip upward and raising your glutes off of the ground.",
    "Extend as far as possible, pause and then return to the starting position."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, το ένα πέλμα στο πάτωμα και το άλλο πόδι τεντωμένο στον αέρα.",
+   "Σπρώξε με τη φτέρνα που είναι στο πάτωμα και σήκωσε τη λεκάνη.",
+   "Κατέβα αργά· ολοκλήρωσε τις επαναλήψεις και άλλαξε πόδι."
+  ],
   "immagini": [
    "Single_Leg_Glute_Bridge/0.jpg",
    "Single_Leg_Glute_Bridge/1.jpg"
@@ -694,6 +820,7 @@
   "id": "Glute_Kickback",
   "nome": "Slanci posteriori a quattro zampe",
   "nome_en": "Glute Kickback",
+  "nome_el": "Λακτίσματα γλουτών στα τέσσερα",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -715,6 +842,11 @@
    "Go back to the initial position as you inhale and now repeat with the left leg.",
    "Continue to alternate legs until all of the recommended repetitions have been performed."
   ],
+  "istruzioni_el": [
+   "Στα τέσσερα, χέρια κάτω από τους ώμους και γόνατα κάτω από τα ισχία.",
+   "Σπρώξε ένα πόδι πίσω και πάνω, με το γόνατο λυγισμένο στις 90°, μέχρι ο μηρός να έρθει στην ευθεία του κορμού.",
+   "Κατέβα αργά χωρίς να καμπουριάσεις τη μέση, μετά άλλαξε πόδι."
+  ],
   "immagini": [
    "Glute_Kickback/0.jpg",
    "Glute_Kickback/1.jpg"
@@ -724,6 +856,7 @@
   "id": "Superman",
   "nome": "Superman",
   "nome_en": "Superman",
+  "nome_el": "Superman",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -746,6 +879,11 @@
    "Slowly begin to lower your arms, legs and chest back down to the starting position while inhaling.",
    "Repeat for the recommended amount of repetitions prescribed in your program."
   ],
+  "istruzioni_el": [
+   "Μπρούμυτα, χέρια τεντωμένα μπροστά.",
+   "Σήκωσε ταυτόχρονα χέρια, στήθος και πόδια από το πάτωμα.",
+   "Κράτα 2 δευτερόλεπτα σφίγγοντας γλουτούς και μέση, μετά κατέβα αργά."
+  ],
   "immagini": [
    "Superman/0.jpg",
    "Superman/1.jpg"
@@ -755,6 +893,7 @@
   "id": "Plank",
   "nome": "Plank",
   "nome_en": "Plank",
+  "nome_el": "Σανίδα",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -773,6 +912,11 @@
    "Get into a prone position on the floor, supporting your weight on your toes and your forearms. Your arms are bent and directly below the shoulder.",
    "Keep your body straight at all times, and hold this position as long as possible. To increase difficulty, an arm or leg can be raised."
   ],
+  "istruzioni_el": [
+   "Πήχεις στο πάτωμα με τους αγκώνες κάτω από τους ώμους, μύτες των ποδιών στο πάτωμα.",
+   "Σώμα ίσιο από το κεφάλι ως τις φτέρνες, κοιλιά και γλουτοί σφιγμένοι.",
+   "Κράτα τη θέση χωρίς να κατέβει ή να ανέβει η λεκάνη."
+  ],
   "immagini": [
    "Plank/0.jpg",
    "Plank/1.jpg"
@@ -782,6 +926,7 @@
   "id": "Side_Bridge",
   "nome": "Plank laterale",
   "nome_en": "Side Bridge",
+  "nome_el": "Πλάγια σανίδα",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -803,6 +948,11 @@
    "Lift your hips until your body is straight from head to feet.",
    "Hold the position, then switch sides."
   ],
+  "istruzioni_el": [
+   "Στο πλάι, στηριγμένος στον πήχη με τον αγκώνα κάτω από τον ώμο.",
+   "Σήκωσε τη λεκάνη μέχρι το σώμα να είναι ίσιο από το κεφάλι ως τα πόδια.",
+   "Κράτα τη θέση, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Side_Bridge/0.jpg",
    "Side_Bridge/1.jpg"
@@ -812,6 +962,7 @@
   "id": "Dead_Bug",
   "nome": "Dead bug",
   "nome_en": "Dead Bug",
+  "nome_el": "Dead bug",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -835,6 +986,11 @@
    "Stay tight and return the working leg to the starting position.",
    "Repeat on the opposite side, alternating until the set is complete."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, χέρια προς το ταβάνι και γόνατα λυγισμένα στις 90° πάνω από τα ισχία.",
+   "Τέντωσε ένα χέρι πίσω από το κεφάλι και το αντίθετο πόδι μπροστά, χωρίς να σηκωθεί η μέση από το πάτωμα.",
+   "Γύρνα στο κέντρο και άλλαζε πλευρές."
+  ],
   "immagini": [
    "Dead_Bug/0.jpg",
    "Dead_Bug/1.jpg"
@@ -844,6 +1000,7 @@
   "id": "Crunches",
   "nome": "Crunch",
   "nome_en": "Crunches",
+  "nome_el": "Κοιλιακοί",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -866,6 +1023,11 @@
    "After the one second contraction, begin to come down slowly again to the starting position as you inhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, γόνατα λυγισμένα, χέρια στα πλάγια του κεφαλιού.",
+   "Σήκωσε τους ώμους από το πάτωμα σφίγγοντας την κοιλιά, χωρίς να τραβάς τον αυχένα.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Crunches/0.jpg",
    "Crunches/1.jpg"
@@ -875,6 +1037,7 @@
   "id": "Reverse_Crunch",
   "nome": "Crunch inverso",
   "nome_en": "Reverse Crunch",
+  "nome_el": "Ανάποδοι κοιλιακοί",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -896,6 +1059,11 @@
    "Hold the contraction for a second and move your legs back to the starting position while exhaling.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, χέρια δίπλα στο σώμα, γόνατα λυγισμένα πάνω από τα ισχία.",
+   "Σφίξε την κοιλιά και φέρε τα γόνατα προς το στήθος σηκώνοντας τη λεκάνη από το πάτωμα.",
+   "Κατέβα αργά χωρίς να αφήσεις τα πόδια να πέσουν."
+  ],
   "immagini": [
    "Reverse_Crunch/0.jpg",
    "Reverse_Crunch/1.jpg"
@@ -905,6 +1073,7 @@
   "id": "Russian_Twist",
   "nome": "Russian twist",
   "nome_en": "Russian Twist",
+  "nome_el": "Ρωσικές περιστροφές",
   "tipo": "forza",
   "schema": "core",
   "livello": "intermedio",
@@ -928,6 +1097,11 @@
    "Hold the contraction for a second and move back to the starting position while breathing out. Now move to the opposite side performing the same techniques you applied to the right side.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Καθιστός με λυγισμένα γόνατα, κορμός γερμένος πίσω και πόδια σηκωμένα (στο πάτωμα για να γίνει πιο εύκολο).",
+   "Γύρνα τον κορμό στη μία πλευρά φέρνοντας τα χέρια προς το πάτωμα.",
+   "Γύρνα στην άλλη πλευρά. Για περισσότερη δυσκολία κράτα έναν δίσκο ή μια μπάλα medicine."
+  ],
   "immagini": [
    "Russian_Twist/0.jpg",
    "Russian_Twist/1.jpg"
@@ -937,6 +1111,7 @@
   "id": "Air_Bike",
   "nome": "Bicycle crunch",
   "nome_en": "Air Bike",
+  "nome_el": "Κοιλιακοί ποδήλατο",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -959,6 +1134,11 @@
    "Crunch to the opposite side as you cycle your legs and bring closer your left elbow to your right knee and exhale.",
    "Continue alternating in this manner until all of the recommended repetitions for each side have been completed."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, χέρια στα πλάγια του κεφαλιού, ώμοι σηκωμένοι από το πάτωμα.",
+   "Φέρε ένα γόνατο προς το στήθος και πλησίασε τον αντίθετο αγκώνα, τεντώνοντας το άλλο πόδι.",
+   "Άλλαζε πλευρές με συνεχή κίνηση, σαν να κάνεις πετάλι."
+  ],
   "immagini": [
    "Air_Bike/0.jpg",
    "Air_Bike/1.jpg"
@@ -968,6 +1148,7 @@
   "id": "Flutter_Kicks",
   "nome": "Sforbiciate",
   "nome_en": "Flutter Kicks",
+  "nome_el": "Ψαλίδι",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -990,6 +1171,11 @@
    "Then lower the left leg as you lift the right leg.",
    "Continue alternating in this manner (as though you are doing a flutter kick in water) until you have done the recommended amount of repetitions for each leg. Make sure that you keep a controlled movement at all times. Tip: You will breathe normally as you perform this movement."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, χέρια κάτω από τους γλουτούς, πόδια τεντωμένα και σηκωμένα λίγα εκατοστά.",
+   "Κούνα τα πόδια πάνω κάτω εναλλάξ, με μικρές και γρήγορες κινήσεις.",
+   "Κράτα τη μέση σε επαφή με το πάτωμα."
+  ],
   "immagini": [
    "Flutter_Kicks/0.jpg",
    "Flutter_Kicks/1.jpg"
@@ -999,6 +1185,7 @@
   "id": "Mountain_Climbers",
   "nome": "Mountain climber",
   "nome_en": "Mountain Climbers",
+  "nome_el": "Ορειβάτες",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "principiante",
@@ -1020,6 +1207,11 @@
    "Begin in a pushup position, with your weight supported by your hands and toes. Flexing the knee and hip, bring one leg until the knee is approximately under the hip. This will be your starting position.",
    "Explosively reverse the positions of your legs, extending the bent leg until the leg is straight and supported by the toe, and bringing the other foot up with the hip and knee flexed. Repeat in an alternating fashion for 20-30 seconds."
   ],
+  "istruzioni_el": [
+   "Πάρε θέση κάμψης με τεντωμένα χέρια.",
+   "Φέρε ένα γόνατο προς το στήθος και γύρνα το πίσω ενώ φέρνεις μπροστά το άλλο.",
+   "Άλλαζε πόδια γρήγορα, χωρίς να σηκώνεις πολύ τη λεκάνη."
+  ],
   "immagini": [
    "Mountain_Climbers/0.jpg",
    "Mountain_Climbers/1.jpg"
@@ -1029,6 +1221,7 @@
   "id": "Star_Jump",
   "nome": "Star jump",
   "nome_en": "Star Jump",
+  "nome_el": "Άλματα αστέρι",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "principiante",
@@ -1052,6 +1245,11 @@
    "To initiate the move, squat down halfway and explode back up as high as possible. Fully extend your entire body, spreading your legs and arms away from the body.",
    "As you land, bring your limbs back in and absorb your impact through the legs."
   ],
+  "istruzioni_el": [
+   "Ξεκίνα σε βαθύ κάθισμα με τα χέρια κοντά στα γόνατα.",
+   "Πήδα ψηλά ανοίγοντας χέρια και πόδια σαν αστέρι.",
+   "Προσγειώσου απαλά κλείνοντας χέρια και πόδια και γύρνα στο κάθισμα."
+  ],
   "immagini": [
    "Star_Jump/0.jpg",
    "Star_Jump/1.jpg"
@@ -1061,6 +1259,7 @@
   "id": "Split_Jump",
   "nome": "Affondi saltati",
   "nome_en": "Split Jump",
+  "nome_el": "Προβολές με άλμα",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "principiante",
@@ -1085,6 +1284,11 @@
    "As you jump, bring your feet together, and move them back to their initial positions as you land.",
    "Absorb the impact by reverting back to the starting position."
   ],
+  "istruzioni_el": [
+   "Ξεκίνα σε θέση προβολής.",
+   "Πήδα ψηλά και άλλαξε πόδια στον αέρα.",
+   "Προσγειώσου απαλά στην αντίθετη προβολή και επανάλαβε."
+  ],
   "immagini": [
    "Split_Jump/0.jpg",
    "Split_Jump/1.jpg"
@@ -1094,6 +1298,7 @@
   "id": "Knee_Tuck_Jump",
   "nome": "Salti con ginocchia al petto",
   "nome_en": "Knee Tuck Jump",
+  "nome_el": "Άλματα με γόνατα στο στήθος",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "principiante",
@@ -1117,6 +1322,11 @@
    "Rapidly dip down into a quarter squat and immediately explode upward. Drive the knees towards the chest, attempting to touch them to the palms of the hands.",
    "Jump as high as you can, raising your knees up, and then ensure a good land be re-extending your legs, absorbing impact through be allowing the knees to rebend."
   ],
+  "istruzioni_el": [
+   "Όρθιος, πόδια στο πλάτος των ώμων.",
+   "Πήδα φέρνοντας τα γόνατα προς το στήθος.",
+   "Προσγειώσου απαλά στις μύτες και επανάλαβε αμέσως."
+  ],
   "immagini": [
    "Knee_Tuck_Jump/0.jpg",
    "Knee_Tuck_Jump/1.jpg"
@@ -1126,6 +1336,7 @@
   "id": "Front_Box_Jump",
   "nome": "Box jump",
   "nome_en": "Front Box Jump",
+  "nome_el": "Άλματα σε κουτί",
   "tipo": "forza",
   "schema": "pliometria",
   "livello": "principiante",
@@ -1154,6 +1365,11 @@
    "Rebound out of this position, extending through the hips, knees, and ankles to jump as high as possible. Swing your arms forward and up.",
    "Land on the box with the knees bent, absorbing the impact through the legs. You can jump from the box back to the ground, or preferably step down one leg at a time."
   ],
+  "istruzioni_el": [
+   "Μπροστά σε ένα σταθερό κουτί, πόδια στο πλάτος των ώμων.",
+   "Λύγισε ελαφρώς και πήδα πάνω στο κουτί, προσγειώνοντας και τα δύο πόδια με μαλακά γόνατα.",
+   "Κατέβα με ένα βήμα, χωρίς να πηδάς προς τα πίσω."
+  ],
   "immagini": [
    "Front_Box_Jump/0.jpg",
    "Front_Box_Jump/1.jpg"
@@ -1163,6 +1379,7 @@
   "id": "Dumbbell_Bench_Press",
   "nome": "Distensioni con manubri su panca",
   "nome_en": "Dumbbell Bench Press",
+  "nome_el": "Πιέσεις στήθους με αλτήρες σε πάγκο",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -1191,6 +1408,11 @@
    "Then, as you breathe out, use your chest to push the dumbbells up. Lock your arms at the top of the lift and squeeze your chest, hold for a second and then begin coming down slowly. Tip: Ideally, lowering the weight should take about twice as long as raising it.",
    "Repeat the movement for the prescribed amount of repetitions of your training program."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος στον πάγκο, αλτήρες στο ύψος του στήθους, παλάμες προς τα εμπρός.",
+   "Σπρώξε τους αλτήρες προς τα πάνω μέχρι να τεντωθούν τα χέρια.",
+   "Κατέβα αργά μέχρι να νιώσεις ένα ελαφρύ τέντωμα στο στήθος."
+  ],
   "immagini": [
    "Dumbbell_Bench_Press/0.jpg",
    "Dumbbell_Bench_Press/1.jpg"
@@ -1200,6 +1422,7 @@
   "id": "Dumbbell_Flyes",
   "nome": "Croci con manubri",
   "nome_en": "Dumbbell Flyes",
+  "nome_el": "Ανοίγματα με αλτήρες",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -1225,6 +1448,11 @@
    "Return your arms back to the starting position as you squeeze your chest muscles and breathe out. Tip: Make sure to use the same arc of motion used to lower the weights.",
    "Hold for a second at the contracted position and repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος στον πάγκο, αλτήρες πάνω από το στήθος με τις παλάμες αντικριστά και τους αγκώνες ελάχιστα λυγισμένους.",
+   "Άνοιξε τα χέρια σε τόξο μέχρι να νιώσεις να τεντώνεται το στήθος.",
+   "Κλείσε με το ίδιο τόξο μέχρι πάνω από το στήθος."
+  ],
   "immagini": [
    "Dumbbell_Flyes/0.jpg",
    "Dumbbell_Flyes/1.jpg"
@@ -1234,6 +1462,7 @@
   "id": "Dumbbell_Shoulder_Press",
   "nome": "Lento avanti con manubri",
   "nome_en": "Dumbbell Shoulder Press",
+  "nome_el": "Πιέσεις ώμων με αλτήρες",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "intermedio",
@@ -1261,6 +1490,11 @@
    "Then, after a brief pause at the top contracted position, slowly lower the weights back down to the starting position while inhaling.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος ή καθιστός, αλτήρες στο ύψος των ώμων, παλάμες προς τα εμπρός.",
+   "Σπρώξε τους αλτήρες πάνω από το κεφάλι μέχρι να τεντωθούν τα χέρια.",
+   "Κατέβα αργά στο ύψος των ώμων."
+  ],
   "immagini": [
    "Dumbbell_Shoulder_Press/0.jpg",
    "Dumbbell_Shoulder_Press/1.jpg"
@@ -1270,6 +1504,7 @@
   "id": "Arnold_Dumbbell_Press",
   "nome": "Arnold press",
   "nome_en": "Arnold Dumbbell Press",
+  "nome_el": "Πιέσεις Arnold",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "intermedio",
@@ -1296,6 +1531,11 @@
    "After a second pause at the top, begin to lower the dumbbells to the original position by rotating the palms of your hands towards you. Tip: The left arm will be rotated in a counter clockwise manner while the right one will be rotated clockwise. Breathe in as you perform this portion of the movement.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος ή καθιστός, αλτήρες μπροστά στο στήθος με τις παλάμες προς εσένα.",
+   "Σπρώξε προς τα πάνω γυρίζοντας τους καρπούς, μέχρι οι παλάμες να κοιτάνε μπροστά με τεντωμένα χέρια.",
+   "Κατέβα αντιστρέφοντας την περιστροφή."
+  ],
   "immagini": [
    "Arnold_Dumbbell_Press/0.jpg",
    "Arnold_Dumbbell_Press/1.jpg"
@@ -1305,6 +1545,7 @@
   "id": "Side_Lateral_Raise",
   "nome": "Alzate laterali",
   "nome_en": "Side Lateral Raise",
+  "nome_el": "Πλάγιες ανυψώσεις",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -1328,6 +1569,11 @@
    "Lower the dumbbells back down slowly to the starting position as you inhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες δίπλα στο σώμα, αγκώνες ελαφρώς λυγισμένοι.",
+   "Σήκωσε τα χέρια στο πλάι μέχρι το ύψος των ώμων.",
+   "Κατέβα αργά χωρίς να κουνάς τον κορμό."
+  ],
   "immagini": [
    "Side_Lateral_Raise/0.jpg",
    "Side_Lateral_Raise/1.jpg"
@@ -1337,6 +1583,7 @@
   "id": "Front_Dumbbell_Raise",
   "nome": "Alzate frontali",
   "nome_en": "Front Dumbbell Raise",
+  "nome_el": "Μπροστινές ανυψώσεις",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -1360,6 +1607,11 @@
    "Now lower the dumbbell back down slowly to the starting position as you simultaneously lift the right dumbbell.",
    "Continue alternating in this fashion until all of the recommended amount of repetitions have been performed for each arm."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες μπροστά στους μηρούς, παλάμες προς το σώμα.",
+   "Σήκωσε ένα χέρι μπροστά σου μέχρι το ύψος των ώμων.",
+   "Κατέβα αργά και άλλαζε χέρια."
+  ],
   "immagini": [
    "Front_Dumbbell_Raise/0.jpg",
    "Front_Dumbbell_Raise/1.jpg"
@@ -1369,6 +1621,7 @@
   "id": "Reverse_Flyes",
   "nome": "Alzate posteriori a busto flesso",
   "nome_en": "Reverse Flyes",
+  "nome_el": "Ανοίγματα πίσω ώμων σε κάμψη",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -1394,6 +1647,11 @@
    "Feel the contraction and slowly lower the weights back down to the starting position while inhaling.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κορμός γερμένος μπροστά με ίσια πλάτη, αλτήρες κάτω από το στήθος.",
+   "Άνοιξε τα χέρια στο πλάι μέχρι το ύψος των ώμων, σφίγγοντας τις ωμοπλάτες.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Reverse_Flyes/0.jpg",
    "Reverse_Flyes/1.jpg"
@@ -1403,6 +1661,7 @@
   "id": "One-Arm_Dumbbell_Row",
   "nome": "Rematore con manubrio a un braccio",
   "nome_en": "One-Arm Dumbbell Row",
+  "nome_el": "Κωπηλατική με αλτήρα με ένα χέρι",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -1432,6 +1691,11 @@
    "Repeat the movement for the specified amount of repetitions.",
    "Switch sides and repeat again with the other arm."
   ],
+  "istruzioni_el": [
+   "Ένα χέρι και ένα γόνατο σε πάγκο ή καρέκλα, πλάτη παράλληλη με το πάτωμα.",
+   "Με το άλλο χέρι τράβα τον αλτήρα προς το πλευρό, αγκώνας κοντά στο σώμα.",
+   "Κατέβα αργά με τεντωμένο χέρι, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "One-Arm_Dumbbell_Row/0.jpg",
    "One-Arm_Dumbbell_Row/1.jpg"
@@ -1441,6 +1705,7 @@
   "id": "Bent_Over_Two-Dumbbell_Row",
   "nome": "Rematore con due manubri",
   "nome_en": "Bent Over Two-Dumbbell Row",
+  "nome_el": "Κωπηλατική με δύο αλτήρες",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -1467,6 +1732,11 @@
    "Slowly lower the weight again to the starting position as you inhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Γόνατα ελαφρώς λυγισμένα, κορμός γερμένος μπροστά με ίσια πλάτη.",
+   "Τράβα τους αλτήρες προς τα πλευρά σφίγγοντας τις ωμοπλάτες.",
+   "Κατέβα αργά με τεντωμένα χέρια."
+  ],
   "immagini": [
    "Bent_Over_Two-Dumbbell_Row/0.jpg",
    "Bent_Over_Two-Dumbbell_Row/1.jpg"
@@ -1476,6 +1746,7 @@
   "id": "Dumbbell_Bicep_Curl",
   "nome": "Curl con manubri",
   "nome_en": "Dumbbell Bicep Curl",
+  "nome_el": "Κάμψεις δικεφάλων με αλτήρες",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -1501,6 +1772,11 @@
    "Then, inhale and slowly begin to lower the dumbbells back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες δίπλα στο σώμα με τις παλάμες προς τα εμπρός.",
+   "Λύγισε τους αγκώνες φέρνοντας τους αλτήρες προς τους ώμους, αγκώνες ακίνητοι δίπλα στο σώμα.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Dumbbell_Bicep_Curl/0.jpg",
    "Dumbbell_Bicep_Curl/1.jpg"
@@ -1510,6 +1786,7 @@
   "id": "Hammer_Curls",
   "nome": "Curl a martello",
   "nome_en": "Hammer Curls",
+  "nome_el": "Κάμψεις σφυριού",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -1534,6 +1811,11 @@
    "After the brief pause, inhale and slowly begin the lower the dumbbells back down to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες δίπλα στο σώμα με τις παλάμες προς το σώμα.",
+   "Λύγισε τους αγκώνες κρατώντας τις παλάμες αντικριστά.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Hammer_Curls/0.jpg",
    "Hammer_Curls/1.jpg"
@@ -1543,6 +1825,7 @@
   "id": "Tricep_Dumbbell_Kickback",
   "nome": "Kickback per tricipiti",
   "nome_en": "Tricep Dumbbell Kickback",
+  "nome_el": "Εκτάσεις τρικεφάλων προς τα πίσω",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -1566,6 +1849,11 @@
    "After a brief pause at the top contraction, inhale and slowly lower the dumbbells back down to the starting position.",
    "Repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κορμός γερμένος μπροστά, αγκώνας λυγισμένος στις 90° και μπράτσο παράλληλο με τον κορμό.",
+   "Τέντωσε τον αγκώνα φέρνοντας τον αλτήρα πίσω, χωρίς να κουνήσεις το μπράτσο.",
+   "Γύρνα αργά στις 90°."
+  ],
   "immagini": [
    "Tricep_Dumbbell_Kickback/0.jpg",
    "Tricep_Dumbbell_Kickback/1.jpg"
@@ -1575,6 +1863,7 @@
   "id": "Standing_Dumbbell_Triceps_Extension",
   "nome": "French press in piedi con manubrio",
   "nome_en": "Standing Dumbbell Triceps Extension",
+  "nome_el": "Εκτάσεις τρικεφάλων όρθιος με αλτήρα",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -1599,6 +1888,11 @@
    "Go back to the starting position by using the triceps to raise the dumbbell. Breathe out as you perform this step.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, κράτα έναν αλτήρα με τα δύο χέρια πάνω από το κεφάλι, χέρια τεντωμένα.",
+   "Λύγισε τους αγκώνες φέρνοντας τον αλτήρα πίσω από το κεφάλι, αγκώνες προς τα πάνω.",
+   "Τέντωσε τα χέρια για να ανέβεις."
+  ],
   "immagini": [
    "Standing_Dumbbell_Triceps_Extension/0.jpg",
    "Standing_Dumbbell_Triceps_Extension/1.jpg"
@@ -1608,6 +1902,7 @@
   "id": "Goblet_Squat",
   "nome": "Goblet squat",
   "nome_en": "Goblet Squat",
+  "nome_el": "Καθίσματα goblet",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -1641,6 +1936,11 @@
    "Squat down between your legs until your hamstrings are on your calves. Keep your chest and head up and your back straight.",
    "At the bottom position, pause and use your elbows to push your knees out. Return to the starting position, and repeat for 10-20 repetitions."
   ],
+  "istruzioni_el": [
+   "Κράτα ένα kettlebell, έναν αλτήρα ή έναν δίσκο μπροστά στο στήθος με τα δύο χέρια.",
+   "Κατέβα στο κάθισμα με το στήθος ψηλά και τους αγκώνες ανάμεσα στα γόνατα.",
+   "Ανέβα σπρώχνοντας με τις φτέρνες."
+  ],
   "immagini": [
    "Goblet_Squat/0.jpg",
    "Goblet_Squat/1.jpg"
@@ -1650,6 +1950,7 @@
   "id": "Dumbbell_Squat",
   "nome": "Squat con manubri",
   "nome_en": "Dumbbell Squat",
+  "nome_el": "Καθίσματα με αλτήρες",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -1679,6 +1980,11 @@
    "Begin to raise your torso as you exhale by pushing the floor with the heel of your foot mainly as you straighten the legs again and go back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένας αλτήρας σε κάθε χέρι δίπλα στο σώμα.",
+   "Κατέβα στο κάθισμα με ίσια πλάτη, μέχρι οι μηροί να γίνουν παράλληλοι με το πάτωμα.",
+   "Ανέβα σπρώχνοντας με τις φτέρνες."
+  ],
   "immagini": [
    "Dumbbell_Squat/0.jpg",
    "Dumbbell_Squat/1.jpg"
@@ -1688,6 +1994,7 @@
   "id": "Dumbbell_Lunges",
   "nome": "Affondi con manubri",
   "nome_en": "Dumbbell Lunges",
+  "nome_el": "Προβολές με αλτήρες",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
@@ -1715,6 +2022,11 @@
    "Using mainly the heel of your foot, push up and go back to the starting position as you exhale.",
    "Repeat the movement for the recommended amount of repetitions and then perform with the left leg."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένας αλτήρας σε κάθε χέρι δίπλα στο σώμα.",
+   "Κάνε ένα βήμα μπροστά και κατέβα μέχρι το πίσω γόνατο να αγγίξει σχεδόν το πάτωμα.",
+   "Σπρώξε με το μπροστινό πόδι για να σηκωθείς και άλλαζε."
+  ],
   "immagini": [
    "Dumbbell_Lunges/0.jpg",
    "Dumbbell_Lunges/1.jpg"
@@ -1724,6 +2036,7 @@
   "id": "Dumbbell_Rear_Lunge",
   "nome": "Affondi indietro con manubri",
   "nome_en": "Dumbbell Rear Lunge",
+  "nome_el": "Προβολές προς τα πίσω με αλτήρες",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "intermedio",
@@ -1751,6 +2064,11 @@
    "Push up and go back to the starting position as you exhale. Tip: Use the ball of your feet to push in order to accentuate the quadriceps. To focus on the glutes, press with your heels.",
    "Now repeat with the opposite leg."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένας αλτήρας σε κάθε χέρι.",
+   "Κάνε ένα βήμα πίσω και κατέβα μέχρι το πίσω γόνατο να αγγίξει σχεδόν το πάτωμα.",
+   "Σήκωσε σπρώχνοντας με το μπροστινό πόδι και άλλαζε."
+  ],
   "immagini": [
    "Dumbbell_Rear_Lunge/0.jpg",
    "Dumbbell_Rear_Lunge/1.jpg"
@@ -1760,6 +2078,7 @@
   "id": "Split_Squat_with_Dumbbells",
   "nome": "Split squat con manubri",
   "nome_en": "Split Squat with Dumbbells",
+  "nome_el": "Split squat με αλτήρες",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
@@ -1786,6 +2105,11 @@
    "Begin by descending, flexing your knee and hip to lower your body down. Maintain good posture througout the movement. Keep the front knee in line with the foot as you perform the exercise.",
    "At the bottom of the movement, drive through the heel to extend the knee and hip to return to the starting position."
   ],
+  "istruzioni_el": [
+   "Ένα πόδι μπροστά και ένα πίσω, ένας αλτήρας σε κάθε χέρι.",
+   "Κατέβα κάθετα μέχρι το πίσω γόνατο να αγγίξει σχεδόν το πάτωμα.",
+   "Ανέβα και ολοκλήρωσε τις επαναλήψεις πριν αλλάξεις πόδι."
+  ],
   "immagini": [
    "Split_Squat_with_Dumbbells/0.jpg",
    "Split_Squat_with_Dumbbells/1.jpg"
@@ -1795,6 +2119,7 @@
   "id": "Dumbbell_Step_Ups",
   "nome": "Step-up con manubri",
   "nome_en": "Dumbbell Step Ups",
+  "nome_el": "Ανεβάσματα με αλτήρες",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "intermedio",
@@ -1827,6 +2152,11 @@
    "Step down with the left leg by flexing the hip and knee of the right leg as you inhale. Return to the original standing position by placing the right foot of to next to the left foot on the initial position.",
    "Repeat with the right leg for the recommended amount of repetitions and then perform with the left leg."
   ],
+  "istruzioni_el": [
+   "Ένας αλτήρας σε κάθε χέρι, μπροστά σε ένα κουτί ή έναν πάγκο.",
+   "Ανέβα ακουμπώντας το ένα πόδι πάνω και τέντωσε το πόδι μέχρι να σταθείς όρθιος στο ύψωμα.",
+   "Κατέβα ελέγχοντας την κίνηση και άλλαζε πόδια."
+  ],
   "immagini": [
    "Dumbbell_Step_Ups/0.jpg",
    "Dumbbell_Step_Ups/1.jpg"
@@ -1836,6 +2166,7 @@
   "id": "Stiff-Legged_Dumbbell_Deadlift",
   "nome": "Stacco a gambe tese con manubri",
   "nome_en": "Stiff-Legged Dumbbell Deadlift",
+  "nome_el": "Άρσεις με τεντωμένα πόδια με αλτήρες",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -1863,6 +2194,11 @@
    "Start bringing your torso up straight again by extending your hips and waist until you are back at the starting position. Inhale as you perform this movement.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες μπροστά στους μηρούς, γόνατα ελάχιστα λυγισμένα.",
+   "Σπρώξε τη λεκάνη πίσω και κατέβα με ίσια πλάτη μέχρι να νιώσεις να τεντώνονται οι οπίσθιοι μηριαίοι.",
+   "Ανέβα σπρώχνοντας τη λεκάνη μπροστά και σφίγγοντας τους γλουτούς."
+  ],
   "immagini": [
    "Stiff-Legged_Dumbbell_Deadlift/0.jpg",
    "Stiff-Legged_Dumbbell_Deadlift/1.jpg"
@@ -1872,6 +2208,7 @@
   "id": "Dumbbell_Shrug",
   "nome": "Scrollate con manubri",
   "nome_en": "Dumbbell Shrug",
+  "nome_el": "Ανασηκώσεις ώμων με αλτήρες",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -1895,6 +2232,11 @@
    "Lower the dumbbells back to the original position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, αλτήρες δίπλα στο σώμα.",
+   "Σήκωσε τους ώμους προς τα αυτιά χωρίς να λυγίσεις τους αγκώνες.",
+   "Κράτα ένα δευτερόλεπτο και κατέβα αργά."
+  ],
   "immagini": [
    "Dumbbell_Shrug/0.jpg",
    "Dumbbell_Shrug/1.jpg"
@@ -1904,6 +2246,7 @@
   "id": "Standing_Dumbbell_Calf_Raise",
   "nome": "Calf raise con manubri",
   "nome_en": "Standing Dumbbell Calf Raise",
+  "nome_el": "Ανυψώσεις γαστροκνημίων με αλτήρες",
   "tipo": "forza",
   "schema": "polpacci",
   "livello": "intermedio",
@@ -1927,6 +2270,11 @@
    "As you inhale, go back to the starting position by slowly lowering the heels.",
    "Repeat for the recommended amount of times."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένας αλτήρας σε κάθε χέρι· καλύτερα με τις μύτες σε ένα σκαλί.",
+   "Ανέβα στις μύτες όσο πιο ψηλά μπορείς.",
+   "Κατέβα αργά μέχρι να νιώσεις να τεντώνονται οι γάμπες."
+  ],
   "immagini": [
    "Standing_Dumbbell_Calf_Raise/0.jpg",
    "Standing_Dumbbell_Calf_Raise/1.jpg"
@@ -1936,6 +2284,7 @@
   "id": "Dumbbell_Side_Bend",
   "nome": "Flessioni laterali con manubrio",
   "nome_en": "Dumbbell Side Bend",
+  "nome_el": "Πλάγιες κάμψεις με αλτήρα",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -1960,6 +2309,11 @@
    "Now repeat the movement but bending to the left instead. Hold for a second and come back to the starting position.",
    "Repeat for the recommended amount of repetitions and then change hands."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένας αλτήρας στο ένα χέρι δίπλα στο σώμα.",
+   "Λύγισε στο πλάι προς τον αλτήρα, μετά ανέβα σφίγγοντας την αντίθετη πλευρά.",
+   "Ολοκλήρωσε τις επαναλήψεις και άλλαξε πλευρά."
+  ],
   "immagini": [
    "Dumbbell_Side_Bend/0.jpg",
    "Dumbbell_Side_Bend/1.jpg"
@@ -1969,6 +2323,7 @@
   "id": "One-Arm_Kettlebell_Swings",
   "nome": "Swing con kettlebell a un braccio",
   "nome_en": "One-Arm Kettlebell Swings",
+  "nome_el": "Αιωρήσεις kettlebell με ένα χέρι",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "intermedio",
@@ -1996,6 +2351,11 @@
    "Push your hips back, bring the kettlebell between your legs, then extend your hips forcefully.",
    "The kettlebell rises to chest height thanks to the drive of the hips, not the arms."
   ],
+  "istruzioni_el": [
+   "Kettlebell ανάμεσα στα πόδια, πόδια λίγο πιο ανοιχτά από τους ώμους.",
+   "Σπρώξε τη λεκάνη πίσω, φέρε το kettlebell ανάμεσα στα πόδια, μετά τέντωσε δυνατά τα ισχία.",
+   "Το kettlebell ανεβαίνει ως το στήθος με την ώθηση των ισχίων, όχι των χεριών."
+  ],
   "immagini": [
    "One-Arm_Kettlebell_Swings/0.jpg",
    "One-Arm_Kettlebell_Swings/1.jpg"
@@ -2005,6 +2365,7 @@
   "id": "Kettlebell_One-Legged_Deadlift",
   "nome": "Stacco su una gamba con kettlebell",
   "nome_en": "Kettlebell One-Legged Deadlift",
+  "nome_el": "Άρση σε ένα πόδι με kettlebell",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "intermedio",
@@ -2033,6 +2394,11 @@
    "Keeping that knee slightly bent, perform a stiff legged deadlift by bending at the hip, extending your free leg behind you for balance.",
    "Continue lowering the kettlebell until you are parallel to the ground, and then return to the upright position."
   ],
+  "istruzioni_el": [
+   "Όρθιος σε ένα πόδι, kettlebell στο αντίθετο χέρι.",
+   "Γείρε μπροστά με ίσια πλάτη ενώ το άλλο πόδι σηκώνεται πίσω σου.",
+   "Σήκωσε σφίγγοντας τον γλουτό, μετά άλλαξε πόδι."
+  ],
   "immagini": [
    "Kettlebell_One-Legged_Deadlift/0.jpg",
    "Kettlebell_One-Legged_Deadlift/1.jpg"
@@ -2042,6 +2408,7 @@
   "id": "Kettlebell_Turkish_Get-Up_Squat_style",
   "nome": "Turkish get-up",
   "nome_en": "Kettlebell Turkish Get-Up (Squat style)",
+  "nome_el": "Turkish get-up",
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
@@ -2074,6 +2441,11 @@
    "Keeping the kettlebell locked out at all times, pivot to the opposite side and use your non- working arm to assist you in driving forward to the lunge position.",
    "Using your free hand, push yourself to a seated position, then progressing to your feet. While looking up at the kettlebell, slowly stand up. Reverse the motion back to the starting position and repeat."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος, kettlebell με τεντωμένο χέρι πάνω σου, το γόνατο της ίδιας πλευράς λυγισμένο.",
+   "Χωρίς να λυγίσεις ποτέ το χέρι, σήκω στον αγκώνα, μετά στο χέρι, φέρε το πόδι από κάτω και σήκω όρθιος.",
+   "Κάνε τα βήματα ανάποδα για να γυρίσεις στο πάτωμα. Ξεκίνα με ελαφρύ βάρος."
+  ],
   "immagini": [
    "Kettlebell_Turkish_Get-Up_Squat_style/0.jpg",
    "Kettlebell_Turkish_Get-Up_Squat_style/1.jpg"
@@ -2083,6 +2455,7 @@
   "id": "One-Arm_Kettlebell_Row",
   "nome": "Rematore con kettlebell",
   "nome_en": "One-Arm Kettlebell Row",
+  "nome_el": "Κωπηλατική με kettlebell",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "intermedio",
@@ -2105,6 +2478,11 @@
   "istruzioni_en": [
    "Place a kettlebell in front of your feet. Bend your knees slightly and then push your butt out as much as possible as you bend over to get in the starting position. Grab the kettlebell and pull it to your stomach, retracting your shoulder blade and flexing the elbow. Keep your back straight. Lower and repeat."
   ],
+  "istruzioni_el": [
+   "Κορμός γερμένος μπροστά με ίσια πλάτη, kettlebell στο ένα χέρι.",
+   "Τράβα το kettlebell προς το πλευρό, αγκώνας κοντά στο σώμα.",
+   "Κατέβα αργά, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "One-Arm_Kettlebell_Row/0.jpg",
    "One-Arm_Kettlebell_Row/1.jpg"
@@ -2114,6 +2492,7 @@
   "id": "One-Arm_Kettlebell_Military_Press_To_The_Side",
   "nome": "Lento con kettlebell a un braccio",
   "nome_en": "One-Arm Kettlebell Military Press To The Side",
+  "nome_el": "Πίεση ώμου με kettlebell με ένα χέρι",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "intermedio",
@@ -2138,6 +2517,11 @@
    "Look at the kettlebell and press it up and out until it is locked out overhead.",
    "Lower the kettlebell back to your shoulder under control and repeat. Make sure to contract your lat, butt, and stomach forcefully for added stability and strength."
   ],
+  "istruzioni_el": [
+   "Φέρε το kettlebell στον ώμο με ένα clean, παλάμη προς τα μέσα.",
+   "Σπρώξ' το πάνω από το κεφάλι μέχρι να τεντωθεί το χέρι, ακολουθώντας το με το βλέμμα.",
+   "Φέρ' το αργά πίσω στον ώμο, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "One-Arm_Kettlebell_Military_Press_To_The_Side/0.jpg",
    "One-Arm_Kettlebell_Military_Press_To_The_Side/1.jpg"
@@ -2147,6 +2531,7 @@
   "id": "One-Arm_Kettlebell_Clean",
   "nome": "Clean con kettlebell a un braccio",
   "nome_en": "One-Arm Kettlebell Clean",
+  "nome_el": "Clean με kettlebell με ένα χέρι",
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
@@ -2174,6 +2559,11 @@
    "Clean the kettlebell to your shoulders by extending through the legs and hips as you raise the kettlebell towards your shoulder. The wrist should rotate as you do so.",
    "Return the weight to the starting position."
   ],
+  "istruzioni_el": [
+   "Kettlebell ανάμεσα στα πόδια: λύγισε σπρώχνοντας τη λεκάνη πίσω και πιάσ' το με το ένα χέρι.",
+   "Τέντωσε δυνατά πόδια και ισχία και φέρε το kettlebell στον ώμο γυρίζοντας τον καρπό.",
+   "Φέρ' το πίσω στο πάτωμα με έλεγχο, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "One-Arm_Kettlebell_Clean/0.jpg",
    "One-Arm_Kettlebell_Clean/1.jpg"
@@ -2183,6 +2573,7 @@
   "id": "Kettlebell_Windmill",
   "nome": "Windmill con kettlebell",
   "nome_en": "Kettlebell Windmill",
+  "nome_el": "Ανεμόμυλος με kettlebell",
   "tipo": "forza",
   "schema": "core",
   "livello": "intermedio",
@@ -2211,6 +2602,11 @@
    "Keeping the kettlebell locked out at all times, push your butt out in the direction of the locked out kettlebell. Turn your feet out at a forty-five degree angle from the arm with the locked out kettlebell. Bending at the hip to one side, sticking your butt out, slowly lean until you can touch the floor with your free hand. Keep your eyes on the kettlebell that you hold over your head at all times.",
    "Pause for a second after reaching the ground and reverse the motion back to the starting position."
   ],
+  "istruzioni_el": [
+   "Kettlebell πάνω από το κεφάλι με τεντωμένο χέρι, πόδια πιο ανοιχτά από τους ώμους.",
+   "Κοιτώντας το kettlebell, σπρώξε τη λεκάνη στο πλάι και κατέβα με το ελεύθερο χέρι προς το αντίθετο πόδι.",
+   "Ανέβα με το χέρι πάντα τεντωμένο, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Kettlebell_Windmill/0.jpg",
    "Kettlebell_Windmill/1.jpg"
@@ -2220,6 +2616,7 @@
   "id": "Kettlebell_Thruster",
   "nome": "Thruster con kettlebell",
   "nome_en": "Kettlebell Thruster",
+  "nome_el": "Thruster με kettlebell",
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
@@ -2246,6 +2643,11 @@
    "At the bottom, reverse direction and squat by extending your knees and hips, driving through your heels. As you do so, press both kettlebells overhead by extending your arms straight up, using the momentum from the squat to help drive the weights upward.",
    "As you begin the next repetition, return the weights to the shoulders."
   ],
+  "istruzioni_el": [
+   "Kettlebell στο ύψος των ώμων (ένα ή δύο).",
+   "Κατέβα στο κάθισμα με το στήθος ψηλά.",
+   "Καθώς ανεβαίνεις δυνατά, σπρώξε το kettlebell πάνω από το κεφάλι στην ίδια κίνηση."
+  ],
   "immagini": [
    "Kettlebell_Thruster/0.jpg",
    "Kettlebell_Thruster/1.jpg"
@@ -2255,6 +2657,7 @@
   "id": "Kettlebell_Sumo_High_Pull",
   "nome": "Tirata alta sumo con kettlebell",
   "nome_en": "Kettlebell Sumo High Pull",
+  "nome_el": "Ψηλό τράβηγμα sumo με kettlebell",
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
@@ -2282,6 +2685,11 @@
    "Place a kettlebell on the ground between your feet. Position your feet in a wide stance, and grasp the kettlebell with two hands. Set your hips back as far as possible, with your knees bent. Keep your chest and head up. This will be your starting position.",
    "Begin by extending the hips and knees, simultaneously pulling the kettlebell to your shoulders, raising your elbows as you do so. Reverse the motion to return to the starting position."
   ],
+  "istruzioni_el": [
+   "Πόδια πολύ ανοιχτά, kettlebell στο πάτωμα ανάμεσα στα πόδια, πιασμένο με τα δύο χέρια.",
+   "Τέντωσε πόδια και ισχία και τράβα το kettlebell μέχρι το στήθος, αγκώνες ψηλά.",
+   "Κατέβασέ το με έλεγχο."
+  ],
   "immagini": [
    "Kettlebell_Sumo_High_Pull/0.jpg",
    "Kettlebell_Sumo_High_Pull/1.jpg"
@@ -2291,6 +2699,7 @@
   "id": "Kettlebell_Figure_8",
   "nome": "Otto con kettlebell",
   "nome_en": "Kettlebell Figure 8",
+  "nome_el": "Οχτάρια με kettlebell",
   "tipo": "forza",
   "schema": "core",
   "livello": "intermedio",
@@ -2316,6 +2725,11 @@
    "Place one kettlebell between your legs and take a wider than shoulder width stance. Bend over by pushing your butt out and keeping your back flat.",
    "Pick up a kettlebell and pass it to your other hand between your legs. The receiving hand should reach from behind the legs. Go back and forth for several repetitions."
   ],
+  "istruzioni_el": [
+   "Πόδια ανοιχτά, κορμός γερμένος με ίσια πλάτη, kettlebell στο ένα χέρι.",
+   "Πέρνα το kettlebell στο άλλο χέρι ανάμεσα στα πόδια: το χέρι το παίρνει από πίσω.",
+   "Συνέχισε σχηματίζοντας ένα οχτάρι γύρω από τα πόδια."
+  ],
   "immagini": [
    "Kettlebell_Figure_8/0.jpg",
    "Kettlebell_Figure_8/1.jpg"
@@ -2325,6 +2739,7 @@
   "id": "Barbell_Squat",
   "nome": "Squat con bilanciere",
   "nome_en": "Barbell Squat",
+  "nome_el": "Καθίσματα με μπάρα",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -2355,6 +2770,11 @@
    "Begin to raise the bar as you exhale by pushing the floor with the heel of your foot as you straighten the legs again and go back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Μπάρα στο πάνω μέρος της πλάτης (καλύτερα ξεκινώντας από rack), πόδια στο πλάτος των ώμων.",
+   "Κατέβα σπρώχνοντας τη λεκάνη πίσω, στήθος ψηλά, μέχρι οι μηροί να γίνουν παράλληλοι με το πάτωμα.",
+   "Ανέβα σπρώχνοντας με τις φτέρνες."
+  ],
   "immagini": [
    "Barbell_Squat/0.jpg",
    "Barbell_Squat/1.jpg"
@@ -2364,6 +2784,7 @@
   "id": "Barbell_Deadlift",
   "nome": "Stacco da terra",
   "nome_en": "Barbell Deadlift",
+  "nome_el": "Άρσεις θανάτου",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "intermedio",
@@ -2396,6 +2817,11 @@
    "Go back to the starting position by bending at the knees while simultaneously leaning the torso forward at the waist while keeping the back straight. When the weights on the bar touch the floor you are back at the starting position and ready to perform another repetition.",
    "Perform the amount of repetitions prescribed in the program."
   ],
+  "istruzioni_el": [
+   "Μπάρα στο πάτωμα πάνω από τη μέση του πέλματος: πιάσ' τη λίγο έξω από τα πόδια.",
+   "Ίσια πλάτη και στήθος ψηλά, σήκωσε τεντώνοντας μαζί πόδια και ισχία, με τη μπάρα κοντά στα πόδια.",
+   "Φέρ' τη πίσω στο πάτωμα από την ίδια διαδρομή."
+  ],
   "immagini": [
    "Barbell_Deadlift/0.jpg",
    "Barbell_Deadlift/1.jpg"
@@ -2405,6 +2831,7 @@
   "id": "Romanian_Deadlift",
   "nome": "Stacco rumeno",
   "nome_en": "Romanian Deadlift",
+  "nome_el": "Ρουμανικές άρσεις",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "intermedio",
@@ -2433,6 +2860,11 @@
    "Once you are standing completely straight up, lower the bar by pushing the hips back, only slightly bending the knees, unlike when squatting. Tip: Take a deep breath at the start of the movement and keep your chest up. Hold your breath as you lower and exhale as you complete the movement.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος με τη μπάρα μπροστά στους μηρούς, γόνατα ελάχιστα λυγισμένα.",
+   "Σπρώξε τη λεκάνη πίσω και κατέβα με ίσια πλάτη μέχρι τη μέση της κνήμης.",
+   "Ανέβα σφίγγοντας τους γλουτούς."
+  ],
   "immagini": [
    "Romanian_Deadlift/0.jpg",
    "Romanian_Deadlift/1.jpg"
@@ -2442,6 +2874,7 @@
   "id": "Barbell_Bench_Press_-_Medium_Grip",
   "nome": "Panca piana con bilanciere",
   "nome_en": "Barbell Bench Press - Medium Grip",
+  "nome_el": "Πιέσεις πάγκου με μπάρα",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -2470,6 +2903,11 @@
    "Repeat the movement for the prescribed amount of repetitions.",
    "When you are done, place the bar back in the rack."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος στον πάγκο, λαβή λίγο πιο ανοιχτή από τους ώμους.",
+   "Κατέβα με τη μπάρα μέχρι να αγγίξει σχεδόν το στήθος, αγκώνες περίπου στις 45°.",
+   "Σπρώξε μέχρι να τεντωθούν τα χέρια. Με μεγάλα βάρη ζήτα βοήθεια από κάποιον."
+  ],
   "immagini": [
    "Barbell_Bench_Press_-_Medium_Grip/0.jpg",
    "Barbell_Bench_Press_-_Medium_Grip/1.jpg"
@@ -2479,6 +2917,7 @@
   "id": "Bent_Over_Barbell_Row",
   "nome": "Rematore con bilanciere",
   "nome_en": "Bent Over Barbell Row",
+  "nome_el": "Κωπηλατική με μπάρα",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -2505,6 +2944,11 @@
    "Then inhale and slowly lower the barbell back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Γόνατα ελαφρώς λυγισμένα, κορμός γερμένος μπροστά με ίσια πλάτη.",
+   "Τράβα τη μπάρα προς την κοιλιά σφίγγοντας τις ωμοπλάτες.",
+   "Κατέβα αργά με τεντωμένα χέρια."
+  ],
   "immagini": [
    "Bent_Over_Barbell_Row/0.jpg",
    "Bent_Over_Barbell_Row/1.jpg"
@@ -2514,6 +2958,7 @@
   "id": "Standing_Military_Press",
   "nome": "Lento in piedi con bilanciere",
   "nome_en": "Standing Military Press",
+  "nome_el": "Πιέσεις ώμων όρθιος με μπάρα",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "principiante",
@@ -2541,6 +2986,11 @@
    "Lift the bar back up to the starting position as you exhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, μπάρα στο ύψος των ώμων, λαβή λίγο πιο ανοιχτή από τους ώμους.",
+   "Σπρώξε τη μπάρα πάνω από το κεφάλι μέχρι να τεντωθούν τα χέρια, κοιλιά σφιγμένη.",
+   "Κατέβα αργά στους ώμους."
+  ],
   "immagini": [
    "Standing_Military_Press/0.jpg",
    "Standing_Military_Press/1.jpg"
@@ -2550,6 +3000,7 @@
   "id": "Barbell_Curl",
   "nome": "Curl con bilanciere",
   "nome_en": "Barbell Curl",
+  "nome_el": "Κάμψεις δικεφάλων με μπάρα",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -2576,6 +3027,11 @@
    "Slowly begin to bring the bar back to starting position as your breathe in.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, μπάρα μπροστά στους μηρούς με τις παλάμες προς τα εμπρός.",
+   "Λύγισε τους αγκώνες φέρνοντας τη μπάρα προς τους ώμους, αγκώνες ακίνητοι.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Barbell_Curl/0.jpg",
    "Barbell_Curl/1.jpg"
@@ -2585,6 +3041,7 @@
   "id": "Barbell_Lunge",
   "nome": "Affondi con bilanciere",
   "nome_en": "Barbell Lunge",
+  "nome_el": "Προβολές με μπάρα",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "intermedio",
@@ -2613,6 +3070,11 @@
    "Using mainly the heel of your foot, push up and go back to the starting position as you exhale.",
    "Repeat the movement for the recommended amount of repetitions and then perform with the left leg."
   ],
+  "istruzioni_el": [
+   "Μπάρα στο πάνω μέρος της πλάτης.",
+   "Κάνε ένα βήμα μπροστά και κατέβα μέχρι το πίσω γόνατο να αγγίξει σχεδόν το πάτωμα.",
+   "Σήκω όρθιος και άλλαζε πόδια."
+  ],
   "immagini": [
    "Barbell_Lunge/0.jpg",
    "Barbell_Lunge/1.jpg"
@@ -2622,6 +3084,7 @@
   "id": "Front_Plate_Raise",
   "nome": "Alzata frontale con disco",
   "nome_en": "Front Plate Raise",
+  "nome_el": "Μπροστινή ανύψωση με δίσκο",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "intermedio",
@@ -2645,6 +3108,11 @@
    "As you inhale, slowly lower the plate back down to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος, κράτα έναν δίσκο με τα δύο χέρια μπροστά στους μηρούς, χέρια σχεδόν τεντωμένα.",
+   "Σήκωσε τον δίσκο μπροστά σου μέχρι το ύψος των ματιών.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Front_Plate_Raise/0.jpg",
    "Front_Plate_Raise/1.jpg"
@@ -2654,6 +3122,7 @@
   "id": "Plate_Twist",
   "nome": "Rotazioni del busto con disco",
   "nome_en": "Plate Twist",
+  "nome_el": "Περιστροφές κορμού με δίσκο",
   "tipo": "forza",
   "schema": "core",
   "livello": "intermedio",
@@ -2679,6 +3148,11 @@
    "Come back to the starting position as you breathe in and then repeat the movement but this time to the right side of the body. Tip: Use a slow controlled movement at all times. Jerking motions can injure the back.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Καθιστός, κορμός γερμένος πίσω, πόδια σηκωμένα και ελαφρώς λυγισμένα, δίσκος μπροστά στην κοιλιά.",
+   "Γύρνα τον κορμό φέρνοντας τον δίσκο στη μία πλευρά.",
+   "Γύρνα στην άλλη πλευρά με ελεγχόμενη κίνηση."
+  ],
   "immagini": [
    "Plate_Twist/0.jpg",
    "Plate_Twist/1.jpg"
@@ -2688,6 +3162,7 @@
   "id": "Weighted_Crunches",
   "nome": "Crunch con sovraccarico",
   "nome_en": "Weighted Crunches",
+  "nome_el": "Κοιλιακοί με βάρος",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -2719,6 +3194,11 @@
    "At the top of the movement, flex your abdominals and hold for a brief pause.",
    "Then inhale and slowly lower yourself back down to the starting position."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, γόνατα λυγισμένα, κράτα ένα βάρος στο στήθος.",
+   "Σήκωσε τους ώμους από το πάτωμα σφίγγοντας την κοιλιά.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Weighted_Crunches/0.jpg",
    "Weighted_Crunches/1.jpg"
@@ -2728,6 +3208,7 @@
   "id": "Band_Pull_Apart",
   "nome": "Pull apart con elastico",
   "nome_en": "Band Pull Apart",
+  "nome_el": "Ανοίγματα με λάστιχο",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -2754,6 +3235,11 @@
    "Keep your elbows extended as you perform the movement, bringing the band to your chest. Ensure that you keep your shoulders back during the exercise.",
    "Pause as you complete the movement, returning to the starting position under control."
   ],
+  "istruzioni_el": [
+   "Όρθιος, κράτα το λάστιχο μπροστά σου με τεντωμένα χέρια, στο ύψος των ώμων.",
+   "Άνοιξε τα χέρια τραβώντας το λάστιχο ως το στήθος, σφίγγοντας τις ωμοπλάτες.",
+   "Γύρνα αργά στην αρχική θέση."
+  ],
   "immagini": [
    "Band_Pull_Apart/0.jpg",
    "Band_Pull_Apart/1.jpg"
@@ -2763,6 +3249,7 @@
   "id": "External_Rotation_with_Band",
   "nome": "Extrarotazione con elastico",
   "nome_en": "External Rotation with Band",
+  "nome_el": "Εξωτερική στροφή με λάστιχο",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -2787,6 +3274,11 @@
    "Execute the movement by rotating your arm in a backhand motion, keeping your elbow in place.",
    "Continue as far as you are able, pause, and then return to the starting position."
   ],
+  "istruzioni_el": [
+   "Στερέωσε το λάστιχο στο ύψος του αγκώνα και στάσου στο πλάι.",
+   "Με τον αγκώνα λυγισμένο στις 90° και ακίνητο στο πλευρό, γύρνα τον πήχη προς τα έξω.",
+   "Γύρνα αργά, μετά άλλαξε πλευρά. Χρήσιμο για την προστασία των ώμων, και στην κολύμβηση."
+  ],
   "immagini": [
    "External_Rotation_with_Band/0.jpg",
    "External_Rotation_with_Band/1.jpg"
@@ -2796,6 +3288,7 @@
   "id": "Lateral_Raise_-_With_Bands",
   "nome": "Alzate laterali con elastico",
   "nome_en": "Lateral Raise - With Bands",
+  "nome_el": "Πλάγιες ανυψώσεις με λάστιχο",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -2819,6 +3312,11 @@
    "Lower the handles back down slowly to the starting position. Inhale as you perform this portion of the movement.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος πάνω στο λάστιχο, λαβές στα πλάγια των μηρών.",
+   "Σήκωσε τα χέρια στο πλάι μέχρι το ύψος των ώμων, αγκώνες ελαφρώς λυγισμένοι.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Lateral_Raise_-_With_Bands/0.jpg",
    "Lateral_Raise_-_With_Bands/1.jpg"
@@ -2828,6 +3326,7 @@
   "id": "Shoulder_Press_-_With_Bands",
   "nome": "Lento avanti con elastico",
   "nome_en": "Shoulder Press - With Bands",
+  "nome_el": "Πιέσεις ώμων με λάστιχο",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "principiante",
@@ -2852,6 +3351,11 @@
    "Rotate the wrists so that the palms of your hands are facing forward. Your elbows should be bent, with the upper arms and forearms in line to the torso. This is your starting position.",
    "As you exhale, lift the handles up until your arms are fully extended overhead."
   ],
+  "istruzioni_el": [
+   "Όρθιος πάνω στο λάστιχο, λαβές στο ύψος των ώμων, παλάμες προς τα εμπρός.",
+   "Σπρώξε πάνω από το κεφάλι μέχρι να τεντωθούν τα χέρια.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Shoulder_Press_-_With_Bands/0.jpg",
    "Shoulder_Press_-_With_Bands/1.jpg"
@@ -2861,6 +3365,7 @@
   "id": "Back_Flyes_-_With_Bands",
   "nome": "Alzate posteriori con elastico",
   "nome_en": "Back Flyes - With Bands",
+  "nome_el": "Ανοίγματα πίσω ώμων με λάστιχο",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -2889,6 +3394,11 @@
    "After a pause, go back to the original position as you inhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Στερέωσε το λάστιχο μπροστά σου στο ύψος των ώμων και πιάσ' το με τεντωμένα χέρια.",
+   "Άνοιξε τα χέρια στο πλάι κρατώντας τα τεντωμένα, σφίγγοντας τις ωμοπλάτες.",
+   "Γύρνα αργά."
+  ],
   "immagini": [
    "Back_Flyes_-_With_Bands/0.jpg",
    "Back_Flyes_-_With_Bands/1.jpg"
@@ -2898,6 +3408,7 @@
   "id": "Overhead_Slam",
   "nome": "Slam con palla medica",
   "nome_en": "Overhead Slam",
+  "nome_el": "Χτυπήματα με μπάλα medicine",
   "tipo": "forza",
   "schema": "total_body",
   "livello": "principiante",
@@ -2921,6 +3432,11 @@
    "Reverse the motion, slamming the ball into the ground directly in front of you as hard as you can.",
    "Receive the ball with both hands on the bounce and repeat the movement."
   ],
+  "istruzioni_el": [
+   "Όρθιος, μπάλα medicine στα δύο χέρια.",
+   "Φέρ' τη πάνω από το κεφάλι τεντώνοντας όλο το σώμα.",
+   "Ρίξ' τη δυνατά στο πάτωμα μπροστά σου και πιάσ' τη ξανά. Χρησιμοποίησε μπάλα που δεν αναπηδά."
+  ],
   "immagini": [
    "Overhead_Slam/0.jpg",
    "Overhead_Slam/1.jpg"
@@ -2930,6 +3446,7 @@
   "id": "Ball_Leg_Curl",
   "nome": "Leg curl su fitball",
   "nome_en": "Ball Leg Curl",
+  "nome_el": "Κάμψεις ποδιών σε μπάλα γυμναστικής",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -2957,6 +3474,11 @@
    "Flex the knees, pulling the ball as close to you as you can, contracting the hamstrings.",
    "After a brief pause, return to the starting position."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, φτέρνες πάνω στη μπάλα γυμναστικής.",
+   "Σήκωσε τη λεκάνη και τράβα τη μπάλα προς τους γλουτούς λυγίζοντας τα γόνατα.",
+   "Τέντωσε αργά τα πόδια κρατώντας τη λεκάνη ψηλά."
+  ],
   "immagini": [
    "Ball_Leg_Curl/0.jpg",
    "Ball_Leg_Curl/1.jpg"
@@ -2966,6 +3488,7 @@
   "id": "Exercise_Ball_Pull-In",
   "nome": "Ginocchia al petto su fitball",
   "nome_en": "Exercise Ball Pull-In",
+  "nome_el": "Γόνατα στο στήθος σε μπάλα γυμναστικής",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -2991,6 +3514,11 @@
    "Now slowly straighten your legs, rolling the ball back to the starting position as you inhale.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Σε θέση κάμψης με τις κνήμες πάνω στη μπάλα γυμναστικής.",
+   "Φέρε τα γόνατα προς το στήθος κυλώντας τη μπάλα.",
+   "Τέντωσε τα πόδια για να γυρίσεις στην αρχική θέση."
+  ],
   "immagini": [
    "Exercise_Ball_Pull-In/0.jpg",
    "Exercise_Ball_Pull-In/1.jpg"
@@ -3000,6 +3528,7 @@
   "id": "Worlds_Greatest_Stretch",
   "nome": "World's greatest stretch",
   "nome_en": "World's Greatest Stretch",
+  "nome_el": "World's greatest stretch",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "intermedio",
@@ -3022,6 +3551,11 @@
    "Now, place the arm on the same side as your front leg on the ground, with the elbow next to the foot. Your other hand should be placed on the ground, parallel to your lead leg, to help support you during this portion of the stretch.",
    "After 10-20 seconds, place your hands on either side of your front foot. Raise the toes of the front foot off of the ground, and straighten your leg. You may need to reposition your rear leg to do so. Hold for 10-20 seconds, and then repeat the entire sequence for the other side."
   ],
+  "istruzioni_el": [
+   "Κάνε μια προβολή μπροστά με το πίσω γόνατο κοντά στο πάτωμα και μείνε 10-20 δευτερόλεπτα.",
+   "Ακούμπησε στο πάτωμα το χέρι από την πλευρά του μπροστινού ποδιού και γύρνα τον κορμό φέρνοντας το άλλο χέρι προς το ταβάνι.",
+   "Τέλος τέντωσε το μπροστινό πόδι φέρνοντας τη λεκάνη πίσω για να τεντώσεις τους οπίσθιους μηριαίους, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Worlds_Greatest_Stretch/0.jpg",
    "Worlds_Greatest_Stretch/1.jpg"
@@ -3031,6 +3565,7 @@
   "id": "Cat_Stretch",
   "nome": "Allungamento del gatto",
   "nome_en": "Cat Stretch",
+  "nome_el": "Διάταση της γάτας",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3052,6 +3587,11 @@
    "Pull your belly in and round your spine, lower back, shoulders, and neck, letting your head drop.",
    "Hold for 15 seconds."
   ],
+  "istruzioni_el": [
+   "Στα τέσσερα, χέρια κάτω από τους ώμους και γόνατα κάτω από τα ισχία.",
+   "Τράβα μέσα την κοιλιά και καμπύλωσε την πλάτη προς τα πάνω, αφήνοντας το κεφάλι να πέσει.",
+   "Κράτα 15 δευτερόλεπτα, μετά χαλάρωσε."
+  ],
   "immagini": [
    "Cat_Stretch/0.jpg",
    "Cat_Stretch/1.jpg"
@@ -3061,6 +3601,7 @@
   "id": "Childs_Pose",
   "nome": "Posizione del bambino",
   "nome_en": "Child's Pose",
+  "nome_el": "Στάση του παιδιού",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3082,6 +3623,11 @@
    "Lower your buttocks down to sit on your heels. Let your arms drag along the floor as you sit back to stretch your entire spine.",
    "Once you settle onto your heels, bring your hands next to your feet and relax. \"breathe\" into your back. Rest your forehead on the floor. Avoid this position if you have knee problems."
   ],
+  "istruzioni_el": [
+   "Γονατιστός, κάθισε στις φτέρνες.",
+   "Λύγισε μπροστά τεντώνοντας τα χέρια στο πάτωμα μπροστά σου, μέτωπο προς το πάτωμα.",
+   "Ανάπνεε αργά και μείνε 20-30 δευτερόλεπτα."
+  ],
   "immagini": [
    "Childs_Pose/0.jpg",
    "Childs_Pose/1.jpg"
@@ -3091,6 +3637,7 @@
   "id": "Kneeling_Hip_Flexor",
   "nome": "Allungamento dei flessori dell'anca",
   "nome_en": "Kneeling Hip Flexor",
+  "nome_el": "Διάταση καμπτήρων ισχίου",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3108,6 +3655,11 @@
    "Kneel on a mat and bring your right knee up so the bottom of your foot is on the floor and extend your left leg out behind you so the top of your foot is on the floor.",
    "Shift your weight forward until you feel a stretch in your hip. Hold for 15 seconds, then repeat for your other side."
   ],
+  "istruzioni_el": [
+   "Γονατιστός σε ένα στρωματάκι, φέρε ένα πόδι μπροστά με το γόνατο στις 90°.",
+   "Μετέφερε το βάρος μπροστά μέχρι να νιώσεις να τεντώνεται το μπροστινό μέρος του ισχίου του πίσω ποδιού.",
+   "Κράτα 15-30 δευτερόλεπτα, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Kneeling_Hip_Flexor/0.jpg",
    "Kneeling_Hip_Flexor/1.jpg"
@@ -3117,6 +3669,7 @@
   "id": "Seated_Floor_Hamstring_Stretch",
   "nome": "Allungamento dei femorali da seduto",
   "nome_en": "Seated Floor Hamstring Stretch",
+  "nome_el": "Διάταση οπίσθιων μηριαίων καθιστός",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3136,6 +3689,11 @@
    "Sit on a mat with your right leg extended in front of you and your left leg bent with your foot against your right inner thigh.",
    "Lean forward from your hips and reach for your ankle until you feel a stretch in your hamstring. Hold for 15 seconds, then repeat for your other side."
   ],
+  "istruzioni_el": [
+   "Καθιστός, το ένα πόδι τεντωμένο και το πέλμα του άλλου στο εσωτερικό του μηρού.",
+   "Λύγισε μπροστά από τα ισχία προς τον αστράγαλο μέχρι να νιώσεις να τεντώνεται το πίσω μέρος του μηρού.",
+   "Κράτα 15-30 δευτερόλεπτα, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Seated_Floor_Hamstring_Stretch/0.jpg",
    "Seated_Floor_Hamstring_Stretch/1.jpg"
@@ -3145,6 +3703,7 @@
   "id": "Calf_Stretch_Hands_Against_Wall",
   "nome": "Allungamento dei polpacci al muro",
   "nome_en": "Calf Stretch Hands Against Wall",
+  "nome_el": "Διάταση γαστροκνημίων στον τοίχο",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3163,6 +3722,11 @@
    "Lean forward and rest your hands on the wall, keeping your heel, hip and head in a straight line.",
    "Attempt to keep your heel on the ground. Hold for 10-20 seconds and then switch sides."
   ],
+  "istruzioni_el": [
+   "Χέρια στον τοίχο, ένα πόδι μπροστά και ένα πίσω.",
+   "Κράτα την πίσω φτέρνα στο πάτωμα και το πόδι τεντωμένο, σπρώχνοντας τη λεκάνη προς τον τοίχο.",
+   "Κράτα 15-30 δευτερόλεπτα, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Calf_Stretch_Hands_Against_Wall/0.jpg",
    "Calf_Stretch_Hands_Against_Wall/1.jpg"
@@ -3172,6 +3736,7 @@
   "id": "Standing_Soleus_And_Achilles_Stretch",
   "nome": "Allungamento di soleo e tendine d'Achille",
   "nome_en": "Standing Soleus And Achilles Stretch",
+  "nome_el": "Διάταση υποκνημιδίου και αχίλλειου τένοντα",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3189,6 +3754,11 @@
    "Stand with your feet hip-distance apart, one foot slightly in front of the other.",
    "Bend both knees, keeping your back heel on the floor. Switch sides."
   ],
+  "istruzioni_el": [
+   "Όρθιος, ένα πόδι μπροστά και ένα πίσω, και οι δύο φτέρνες στο πάτωμα.",
+   "Λύγισε και τα δύο γόνατα μεταφέροντας το βάρος στο πίσω πόδι.",
+   "Νιώσε να τεντώνεται το κάτω μέρος της γάμπας: κράτα 15-30 δευτερόλεπτα και άλλαξε πλευρά."
+  ],
   "immagini": [
    "Standing_Soleus_And_Achilles_Stretch/0.jpg",
    "Standing_Soleus_And_Achilles_Stretch/1.jpg"
@@ -3198,6 +3768,7 @@
   "id": "On_Your_Side_Quad_Stretch",
   "nome": "Allungamento dei quadricipiti sul fianco",
   "nome_en": "On Your Side Quad Stretch",
+  "nome_el": "Διάταση τετρακεφάλων στο πλάι",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3215,6 +3786,11 @@
    "Start off by lying on your right side, with your right knee bent at a 90-degree angle resting on the floor in front of you (this stabilizes the torso).",
    "Bend your left knee behind you and hold your left foot with your left hand. To stretch your hip flexor, press your left hip forward as you push your left foot back into your hand. Switch sides."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος στο πλάι, με το κάτω πόδι λυγισμένο μπροστά σου για σταθερότητα.",
+   "Λύγισε το πάνω πόδι και πιάσε το πέλμα με το χέρι.",
+   "Σπρώξε το ισχίο μπροστά και το πέλμα στο χέρι: κράτα 15-30 δευτερόλεπτα και άλλαξε πλευρά."
+  ],
   "immagini": [
    "On_Your_Side_Quad_Stretch/0.jpg",
    "On_Your_Side_Quad_Stretch/1.jpg"
@@ -3224,6 +3800,7 @@
   "id": "Runners_Stretch",
   "nome": "Allungamento del corridore",
   "nome_en": "Runner's Stretch",
+  "nome_el": "Διάταση του δρομέα",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3244,6 +3821,11 @@
    "Keep the front heel on the floor (if it lifts up, scoot your other leg further back).",
    "Place your hands on either side of your front leg. To get more out of this stretch, push your butt up toward the ceiling, and then gradually lower it back toward the floor. You'll Stretch the hip flexor of the back leg and the hamstring and buttocks of the front."
   ],
+  "istruzioni_el": [
+   "Από όρθιος φέρε ένα πόδι πίσω και κατέβα με τα χέρια στο πάτωμα δίπλα στο μπροστινό πόδι.",
+   "Κράτα τη μπροστινή φτέρνα στο πάτωμα.",
+   "Για πιο έντονη διάταση σήκωσε τη λεκάνη τεντώνοντας το μπροστινό πόδι."
+  ],
   "immagini": [
    "Runners_Stretch/0.jpg",
    "Runners_Stretch/1.jpg"
@@ -3253,6 +3835,7 @@
   "id": "Hip_Circles_prone",
   "nome": "Circonduzioni dell'anca a quattro zampe",
   "nome_en": "Hip Circles (prone)",
+  "nome_el": "Κύκλοι ισχίου στα τέσσερα",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3273,6 +3856,11 @@
    "Keeping the knee in a bent position, rotate the femur in an arc, attempting to make a big circle with your knee.",
    "Perform this slowly for a number of repetitions, and repeat on the other side."
   ],
+  "istruzioni_el": [
+   "Στα τέσσερα, σήκωσε από το πάτωμα ένα λυγισμένο γόνατο.",
+   "Σχημάτισε με το γόνατο έναν μεγάλο και αργό κύκλο.",
+   "Κάνε τις επαναλήψεις και προς τις δύο κατευθύνσεις, μετά άλλαξε πόδι."
+  ],
   "immagini": [
    "Hip_Circles_prone/0.jpg",
    "Hip_Circles_prone/1.jpg"
@@ -3282,6 +3870,7 @@
   "id": "Pelvic_Tilt_Into_Bridge",
   "nome": "Retroversione del bacino e ponte",
   "nome_en": "Pelvic Tilt Into Bridge",
+  "nome_el": "Ανάστροφη κλίση λεκάνης και γέφυρα",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "intermedio",
@@ -3300,6 +3889,11 @@
    "Lift only your tailbone to the ceiling to stretch your lower back. (Don't lift the entire spine yet.) Pull in your stomach.",
    "To go into a bridge, lift the entire spine except the neck."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, πέλματα στο πάτωμα με τις φτέρνες κάτω από τα γόνατα.",
+   "Σήκωσε μόνο τον κόκκυγα τραβώντας μέσα την κοιλιά, για να τεντώσεις τη μέση.",
+   "Μετά σήκωσε όλη τη σπονδυλική στήλη, σπόνδυλο σπόνδυλο, εκτός από τον αυχένα, και κατέβα αργά."
+  ],
   "immagini": [
    "Pelvic_Tilt_Into_Bridge/0.jpg",
    "Pelvic_Tilt_Into_Bridge/1.jpg"
@@ -3309,6 +3903,7 @@
   "id": "Spinal_Stretch",
   "nome": "Torsione della colonna da seduto",
   "nome_en": "Spinal Stretch",
+  "nome_el": "Στροφή σπονδυλικής στήλης καθιστός",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3332,6 +3927,11 @@
    "Twist your upper body to one side about 3 times as far as you can. Then lean forward and twist your torso to reach your elbow to the floor on the inside of your knee.",
    "Return to upright position and then repeat for your other side."
   ],
+  "istruzioni_el": [
+   "Καθιστός σε καρέκλα με ίσια πλάτη, χέρια πλεγμένα πίσω από το κεφάλι.",
+   "Γύρνα τον κορμό στη μία πλευρά όσο μπορείς, μετά στην άλλη.",
+   "Επανάλαβε 3 φορές για κάθε πλευρά με αργές κινήσεις."
+  ],
   "immagini": [
    "Spinal_Stretch/0.jpg",
    "Spinal_Stretch/1.jpg"
@@ -3341,6 +3941,7 @@
   "id": "Upper_Back_Stretch",
   "nome": "Allungamento della parte alta della schiena",
   "nome_en": "Upper Back Stretch",
+  "nome_el": "Διάταση πάνω πλάτης",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3357,6 +3958,11 @@
   "istruzioni_en": [
    "Clasp fingers together with your thumbs pointing down, round your shoulders as you reach your hands forward."
   ],
+  "istruzioni_el": [
+   "Πλέξε τα δάχτυλα με τους αντίχειρες προς τα κάτω.",
+   "Σπρώξε τα χέρια μπροστά στρογγυλεύοντας τους ώμους.",
+   "Κράτα 15-20 δευτερόλεπτα."
+  ],
   "immagini": [
    "Upper_Back_Stretch/0.jpg",
    "Upper_Back_Stretch/1.jpg"
@@ -3366,6 +3972,7 @@
   "id": "Shoulder_Stretch",
   "nome": "Allungamento della spalla",
   "nome_en": "Shoulder Stretch",
+  "nome_el": "Διάταση ώμου",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3382,6 +3989,11 @@
   "istruzioni_en": [
    "Reach your left arm across your body and hold it straight."
   ],
+  "istruzioni_el": [
+   "Φέρε ένα τεντωμένο χέρι μπροστά από το σώμα, προς τον αντίθετο ώμο.",
+   "Με το άλλο χέρι κράτα το κοντά στο στήθος.",
+   "Κράτα 15-20 δευτερόλεπτα, μετά άλλαξε χέρι."
+  ],
   "immagini": [
    "Shoulder_Stretch/0.jpg",
    "Shoulder_Stretch/1.jpg"
@@ -3391,6 +4003,7 @@
   "id": "Triceps_Stretch",
   "nome": "Allungamento dei tricipiti",
   "nome_en": "Triceps Stretch",
+  "nome_el": "Διάταση τρικεφάλων",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3409,6 +4022,11 @@
   "istruzioni_en": [
    "Reach your hand behind your head, grasp your elbow and gently pull. Hold for 10 to 20 seconds, then switch sides."
   ],
+  "istruzioni_el": [
+   "Φέρε ένα χέρι πίσω από το κεφάλι.",
+   "Με το άλλο χέρι πιάσε τον αγκώνα και τράβα τον απαλά.",
+   "Κράτα 10-20 δευτερόλεπτα, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Triceps_Stretch/0.jpg",
    "Triceps_Stretch/1.jpg"
@@ -3418,6 +4036,7 @@
   "id": "Dynamic_Chest_Stretch",
   "nome": "Apertura dinamica del petto",
   "nome_en": "Dynamic Chest Stretch",
+  "nome_el": "Δυναμικό άνοιγμα στήθους",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3437,6 +4056,11 @@
    "Stand with your hands together, arms extended directly in front of you. This will be your starting position.",
    "Keeping your arms straight, quickly move your arms back as far as possible and back in again, similar to an exaggerated clapping motion. Repeat 5-10 times, increasing speed as you do so."
   ],
+  "istruzioni_el": [
+   "Όρθιος, χέρια τεντωμένα μπροστά σου με τις παλάμες ενωμένες.",
+   "Άνοιξε τα χέρια πίσω όσο μπορείς, κρατώντας τα τεντωμένα, και κλείσ' τα ξανά.",
+   "Επανάλαβε 5-10 φορές αυξάνοντας σιγά σιγά την ταχύτητα."
+  ],
   "immagini": [
    "Dynamic_Chest_Stretch/0.jpg",
    "Dynamic_Chest_Stretch/1.jpg"
@@ -3446,6 +4070,7 @@
   "id": "Arm_Circles",
   "nome": "Circonduzioni delle braccia",
   "nome_en": "Arm Circles",
+  "nome_el": "Κύκλοι με τα χέρια",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3466,6 +4091,11 @@
    "Slowly start to make circles of about 1 foot in diameter with each outstretched arm. Breathe normally as you perform the movement.",
    "Continue the circular motion of the outstretched arms for about ten seconds. Then reverse the movement, going the opposite direction."
   ],
+  "istruzioni_el": [
+   "Όρθιος, χέρια ανοιχτά στο πλάι στο ύψος των ώμων.",
+   "Σχημάτισε μικρούς κύκλους, μεγαλώνοντάς τους σιγά σιγά.",
+   "Επανάλαβε προς την άλλη κατεύθυνση."
+  ],
   "immagini": [
    "Arm_Circles/0.jpg",
    "Arm_Circles/1.jpg"
@@ -3475,6 +4105,7 @@
   "id": "Ankle_Circles",
   "nome": "Circonduzioni delle caviglie",
   "nome_en": "Ankle Circles",
+  "nome_el": "Κύκλοι αστραγάλων",
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
@@ -3493,6 +4124,11 @@
    "Lift the right leg in the air (just around 2 inches from the floor) and perform a circular motion with the big toe. Pretend that you are drawing a big circle with it. Tip: One circle equals 1 repetition. Breathe normally as you perform the movement.",
    "When you are done with the right foot, then repeat with the left leg."
   ],
+  "istruzioni_el": [
+   "Καθιστός ή όρθιος, σήκωσε ένα πόδι από το πάτωμα.",
+   "Γύρνα αργά τον αστράγαλο σχηματίζοντας μεγάλους κύκλους.",
+   "Επανάλαβε προς την άλλη κατεύθυνση και άλλαξε πόδι."
+  ],
   "immagini": [
    "Ankle_Circles/0.jpg",
    "Ankle_Circles/1.jpg"
@@ -3502,6 +4138,7 @@
   "id": "Quadriceps-SMR",
   "nome": "Rullo sui quadricipiti",
   "nome_en": "Quadriceps-SMR",
+  "nome_el": "Foam roller στους τετρακέφαλους",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
@@ -3523,6 +4160,11 @@
    "Lay facedown on the floor with your weight supported by your hands or forearms. Place a foam roll underneath one leg on the quadriceps, and keep the foot off of the ground. Make sure to relax the leg as much as possible. This will be your starting position.",
    "Shifting as much weight onto the leg to be stretched as is tolerable, roll over the foam from above the knee to below the hip, holding points of tension for 10-30 seconds. Switch sides."
   ],
+  "istruzioni_el": [
+   "Μπρούμυτα, στηριγμένος στους πήχεις, με το foam roller κάτω από τους μηρούς.",
+   "Κύλησε το foam roller από το ισχίο ως το γόνατο.",
+   "Σταμάτα 10-20 δευτερόλεπτα στα πιο σφιγμένα σημεία."
+  ],
   "immagini": [
    "Quadriceps-SMR/0.jpg",
    "Quadriceps-SMR/1.jpg"
@@ -3532,6 +4174,7 @@
   "id": "Calves-SMR",
   "nome": "Rullo sui polpacci",
   "nome_en": "Calves-SMR",
+  "nome_el": "Foam roller στις γάμπες",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
@@ -3553,6 +4196,11 @@
    "Begin seated on the floor. Place a foam roller underneath your lower leg. Your other leg can either be crossed over the opposite or be placed on the floor, supporting some of your weight. This will be your starting position.",
    "Place your hands to your side or just behind you, and press down to raise your hips off of the floor, placing much of your weight against your calf muscle. Roll from below the knee to above the ankle, pausing at points of tension for 10-30 seconds. Repeat for the other leg."
   ],
+  "istruzioni_el": [
+   "Καθιστός, foam roller κάτω από τις γάμπες και χέρια στο πάτωμα πίσω σου.",
+   "Σήκωσε τη λεκάνη και κύλησε το foam roller από τον αστράγαλο ως το γόνατο.",
+   "Για περισσότερη πίεση βάλε το ένα πόδι πάνω στο άλλο."
+  ],
   "immagini": [
    "Calves-SMR/0.jpg",
    "Calves-SMR/1.jpg"
@@ -3562,6 +4210,7 @@
   "id": "Iliotibial_Tract-SMR",
   "nome": "Rullo sulla bandelletta ileotibiale",
   "nome_en": "Iliotibial Tract-SMR",
+  "nome_el": "Foam roller στη λαγονοκνημιαία ταινία",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
@@ -3584,6 +4233,11 @@
    "Place as much of your weight as is tolerable onto your bottom leg; there is no need to keep your bottom leg in contact with the ground. Be sure to relax the muscles of the leg you are stretching.",
    "Roll your leg over the foam from you hip to your knee, pausing for 10-30 seconds at points of tension. Repeat with the opposite leg."
   ],
+  "istruzioni_el": [
+   "Στο πλάι, foam roller κάτω από το εξωτερικό μέρος του μηρού, στηριγμένος στον πήχη.",
+   "Κύλησε το foam roller από το ισχίο ως το γόνατο.",
+   "Χρησιμοποίησε το άλλο πόδι στο πάτωμα για να ρυθμίσεις την πίεση, μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Iliotibial_Tract-SMR/0.jpg",
    "Iliotibial_Tract-SMR/1.jpg"
@@ -3593,6 +4247,7 @@
   "id": "Hamstring-SMR",
   "nome": "Rullo sui femorali",
   "nome_en": "Hamstring-SMR",
+  "nome_el": "Foam roller στους οπίσθιους μηριαίους",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "principiante",
@@ -3615,6 +4270,11 @@
    "Using your hands, lift your hips off of the floor and shift your weight on the foam roll to one leg. Relax the hamstrings of the leg you are stretching.",
    "Roll over the foam from below the hip to above the back of the knee, pausing at points of tension for 10-30 seconds. Repeat for the other leg."
   ],
+  "istruzioni_el": [
+   "Καθιστός, foam roller κάτω από το πίσω μέρος των μηρών, χέρια στο πάτωμα πίσω σου.",
+   "Σήκωσε τη λεκάνη και κύλησε το foam roller από τον γλουτό ως το γόνατο.",
+   "Σταμάτα στα πιο σφιγμένα σημεία."
+  ],
   "immagini": [
    "Hamstring-SMR/0.jpg",
    "Hamstring-SMR/1.jpg"
@@ -3624,6 +4284,7 @@
   "id": "Piriformis-SMR",
   "nome": "Rullo sui glutei",
   "nome_en": "Piriformis-SMR",
+  "nome_el": "Foam roller στους γλουτούς",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
@@ -3645,6 +4306,11 @@
    "Sit with your buttocks on top of a foam roll. Bend your knees, and then cross one leg so that the ankle is over the knee. This will be your starting position.",
    "Shift your weight to the side of the crossed leg, rolling over the buttocks until you feel tension in your upper glute. You may assist the stretch by using one hand to pull the bent knee towards your chest. Hold this position for 10-30 seconds, and then switch sides."
   ],
+  "istruzioni_el": [
+   "Καθιστός πάνω στο foam roller, βάλε τον έναν αστράγαλο πάνω στο αντίθετο γόνατο.",
+   "Γείρε προς την πλευρά του ποδιού που είναι από πάνω και κύλησε το foam roller στον γλουτό.",
+   "Μετά άλλαξε πλευρά."
+  ],
   "immagini": [
    "Piriformis-SMR/0.jpg",
    "Piriformis-SMR/1.jpg"
@@ -3654,6 +4320,7 @@
   "id": "Rhomboids-SMR",
   "nome": "Rullo sulla parte alta della schiena",
   "nome_en": "Rhomboids-SMR",
+  "nome_el": "Foam roller στο πάνω μέρος της πλάτης",
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
@@ -3677,6 +4344,11 @@
    "Lay down with your back on the floor. Place a foam roll underneath your upper back, and cross your arms in front of you, protracting your shoulders. This will be your starting position.",
    "Raise your hips off of the ground, placing your weight onto the foam roll. Shift your weight to one side at a time, rolling over your middle and upper back. Pause at points of tension for 10-30 seconds."
   ],
+  "istruzioni_el": [
+   "Ξαπλωμένος ανάσκελα, foam roller κάτω από το πάνω μέρος της πλάτης και χέρια σταυρωμένα μπροστά.",
+   "Σήκωσε τη λεκάνη και κύλησε το foam roller ανάμεσα στις ωμοπλάτες.",
+   "Μετέφερε λίγο το βάρος δεξιά και λίγο αριστερά."
+  ],
   "immagini": [
    "Rhomboids-SMR/0.jpg",
    "Rhomboids-SMR/1.jpg"
@@ -3686,6 +4358,7 @@
   "id": "Wide-Grip_Lat_Pulldown",
   "nome": "Lat machine presa larga",
   "nome_en": "Wide-Grip Lat Pulldown",
+  "nome_el": "Έλξεις τροχαλίας με ανοιχτή λαβή",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -3714,6 +4387,11 @@
    "After a second at the contracted position squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
    "Repeat this motion for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τους μηρούς κλειδωμένους κάτω από τα μαξιλαράκια και πιάσε τη μπάρα πιο ανοιχτά από τους ώμους.",
+   "Στήθος έξω, τράβα τη μπάρα προς το πάνω μέρος του στήθους φέρνοντας τους αγκώνες κάτω και πίσω.",
+   "Ανέβα αργά μέχρι να τεντωθούν τα χέρια, χωρίς να κουνάς τον κορμό."
+  ],
   "immagini": [
    "Wide-Grip_Lat_Pulldown/0.jpg",
    "Wide-Grip_Lat_Pulldown/1.jpg"
@@ -3723,6 +4401,7 @@
   "id": "Close-Grip_Front_Lat_Pulldown",
   "nome": "Lat machine presa stretta",
   "nome_en": "Close-Grip Front Lat Pulldown",
+  "nome_el": "Έλξεις τροχαλίας με κλειστή λαβή",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -3751,6 +4430,11 @@
    "After a second in the contracted position, while squeezing your shoulder blades together, slowly raise the bar back to the starting position when your arms are fully extended and the lats are fully stretched. Inhale during this portion of the movement.",
    "6. Repeat this motion for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε τη μπάρα με τα χέρια στο πλάτος των ώμων, παλάμες προς τα εμπρός.",
+   "Τράβα τη μπάρα προς το στήθος κρατώντας τους αγκώνες κοντά στο σώμα.",
+   "Ανέβα αργά μέχρι να νιώσεις τους ραχιαίους να τεντώνονται."
+  ],
   "immagini": [
    "Close-Grip_Front_Lat_Pulldown/0.jpg",
    "Close-Grip_Front_Lat_Pulldown/1.jpg"
@@ -3760,6 +4444,7 @@
   "id": "Underhand_Cable_Pulldowns",
   "nome": "Lat machine presa inversa",
   "nome_en": "Underhand Cable Pulldowns",
+  "nome_el": "Έλξεις τροχαλίας με ανάποδη λαβή",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -3788,6 +4473,11 @@
    "After a second on the contracted position, while breathing in, slowly bring the bar back to the starting position when your arms are fully extended and the lats are fully stretched.",
    "Repeat this motion for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε τη μπάρα με τις παλάμες προς εσένα, χέρια στο πλάτος των ώμων.",
+   "Τράβα ως το στήθος φέρνοντας τους αγκώνες προς τα πλευρά.",
+   "Ανέβα αργά: δουλεύουν και οι δικέφαλοι."
+  ],
   "immagini": [
    "Underhand_Cable_Pulldowns/0.jpg",
    "Underhand_Cable_Pulldowns/1.jpg"
@@ -3797,6 +4487,7 @@
   "id": "Straight-Arm_Pulldown",
   "nome": "Pulldown a braccia tese",
   "nome_en": "Straight-Arm Pulldown",
+  "nome_el": "Έλξεις τροχαλίας με τεντωμένα χέρια",
   "tipo": "forza",
   "schema": "trazione_verticale",
   "livello": "principiante",
@@ -3824,6 +4515,11 @@
    "While keeping the arms straight, go back to the starting position while breathing in.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος μπροστά στην ψηλή τροχαλία, πιάσε τη μπάρα με σχεδόν τεντωμένα χέρια.",
+   "Με τον κορμό ελαφρώς γερμένο μπροστά, φέρε τη μπάρα προς τους μηρούς χωρίς να λυγίσεις τους αγκώνες.",
+   "Ανέβα αργά μέχρι το ύψος του κεφαλιού."
+  ],
   "immagini": [
    "Straight-Arm_Pulldown/0.jpg",
    "Straight-Arm_Pulldown/1.jpg"
@@ -3833,6 +4529,7 @@
   "id": "Seated_Cable_Rows",
   "nome": "Pulley basso (rematore ai cavi)",
   "nome_en": "Seated Cable Rows",
+  "nome_el": "Κωπηλατική χαμηλής τροχαλίας",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -3860,6 +4557,11 @@
    "Keeping the torso stationary, pull the handles back towards your torso while keeping the arms close to it until you touch the abdominals. Breathe out as you perform that movement. At that point you should be squeezing your back muscles hard. Hold that contraction for a second and slowly go back to the original position while breathing in.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τα πόδια στο πατάκι και τα γόνατα ελαφρώς λυγισμένα, πλάτη ίσια.",
+   "Τράβα τη λαβή προς τον αφαλό φέρνοντας τους αγκώνες πίσω και σφίγγοντας τις ωμοπλάτες.",
+   "Γύρνα μπροστά αργά με τεντωμένα χέρια, χωρίς να καμπουριάσεις την πλάτη."
+  ],
   "immagini": [
    "Seated_Cable_Rows/0.jpg",
    "Seated_Cable_Rows/1.jpg"
@@ -3869,6 +4571,7 @@
   "id": "Seated_One-arm_Cable_Pulley_Rows",
   "nome": "Pulley a un braccio",
   "nome_en": "Seated One-arm Cable Pulley Rows",
+  "nome_el": "Κωπηλατική τροχαλίας με ένα χέρι",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "intermedio",
@@ -3900,6 +4603,11 @@
    "Hold that contraction for a second and slowly go back to the original position while breathing in. Tip: Remember to rotate the wrist as you go back to the starting position so that the palms are facing down again.",
    "Repeat for the recommended amount of repetitions and then perform the same movement with the right hand."
   ],
+  "istruzioni_el": [
+   "Καθιστός ή όρθιος, πιάσε τη λαβή με ένα μόνο χέρι, κορμός ακίνητος.",
+   "Τράβα τη λαβή προς το πλευρό φέρνοντας τον αγκώνα πίσω.",
+   "Γύρνα αργά με τεντωμένο χέρι και επανάλαβε με το άλλο χέρι."
+  ],
   "immagini": [
    "Seated_One-arm_Cable_Pulley_Rows/0.jpg",
    "Seated_One-arm_Cable_Pulley_Rows/1.jpg"
@@ -3909,6 +4617,7 @@
   "id": "Leverage_Iso_Row",
   "nome": "Rematore alla macchina",
   "nome_en": "Leverage Iso Row",
+  "nome_el": "Κωπηλατική στο μηχάνημα",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -3933,6 +4642,11 @@
    "Pull the handles towards your torso, retracting your shoulder blades as you flex the elbow.",
    "Pause at the bottom of the motion, and then slowly return the handles to the starting position. For multiple repetitions, avoid completely returning the weight to the stops to keep tension on the muscles being worked."
   ],
+  "istruzioni_el": [
+   "Ρύθμισε το κάθισμα ώστε οι λαβές να είναι στο ύψος του στήθους, στήθος στο μαξιλάρι.",
+   "Τράβα τις λαβές προς εσένα φέρνοντας τους αγκώνες πίσω και σφίγγοντας τις ωμοπλάτες.",
+   "Γύρνα μπροστά αργά μέχρι να τεντωθούν τα χέρια."
+  ],
   "immagini": [
    "Leverage_Iso_Row/0.jpg",
    "Leverage_Iso_Row/1.jpg"
@@ -3942,6 +4656,7 @@
   "id": "Leverage_High_Row",
   "nome": "Rematore alto alla macchina",
   "nome_en": "Leverage High Row",
+  "nome_el": "Ψηλή κωπηλατική στο μηχάνημα",
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
@@ -3965,6 +4680,11 @@
    "Pause at the bottom of the motion, and then slowly return the handles to the starting position.",
    "For multiple repetitions, avoid completely returning the weight to the stops to keep tension on the muscles being worked."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τις λαβές ψηλά μπροστά σου και τους μηρούς κλειδωμένους.",
+   "Τράβα τις λαβές κάτω και πίσω, προς το στήθος, σφίγγοντας τις ωμοπλάτες.",
+   "Ανέβα αργά ελέγχοντας το βάρος."
+  ],
   "immagini": [
    "Leverage_High_Row/0.jpg",
    "Leverage_High_Row/1.jpg"
@@ -3974,6 +4694,7 @@
   "id": "Face_Pull",
   "nome": "Face pull ai cavi",
   "nome_en": "Face Pull",
+  "nome_el": "Face pull στην τροχαλία",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "intermedio",
@@ -3996,6 +4717,11 @@
   "istruzioni_en": [
    "Facing a high pulley with a rope or dual handles attached, pull the weight directly towards your face, separating your hands as you do so. Keep your upper arms parallel to the ground."
   ],
+  "istruzioni_el": [
+   "Τροχαλία στο ύψος του προσώπου με το σχοινί: πιάσ' το με τους αντίχειρες προς εσένα.",
+   "Τράβα το σχοινί προς το μέτωπο ανοίγοντας τα χέρια και φέρνοντας τους αγκώνες ψηλά και πίσω.",
+   "Γύρνα αργά: δουλεύουν οι οπίσθιοι δελτοειδείς και η στάση του σώματος."
+  ],
   "immagini": [
    "Face_Pull/0.jpg",
    "Face_Pull/1.jpg"
@@ -4005,6 +4731,7 @@
   "id": "Leverage_Chest_Press",
   "nome": "Chest press",
   "nome_en": "Leverage Chest Press",
+  "nome_el": "Μηχάνημα πιέσεων στήθους",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4031,6 +4758,11 @@
    "Press the handles forward by extending through the elbow.",
    "After a brief pause at the top, return the weight just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
   ],
+  "istruzioni_el": [
+   "Ρύθμισε το κάθισμα ώστε οι λαβές να είναι στο ύψος της μέσης του στήθους.",
+   "Σπρώξε τις λαβές μπροστά μέχρι τα χέρια να τεντωθούν σχεδόν, χωρίς να ξεκολλήσει η πλάτη.",
+   "Γύρνα πίσω αργά μέχρι να νιώσεις το στήθος να τεντώνεται."
+  ],
   "immagini": [
    "Leverage_Chest_Press/0.jpg",
    "Leverage_Chest_Press/1.jpg"
@@ -4040,6 +4772,7 @@
   "id": "Leverage_Incline_Chest_Press",
   "nome": "Chest press inclinata",
   "nome_en": "Leverage Incline Chest Press",
+  "nome_el": "Μηχάνημα πιέσεων στήθους σε κλίση",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4065,6 +4798,11 @@
    "Press the handles forward by extending through the elbow.",
    "After a brief pause at the top, return the weight just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
   ],
+  "istruzioni_el": [
+   "Κάθισε με την πλάτη ακουμπισμένη και τις λαβές στο ύψος του πάνω στήθους.",
+   "Σπρώξε μπροστά και πάνω μέχρι τα χέρια να τεντωθούν σχεδόν.",
+   "Γύρνα αργά: δουλεύει περισσότερο το πάνω στήθος."
+  ],
   "immagini": [
    "Leverage_Incline_Chest_Press/0.jpg",
    "Leverage_Incline_Chest_Press/1.jpg"
@@ -4074,6 +4812,7 @@
   "id": "Butterfly",
   "nome": "Pectoral machine (butterfly)",
   "nome_en": "Butterfly",
+  "nome_el": "Πεταλούδα (pec deck)",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4098,6 +4837,11 @@
    "Return back to the starting position slowly as you inhale until your chest muscles are fully stretched.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με την πλάτη ακουμπισμένη, χέρια ανοιχτά στα μαξιλαράκια ή στις λαβές.",
+   "Κλείσε τα χέρια μπροστά στο στήθος σφίγγοντας τους θωρακικούς.",
+   "Άνοιξε ξανά αργά μέχρι να νιώσεις το στήθος να τεντώνεται, όχι παραπέρα."
+  ],
   "immagini": [
    "Butterfly/0.jpg",
    "Butterfly/1.jpg"
@@ -4107,6 +4851,7 @@
   "id": "Reverse_Machine_Flyes",
   "nome": "Pectoral inversa",
   "nome_en": "Reverse Machine Flyes",
+  "nome_el": "Ανάποδη πεταλούδα",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -4130,6 +4875,11 @@
    "Keep your arms slightly bent throughout the movement, with all of the motion occurring at the shoulder joint.",
    "Pause at the rear of the movement, and slowly return the weight to the starting position."
   ],
+  "istruzioni_el": [
+   "Κάθισε με το στήθος στην πλάτη του καθίσματος και πιάσε τις λαβές με τεντωμένα χέρια μπροστά.",
+   "Άνοιξε τα χέρια προς τα πίσω σφίγγοντας τις ωμοπλάτες.",
+   "Γύρνα αργά: δουλεύουν οι οπίσθιοι δελτοειδείς και το πάνω μέρος της πλάτης."
+  ],
   "immagini": [
    "Reverse_Machine_Flyes/0.jpg",
    "Reverse_Machine_Flyes/1.jpg"
@@ -4139,6 +4889,7 @@
   "id": "Cable_Crossover",
   "nome": "Croce ai cavi",
   "nome_en": "Cable Crossover",
+  "nome_el": "Χιαστί στις τροχαλίες",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4165,6 +4916,11 @@
    "Return your arms back to the starting position as you breathe out. Make sure to use the same arc of motion used to lower the weights.",
    "Hold for a second at the starting position and repeat the movement for the prescribed amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Στη μέση ανάμεσα στις δύο ψηλές τροχαλίες, μία λαβή σε κάθε χέρι, ένα πόδι μπροστά.",
+   "Με τους αγκώνες ελάχιστα λυγισμένους, φέρε τα χέρια το ένα προς το άλλο μπροστά στο στήθος.",
+   "Άνοιξε ξανά αργά μέχρι να νιώσεις το στήθος να τεντώνεται."
+  ],
   "immagini": [
    "Cable_Crossover/0.jpg",
    "Cable_Crossover/1.jpg"
@@ -4174,6 +4930,7 @@
   "id": "Low_Cable_Crossover",
   "nome": "Croce ai cavi dal basso",
   "nome_en": "Low Cable Crossover",
+  "nome_el": "Χιαστί από χαμηλές τροχαλίες",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4199,6 +4956,11 @@
    "With a slight bend in your arms, draw your hands upward and toward the midline of your body. Your hands should come together in front of your chest, palms facing up.",
    "Return your arms back to the starting position after a brief pause."
   ],
+  "istruzioni_el": [
+   "Τροχαλίες χαμηλά, μία λαβή σε κάθε χέρι, κορμός ίσιος.",
+   "Φέρε τα χέρια πάνω και μπροστά, στο ύψος του προσώπου, με τους αγκώνες ελάχιστα λυγισμένους.",
+   "Κατέβα αργά: δουλεύει το πάνω στήθος."
+  ],
   "immagini": [
    "Low_Cable_Crossover/0.jpg",
    "Low_Cable_Crossover/1.jpg"
@@ -4208,6 +4970,7 @@
   "id": "Leverage_Shoulder_Press",
   "nome": "Shoulder press alla macchina",
   "nome_en": "Leverage Shoulder Press",
+  "nome_el": "Μηχάνημα πιέσεων ώμων",
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "principiante",
@@ -4232,6 +4995,11 @@
    "Press the handles upward by extending through the elbow.",
    "After a brief pause at the top, return the weight to just above the start position, keeping tension on the muscles by not returning the weight to the stops until the set is complete."
   ],
+  "istruzioni_el": [
+   "Ρύθμισε το κάθισμα ώστε οι λαβές να είναι στο ύψος των ώμων.",
+   "Σπρώξε προς τα πάνω μέχρι τα χέρια να τεντωθούν σχεδόν, πλάτη ακουμπισμένη.",
+   "Κατέβα αργά μέχρι το ύψος των αυτιών."
+  ],
   "immagini": [
    "Leverage_Shoulder_Press/0.jpg",
    "Leverage_Shoulder_Press/1.jpg"
@@ -4241,6 +5009,7 @@
   "id": "Standing_Low-Pulley_Deltoid_Raise",
   "nome": "Alzata laterale al cavo",
   "nome_en": "Standing Low-Pulley Deltoid Raise",
+  "nome_el": "Πλάγια ανύψωση στην τροχαλία",
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
@@ -4268,6 +5037,11 @@
    "Repeat for the recommended amount of repetitions.",
    "Switch arms and repeat the exercise."
   ],
+  "istruzioni_el": [
+   "Στο πλάι της χαμηλής τροχαλίας, πιάσε τη λαβή με το χέρι που είναι πιο μακριά.",
+   "Σήκωσε το χέρι στο πλάι μέχρι το ύψος του ώμου, αγκώνας ελάχιστα λυγισμένος.",
+   "Κατέβα αργά και επανάλαβε από την άλλη πλευρά."
+  ],
   "immagini": [
    "Standing_Low-Pulley_Deltoid_Raise/0.jpg",
    "Standing_Low-Pulley_Deltoid_Raise/1.jpg"
@@ -4277,6 +5051,7 @@
   "id": "Triceps_Pushdown",
   "nome": "Push down ai cavi",
   "nome_en": "Triceps Pushdown",
+  "nome_el": "Πιέσεις τρικεφάλων στην τροχαλία",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -4304,6 +5079,11 @@
    "After a second hold at the contracted position, bring the bar slowly up to the starting point. Breathe in as you perform this step.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Μπροστά στην ψηλή τροχαλία, πιάσε τη μπάρα με τις παλάμες προς τα κάτω, αγκώνες κολλητά στα πλευρά.",
+   "Σπρώξε τη μπάρα κάτω μέχρι να τεντωθούν τα χέρια, κουνώντας μόνο τους πήχεις.",
+   "Ανέβα αργά μέχρι περίπου τις 90° στους αγκώνες."
+  ],
   "immagini": [
    "Triceps_Pushdown/0.jpg",
    "Triceps_Pushdown/1.jpg"
@@ -4313,6 +5093,7 @@
   "id": "Triceps_Pushdown_-_Rope_Attachment",
   "nome": "Push down con corda",
   "nome_en": "Triceps Pushdown - Rope Attachment",
+  "nome_el": "Πιέσεις τρικεφάλων με σχοινί",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -4340,6 +5121,11 @@
    "After holding for a second, at the contracted position, bring the rope slowly up to the starting point. Breathe in as you perform this step.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε το σχοινί στην ψηλή τροχαλία με τους αντίχειρες προς τα πάνω, αγκώνες κολλητά στα πλευρά.",
+   "Σπρώξε κάτω και, στο τέλος, άνοιξε λίγο τα χέρια προς τα έξω.",
+   "Ανέβα αργά χωρίς να κουνάς τους αγκώνες."
+  ],
   "immagini": [
    "Triceps_Pushdown_-_Rope_Attachment/0.jpg",
    "Triceps_Pushdown_-_Rope_Attachment/1.jpg"
@@ -4349,6 +5135,7 @@
   "id": "Cable_Rope_Overhead_Triceps_Extension",
   "nome": "Tricipiti sopra la testa al cavo",
   "nome_en": "Cable Rope Overhead Triceps Extension",
+  "nome_el": "Εκτάσεις τρικεφάλων πάνω από το κεφάλι στην τροχαλία",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -4373,6 +5160,11 @@
    "Return to the starting position by flexing your triceps as you breathe out.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Με την πλάτη στην τροχαλία, σχοινί πίσω από το κεφάλι, αγκώνες ψηλά και κοντά.",
+   "Τέντωσε τα χέρια μπροστά και πάνω χωρίς να κουνάς τους αγκώνες.",
+   "Γύρνα αργά με τα χέρια πίσω από το κεφάλι."
+  ],
   "immagini": [
    "Cable_Rope_Overhead_Triceps_Extension/0.jpg",
    "Cable_Rope_Overhead_Triceps_Extension/1.jpg"
@@ -4382,6 +5174,7 @@
   "id": "Standing_Biceps_Cable_Curl",
   "nome": "Curl ai cavi",
   "nome_en": "Standing Biceps Cable Curl",
+  "nome_el": "Κάμψεις δικεφάλων στην τροχαλία",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -4408,6 +5201,11 @@
    "Slowly begin to bring the curl bar back to starting position as your breathe in.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Μπροστά στη χαμηλή τροχαλία, πιάσε τη μπάρα με τις παλάμες προς τα πάνω, αγκώνες στα πλευρά.",
+   "Λύγισε τους αγκώνες φέρνοντας τη μπάρα προς τους ώμους.",
+   "Κατέβα αργά χωρίς να κουνιέσαι."
+  ],
   "immagini": [
    "Standing_Biceps_Cable_Curl/0.jpg",
    "Standing_Biceps_Cable_Curl/1.jpg"
@@ -4417,6 +5215,7 @@
   "id": "Cable_Hammer_Curls_-_Rope_Attachment",
   "nome": "Curl a martello al cavo",
   "nome_en": "Cable Hammer Curls - Rope Attachment",
+  "nome_el": "Κάμψεις σφυριού στην τροχαλία",
   "tipo": "forza",
   "schema": "braccia",
   "livello": "principiante",
@@ -4445,6 +5244,11 @@
    "After a 1 second contraction where you squeeze your biceps, slowly start to bring the weight back to the original position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πιάσε το σχοινί στη χαμηλή τροχαλία με τους αντίχειρες προς τα πάνω, αγκώνες στα πλευρά.",
+   "Λύγισε τους αγκώνες φέρνοντας τα χέρια προς τους ώμους.",
+   "Κατέβα αργά: δουλεύουν δικέφαλοι και πήχεις."
+  ],
   "immagini": [
    "Cable_Hammer_Curls_-_Rope_Attachment/0.jpg",
    "Cable_Hammer_Curls_-_Rope_Attachment/1.jpg"
@@ -4454,6 +5258,7 @@
   "id": "Cable_Crunch",
   "nome": "Crunch al cavo in ginocchio",
   "nome_en": "Cable Crunch",
+  "nome_el": "Κοιλιακοί στην τροχαλία γονατιστός",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -4483,6 +5288,11 @@
    "Slowly return to the starting position as you inhale. Tip: Make sure that you keep constant tension on the abs throughout the movement. Also, do not choose a weight so heavy that the lower back handles the brunt of the work.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Γονατιστός μπροστά στην ψηλή τροχαλία, σχοινί στα πλάγια του κεφαλιού.",
+   "Στρογγύλεψε την πλάτη φέρνοντας τους αγκώνες προς τα γόνατα, χωρίς να τραβάς με τα χέρια.",
+   "Ανέβα αργά."
+  ],
   "immagini": [
    "Cable_Crunch/0.jpg",
    "Cable_Crunch/1.jpg"
@@ -4492,6 +5302,7 @@
   "id": "Pallof_Press",
   "nome": "Pallof press",
   "nome_en": "Pallof Press",
+  "nome_el": "Pallof press",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -4525,6 +5336,11 @@
    "Hold the repetition for several seconds before returning to the starting position.",
    "At the conclusion of the set, repeat facing the other direction."
   ],
+  "istruzioni_el": [
+   "Στο πλάι της τροχαλίας (ή του λάστιχου) στο ύψος του στήθους, λαβή με τα δύο χέρια στο στήθος.",
+   "Σπρώξε τα χέρια μπροστά με τεντωμένα χέρια χωρίς να σε γυρίσει η τροχαλία.",
+   "Κράτα ένα δευτερόλεπτο, γύρνα στο στήθος και επανάλαβε από την άλλη πλευρά."
+  ],
   "immagini": [
    "Pallof_Press/0.jpg",
    "Pallof_Press/1.jpg"
@@ -4534,6 +5350,7 @@
   "id": "Standing_Cable_Wood_Chop",
   "nome": "Taglialegna al cavo",
   "nome_en": "Standing Cable Wood Chop",
+  "nome_el": "Ξυλοκόπος στην τροχαλία",
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
@@ -4564,6 +5381,11 @@
    "Repeat to failure.",
    "Then, reposition and repeat the same series of movements on the opposite side."
   ],
+  "istruzioni_el": [
+   "Στο πλάι της ψηλής τροχαλίας, λαβή με τα δύο χέρια, πόδια στο πλάτος των ώμων.",
+   "Φέρε τα χέρια διαγώνια προς τα κάτω, γυρίζοντας κορμό και ισχία.",
+   "Γύρνα αργά και επανάλαβε από την άλλη πλευρά."
+  ],
   "immagini": [
    "Standing_Cable_Wood_Chop/0.jpg",
    "Standing_Cable_Wood_Chop/1.jpg"
@@ -4573,6 +5395,7 @@
   "id": "Leg_Press",
   "nome": "Leg press",
   "nome_en": "Leg Press",
+  "nome_el": "Πρέσα ποδιών",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -4601,6 +5424,11 @@
    "Pushing mainly with the heels of your feet and using the quadriceps go back to the starting position as you exhale.",
    "Repeat for the recommended amount of repetitions and ensure to lock the safety pins properly once you are done. You do not want that platform falling on you fully loaded."
   ],
+  "istruzioni_el": [
+   "Κάθισε με την πλάτη ακουμπισμένη, πόδια στο πατάκι στο πλάτος των ώμων.",
+   "Βγάλε τις ασφάλειες και λύγισε τα γόνατα προς το στήθος χωρίς να σηκωθεί η λεκάνη.",
+   "Σπρώξε μέχρι τα πόδια να τεντωθούν σχεδόν, χωρίς να κλειδώσεις τα γόνατα."
+  ],
   "immagini": [
    "Leg_Press/0.jpg",
    "Leg_Press/1.jpg"
@@ -4610,6 +5438,7 @@
   "id": "Calf_Press_On_The_Leg_Press_Machine",
   "nome": "Polpacci alla leg press",
   "nome_en": "Calf Press On The Leg Press Machine",
+  "nome_el": "Γάμπες στην πρέσα ποδιών",
   "tipo": "forza",
   "schema": "polpacci",
   "livello": "principiante",
@@ -4634,6 +5463,11 @@
    "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πόδια τεντωμένα, μόνο οι μύτες στην κάτω άκρη του πατακιού.",
+   "Σπρώξε με τις μύτες απομακρύνοντας το πατάκι.",
+   "Γύρνα αργά μέχρι να νιώσεις τις γάμπες να τεντώνονται."
+  ],
   "immagini": [
    "Calf_Press_On_The_Leg_Press_Machine/0.jpg",
    "Calf_Press_On_The_Leg_Press_Machine/1.jpg"
@@ -4643,6 +5477,7 @@
   "id": "Hack_Squat",
   "nome": "Hack squat",
   "nome_en": "Hack Squat",
+  "nome_el": "Hack squat",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -4673,6 +5508,11 @@
    "Begin to raise the unit as you exhale by pushing the floor with mainly with the heel of your foot as you straighten the legs again and go back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Πλάτη στην πλάτη του μηχανήματος, ώμοι κάτω από τα μαξιλαράκια, πόδια στο πλάτος των ώμων.",
+   "Βγάλε τις ασφάλειες και κατέβα λυγίζοντας τα γόνατα περίπου στις 90°.",
+   "Σπρώξε για να ανέβεις χωρίς να κλειδώσεις τα γόνατα."
+  ],
   "immagini": [
    "Hack_Squat/0.jpg",
    "Hack_Squat/1.jpg"
@@ -4682,6 +5522,7 @@
   "id": "Smith_Machine_Squat",
   "nome": "Squat al multipower",
   "nome_en": "Smith Machine Squat",
+  "nome_el": "Καθίσματα στο Smith machine",
   "tipo": "forza",
   "schema": "squat",
   "livello": "principiante",
@@ -4712,6 +5553,11 @@
    "Begin to raise the bar as you exhale by pushing the floor with the heel of your foot as you straighten the legs again and go back to the starting position.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Μπάρα στο πάνω μέρος της πλάτης, πόδια λίγο μπροστά από τη μπάρα.",
+   "Ξεκλείδωσε τη μπάρα και κατέβα σαν να κάθεσαι, πλάτη ίσια.",
+   "Σπρώξε για να ανέβεις και κλείδωσε ξανά τη μπάρα στο τέλος."
+  ],
   "immagini": [
    "Smith_Machine_Squat/0.jpg",
    "Smith_Machine_Squat/1.jpg"
@@ -4721,6 +5567,7 @@
   "id": "Smith_Machine_Bench_Press",
   "nome": "Panca piana al multipower",
   "nome_en": "Smith Machine Bench Press",
+  "nome_el": "Πιέσεις πάγκου στο Smith machine",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4749,6 +5596,11 @@
    "Repeat the movement for the prescribed amount of repetitions.",
    "When you are done, lock the bar back in the rack."
   ],
+  "istruzioni_el": [
+   "Ξάπλωσε στον πάγκο με τη μπάρα πάνω από τη μέση του στήθους.",
+   "Ξεκλείδωσε τη μπάρα και κατέβα αργά μέχρι να αγγίξει σχεδόν το στήθος.",
+   "Σπρώξε μέχρι να τεντωθούν τα χέρια και κλείδωσε ξανά στο τέλος."
+  ],
   "immagini": [
    "Smith_Machine_Bench_Press/0.jpg",
    "Smith_Machine_Bench_Press/1.jpg"
@@ -4758,6 +5610,7 @@
   "id": "Smith_Machine_Incline_Bench_Press",
   "nome": "Panca inclinata al multipower",
   "nome_en": "Smith Machine Incline Bench Press",
+  "nome_el": "Πιέσεις σε κεκλιμένο πάγκο στο Smith machine",
   "tipo": "forza",
   "schema": "spinta_orizzontale",
   "livello": "principiante",
@@ -4786,6 +5639,11 @@
    "Repeat the movement for the prescribed amount of repetitions.",
    "When you are done, place the bar back in the rack."
   ],
+  "istruzioni_el": [
+   "Πάγκος σε κλίση περίπου 30°, μπάρα πάνω από το πάνω στήθος.",
+   "Ξεκλείδωσε και κατέβα αργά μέχρι να αγγίξει σχεδόν το στήθος.",
+   "Σπρώξε μέχρι να τεντωθούν τα χέρια: δουλεύει περισσότερο το πάνω στήθος."
+  ],
   "immagini": [
    "Smith_Machine_Incline_Bench_Press/0.jpg",
    "Smith_Machine_Incline_Bench_Press/1.jpg"
@@ -4795,6 +5653,7 @@
   "id": "Smith_Single-Leg_Split_Squat",
   "nome": "Affondo al multipower",
   "nome_en": "Smith Single-Leg Split Squat",
+  "nome_el": "Προβολή στο Smith machine",
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
@@ -4825,6 +5684,11 @@
    "Repeat for the recommended amount of repetitions.",
    "Switch legs and repeat the movement."
   ],
+  "istruzioni_el": [
+   "Μπάρα στην πλάτη, ένα πόδι μπροστά και ένα πίσω, όπως σε προβολή.",
+   "Κατέβα λυγίζοντας και τα δύο γόνατα, ο κορμός μένει ίσιος.",
+   "Σπρώξε με το μπροστινό πόδι για να ανέβεις· μετά άλλαξε πόδι."
+  ],
   "immagini": [
    "Smith_Single-Leg_Split_Squat/0.jpg",
    "Smith_Single-Leg_Split_Squat/1.jpg"
@@ -4834,6 +5698,7 @@
   "id": "Smith_Machine_Stiff-Legged_Deadlift",
   "nome": "Stacco a gambe tese al multipower",
   "nome_en": "Smith Machine Stiff-Legged Deadlift",
+  "nome_el": "Άρσεις με τεντωμένα πόδια στο Smith machine",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -4861,6 +5726,11 @@
    "Start bringing your torso up straight again as soon as you feel the hamstrings stretch by extending your hips and waist until you are back at the starting position. Inhale as you perform this movement.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Όρθιος με τη μπάρα μπροστά στους μηρούς, γόνατα ελάχιστα λυγισμένα.",
+   "Φέρε τη λεκάνη πίσω και κατέβα με τη μπάρα κατά μήκος των ποδιών, πλάτη ίσια.",
+   "Ανέβα σπρώχνοντας τη λεκάνη μπροστά: δουλεύουν οπίσθιοι μηριαίοι και γλουτοί."
+  ],
   "immagini": [
    "Smith_Machine_Stiff-Legged_Deadlift/0.jpg",
    "Smith_Machine_Stiff-Legged_Deadlift/1.jpg"
@@ -4870,6 +5740,7 @@
   "id": "Pull_Through",
   "nome": "Pull through al cavo",
   "nome_en": "Pull Through",
+  "nome_el": "Pull through στην τροχαλία",
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
@@ -4894,6 +5765,11 @@
    "Begin standing a few feet in front of a low pulley with a rope or handle attached. Face away from the machine, straddling the cable, with your feet set wide apart.",
    "Begin the movement by reaching through your legs as far as possible, bending at the hips. Keep your knees slightly bent. Keeping your arms straight, extend through the hip to stand straight up. Avoid pulling upward through the shoulders; all of the motion should originate through the hips."
   ],
+  "istruzioni_el": [
+   "Με την πλάτη στη χαμηλή τροχαλία, σχοινί ανάμεσα στα πόδια, πόδια λίγο πιο ανοιχτά από τους ώμους.",
+   "Φέρε τη λεκάνη πίσω σκύβοντας μπροστά με ίσια πλάτη.",
+   "Ανέβα σπρώχνοντας τη λεκάνη μπροστά και σφίγγοντας τους γλουτούς."
+  ],
   "immagini": [
    "Pull_Through/0.jpg",
    "Pull_Through/1.jpg"
@@ -4903,6 +5779,7 @@
   "id": "Leg_Extensions",
   "nome": "Leg extension",
   "nome_en": "Leg Extensions",
+  "nome_el": "Εκτάσεις ποδιών",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "principiante",
@@ -4926,6 +5803,11 @@
    "Slowly lower the weight back to the original position as you inhale, ensuring that you do not go past the 90-degree angle limit.",
    "Repeat for the recommended amount of times."
   ],
+  "istruzioni_el": [
+   "Κάθισε με την πλάτη ακουμπισμένη και το μαξιλαράκι πάνω από τους αστραγάλους.",
+   "Τέντωσε τα πόδια μέχρι σχεδόν να ισιώσουν, σφίγγοντας τους τετρακέφαλους.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Leg_Extensions/0.jpg",
    "Leg_Extensions/1.jpg"
@@ -4935,6 +5817,7 @@
   "id": "Seated_Leg_Curl",
   "nome": "Leg curl da seduto",
   "nome_en": "Seated Leg Curl",
+  "nome_el": "Κάμψεις ποδιών καθιστός",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "principiante",
@@ -4959,6 +5842,11 @@
    "Slowly return to the starting position as you breathe in.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με το μαξιλαράκι πίσω από τους αστραγάλους και τους μηρούς κλειδωμένους.",
+   "Λύγισε τα γόνατα φέρνοντας τις φτέρνες κάτω από το κάθισμα.",
+   "Γύρνα αργά με τεντωμένα πόδια."
+  ],
   "immagini": [
    "Seated_Leg_Curl/0.jpg",
    "Seated_Leg_Curl/1.jpg"
@@ -4968,6 +5856,7 @@
   "id": "Lying_Leg_Curls",
   "nome": "Leg curl sdraiato",
   "nome_en": "Lying Leg Curls",
+  "nome_el": "Κάμψεις ποδιών πρηνής",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "principiante",
@@ -4991,6 +5880,11 @@
    "As you exhale, curl your legs up as far as possible without lifting the upper legs from the pad. Once you hit the fully contracted position, hold it for a second.",
    "As you inhale, bring the legs back to the initial position. Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Ξάπλωσε μπρούμυτα με το μαξιλαράκι πίσω από τους αστραγάλους.",
+   "Λύγισε τα γόνατα φέρνοντας τις φτέρνες προς τους γλουτούς, λεκάνη σε επαφή με τον πάγκο.",
+   "Κατέβα αργά."
+  ],
   "immagini": [
    "Lying_Leg_Curls/0.jpg",
    "Lying_Leg_Curls/1.jpg"
@@ -5000,6 +5894,7 @@
   "id": "Thigh_Adductor",
   "nome": "Adduttori alla macchina",
   "nome_en": "Thigh Adductor",
+  "nome_el": "Προσαγωγοί στο μηχάνημα",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "principiante",
@@ -5026,6 +5921,11 @@
    "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary and avoid fast jerking motions in order to prevent any injuries from occurring.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τα πόδια ανοιχτά και τα μαξιλαράκια στο εσωτερικό των γονάτων.",
+   "Κλείσε τα πόδια σφίγγοντας το εσωτερικό των μηρών.",
+   "Άνοιξε ξανά αργά."
+  ],
   "immagini": [
    "Thigh_Adductor/0.jpg",
    "Thigh_Adductor/1.jpg"
@@ -5035,6 +5935,7 @@
   "id": "Thigh_Abductor",
   "nome": "Abduttori alla macchina",
   "nome_en": "Thigh Abductor",
+  "nome_el": "Απαγωγοί στο μηχάνημα",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "principiante",
@@ -5058,6 +5959,11 @@
    "Feel the contraction for a second and begin to move your legs back to the starting position while breathing in. Note: Remember to keep your upper body stationary to prevent any injuries from occurring.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τα πόδια κλειστά και τα μαξιλαράκια στο εξωτερικό των γονάτων.",
+   "Άνοιξε τα πόδια σπρώχνοντας προς τα έξω.",
+   "Κλείσε ξανά αργά: δουλεύουν οι πλάγιοι γλουτοί."
+  ],
   "immagini": [
    "Thigh_Abductor/0.jpg",
    "Thigh_Abductor/1.jpg"
@@ -5067,6 +5973,7 @@
   "id": "One-Legged_Cable_Kickback",
   "nome": "Slanci del gluteo al cavo",
   "nome_en": "One-Legged Cable Kickback",
+  "nome_el": "Λακτίσματα γλουτού στην τροχαλία",
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "intermedio",
@@ -5094,6 +6001,11 @@
    "Repeat for the recommended amount of repetitions.",
    "Switch legs and repeat the movement for the other side."
   ],
+  "istruzioni_el": [
+   "Περιαστράγαλο στη χαμηλή τροχαλία, μπροστά στο μηχάνημα με τα χέρια ακουμπισμένα.",
+   "Φέρε το πόδι πίσω και πάνω σφίγγοντας τον γλουτό, κορμός ακίνητος.",
+   "Γύρνα αργά και άλλαξε πόδι."
+  ],
   "immagini": [
    "One-Legged_Cable_Kickback/0.jpg",
    "One-Legged_Cable_Kickback/1.jpg"
@@ -5103,6 +6015,7 @@
   "id": "Seated_Calf_Raise",
   "nome": "Polpacci da seduto alla macchina",
   "nome_en": "Seated Calf Raise",
+  "nome_el": "Γάμπες καθιστός στο μηχάνημα",
   "tipo": "forza",
   "schema": "polpacci",
   "livello": "principiante",
@@ -5128,6 +6041,11 @@
    "Raise the heels by extending the ankles as high as possible as you contract the calves and breathe out. Hold the top contraction for a second.",
    "Repeat for the recommended amount of repetitions."
   ],
+  "istruzioni_el": [
+   "Κάθισε με τα μαξιλαράκια πάνω στα γόνατα και τις μύτες των ποδιών στο πατάκι.",
+   "Ανέβα στις μύτες όσο μπορείς.",
+   "Κατέβα αργά μέχρι να νιώσεις τις γάμπες να τεντώνονται."
+  ],
   "immagini": [
    "Seated_Calf_Raise/0.jpg",
    "Seated_Calf_Raise/1.jpg"
@@ -5137,6 +6055,7 @@
   "id": "Standing_Calf_Raises",
   "nome": "Polpacci in piedi alla macchina",
   "nome_en": "Standing Calf Raises",
+  "nome_el": "Γάμπες όρθιος στο μηχάνημα",
   "tipo": "forza",
   "schema": "polpacci",
   "livello": "principiante",
@@ -5160,6 +6079,11 @@
    "Raise your heels as you breathe out by extending your ankles as high as possible and flexing your calf. Ensure that the knee is kept stationary at all times. There should be no bending at any time. Hold the contracted position by a second before you start to go back down.",
    "Go back slowly to the starting position as you breathe in by lowering your heels as you bend the ankles until calves are stretched.",
    "Repeat for the recommended amount of repetitions."
+  ],
+  "istruzioni_el": [
+   "Ώμοι κάτω από τα μαξιλαράκια, μύτες των ποδιών στην άκρη του πατακιού.",
+   "Ανέβα στις μύτες με τεντωμένα πόδια.",
+   "Κατέβα αργά κάτω από το ύψος του πατακιού."
   ],
   "immagini": [
    "Standing_Calf_Raises/0.jpg",

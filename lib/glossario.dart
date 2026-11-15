@@ -37,7 +37,7 @@ Map<int, String> get sensazioniZone => {
   5: l10n.alMassimoSiRegge,
 };
 
-final _zona = RegExp(r'zon[ae] (\d)');
+final _zona = RegExp(r'(?:zon[ae]|[ζΖ]ώνη) (\d)');
 
 /// "intensità zona 2" diventa anche "facile: riesci a parlare".
 String? sensazioneDi(String testo) {

@@ -59,22 +59,28 @@ flutter build apk --debug
 ## Texts and translations
 
 - No hard-coded user-visible strings: add the text to `lib/l10n/app_it.arb`
-  (the template) **and** `lib/l10n/app_en.arb`, then use it as
+  (the template) **and** to `app_en.arb` and `app_el.arb`, then use it as
   `l10n.yourKey` (import `l10n/lingua.dart`). `flutter pub get` or
   `flutter gen-l10n` regenerates `app_localizations*.dart`; commit those too.
 - Placeholders are `{p0}`, `{p1}`… with type `Object`, and must be the same in
-  both languages (`test/lingua_test.dart` checks it).
+  every language (`test/lingua_test.dart` checks it).
 - **Values saved in the CSV files stay in Italian** (sports like `Corsa`, times
   of day like `Mattina`, session types like `Lento`, intensities like
   `zona 2`): the code compares and parses them. Translate them only on screen
   with `mostra()` / `mostraTesto()` from `lib/l10n/vocabolario.dart`.
-- To add a language: copy `app_en.arb` to `app_xx.arb`, translate it, add the
-  code to `lingueApp` in `lib/l10n/lingua.dart` and the words to
-  `vocabolario.dart`.
-- To add a language **for the workout voice only** (like Greek in
-  `app_el.arb`): translate just the keys the voice uses (`l10nVoce.…`, the
-  test in `test/lingua_test.dart` lists any that are missing), add the code to
-  `lingueVoce` and the data words to `_parole` in `vocabolario.dart`.
+- To add a language: copy `app_en.arb` to `app_xx.arb` and translate it; add
+  the code to `lingueApp` in `lib/l10n/lingua.dart`, the saved names to
+  `_nomi` and the data words to `_parole` in `vocabolario.dart`, `nome_xx`
+  and `istruzioni_xx` to `assets/esercizi.json` (read in `lib/esercizi.dart`)
+  and the widget names in `android/app/src/main/res/values-xx/strings.xml`.
+  Check the screens with
+  `flutter test tool/schermate/schermate_test.dart --dart-define=LINGUA=xx`:
+  the title font (Space Grotesk) only has Latin letters, other scripts fall
+  back to Manrope.
+- A language can also start **for the workout voice only**: translate just
+  the keys the voice uses (`l10nVoce.…`, the test in `test/lingua_test.dart`
+  lists any that are missing) and add it only to `lingueVoce` in
+  `lib/l10n/lingua.dart` (`{...lingueApp, 'xx': '…'}`).
 
 ## Privacy and security rules
 

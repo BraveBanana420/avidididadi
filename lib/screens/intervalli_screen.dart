@@ -233,7 +233,7 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
                   ButtonSegment(
                     value: true,
                     icon: Icon(Icons.pause_circle_outline_rounded),
-                    label: Text('Recupero'),
+                    label: Text(l10n.parolaRecupero),
                   ),
                 ],
                 selected: {_recupero},

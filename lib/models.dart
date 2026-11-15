@@ -25,6 +25,45 @@ List<String> get mesiNomi => [
   l10n.parolaNovembre,
   l10n.parolaDicembre,
 ];
+
+/// Il mese da solo, come titolo ("Novembre 2026"). In greco il nome dentro
+/// una data è al genitivo ("16 Νοεμβρίου"), da solo al nominativo.
+String nomeMese(int mese) => codiceLingua == 'el'
+    ? const [
+        'Ιανουάριος',
+        'Φεβρουάριος',
+        'Μάρτιος',
+        'Απρίλιος',
+        'Μάιος',
+        'Ιούνιος',
+        'Ιούλιος',
+        'Αύγουστος',
+        'Σεπτέμβριος',
+        'Οκτώβριος',
+        'Νοέμβριος',
+        'Δεκέμβριος',
+      ][mese - 1]
+    : maiuscola(mesiNomi[mese - 1]);
+
+/// Il mese abbreviato per gli assi dei grafici ("nov"). In greco le prime
+/// tre lettere non bastano: giugno e luglio sarebbero tutti e due "Ιου".
+String meseBreve(int mese) => codiceLingua == 'el'
+    ? const [
+        'Ιαν',
+        'Φεβ',
+        'Μαρ',
+        'Απρ',
+        'Μαΐ',
+        'Ιουν',
+        'Ιουλ',
+        'Αυγ',
+        'Σεπ',
+        'Οκτ',
+        'Νοε',
+        'Δεκ',
+      ][mese - 1]
+    : mesiNomi[mese - 1].substring(0, 3);
+
 const fasce = ['Mattina', 'Pranzo', 'Pomeriggio', 'Sera'];
 const sportList = [
   'Forza',

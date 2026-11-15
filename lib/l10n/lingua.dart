@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'app_localizations.dart';
 
 /// Lingue dell'app: codice e nome scritto nella lingua stessa.
-const lingueApp = {'it': 'Italiano', 'en': 'English'};
+const lingueApp = {'it': 'Italiano', 'en': 'English', 'el': 'Ελληνικά'};
 
 /// Lingua scelta dall'utente, salvata in lingua.txt. Null finché non l'ha
 /// scelta (primo avvio): allora l'app chiede quale usare.
@@ -36,10 +36,11 @@ String linguaDelTelefono() {
   return lingueApp.containsKey(c) ? c : 'en';
 }
 
-/// Lingue della voce dell'allenamento: quelle dell'app più quelle tradotte
-/// solo per la voce (indicazioni stradali, km, ritmo, zone). Nelle seconde
-/// i nomi degli esercizi restano nella lingua dell'app.
-const lingueVoce = {'it': 'Italiano', 'en': 'English', 'el': 'Ελληνικά'};
+/// Lingue della voce dell'allenamento. Per ora sono le stesse dell'app; una
+/// lingua può entrare qui prima, tradotta solo per la voce (indicazioni,
+/// km, ritmo, zone), e allora i nomi degli esercizi restano nella lingua
+/// dell'app.
+const lingueVoce = lingueApp;
 
 /// Lingua della voce scelta: 'app', 'telefono' o un codice di [lingueVoce].
 /// Salvata in avvisi.txt.

@@ -10,1655 +10,1665 @@ class AppLocalizationsEl extends AppLocalizations {
   AppLocalizationsEl([String locale = 'el']) : super(locale);
 
   @override
-  String get tenuto => 'Tenuto';
+  String get tenuto => 'Στον ρυθμό';
 
   @override
-  String get poPiuLento => 'Un po\' più lento';
+  String get poPiuLento => 'Λίγο πιο αργά';
 
   @override
-  String get moltoPiuLento => 'Molto più lento';
+  String get moltoPiuLento => 'Πολύ πιο αργά';
 
   @override
   String principaleInvece(Object p0, Object p1) {
-    return 'principale $p0 invece di $p1';
+    return 'κύριο μέρος $p0 αντί για $p1';
   }
 
   @override
   String passoInvece(Object p0, Object p1) {
-    return 'passo $p0 invece di $p1';
+    return 'ρυθμός $p0 αντί για $p1';
   }
 
   @override
   String intensitaInvece(Object p0, Object p1) {
-    return 'intensità $p0 invece di $p1';
+    return 'ένταση $p0 αντί για $p1';
   }
 
   @override
   String totaleMInveceM(Object p0, Object p1) {
-    return 'totale $p0 m invece di $p1 m';
+    return 'σύνολο $p0 μ. αντί για $p1 μ.';
   }
 
   @override
   String durataMinInvece(Object p0, Object p1) {
-    return 'durata $p0 min invece di $p1';
+    return 'διάρκεια $p0 λεπ. αντί για $p1';
   }
 
   @override
   String passoPiuLentoTarget(Object p0, Object p1, Object p2, Object p3) {
-    return 'Passo più lento del target del $p0% (fatica $p1, attesa $p2): alleggerisco il $p3.';
+    return 'Ρυθμός $p0% πιο αργός από τον στόχο (κόπωση $p1, αναμενόμενη $p2): χαλαρώνω το $p3.';
   }
 
   @override
   String faticaSopraAttesaAlleggerisco(Object p0, Object p1, Object p2) {
-    return 'Fatica $p0, sopra l\'attesa ($p1): alleggerisco il $p2.';
+    return 'Κόπωση $p0, πάνω από την αναμενόμενη ($p1): χαλαρώνω το $p2.';
   }
 
   @override
   String faticaLineaAttesaProgressione(Object p0, Object p1) {
-    return 'Fatica $p0, in linea con l\'attesa ($p1): progressione normale, una cosa alla volta.';
+    return 'Κόπωση $p0, όσο η αναμενόμενη ($p1): κανονική πρόοδος, ένα πράγμα τη φορά.';
   }
 
   @override
   String faticaSottoAttesaPiccola(Object p0, Object p1) {
-    return 'Fatica $p0, sotto l\'attesa ($p1): piccola progressione.';
+    return 'Κόπωση $p0, κάτω από την αναμενόμενη ($p1): μικρή πρόοδος.';
   }
 
   @override
   String dueSedutePesantiFila(Object p0) {
-    return 'Due sedute pesanti di fila: settimana di scarico per il $p0.';
+    return 'Δύο δύσκολες προπονήσεις στη σειρά: εβδομάδα αποκατάστασης για $p0.';
   }
 
   @override
   String get claudeImpostazioniPrivacyDisattiva =>
-      'In Claude: Impostazioni → Privacy → disattiva \"Aiuta a migliorare Claude\".';
+      'Στο Claude: Ρυθμίσεις → Απόρρητο → απενεργοποίησε το «Help improve Claude».';
 
   @override
   String get chatgptImpostazioniControlliDati =>
-      'In ChatGPT: Impostazioni → Controlli dati → disattiva \"Migliora il modello per tutti\".';
+      'Στο ChatGPT: Ρυθμίσεις → Έλεγχοι δεδομένων → απενεργοποίησε το «Βελτίωση του μοντέλου για όλους».';
 
   @override
   String get geminiDisattivaAttivitaNelle =>
-      'In Gemini: disattiva \"Attività nelle app Gemini\" (o \"Mantieni attività\") dal tuo account Google.';
+      'Στο Gemini: απενεργοποίησε τη «Δραστηριότητα εφαρμογών Gemini» (ή «Διατήρηση δραστηριότητας») στον λογαριασμό Google.';
 
   @override
   String get controllaNelleImpostazioniDell =>
-      'Controlla nelle impostazioni dell\'app se le chat servono ad addestrare il modello e, se vuoi, disattivalo.';
+      'Έλεγξε στις ρυθμίσεις της εφαρμογής αν οι συνομιλίες χρησιμοποιούνται για την εκπαίδευση του μοντέλου και, αν θέλεις, απενεργοποίησέ το.';
 
   @override
   String get nellaRispostaNonC =>
-      'Nella risposta non c\'è il blocco per l\'app. Chiedi all\'assistente di scrivere le modifiche nel formato <avidididadi>.';
+      'Η απάντηση δεν έχει μπλοκ για την εφαρμογή. Ζήτα από τον βοηθό να γράψει τις αλλαγές στη μορφή <avidididadi>.';
 
   @override
   String get codiceNellaRispostaNon =>
-      'Il codice nella risposta non è quello di questo telefono: forse è di un collegamento vecchio. Manda di nuovo i dati e riprova.';
+      'Ο κωδικός στην απάντηση δεν είναι αυτού του κινητού: ίσως προέρχεται από παλιό σύνδεσμο. Στείλε ξανά τα δεδομένα και δοκίμασε πάλι.';
 
   @override
   String get bloccoNonLeggibileChiedi =>
-      'Il blocco non è leggibile. Chiedi all\'assistente di riscriverlo.';
+      'Το μπλοκ δεν διαβάζεται. Ζήτα από τον βοηθό να το γράψει ξανά.';
 
   @override
-  String get dataInizioGiaPassata => 'La data di inizio è già passata.';
+  String get dataInizioGiaPassata => 'Η ημερομηνία έναρξης έχει ήδη περάσει.';
 
   @override
-  String get dataMancante => 'data mancante';
+  String get dataMancante => 'λείπει η ημερομηνία';
 
   @override
-  String get primaDellInizioPiano => 'prima dell\'inizio del piano';
+  String get primaDellInizioPiano => 'πριν από την έναρξη του προγράμματος';
 
   @override
   String oltreSettimane(Object p0) {
-    return 'oltre le $p0 settimane';
+    return 'πέρα από τις $p0 εβδομάδες';
   }
 
   @override
-  String get sportNonPrevisto => 'sport non previsto';
+  String get sportNonPrevisto => 'μη επιτρεπτό άθλημα';
 
   @override
-  String get durataNonSensata => 'durata non sensata';
+  String get durataNonSensata => 'η διάρκεια δεν βγάζει νόημα';
 
   @override
   String dueSeduteStessoGiorno(Object p0) {
-    return 'due sedute di $p0 lo stesso giorno';
+    return 'δύο προπονήσεις $p0 την ίδια μέρα';
   }
 
   @override
   String settimanaMancaGiornoRiposo(Object p0) {
-    return 'Settimana del $p0: manca un giorno di riposo.';
+    return 'Εβδομάδα $p0: λείπει μια μέρα ξεκούρασης.';
   }
 
   @override
   String settimanaMinutiTroppiRispetto(Object p0, Object p1, Object p2) {
-    return 'Settimana del $p0: $p1 minuti, troppi rispetto alle settimane prima (al massimo $p2).';
+    return 'Εβδομάδα $p0: $p1 λεπτά, πάρα πολλά σε σχέση με τις προηγούμενες εβδομάδες (το πολύ $p2).';
   }
 
   @override
   String appNonHaAccettato(Object p0, Object p1) {
-    return 'L\'app non ha accettato il piano per questi motivi:\n$p0\nCorreggilo e rimandalo nel blocco <avidididadi> con il codice $p1.';
+    return 'Η εφαρμογή δεν δέχτηκε το πρόγραμμα για τους εξής λόγους:\n$p0\nΔιόρθωσέ το και στείλ\' το ξανά στο μπλοκ <avidididadi> με τον κωδικό $p1.';
   }
 
   @override
-  String get allenamentoNonHaData => 'Un allenamento non ha la data.';
+  String get allenamentoNonHaData => 'Μια προπόνηση δεν έχει ημερομηνία.';
 
   @override
   String allenamentoSportDeveEssere(Object p0) {
-    return 'Allenamento del $p0: lo sport deve essere corsa, bici o nuoto.';
+    return 'Προπόνηση $p0: το άθλημα πρέπει να είναι τρέξιμο, ποδήλατο ή κολύμβηση.';
   }
 
   @override
   String allenamentoServono140(Object p0) {
-    return 'Allenamento del $p0: servono da 1 a 40 passi.';
+    return 'Προπόνηση $p0: χρειάζεται από 1 έως 40 βήματα.';
   }
 
   @override
   String allenamento(Object p0) {
-    return 'Allenamento di $p0';
+    return 'Προπόνηση $p0';
   }
 
   @override
   String allenamentoPassoServonoMinuti(Object p0, Object p1) {
-    return 'Allenamento del $p0, passo $p1: servono i minuti (fino a 300) o i metri.';
+    return 'Προπόνηση $p0, βήμα $p1: χρειάζονται τα λεπτά (έως 300) ή τα μέτρα.';
   }
 
   @override
   String allenamentoPassoRipetizioni1(Object p0, Object p1) {
-    return 'Allenamento del $p0, passo $p1: ripetizioni da 1 a 30 e recupero fino a 1800 secondi.';
+    return 'Προπόνηση $p0, βήμα $p1: από 1 έως 30 επαναλήψεις και διάλειμμα έως 1800 δευτερόλεπτα.';
   }
 
   @override
   String allenamentoDuraPiu5(Object p0) {
-    return 'Allenamento del $p0: dura più di 5 ore.';
+    return 'Προπόνηση $p0: διαρκεί πάνω από 5 ώρες.';
   }
 
   @override
-  String get trave => 'Trave';
+  String get trave => 'Hangboard';
 
   @override
-  String get circuito => 'Circuito';
+  String get circuito => 'Κύκλωμα';
 
   @override
   String get campus => 'Campus';
 
   @override
-  String get potenza => 'Potenza';
+  String get potenza => 'Ισχύς';
 
   @override
   String deveEssereNumero0(Object p0, Object p1, Object p2) {
-    return '$p0: \"$p1\" deve essere un numero da 0 a $p2.';
+    return '$p0: το «$p1» πρέπει να είναι αριθμός από 0 έως $p2.';
   }
 
   @override
   String mancaNome(Object p0) {
-    return '$p0: manca il nome.';
+    return '$p0: λείπει το όνομα.';
   }
 
   @override
   String esercizio(Object p0) {
-    return 'Esercizio $p0';
+    return 'Άσκηση $p0';
   }
 
   @override
   String get allenamentoArrampicataNonHa =>
-      'Un allenamento di arrampicata non ha il nome.';
+      'Μια προπόνηση αναρρίχησης δεν έχει όνομα.';
 
   @override
   String servono130Esercizi(Object p0) {
-    return '\"$p0\": servono da 1 a 30 esercizi.';
+    return '«$p0»: χρειάζεται από 1 έως 30 ασκήσεις.';
   }
 
   @override
   String esercizio2(Object p0, Object p1) {
-    return '\"$p0\", esercizio $p1';
+    return '«$p0», άσκηση $p1';
   }
 
   @override
-  String get recuperoTraSerie => 'Recupero tra le serie';
+  String get recuperoTraSerie => 'Διάλειμμα ανάμεσα στα σετ';
 
   @override
   String riposaSerieDopo(Object p0) {
-    return 'Riposa: la serie dopo è \"$p0\".';
+    return 'Ξεκουράσου: το επόμενο σετ είναι «$p0».';
   }
 
   @override
   String min(Object p0, Object p1) {
-    return '$p0:$p1 min';
+    return '$p0:$p1 λεπ.';
   }
 
   @override
   String dataNonValidaServe(Object p0) {
-    return 'Data non valida: $p0 (serve AAAA-MM-GG).';
+    return 'Μη έγκυρη ημερομηνία: $p0 (γράψε ΕΕΕΕ-ΜΜ-ΗΗ).';
   }
 
   @override
   String get nelBloccoNonCi =>
-      'Nel blocco non ci sono allenamenti di arrampicata.';
+      'Στο μπλοκ δεν υπάρχουν προπονήσεις αναρρίχησης.';
 
   @override
   String get backupRovinatoTuoiDati =>
-      'Il backup è rovinato: i tuoi dati sono rimasti quelli di prima.';
+      'Το αντίγραφο ασφαλείας είναι κατεστραμμένο: τα δεδομένα σου έμειναν όπως ήταν.';
 
   @override
   String errore(Object p0) {
-    return 'Errore: $p0';
+    return 'Σφάλμα: $p0';
   }
 
   @override
   String get collegaPrimaIntervalsIcu =>
-      'Collega prima intervals.icu da Profilo → Dati e collegamenti.';
+      'Σύνδεσε πρώτα το intervals.icu από Προφίλ → Δεδομένα και συνδέσεις.';
 
   @override
-  String get giaInviataIntervalsIcu => 'Già inviata a intervals.icu.';
+  String get giaInviataIntervalsIcu => 'Έχει ήδη σταλεί στο intervals.icu.';
 
   @override
-  String get inviataIntervalsIcu => 'Inviata a intervals.icu.';
+  String get inviataIntervalsIcu => 'Στάλθηκε στο intervals.icu.';
 
   @override
-  String get incollaPrimaChiaveApi => 'Incolla prima la chiave API.';
+  String get incollaPrimaChiaveApi => 'Επικόλλησε πρώτα το κλειδί API.';
 
   @override
-  String get collegato => 'Collegato';
+  String get collegato => 'Συνδεδεμένο';
 
   @override
   String collegatoCome(Object p0) {
-    return 'Collegato come $p0';
+    return 'Συνδεδεμένο ως $p0';
   }
 
   @override
   String get chiaveNonTrovataCollega =>
-      'Chiave non trovata: collega di nuovo intervals.icu.';
+      'Το κλειδί δεν βρέθηκε: σύνδεσε ξανά το intervals.icu.';
 
   @override
   String attivitaLetteIntervalsIcu(Object p0) {
-    return '$p0 attività lette da intervals.icu.';
+    return '$p0 δραστηριότητες διαβάστηκαν από το intervals.icu.';
   }
 
   @override
   String get calendarioIntervalsIcuGia =>
-      'Il calendario di intervals.icu è già aggiornato.';
+      'Το ημερολόγιο του intervals.icu είναι ήδη ενημερωμένο.';
 
   @override
-  String get sedutaMandata => 'seduta mandata';
+  String get sedutaMandata => 'προπόνηση στάλθηκε';
 
   @override
-  String get seduteMandate => 'sedute mandate';
+  String get seduteMandate => 'προπονήσεις στάλθηκαν';
 
   @override
   String intervalsIcu(Object p0) {
-    return '$p0 a intervals.icu.';
+    return '$p0 στο intervals.icu.';
   }
 
   @override
   String seduteTolteDalCalendario(Object p0) {
-    return '$p0 sedute tolte dal calendario di intervals.icu.';
+    return '$p0 προπονήσεις αφαιρέθηκαν από το ημερολόγιο του intervals.icu.';
   }
 
   @override
-  String get sincronizzazioneGiaCorso => 'Sincronizzazione già in corso.';
+  String get sincronizzazioneGiaCorso => 'Ο συγχρονισμός είναι ήδη σε εξέλιξη.';
 
   @override
   String get healthConnectVaAggiornato =>
-      'Health Connect va aggiornato: aprilo dal Play Store.';
+      'Το Health Connect χρειάζεται ενημέρωση: άνοιξέ το από το Play Store.';
 
   @override
   String get healthConnectNonInstallato =>
-      'Health Connect non è installato sul telefono.';
+      'Το Health Connect δεν είναι εγκατεστημένο στο κινητό.';
 
   @override
   String get healthConnectDisponibileSolo =>
-      'Health Connect è disponibile solo su Android.';
+      'Το Health Connect υπάρχει μόνο σε Android.';
 
   @override
-  String get healthConnectNonAncora => 'Health Connect non è ancora collegato.';
+  String get healthConnectNonAncora =>
+      'Το Health Connect δεν έχει συνδεθεί ακόμα.';
 
   @override
   String get senzaPermessoSessioniAllenamento =>
-      'Senza il permesso per le sessioni di allenamento non posso leggere nulla. Puoi darlo da \"Rivedi permessi\".';
+      'Χωρίς άδεια για τις προπονήσεις δεν μπορώ να διαβάσω τίποτα. Μπορείς να τη δώσεις από το «Έλεγχος αδειών».';
 
   @override
-  String get nessunaNovitaHealthConnect => 'Nessuna novità da Health Connect.';
+  String get nessunaNovitaHealthConnect =>
+      'Τίποτα καινούργιο από το Health Connect.';
 
   @override
   String sessioniNuove(Object p0) {
-    return '$p0 sessioni nuove';
+    return '$p0 νέες προπονήσεις';
   }
 
   @override
   String erroreDuranteSincronizzazione(Object p0) {
-    return 'Errore durante la sincronizzazione: $p0';
+    return 'Σφάλμα κατά τον συγχρονισμό: $p0';
   }
 
   @override
   String get feedbackSalvatoContaNel =>
-      'Feedback salvato: conta nel carico di allenamento.';
+      'Η αξιολόγηση αποθηκεύτηκε: μετράει στο προπονητικό φορτίο.';
 
   @override
-  String get restaUguale => 'resta uguale';
+  String get restaUguale => 'μένει ίδιο';
 
   @override
   String prossimaSeduta(Object p0, Object p1, Object p2) {
-    return '$p0\n\nProssima seduta ($p1): $p2.';
+    return '$p0\n\nΕπόμενη προπόνηση ($p1): $p2.';
   }
 
   @override
-  String get feedbackSalvato => 'Feedback salvato.';
+  String get feedbackSalvato => 'Η αξιολόγηση αποθηκεύτηκε.';
 
   @override
-  String get fileVuotoONon => 'file vuoto o non valido.';
+  String get fileVuotoONon => 'κενό ή μη έγκυρο αρχείο.';
 
   @override
   String formatoNonRiconosciutoServono(Object p0) {
-    return 'formato non riconosciuto: servono almeno le colonne data e sport (trovate: $p0).';
+    return 'η μορφή δεν αναγνωρίστηκε: χρειάζονται τουλάχιστον οι στήλες ημερομηνίας και αθλήματος (βρέθηκαν: $p0).';
   }
 
   @override
   String righeScartateDataO(Object p0) {
-    return '$p0 righe scartate (data o sport mancanti)';
+    return '$p0 γραμμές παραλείφθηκαν (λείπει ημερομηνία ή άθλημα)';
   }
 
   @override
   String ignorate(Object p0, Object p1) {
-    return '$p0 ignorate ($p1)';
+    return '$p0 αγνοήθηκαν ($p1)';
   }
 
   @override
   String sessioniNuoveAggiornate(Object p0, Object p1, Object p2) {
-    return '$p0 sessioni nuove, $p1 aggiornate$p2.';
+    return '$p0 νέες προπονήσεις, $p1 ενημερώθηκαν$p2.';
   }
 
   @override
   String gradoPiuDifficile(Object p0, Object p1) {
-    return 'Grado più difficile: $p0$p1';
+    return 'Δυσκολότερος βαθμός: $p0$p1';
   }
 
   @override
-  String get vieChiuse => 'vie chiuse';
+  String get vieChiuse => 'διαδρομές ολοκληρώθηκαν';
 
   @override
-  String get blocchiChiusi => 'blocchi chiusi';
+  String get blocchiChiusi => 'boulder ολοκληρώθηκαν';
 
   @override
   String circaMSaliti(Object p0) {
-    return 'circa $p0 m saliti';
+    return 'περίπου $p0 μ. ανάβαση';
   }
 
   @override
   String progetto(Object p0) {
-    return 'Progetto: $p0';
+    return 'Project: $p0';
   }
 
   @override
-  String get ollamaSulTuoPc => 'Ollama sul tuo PC';
+  String get ollamaSulTuoPc => 'Ollama στον υπολογιστή σου';
 
   @override
   String get serveChiaveApiConsole =>
-      'Serve una chiave API da console.anthropic.com (a consumo). L\'abbonamento Claude Pro non vale per le app esterne.';
+      'Χρειάζεσαι κλειδί API από το console.anthropic.com (πληρώνεις όσο χρησιμοποιείς). Η συνδρομή Claude Pro δεν λειτουργεί για εξωτερικές εφαρμογές.';
 
   @override
   String get serveChiaveApiPlatform =>
-      'Serve una chiave API da platform.openai.com (a consumo). L\'abbonamento ChatGPT Plus non vale per le app esterne.';
+      'Χρειάζεσαι κλειδί API από το platform.openai.com (πληρώνεις όσο χρησιμοποιείς). Η συνδρομή ChatGPT Plus δεν λειτουργεί για εξωτερικές εφαρμογές.';
 
   @override
   String get serveChiaveApiAistudio =>
-      'Serve una chiave API da aistudio.google.com: c\'è un piano gratuito con limiti giornalieri.';
+      'Χρειάζεσαι κλειδί API από το aistudio.google.com: υπάρχει δωρεάν επίπεδο με ημερήσια όρια.';
 
   @override
   String get gratisPrivatoModelloGira =>
-      'Gratis e privato: il modello gira sul tuo PC, nella stessa rete Wi-Fi. Nessuna chiave. Sul PC avvia Ollama con OLLAMA_HOST=0.0.0.0.';
+      'Δωρεάν και ιδιωτικό: το μοντέλο τρέχει στον υπολογιστή σου, στο ίδιο δίκτυο Wi-Fi. Χωρίς κλειδί. Στον υπολογιστή ξεκίνα το Ollama με OLLAMA_HOST=0.0.0.0.';
 
   @override
-  String get nelBloccoNonCi2 => 'Nel blocco non ci sono allenamenti.';
+  String get nelBloccoNonCi2 => 'Στο μπλοκ δεν υπάρχουν προπονήσεις.';
 
   @override
   String get nelPianoMancanoData =>
-      'Nel piano mancano la data di inizio o le sedute.';
+      'Στο πρόγραμμα λείπουν η ημερομηνία έναρξης ή οι προπονήσεις.';
 
   @override
-  String get nelBloccoNonCi3 => 'Nel blocco non ci sono modifiche valide.';
+  String get nelBloccoNonCi3 => 'Στο μπλοκ δεν υπάρχουν έγκυρες αλλαγές.';
 
   @override
   String get propostaNonLeggibileChiedi =>
-      'La proposta non è leggibile: chiedi al coach di riscriverla.';
+      'Η πρόταση δεν διαβάζεται: ζήτα από τον προπονητή να τη γράψει ξανά.';
 
   @override
   String sportNonPrevisto2(Object p0) {
-    return 'sport non previsto ($p0)';
+    return 'μη επιτρεπτό άθλημα ($p0)';
   }
 
   @override
-  String get dataGiaPassata => 'la data è già passata';
+  String get dataGiaPassata => 'η ημερομηνία έχει ήδη περάσει';
 
   @override
   String durataNonSensataMin(Object p0) {
-    return 'durata non sensata ($p0 min)';
+    return 'η διάρκεια δεν βγάζει νόημα ($p0 λεπ.)';
   }
 
   @override
   String cGiaSedutaQuel(Object p0) {
-    return 'c\'è già una seduta di $p0 quel giorno';
+    return 'υπάρχει ήδη προπόνηση $p0 εκείνη τη μέρα';
   }
 
   @override
-  String get mancaDurata => 'manca la durata';
+  String get mancaDurata => 'λείπει η διάρκεια';
 
   @override
   String quelGiornoNonC(Object p0) {
-    return 'quel giorno non c\'è una seduta di $p0';
+    return 'εκείνη τη μέρα δεν υπάρχει προπόνηση $p0';
   }
 
   @override
-  String get nuovaDataMancanteO => 'nuova data mancante o passata';
+  String get nuovaDataMancanteO => 'η νέα ημερομηνία λείπει ή έχει περάσει';
 
   @override
   String cGiaSedutaGiorno(Object p0) {
-    return 'c\'è già una seduta di $p0 il giorno scelto';
+    return 'υπάρχει ήδη προπόνηση $p0 τη μέρα που διάλεξες';
   }
 
   @override
   String settimanaPasserebbeMinutiOltre(Object p0, Object p1) {
-    return 'la settimana passerebbe da $p0 a $p1 minuti (oltre +10%)';
+    return 'η εβδομάδα θα πήγαινε από $p0 σε $p1 λεπτά (πάνω από +10%)';
   }
 
   @override
   String get settimanaResterebbeSenzaGiorno =>
-      'la settimana resterebbe senza un giorno di riposo';
+      'η εβδομάδα θα έμενε χωρίς μέρα ξεκούρασης';
 
   @override
   String nuovaSeduta(Object p0, Object p1) {
-    return '$p0: nuova seduta, $p1';
+    return '$p0: νέα προπόνηση, $p1';
   }
 
   @override
   String tolta(Object p0, Object p1) {
-    return '$p0: tolta$p1';
+    return '$p0: αφαιρέθηκε$p1';
   }
 
   @override
-  String get ellittica => 'Ellittica';
+  String get ellittica => 'Ελλειπτικό';
 
   @override
-  String get canottaggio => 'Canottaggio';
+  String get canottaggio => 'Κωπηλασία';
 
   @override
-  String get vogatore => 'Vogatore';
+  String get vogatore => 'Κωπηλατική μηχανή';
 
   @override
   String get stepper => 'Stepper';
 
   @override
-  String get scale => 'Scale';
+  String get scale => 'Σκάλες';
 
   @override
-  String get sci => 'Sci';
+  String get sci => 'Σκι';
 
   @override
-  String get scialpinismo => 'Scialpinismo';
+  String get scialpinismo => 'Ορειβατικό σκι';
 
   @override
-  String get sciFondo => 'Sci di fondo';
+  String get sciFondo => 'Σκι αντοχής';
 
   @override
-  String get pattinaggio => 'Pattinaggio';
+  String get pattinaggio => 'Πατινάζ';
 
   @override
-  String get kayak => 'Kayak';
+  String get kayak => 'Καγιάκ';
 
   @override
-  String get canoa => 'Canoa';
+  String get canoa => 'Κανό';
 
   @override
-  String get vela => 'Vela';
+  String get vela => 'Ιστιοπλοΐα';
 
   @override
-  String get surf => 'Surf';
+  String get surf => 'Σέρφινγκ';
 
   @override
   String get sup => 'SUP';
 
   @override
-  String get calcio => 'Calcio';
+  String get calcio => 'Ποδόσφαιρο';
 
   @override
-  String get basket => 'Basket';
+  String get basket => 'Μπάσκετ';
 
   @override
-  String get pallavolo => 'Pallavolo';
+  String get pallavolo => 'Βόλεϊ';
 
   @override
-  String get pingPong => 'Ping pong';
+  String get pingPong => 'Πινγκ πονγκ';
 
   @override
-  String get danza => 'Danza';
+  String get danza => 'Χορός';
 
   @override
-  String get artiMarziali => 'Arti marziali';
+  String get artiMarziali => 'Πολεμικές τέχνες';
 
   @override
-  String get pugilato => 'Pugilato';
+  String get pugilato => 'Πυγμαχία';
 
   @override
-  String get uscitaBici => 'Uscita in bici';
+  String get uscitaBici => 'Βόλτα με ποδήλατο';
 
   @override
-  String get nuotoLibero => 'Nuoto libero';
+  String get nuotoLibero => 'Ελεύθερη κολύμβηση';
 
   @override
-  String get toccaFattoQuandoHai => 'Tocca \"Fatto\" quando hai finito.';
+  String get toccaFattoQuandoHai => 'Πάτα «Έγινε» όταν τελειώσεις.';
 
   @override
-  String get duePagine => 'Due pagine';
+  String get duePagine => 'Δύο σελίδες';
 
   @override
-  String get minimappa => 'Minimappa';
+  String get minimappa => 'Μικρός χάρτης';
 
   @override
-  String get tuttoSchermo => 'Tutto schermo';
+  String get tuttoSchermo => 'Πλήρης οθόνη';
 
   @override
-  String get annulla => 'Annulla';
+  String get annulla => 'Άκυρο';
 
   @override
   String creato(Object p0) {
-    return 'Creato il $p0';
+    return 'Δημιουργήθηκε στις $p0';
   }
 
   @override
   String giorniPiano(Object p0) {
-    return '$p0 giorni di piano';
+    return '$p0 μέρες προγράμματος';
   }
 
   @override
-  String get fotoProfilo => 'foto del profilo';
+  String get fotoProfilo => 'φωτογραφία προφίλ';
 
   @override
   String get fileTroppoGrandeEssere =>
-      'File troppo grande per essere un backup.';
+      'Το αρχείο είναι πολύ μεγάλο για να είναι αντίγραφο ασφαλείας.';
 
   @override
   String get fileNonBackupAvidididadi =>
-      'Il file non è un backup di Avidididadi.';
+      'Το αρχείο δεν είναι αντίγραφο ασφαλείας του Avidididadi.';
 
   @override
   String get backupCreatoVersionePiu =>
-      'Backup creato da una versione più recente dell\'app: aggiornala.';
+      'Το αντίγραφο ασφαλείας δημιουργήθηκε από νεότερη έκδοση της εφαρμογής: ενημέρωσέ την.';
 
   @override
-  String get backupVuoto => 'Il backup è vuoto.';
+  String get backupVuoto => 'Το αντίγραφο ασφαλείας είναι κενό.';
 
   @override
   String get nonRiescoScrivereNella =>
-      'Non riesco a scrivere nella cartella: sceglila di nuovo (forse è stata spostata o cancellata).';
+      'Δεν μπορώ να γράψω στον φάκελο: διάλεξέ τον ξανά (ίσως μετακινήθηκε ή διαγράφηκε).';
 
   @override
-  String get backupAutomaticoNonRiuscito => 'Backup automatico non riuscito.';
+  String get backupAutomaticoNonRiuscito =>
+      'Το αυτόματο αντίγραφο ασφαλείας απέτυχε.';
 
   @override
-  String get sensoreBattito => 'Sensore del battito';
+  String get sensoreBattito => 'Αισθητήρας παλμών';
 
   @override
   String get bastaPaioScarpeSi =>
-      'Basta un paio di scarpe. Si parte anche camminando.';
+      'Αρκεί ένα ζευγάρι παπούτσια. Μπορείς να ξεκινήσεις με περπάτημα.';
 
   @override
   String get casaOPalestraAnche =>
-      'A casa o in palestra, anche senza attrezzi.';
+      'Στο σπίτι ή στο γυμναστήριο, ακόμα και χωρίς εξοπλισμό.';
 
   @override
   String get piscinaDelicatoSulleArticolazioni =>
-      'In piscina, delicato sulle articolazioni.';
+      'Στην πισίνα, ήπιο για τις αρθρώσεις.';
 
   @override
-  String get allApertoOSui => 'All\'aperto o sui rulli, a ritmo tranquillo.';
+  String get allApertoOSui =>
+      'Σε εξωτερικό χώρο ή στο προπονητήριο, με χαλαρό ρυθμό.';
 
   @override
   String get stretchingMovimentiLentiPerfetta =>
-      'Stretching e movimenti lenti: perfetta per iniziare o recuperare.';
+      'Διατάσεις και αργές κινήσεις: ιδανικό για αρχή ή για αποκατάσταση.';
 
   @override
   String get palestraOFalesiaSegni =>
-      'In palestra o in falesia: segni vie, blocchi e gradi.';
+      'Στο γυμναστήριο ή στον βράχο: κατέγραψε διαδρομές, boulder και βαθμούς.';
 
   @override
-  String get maiOQuasiMai => 'Mai o quasi mai';
+  String get maiOQuasiMai => 'Ποτέ ή σχεδόν ποτέ';
 
   @override
   String get siPartePianoSedute =>
-      'Si parte piano: sedute semplici per imparare i movimenti.';
+      'Ξεκινάμε σιγά: απλές προπονήσεις για να μάθεις τις κινήσεις.';
 
   @override
-  String get ogniTanto => 'Ogni tanto';
+  String get ogniTanto => 'Πού και πού';
 
   @override
   String get qualcheAllenamentoAlMese =>
-      'Qualche allenamento al mese, ma senza costanza.';
+      'Λίγες προπονήσεις τον μήνα, αλλά όχι σταθερά.';
 
   @override
-  String get regolarmente => 'Regolarmente';
+  String get regolarmente => 'Τακτικά';
 
   @override
-  String get miAllenoQuasiOgni => 'Mi alleno quasi ogni settimana da mesi.';
+  String get miAllenoQuasiOgni =>
+      'Προπονούμαι σχεδόν κάθε εβδομάδα εδώ και μήνες.';
 
   @override
-  String get caloStaiFacendoMeno => 'In calo: stai facendo meno del solito.';
+  String get caloStaiFacendoMeno => 'Πτώση: κάνεις λιγότερα από ό,τι συνήθως.';
 
   @override
   String get equilibratoAumentoSostenibile =>
-      'Equilibrato: aumento sostenibile.';
+      'Ισορροπημένο: μια αύξηση που αντέχεται.';
 
   @override
-  String get attenzioneStaiAumentandoFretta =>
-      'Attenzione: stai aumentando in fretta.';
+  String get attenzioneStaiAumentandoFretta => 'Προσοχή: αυξάνεις γρήγορα.';
 
   @override
   String get rischioTroppoCaricoRispetto =>
-      'Rischio: troppo carico rispetto alle ultime settimane.';
+      'Κίνδυνος: πολύ φορτίο σε σχέση με τις τελευταίες εβδομάδες.';
 
   @override
   String hMin(Object p0, Object p1) {
-    return '$p0 h $p1 min';
+    return '$p0 ώ. $p1 λεπ.';
   }
 
   @override
-  String get chiudi => 'Chiudi';
+  String get chiudi => 'Κλείσιμο';
 
   @override
-  String get nessunDatoQuestoGrafico => 'Nessun dato per questo grafico.';
+  String get nessunDatoQuestoGrafico =>
+      'Δεν υπάρχουν δεδομένα για αυτό το γράφημα.';
 
   @override
   String settimanaDal(Object p0) {
-    return 'Settimana dal $p0';
+    return 'Εβδομάδα από $p0';
   }
 
   @override
   String totale(Object p0) {
-    return 'Totale: $p0';
+    return 'Σύνολο: $p0';
   }
 
   @override
   String tuttoPeriodo(Object p0, Object p1) {
-    return '$p0 in tutto il periodo: $p1';
+    return '$p0 σε όλη την περίοδο: $p1';
   }
 
   @override
-  String get nessunAllenamento => 'Nessun allenamento';
+  String get nessunAllenamento => 'Καμία προπόνηση';
 
   @override
   String ripetizione(Object p0, Object p1) {
-    return 'Ripetizione $p0 di $p1';
+    return 'Επανάληψη $p0 από $p1';
   }
 
   @override
   String serie(Object p0, Object p1) {
-    return 'Serie $p0 di $p1';
+    return 'Σετ $p0 από $p1';
   }
 
   @override
-  String get cambiaLatoMeta => 'Cambia lato a metà.';
+  String get cambiaLatoMeta => 'Άλλαξε πλευρά στη μέση.';
 
   @override
   String poiRipetizione(Object p0, Object p1) {
-    return 'Poi ripetizione $p0 di $p1';
+    return 'Μετά επανάληψη $p0 από $p1';
   }
 
   @override
   String poiSerie(Object p0, Object p1) {
-    return 'Poi serie $p0 di $p1';
+    return 'Μετά σετ $p0 από $p1';
   }
 
   @override
-  String get continuaPianoSenzaFermarti => 'Continua piano, senza fermarti.';
+  String get continuaPianoSenzaFermarti =>
+      'Συνέχισε χαλαρά, χωρίς να σταματήσεις.';
 
   @override
-  String get respiraBeviSorsoAcqua => 'Respira e bevi un sorso d\'acqua.';
+  String get respiraBeviSorsoAcqua => 'Πάρε ανάσα και πιες μια γουλιά νερό.';
 
   @override
-  String get manubri => 'Manubri';
+  String get manubri => 'Αλτήρες';
 
   @override
   String get pesoOgniManubrioEs =>
-      'Il peso di ogni manubrio, es. 4, 8, 12. Se sono regolabili scrivi l\'intervallo, es. 2-20.';
+      'Το βάρος κάθε αλτήρα, π.χ. 4, 8, 12. Αν είναι ρυθμιζόμενοι, γράψε το εύρος, π.χ. 2-20.';
 
   @override
   String get kettlebell => 'Kettlebell';
 
   @override
-  String get pesoOgniKettlebellHai => 'Il peso di ogni kettlebell che hai.';
+  String get pesoOgniKettlebellHai => 'Το βάρος κάθε kettlebell που έχεις.';
 
   @override
-  String get bilanciere => 'Bilanciere';
+  String get bilanciere => 'Μπάρα';
 
   @override
   String get pesoSolaBarraSolito =>
-      'Il peso della sola barra (di solito 20 kg).';
+      'Το βάρος της μπάρας χωρίς δίσκους (συνήθως 20 kg).';
 
   @override
-  String get dischi => 'Dischi';
+  String get dischi => 'Δίσκοι';
 
   @override
   String get pesoDeiDischiHai =>
-      'Il peso dei dischi che hai. Si usano anche senza bilanciere.';
+      'Το βάρος των δίσκων που έχεις. Χρησιμοποιούνται και χωρίς μπάρα.';
 
   @override
-  String get pallaMedica => 'Palla medica';
+  String get pallaMedica => 'Μπάλα medicine';
 
   @override
-  String get pesoPalla => 'Il peso della palla.';
+  String get pesoPalla => 'Το βάρος της μπάλας.';
 
   @override
-  String get elastici => 'Elastici';
+  String get elastici => 'Λάστιχα αντίστασης';
 
   @override
-  String get sbarraTrazioni => 'Sbarra per trazioni';
+  String get sbarraTrazioni => 'Μονόζυγο';
 
   @override
-  String get paralleleDip => 'Parallele per dip';
+  String get paralleleDip => 'Δίζυγο για dips';
 
   @override
-  String get anelliOTrx => 'Anelli o TRX';
+  String get anelliOTrx => 'Κρίκοι ή TRX';
 
   @override
-  String get panca => 'Panca';
+  String get panca => 'Πάγκος';
 
   @override
-  String get stepOBox => 'Step o box';
+  String get stepOBox => 'Step ή κουτί';
 
   @override
-  String get fitball => 'Fitball';
+  String get fitball => 'Μπάλα γυμναστικής';
 
   @override
-  String get rulloFoamRoller => 'Rullo (foam roller)';
+  String get rulloFoamRoller => 'Foam roller';
 
   @override
-  String get latMachine => 'Lat machine';
+  String get latMachine => 'Τροχαλία πλάτης';
 
   @override
-  String get pulleyBasso => 'Pulley basso';
+  String get pulleyBasso => 'Χαμηλή τροχαλία';
 
   @override
-  String get caviRegolabiliCroceAi => 'Cavi regolabili (croce ai cavi)';
+  String get caviRegolabiliCroceAi => 'Ρυθμιζόμενα καλώδια (cable crossover)';
 
   @override
-  String get chestPress => 'Chest press';
+  String get chestPress => 'Μηχάνημα πιέσεων στήθους';
 
   @override
-  String get pectoralMachine => 'Pectoral machine';
+  String get pectoralMachine => 'Πεταλούδα (pec deck)';
 
   @override
-  String get shoulderPress => 'Shoulder press';
+  String get shoulderPress => 'Μηχάνημα πιέσεων ώμων';
 
   @override
-  String get rematoreAllaMacchina => 'Rematore alla macchina';
+  String get rematoreAllaMacchina => 'Κωπηλατική στο μηχάνημα';
 
   @override
-  String get multipowerSmithMachine => 'Multipower (Smith machine)';
+  String get multipowerSmithMachine => 'Smith machine';
 
   @override
-  String get legPress => 'Leg press';
+  String get legPress => 'Πρέσα ποδιών';
 
   @override
   String get hackSquat => 'Hack squat';
 
   @override
-  String get legExtension => 'Leg extension';
+  String get legExtension => 'Εκτάσεις ποδιών';
 
   @override
-  String get legCurl => 'Leg curl';
+  String get legCurl => 'Κάμψεις ποδιών';
 
   @override
-  String get adduttoriAbduttori => 'Adduttori e abduttori';
+  String get adduttoriAbduttori => 'Μηχάνημα προσαγωγών και απαγωγών';
 
   @override
-  String get calfMachinePolpacci => 'Calf machine (polpacci)';
+  String get calfMachinePolpacci => 'Μηχάνημα γαστροκνημίων';
 
   @override
-  String get addominali => 'Addominali';
+  String get addominali => 'Κοιλιακοί';
 
   @override
-  String get obliqui => 'Obliqui';
+  String get obliqui => 'Πλάγιοι κοιλιακοί';
 
   @override
-  String get adduttori => 'Adduttori';
+  String get adduttori => 'Προσαγωγοί';
 
   @override
-  String get bicipiti => 'Bicipiti';
+  String get bicipiti => 'Δικέφαλοι';
 
   @override
-  String get polpacci => 'Polpacci';
+  String get polpacci => 'Γάμπες';
 
   @override
-  String get petto => 'Petto';
+  String get petto => 'Στήθος';
 
   @override
-  String get avambracci => 'Avambracci';
+  String get avambracci => 'Πήχεις';
 
   @override
-  String get glutei => 'Glutei';
+  String get glutei => 'Γλουτοί';
 
   @override
-  String get femorali => 'Femorali';
+  String get femorali => 'Οπίσθιοι μηριαίοι';
 
   @override
-  String get dorsali => 'Dorsali';
+  String get dorsali => 'Άνω πλάτη';
 
   @override
-  String get lombari => 'Lombari';
+  String get lombari => 'Μέση';
 
   @override
-  String get collo => 'Collo';
+  String get collo => 'Αυχένας';
 
   @override
-  String get quadricipiti => 'Quadricipiti';
+  String get quadricipiti => 'Τετρακέφαλοι';
 
   @override
-  String get spalle => 'Spalle';
+  String get spalle => 'Ώμοι';
 
   @override
-  String get trapezio => 'Trapezio';
+  String get trapezio => 'Τραπεζοειδής';
 
   @override
-  String get tricipiti => 'Tricipiti';
+  String get tricipiti => 'Τρικέφαλοι';
 
   @override
-  String get spintaOrizzontalePetto => 'Spinta orizzontale (petto)';
+  String get spintaOrizzontalePetto => 'Οριζόντια ώθηση (στήθος)';
 
   @override
-  String get spintaVerticaleSpalle => 'Spinta verticale (spalle)';
+  String get spintaVerticaleSpalle => 'Κάθετη ώθηση (ώμοι)';
 
   @override
-  String get trazioneOrizzontaleRematori => 'Trazione orizzontale (rematori)';
+  String get trazioneOrizzontaleRematori => 'Οριζόντια έλξη (κωπηλατικές)';
 
   @override
-  String get trazioneVerticaleTrazioni => 'Trazione verticale (trazioni)';
+  String get trazioneVerticaleTrazioni => 'Κάθετη έλξη (έλξεις)';
 
   @override
-  String get squat => 'Squat';
+  String get squat => 'Καθίσματα (squat)';
 
   @override
-  String get affondiStep => 'Affondi e step';
+  String get affondiStep => 'Προβολές και ανεβάσματα';
 
   @override
-  String get cernieraAncaStacchiPonti => 'Cerniera d\'anca (stacchi e ponti)';
+  String get cernieraAncaStacchiPonti => 'Κάμψη ισχίου (άρσεις και γέφυρες)';
 
   @override
-  String get core => 'Core';
+  String get core => 'Κορμός';
 
   @override
-  String get spallePostura => 'Spalle e postura';
+  String get spallePostura => 'Ώμοι και στάση σώματος';
 
   @override
-  String get braccia => 'Braccia';
+  String get braccia => 'Χέρια';
 
   @override
-  String get gambeAlleMacchine => 'Gambe alle macchine';
+  String get gambeAlleMacchine => 'Πόδια στα μηχανήματα';
 
   @override
-  String get pliometria => 'Pliometria';
+  String get pliometria => 'Πλειομετρικά';
 
   @override
-  String get totalBody => 'Total body';
+  String get totalBody => 'Όλο το σώμα';
 
   @override
-  String get rulloAutomassaggio => 'Rullo (automassaggio)';
+  String get rulloAutomassaggio => 'Foam roller (αυτομασάζ)';
 
   @override
-  String get n1Esercizio => '1 esercizio';
+  String get n1Esercizio => '1 άσκηση';
 
   @override
   String get beneDallaProssimaSessione =>
-      'Bene! Dalla prossima sessione aumento un po\' il carico.';
+      'Μπράβο! Από την επόμενη προπόνηση ανεβάζω λίγο το φορτίο.';
 
   @override
   String get haiSegnalatoDoloreAlleggerisco =>
-      'Hai segnalato dolore: alleggerisco le prossime sessioni. Se il dolore continua, fermati e chiedi a un medico.';
+      'Ανέφερες πόνο: ελαφραίνω τις επόμενες προπονήσεις. Αν ο πόνος συνεχίζεται, σταμάτα και δες έναν γιατρό.';
 
   @override
   String get alleggeriscoPoProssimeSessioni =>
-      'Alleggerisco un po\' le prossime sessioni.';
+      'Ελαφραίνω λίγο τις επόμενες προπονήσεις.';
 
   @override
-  String get caricoGiustoSiContinua => 'Carico giusto: si continua così.';
+  String get caricoGiustoSiContinua =>
+      'Το φορτίο είναι σωστό: συνεχίζουμε έτσι.';
 
   @override
   String tiAlleniMeglioQuanto(Object p0) {
-    return 'Ti alleni meglio di quanto pensavi: passo al livello $p0.';
+    return 'Προπονείσαι καλύτερα απ\' ό,τι νόμιζες: ανεβαίνεις στο επίπεδο $p0.';
   }
 
   @override
   String passoAlLivelloPiu(Object p0) {
-    return 'Passo al livello $p0, più adatto per ora.';
+    return 'Περνάω στο επίπεδο $p0, πιο κατάλληλο για τώρα.';
   }
 
   @override
   String haiSegnalatoDoloreAlleggerisco2(Object p0) {
-    return 'Hai segnalato dolore: alleggerisco le prossime sedute di $p0. Se il dolore continua, fermati e chiedi a un medico.';
+    return 'Ανέφερες πόνο: ελαφραίνω τις επόμενες προπονήσεις $p0. Αν ο πόνος συνεχίζεται, σταμάτα και δες έναν γιατρό.';
   }
 
   @override
   String beneSeduteSonoGia(Object p0) {
-    return 'Bene! Le sedute di $p0 sono già al massimo dell\'aumento.';
+    return 'Μπράβο! Οι προπονήσεις $p0 είναι ήδη στη μέγιστη αύξηση.';
   }
 
   @override
   String beneAumentoPoIntensita(Object p0) {
-    return 'Bene! Aumento un po\' l\'intensità delle prossime sedute di $p0, a parità di tempo.';
+    return 'Μπράβο! Ανεβάζω λίγο την ένταση στις επόμενες προπονήσεις $p0, με τον ίδιο χρόνο.';
   }
 
   @override
   String beneAllungoPoProssime(Object p0) {
-    return 'Bene! Allungo un po\' le prossime sedute di $p0.';
+    return 'Μπράβο! Κάνω λίγο πιο μεγάλες τις επόμενες προπονήσεις $p0.';
   }
 
   @override
   String rendoPoMenoIntense(Object p0) {
-    return 'Rendo un po\' meno intense le prossime sedute di $p0.';
+    return 'Κάνω λίγο πιο ήπιες τις επόμενες προπονήσεις $p0.';
   }
 
   @override
   String accorcioPoProssimeSedute(Object p0) {
-    return 'Accorcio un po\' le prossime sedute di $p0.';
+    return 'Κάνω λίγο πιο σύντομες τις επόμενες προπονήσεις $p0.';
   }
 
   @override
-  String get faticaGiustaSiContinua => 'Fatica giusta: si continua così.';
+  String get faticaGiustaSiContinua =>
+      'Η κόπωση είναι σωστή: συνεχίζουμε έτσι.';
 
   @override
-  String get braccio => 'Braccio';
+  String get braccio => 'Μπράτσο';
 
   @override
-  String get vita => 'Vita';
+  String get vita => 'Μέση';
 
   @override
-  String get fianchi => 'Fianchi';
+  String get fianchi => 'Γοφοί';
 
   @override
-  String get coscia => 'Coscia';
+  String get coscia => 'Μηρός';
 
   @override
-  String get durata => 'Durata';
+  String get durata => 'Διάρκεια';
 
   @override
-  String get sedutePiuLunghe5 => 'Sedute più lunghe del 5% per ogni passo.';
+  String get sedutePiuLunghe5 => 'Προπονήσεις 5% πιο μεγάλες σε κάθε βήμα.';
 
   @override
-  String get intensita => 'Intensità';
+  String get intensita => 'Ένταση';
 
   @override
   String get stessaDurataPiuSforzo =>
-      'Stessa durata, più sforzo: recuperi più brevi, più minuti veloci, passo un po\' più svelto.';
+      'Ίδια διάρκεια, περισσότερη προσπάθεια: πιο σύντομα διαλείμματα, περισσότερα γρήγορα λεπτά, λίγο πιο γρήγορος ρυθμός.';
 
   @override
-  String get auto => 'Auto';
+  String get auto => 'Αυτόματα';
 
   @override
   String get primaIntensitaFino2 =>
-      'Prima l\'intensità (fino a 2 passi), poi la durata.';
+      'Πρώτα η ένταση (έως 2 βήματα), μετά η διάρκεια.';
 
   @override
   String min2(Object p0, Object p1) {
-    return '$p0 · $p1 min';
+    return '$p0 · $p1 λεπ.';
   }
 
   @override
   String get corsaLeggeraAlternataCamminata =>
-      'Corsa leggera alternata a camminata';
+      'Ελαφρύ τρέξιμο εναλλάξ με περπάτημα';
 
   @override
   String get dopo2MinutiCorsa =>
-      'Dopo 2 minuti di corsa cammina 1 minuto. Se ti manca il fiato, cammina di più: va benissimo, è così che si comincia.';
+      'Μετά από 2 λεπτά τρέξιμο, περπάτα για 1 λεπτό. Αν λαχανιάζεις, περπάτα περισσότερο: είναι απολύτως φυσιολογικό, έτσι ξεκινούν όλοι.';
 
   @override
   String lungoMin(Object p0) {
-    return 'Lungo · $p0 min';
+    return 'Μεγάλη απόσταση · $p0 λεπ.';
   }
 
   @override
-  String get corsaLungaContinua => 'Corsa lunga continua';
+  String get corsaLungaContinua => 'Συνεχές μεγάλο τρέξιμο';
 
   @override
   String get ritmoFacileCostanteDevi =>
-      'Ritmo facile e costante: devi riuscire a parlare.';
+      'Χαλαρός, σταθερός ρυθμός: πρέπει να μπορείς να μιλάς.';
 
   @override
-  String get finaleRitmoGara => 'Finale a ritmo gara';
+  String get finaleRitmoGara => 'Τέλος σε ρυθμό αγώνα';
 
   @override
-  String get finaleProgressione => 'Finale in progressione';
+  String get finaleProgressione => 'Τέλος με προοδευτική αύξηση';
 
   @override
-  String get corsaFacile => 'Corsa facile';
+  String get corsaFacile => 'Χαλαρό τρέξιμο';
 
   @override
-  String get corsaVeloce => 'Corsa veloce';
+  String get corsaVeloce => 'Γρήγορο τρέξιμο';
 
   @override
-  String get recuperoCorricchiandoZona2 => 'Recupero corricchiando in zona 2.';
+  String get recuperoCorricchiandoZona2 =>
+      'Αποκατάσταση με ελαφρύ τρέξιμο σε ζώνη 2.';
 
   @override
-  String get corsaRitmoSostenuto => 'Corsa a ritmo sostenuto';
+  String get corsaRitmoSostenuto => 'Τρέξιμο σε έντονο ρυθμό';
 
   @override
-  String get ripetuteVeloci => 'Ripetute veloci';
+  String get ripetuteVeloci => 'Γρήγορα διαλειμματικά';
 
   @override
-  String get recuperoCorricchiandoPiano => 'Recupero corricchiando piano.';
+  String get recuperoCorricchiandoPiano =>
+      'Αποκατάσταση με πολύ ελαφρύ τρέξιμο.';
 
   @override
-  String get blocchiRitmoGara => 'Blocchi a ritmo gara';
+  String get blocchiRitmoGara => 'Τμήματα σε ρυθμό αγώνα';
 
   @override
-  String get allunghiProgressione => 'Allunghi in progressione';
+  String get allunghiProgressione => 'Προοδευτικές επιταχύνσεις';
 
   @override
-  String get velociMaRilassatiNon => 'Veloci ma rilassati, non a tutta.';
+  String get velociMaRilassatiNon => 'Γρήγορα αλλά χαλαρά, όχι στο μέγιστο.';
 
   @override
   String lentoMin(Object p0) {
-    return 'Lento · $p0 min';
+    return 'Χαλαρό · $p0 λεπ.';
   }
 
   @override
-  String get corsaLenta => 'Corsa lenta';
+  String get corsaLenta => 'Χαλαρό τρέξιμο';
 
   @override
-  String get stileLiberoFacile => 'Stile libero facile';
+  String get stileLiberoFacile => 'Χαλαρό ελεύθερο';
 
   @override
-  String get gambeTavolettaBraccioSingolo =>
-      'Gambe con tavoletta e braccio singolo';
+  String get gambeTavolettaBraccioSingolo => 'Πόδια με σανίδα και ένα χέρι';
 
   @override
   String get n2GambeTavoletta1 =>
-      '2 gambe con tavoletta, 1 solo braccio destro, 1 solo sinistro.';
+      '2 πόδια με σανίδα, 1 μόνο δεξί χέρι, 1 μόνο αριστερό χέρι.';
 
   @override
-  String get stileLiberoSostenuto => 'Stile libero sostenuto';
+  String get stileLiberoSostenuto => 'Έντονο ελεύθερο';
 
   @override
-  String get sostenutoCostante => 'sostenuto, costante';
+  String get sostenutoCostante => 'έντονα, σταθερά';
 
   @override
-  String get stileLiberoAerobico => 'Stile libero aerobico';
+  String get stileLiberoAerobico => 'Αερόβιο ελεύθερο';
 
   @override
-  String get medioRespirazioneRegolare => 'medio, respirazione regolare';
+  String get medioRespirazioneRegolare => 'μέτρια, σταθερή αναπνοή';
 
   @override
-  String get dorsoFacile => 'Dorso facile';
+  String get dorsoFacile => 'Χαλαρό ύπτιο';
 
   @override
   String intervalliMin(Object p0) {
-    return 'Intervalli · $p0 min';
+    return 'Διαλειμματικά · $p0 λεπ.';
   }
 
   @override
-  String get pedalataAgile => 'Pedalata agile';
+  String get pedalataAgile => 'Ελαφριά ποδηλασία';
 
   @override
-  String get ripetuteSalitaOPianura => 'Ripetute in salita o in pianura';
+  String get ripetuteSalitaOPianura => 'Επαναλήψεις σε ανηφόρα ή σε ευθεία';
 
   @override
-  String get pedalataSciolta => 'Pedalata sciolta';
+  String get pedalataSciolta => 'Χαλαρή ποδηλασία';
 
   @override
-  String get uscitaLunga => 'Uscita lunga';
+  String get uscitaLunga => 'Μεγάλη διαδρομή';
 
   @override
   String uscitaLungaMin(Object p0) {
-    return 'Uscita lunga · $p0 min';
+    return 'Μεγάλη διαδρομή · $p0 λεπ.';
   }
 
   @override
-  String get uscitaContinua => 'Uscita continua';
+  String get uscitaContinua => 'Συνεχής διαδρομή';
 
   @override
   String inserisciTratti10Minuti(Object p0) {
-    return 'Inserisci $p0 tratti da 10 minuti in zona 3. Mangia e bevi ogni 30-45 minuti.';
+    return 'Βάλε $p0 τμήματα των 10 λεπτών σε ζώνη 3. Τρώγε και πίνε κάθε 30-45 λεπτά.';
   }
 
   @override
-  String get mangiaBeviOgni30 => 'Mangia e bevi ogni 30-45 minuti.';
+  String get mangiaBeviOgni30 => 'Τρώγε και πίνε κάθε 30-45 λεπτά.';
 
   @override
   String uscitaMin(Object p0) {
-    return 'Uscita · $p0 min';
+    return 'Διαδρομή · $p0 λεπ.';
   }
 
   @override
-  String get pedalataCostante => 'Pedalata costante';
+  String get pedalataCostante => 'Σταθερή ποδηλασία';
 
   @override
-  String get finalePiuSpinto => 'Finale più spinto';
+  String get finalePiuSpinto => 'Πιο έντονο τέλος';
 
   @override
   String get pocheRipetizioniCarichiAlti =>
-      'Poche ripetizioni con carichi alti e recuperi lunghi.';
+      'Λίγες επαναλήψεις με μεγάλα βάρη και μεγάλα διαλείμματα.';
 
   @override
-  String get massaMuscolare => 'Massa muscolare';
+  String get massaMuscolare => 'Μυϊκή μάζα';
 
   @override
   String get ripetizioniMediePiuVolume =>
-      'Ripetizioni medie, più volume per far crescere i muscoli.';
+      'Μέτριες επαναλήψεις, περισσότερος όγκος για να μεγαλώσουν οι μύες.';
 
   @override
-  String get resistenzaMuscolare => 'Resistenza muscolare';
+  String get resistenzaMuscolare => 'Μυϊκή αντοχή';
 
   @override
   String get tanteRipetizioniRecuperiBrevi =>
-      'Tante ripetizioni e recuperi brevi, utile per gli sport di resistenza.';
+      'Πολλές επαναλήψεις και σύντομα διαλείμματα, χρήσιμο για αθλήματα αντοχής.';
 
   @override
-  String get formaGenerale => 'Forma generale';
+  String get formaGenerale => 'Γενική φυσική κατάσταση';
 
   @override
   String get equilibrioTraForzaMuscoli =>
-      'Un equilibrio tra forza, muscoli e resistenza.';
+      'Ισορροπία ανάμεσα σε δύναμη, μύες και αντοχή.';
 
   @override
-  String get principiante => 'Principiante';
+  String get principiante => 'Αρχάριος';
 
   @override
   String get tiAlleniPesiPoco =>
-      'Ti alleni con i pesi da poco o non lo fai da tempo.';
+      'Είσαι καινούργιος στα βάρη ή δεν έχεις προπονηθεί εδώ και καιρό.';
 
   @override
-  String get intermedio => 'Intermedio';
+  String get intermedio => 'Μέσος';
 
   @override
   String get tiAlleniCostanzaAlmeno =>
-      'Ti alleni con costanza da almeno qualche mese.';
+      'Προπονείσαι σταθερά εδώ και τουλάχιστον λίγους μήνες.';
 
   @override
-  String get avanzato => 'Avanzato';
+  String get avanzato => 'Προχωρημένος';
 
   @override
   String get tiAlleniAnniConosci =>
-      'Ti alleni da anni e conosci bene la tecnica.';
+      'Προπονείσαι χρόνια και ξέρεις καλά την τεχνική.';
 
   @override
   String settimana4(Object p0, Object p1) {
-    return '$p0 · settimana $p1 di 4';
+    return '$p0 · εβδομάδα $p1 από 4';
   }
 
   @override
-  String get n10Lato => '10 per lato';
+  String get n10Lato => '10 ανά πλευρά';
 
   @override
-  String get n10Lenti => '10 lenti';
+  String get n10Lenti => '10 αργές';
 
   @override
   String get settimanaScaricoSerieMeno =>
-      'Settimana di scarico: una serie in meno, stessa tecnica.';
+      'Εβδομάδα αποκατάστασης: ένα σετ λιγότερο, ίδια τεχνική.';
 
   @override
   String get settimana2RipetizionePiu =>
-      'Settimana 2: una ripetizione in più rispetto alla scorsa.';
+      'Εβδομάδα 2: μία επανάληψη περισσότερη από την προηγούμενη εβδομάδα.';
 
   @override
   String get settimana3DueRipetizioni =>
-      'Settimana 3: due ripetizioni in più rispetto alla prima.';
+      'Εβδομάδα 3: δύο επαναλήψεις περισσότερες από την πρώτη εβδομάδα.';
 
   @override
   String gambeLeggereDomaniHai(Object p0) {
-    return 'Gambe leggere: domani hai $p0.';
+    return 'Ελαφριά για τα πόδια: αύριο έχεις $p0.';
   }
 
   @override
   String n10Fatica(Object p0) {
-    return '$p0/10 di fatica';
+    return '$p0/10 κόπωση';
   }
 
   @override
-  String get n30SLato => '30 s per lato';
+  String get n30SLato => '30 δευτ. ανά πλευρά';
 
   @override
-  String get lungo => 'il Lungo';
+  String get lungo => 'η Μεγάλη απόσταση';
 
   @override
-  String get fartlek => 'il Fartlek';
+  String get fartlek => 'το Fartlek';
 
   @override
-  String get tempoRun => 'il Tempo run';
+  String get tempoRun => 'το Tempo run';
 
   @override
   String get partiSolaBarraAggiungi =>
-      'Parti con la sola barra e aggiungi dischi fino alla fatica indicata.';
+      'Ξεκίνα μόνο με τη μπάρα και πρόσθεσε δίσκους μέχρι να φτάσεις την κόπωση που λέει.';
 
   @override
   String pesoKg(Object p0, Object p1) {
-    return 'Peso: $p0 $p1 kg.';
+    return 'Βάρος: $p0 $p1 kg.';
   }
 
   @override
   String pesoCircaKg(Object p0) {
-    return 'Peso: circa $p0 kg.';
+    return 'Βάρος: περίπου $p0 kg.';
   }
 
   @override
   String get movimentiLentiRespiraCalma =>
-      'Movimenti lenti, respira con calma: allunga senza mai sentire dolore.';
+      'Αργές κινήσεις, ανάπνεε ήρεμα: τέντωσε χωρίς ποτέ να πονάς.';
 
   @override
   String get corsaRitmoTranquilloDevi =>
-      'Corsa a ritmo tranquillo: devi riuscire a parlare senza fiatone. Costruisce la resistenza ed è la base di tutto.';
+      'Τρέξιμο σε ήρεμο ρυθμό: πρέπει να μπορείς να μιλάς χωρίς να λαχανιάζεις. Χτίζει αντοχή και είναι η βάση για όλα.';
 
   @override
   String get corsaPiuLungaSettimana =>
-      'La corsa più lunga della settimana, sempre a ritmo facile. Abitua il corpo a durare nel tempo.';
+      'Το πιο μεγάλο τρέξιμο της εβδομάδας, πάντα σε χαλαρό ρυθμό. Συνηθίζει το σώμα στις αποστάσεις.';
 
   @override
   String get giocoVelocitaAlterniTratti =>
-      'Gioco di velocità: alterni tratti veloci e tratti facili, senza mai fermarti. Allena a cambiare ritmo.';
+      'Παιχνίδι ταχύτητας: εναλλάσσεις γρήγορα και χαλαρά κομμάτια, χωρίς να σταματάς ποτέ. Σε μαθαίνει να αλλάζεις ρυθμό.';
 
   @override
   String get corsaRitmoSostenutoMa =>
-      'Corsa a ritmo sostenuto ma costante, \"comodamente impegnativo\": parli a fatica, ma lo tieni per molti minuti.';
+      'Τρέξιμο σε έντονο αλλά σταθερό ρυθμό, «άνετα δύσκολο»: μιλάς μόνο με κόπο, αλλά τον κρατάς για πολλά λεπτά.';
 
   @override
   String get trattiBreviVelociPausa =>
-      'Tratti brevi e veloci con una pausa per recuperare tra uno e l\'altro. Rendono più veloci.';
+      'Σύντομα, γρήγορα κομμάτια με διάλειμμα ανάμεσα για αποκατάσταση. Σε κάνουν πιο γρήγορο.';
 
   @override
   String get blocchiAlRitmoVuoi =>
-      'Blocchi al ritmo che vuoi tenere il giorno della gara, per prenderci confidenza.';
+      'Τμήματα στον ρυθμό που θέλεις να κρατήσεις τη μέρα του αγώνα, για να τον συνηθίσεις.';
 
   @override
   String get corsaFacileQualcheAccelerazione =>
-      'Corsa facile con qualche accelerazione breve (20 secondi), veloce ma rilassata. Tiene le gambe brillanti senza stancare.';
+      'Χαλαρό τρέξιμο με μερικές σύντομες επιταχύνσεις (20 δευτερόλεπτα), γρήγορες αλλά χαλαρές. Κρατά τα πόδια ζωηρά χωρίς να τα κουράζει.';
 
   @override
   String get nuotoCalmoEserciziMigliorare =>
-      'Nuoto calmo con esercizi per migliorare il movimento: nuotare bene costa meno fatica.';
+      'Ήρεμη κολύμβηση με ασκήσεις για καλύτερη τεχνική: όταν κολυμπάς σωστά, κουράζεσαι λιγότερο.';
 
   @override
   String get serieVascheRitmoSostenuto =>
-      'Serie di vasche a ritmo sostenuto e costante con brevi pause. Migliora la velocità che riesci a tenere a lungo.';
+      'Σετ από μήκη σε έντονο, σταθερό ρυθμό με σύντομα διαλείμματα. Βελτιώνει την ταχύτητα που κρατάς για πολλή ώρα.';
 
   @override
   String get pedalataCostanteRitmoFacile =>
-      'Pedalata costante a ritmo facile: costruisce la resistenza.';
+      'Σταθερή ποδηλασία σε χαλαρό ρυθμό: χτίζει αντοχή.';
 
   @override
   String get pedalataPiuLungaSettimana =>
-      'La pedalata più lunga della settimana, a ritmo facile. Porta acqua e qualcosa da mangiare.';
+      'Η πιο μεγάλη διαδρομή της εβδομάδας, σε χαλαρό ρυθμό. Πάρε μαζί νερό και κάτι να φας.';
 
   @override
   String get trattiPedalataImpegnativaSalita =>
-      'Tratti di pedalata impegnativa (in salita o in pianura) con pause facili in mezzo.';
+      'Κομμάτια δύσκολης ποδηλασίας (σε ανηφόρα ή σε ευθεία) με χαλαρά διαλείμματα ανάμεσα.';
 
   @override
   String get movimentiLentiAllungamentiQuasi =>
-      'Movimenti lenti e allungamenti, quasi tutti a tempo. Sciolgono articolazioni e muscoli, aiutano a recuperare e a muoversi meglio. Non deve mai fare male.';
+      'Αργές κινήσεις και διατάσεις, σχεδόν όλες με χρόνο. Χαλαρώνουν αρθρώσεις και μύες, βοηθούν την αποκατάσταση και σε κάνουν να κινείσαι καλύτερα. Δεν πρέπει ποτέ να πονάει.';
 
   @override
   String get mobilitaAncheCoscePolpacci =>
-      'Mobilità per anche, cosce e polpacci: le parti che lavorano di più in corsa e in bici.';
+      'Κινητικότητα για ισχία, μηρούς και γάμπες: τα σημεία που δουλεύουν πιο πολύ στο τρέξιμο και στο ποδήλατο.';
 
   @override
   String get mobilitaSchienaBustoUtile =>
-      'Mobilità per la schiena e il busto: utile se stai molto seduto.';
+      'Κινητικότητα για πλάτη και κορμό: χρήσιμη αν κάθεσαι πολύ.';
 
   @override
   String get mobilitaSpallePettoBraccia =>
-      'Mobilità per spalle, petto e braccia: apre la postura e aiuta nel nuoto.';
+      'Κινητικότητα για ώμους, στήθος και χέρια: ανοίγει τη στάση του σώματος και βοηθά στην κολύμβηση.';
 
   @override
   String get eserciziMuscoliCorpoLibero =>
-      'Esercizi per i muscoli, a corpo libero o con i pesi, seguiti da qualche minuto di mobilità. Rendono più forti e proteggono da infortuni.';
+      'Ασκήσεις για τους μύες, με το βάρος του σώματος ή με βάρη, και μετά λίγα λεπτά κινητικότητας. Σε κάνουν πιο δυνατό και προστατεύουν από τραυματισμούς.';
 
   @override
-  String get moltoFacileComeCamminata =>
-      'molto facile, come una camminata veloce';
+  String get moltoFacileComeCamminata => 'πολύ εύκολα, σαν γρήγορο περπάτημα';
 
   @override
-  String get facileRiesciParlare => 'facile: riesci a parlare';
+  String get facileRiesciParlare => 'εύκολα: μπορείς να μιλάς';
 
   @override
-  String get medioParliMaFatica => 'medio: parli, ma a fatica';
+  String get medioParliMaFatica => 'μέτρια: μιλάς, αλλά με κόπο';
 
   @override
-  String get impegnativoSoloPocheParole => 'impegnativo: solo poche parole';
+  String get impegnativoSoloPocheParole => 'δύσκολα: μόνο λίγες λέξεις';
 
   @override
-  String get alMassimoSiRegge => 'al massimo: si regge per poco';
+  String get alMassimoSiRegge => 'στο μέγιστο: αντέχεται μόνο για λίγο';
 
   @override
-  String get zoneFrequenzaCardiaca => 'Zone di frequenza cardiaca';
+  String get zoneFrequenzaCardiaca => 'Ζώνες καρδιακών παλμών';
 
   @override
   String get cinqueFasceBattitiAl =>
-      'Cinque fasce di battiti al minuto, dalla più facile (1) alla più dura (5). Le calcola l\'app dai tuoi dati: segui la zona indicata e l\'allenamento ha l\'effetto giusto.';
+      'Πέντε εύρη παλμών το λεπτό, από το πιο εύκολο (1) ως το πιο δύσκολο (5). Η εφαρμογή τα υπολογίζει από τα δεδομένα σου: ακολούθησε τη ζώνη που δείχνει και η προπόνηση έχει το σωστό αποτέλεσμα.';
 
   @override
-  String get fatica110 => 'Fatica (da 1 a 10)';
+  String get fatica110 => 'Κόπωση (1 έως 10)';
 
   @override
   String get quantoTiSembrataDura =>
-      'Quanto ti è sembrata dura la seduta: 1 è una passeggiata, 10 è il massimo. Dirlo dopo ogni seduta aiuta l\'app ad adattare il piano.';
+      'Πόσο δύσκολη σου φάνηκε η προπόνηση: 1 είναι βόλτα, 10 είναι το μέγιστο. Αν το λες στην εφαρμογή μετά από κάθε προπόνηση, προσαρμόζει το πρόγραμμα.';
 
   @override
-  String get carico => 'Carico';
+  String get carico => 'Φορτίο';
 
   @override
   String get quantoTiSeiAllenato =>
-      'Quanto ti sei allenato, tenendo conto di durata e fatica. Conta come cresce: aumentare poco alla volta evita di farsi male.';
+      'Πόσο προπονήθηκες, με βάση τη διάρκεια και την κόπωση. Δες πώς αυξάνεται: αν ανεβαίνεις λίγο λίγο, δεν τραυματίζεσαι.';
 
   @override
-  String get settimanaScarico => 'Settimana di scarico';
+  String get settimanaScarico => 'Εβδομάδα αποκατάστασης';
 
   @override
   String get ogniQuattroSettimanePiu =>
-      'Ogni quattro settimane una più leggera: il corpo assorbe il lavoro fatto e riparte più forte.';
+      'Κάθε τέσσερις εβδομάδες μία πιο ελαφριά: το σώμα αφομοιώνει τη δουλειά που έγινε και επιστρέφει πιο δυνατό.';
 
   @override
   String get comeStaiOggiSonno =>
-      'Come stai oggi, da sonno e battiti a riposo. Se è basso, meglio una seduta facile.';
+      'Πώς είσαι σήμερα, από τον ύπνο και τους παλμούς ηρεμίας. Αν είναι χαμηλό, καλύτερα μια χαλαρή προπόνηση.';
 
   @override
   String get movimentiLentiSciogliereArticolazioni =>
-      'Movimenti lenti per sciogliere le articolazioni a fine seduta.';
+      'Αργές κινήσεις για να χαλαρώσουν οι αρθρώσεις στο τέλος της προπόνησης.';
 
   @override
-  String get stoRegistrandoPercorso => 'Sto registrando il percorso';
+  String get stoRegistrandoPercorso => 'Καταγράφω τη διαδρομή';
 
   @override
-  String get registrazionePercorso => 'Registrazione percorso';
+  String get registrazionePercorso => 'Καταγραφή διαδρομής';
 
   @override
-  String get sessioniAllenamento => 'Sessioni di allenamento';
+  String get sessioniAllenamento => 'Προπονήσεις';
 
   @override
-  String get frequenzaCardiaca => 'Frequenza cardiaca';
+  String get frequenzaCardiaca => 'Καρδιακοί παλμοί';
 
   @override
-  String get distanza => 'Distanza';
+  String get distanza => 'Απόσταση';
 
   @override
-  String get calorieAttive => 'Calorie attive';
+  String get calorieAttive => 'Ενεργές θερμίδες';
 
   @override
-  String get calorieTotali => 'Calorie totali';
+  String get calorieTotali => 'Συνολικές θερμίδες';
 
   @override
-  String get passi => 'Passi';
+  String get passi => 'Βήματα';
 
   @override
   String get velocita => 'Ταχύτητα';
 
   @override
-  String get fcRiposo => 'FC a riposo';
+  String get fcRiposo => 'Παλμοί ηρεμίας';
 
   @override
-  String get variabilitaCardiacaHrv => 'Variabilità cardiaca (HRV)';
+  String get variabilitaCardiacaHrv => 'Μεταβλητότητα καρδιακού ρυθμού (HRV)';
 
   @override
-  String get sonno => 'Sonno';
+  String get sonno => 'Ύπνος';
 
   @override
   String get immagineNonDisponibileSenza =>
-      'Immagine non disponibile senza rete';
+      'Η εικόνα δεν είναι διαθέσιμη χωρίς σύνδεση';
 
   @override
   String previsti(Object p0, Object p1) {
-    return '$p0 (previsti $p1)';
+    return '$p0 (προγραμματισμένα $p1)';
   }
 
   @override
   String recupero(Object p0) {
-    return 'Recupero $p0';
+    return 'Διάλειμμα $p0';
   }
 
   @override
   String fc(Object p0) {
-    return 'FC $p0';
+    return 'Παλμοί $p0';
   }
 
   @override
   String get chiaveApiNonValida =>
-      'Chiave API non valida: ricopiala da intervals.icu → Impostazioni → Developer settings.';
+      'Μη έγκυρο κλειδί API: αντέγραψέ το ξανά από intervals.icu → Settings → Developer settings.';
 
   @override
   String get intervalsIcuHaRicevuto =>
-      'intervals.icu ha ricevuto troppe richieste: riprova tra qualche minuto.';
+      'Το intervals.icu δέχτηκε πάρα πολλά αιτήματα: δοκίμασε ξανά σε λίγα λεπτά.';
 
   @override
   String intervalsIcuHaRisposto(Object p0) {
-    return 'intervals.icu ha risposto con un errore ($p0).';
+    return 'Το intervals.icu απάντησε με σφάλμα ($p0).';
   }
 
   @override
-  String get nessunaConnessioneInternet => 'Nessuna connessione a internet.';
+  String get nessunaConnessioneInternet => 'Δεν υπάρχει σύνδεση στο internet.';
 
   @override
-  String get intervalsIcuNonRisponde => 'intervals.icu non risponde: riprova.';
+  String get intervalsIcuNonRisponde =>
+      'Το intervals.icu δεν απαντά: δοκίμασε ξανά.';
 
   @override
   String get rispostaIntervalsIcuNon =>
-      'Risposta di intervals.icu non leggibile.';
+      'Η απάντηση του intervals.icu δεν διαβάζεται.';
 
   @override
-  String get chiaveApiNonValida2 => 'Chiave API non valida.';
+  String get chiaveApiNonValida2 => 'Μη έγκυρο κλειδί API.';
 
   @override
   String get indirizzoOllamaNonValido =>
-      'Indirizzo di Ollama non valido: scrivilo come http://192.168.1.10:11434';
+      'Μη έγκυρη διεύθυνση Ollama: γράψ\' τη έτσι: http://192.168.1.10:11434';
 
   @override
   String get proteggereTuoiDatiIndirizzo =>
-      'Per proteggere i tuoi dati, l\'indirizzo http è accettato solo nella rete di casa (es. http://192.168.1.10:11434). Per un indirizzo su internet serve https.';
+      'Για να προστατευτούν τα δεδομένα σου, μια διεύθυνση http γίνεται δεκτή μόνο στο οικιακό δίκτυο (π.χ. http://192.168.1.10:11434). Μια διεύθυνση στο internet θέλει https.';
 
   @override
-  String get rispostaVuotaDalModello => 'Risposta vuota dal modello.';
+  String get rispostaVuotaDalModello => 'Κενή απάντηση από το μοντέλο.';
 
   @override
   String chiaveApiNonValida3(Object p0) {
-    return 'Chiave API non valida: ricopiala dal sito del servizio, per intero.\n($p0)';
+    return 'Μη έγκυρο κλειδί API: αντέγραψέ το ξανά ολόκληρο από τον ιστότοπο της υπηρεσίας.\n($p0)';
   }
 
   @override
   String get richiestaRifiutataControllaNome =>
-      'Richiesta rifiutata: controlla il nome del modello.';
+      'Το αίτημα απορρίφθηκε: έλεγξε το όνομα του μοντέλου.';
 
   @override
-  String get chiaveApiNonValida4 => 'Chiave API non valida o senza permessi.';
+  String get chiaveApiNonValida4 => 'Μη έγκυρο κλειδί API ή λείπουν άδειες.';
 
   @override
   String get modelloNonTrovatoSu =>
-      'Modello non trovato su Ollama: scaricalo con \"ollama pull\".';
+      'Το μοντέλο δεν βρέθηκε στο Ollama: κατέβασέ το με «ollama pull».';
 
   @override
   String get modelloNonTrovatoControlla =>
-      'Modello non trovato: controlla il nome.';
+      'Το μοντέλο δεν βρέθηκε: έλεγξε το όνομα.';
 
   @override
   String get limiteRichiesteRaggiuntoO =>
-      'Limite di richieste raggiunto o credito esaurito. Riprova più tardi.';
+      'Έφτασες το όριο αιτημάτων ή τελείωσε η πίστωση. Δοκίμασε ξανά αργότερα.';
 
   @override
   String get servizioHaProblemaQuesto =>
-      'Il servizio ha un problema in questo momento. Riprova più tardi.';
+      'Η υπηρεσία έχει πρόβλημα αυτή τη στιγμή. Δοκίμασε ξανά αργότερα.';
 
   @override
   String errore2(Object p0) {
-    return 'Errore $p0.';
+    return 'Σφάλμα $p0.';
   }
 
   @override
   String get mancaChiaveApiAggiungila =>
-      'Manca la chiave API: aggiungila qui sopra.';
+      'Λείπει το κλειδί API: πρόσθεσέ το παραπάνω.';
 
   @override
   String nonRiescoRaggiungereOllama(Object p0, Object p1) {
-    return 'Non riesco a raggiungere Ollama a $p0. ($p1)';
+    return 'Δεν μπορώ να φτάσω το Ollama στο $p0. ($p1)';
   }
 
   @override
   String nessunaConnessioneInternet2(Object p0) {
-    return 'Nessuna connessione a internet. ($p0)';
+    return 'Δεν υπάρχει σύνδεση στο internet. ($p0)';
   }
 
   @override
-  String get servizioNonRispondeRiprova => 'Il servizio non risponde: riprova.';
+  String get servizioNonRispondeRiprova =>
+      'Η υπηρεσία δεν απαντά: δοκίμασε ξανά.';
 
   @override
-  String get rispostaNonLeggibile => 'Risposta non leggibile.';
+  String get rispostaNonLeggibile => 'Η απάντηση δεν διαβάζεται.';
 
   @override
-  String get indirizzoNonValido => 'Indirizzo non valido.';
+  String get indirizzoNonValido => 'Μη έγκυρη διεύθυνση.';
 
   @override
   String esempio(Object p0) {
-    return ', per esempio $p0';
+    return ', για παράδειγμα $p0';
   }
 
   @override
   String chiaveFunzionaMaModello(Object p0, Object p1) {
-    return 'La chiave funziona, ma il modello \"$p0\" non esiste. Toccane uno da \"Scegli tra i modelli disponibili\"$p1.';
+    return 'Το κλειδί λειτουργεί, αλλά το μοντέλο «$p0» δεν υπάρχει. Πάτα ένα από το «Διάλεξε από τα διαθέσιμα μοντέλα»$p1.';
   }
 
   @override
-  String get provaConnessione => 'Prova di connessione';
+  String get provaConnessione => 'Δοκιμή σύνδεσης';
 
   @override
   String ollamaRispondeMaModello(Object p0, Object p1) {
-    return 'Ollama risponde, ma il modello \"$p0\" non c\'è. Installati: $p1.';
+    return 'Το Ollama απαντά, αλλά το μοντέλο «$p0» δεν υπάρχει. Εγκατεστημένα: $p1.';
   }
 
   @override
   String nonRiescoRaggiungereOllama2(Object p0, Object p1) {
-    return 'Non riesco a raggiungere Ollama a $p0. Il PC è acceso, nella stessa rete, con Ollama aperto? ($p1)';
+    return 'Δεν μπορώ να φτάσω το Ollama στο $p0. Είναι ανοιχτός ο υπολογιστής, στο ίδιο δίκτυο, με ανοιχτό το Ollama; ($p1)';
   }
 
   @override
-  String get ollamaNonRispondePc => 'Ollama non risponde: il PC è acceso?';
+  String get ollamaNonRispondePc =>
+      'Το Ollama δεν απαντά: είναι ανοιχτός ο υπολογιστής;';
 
   @override
   String get indirizzoNonValidoO =>
-      'Indirizzo non valido o risposta non di Ollama.';
+      'Μη έγκυρη διεύθυνση ή η απάντηση δεν είναι από το Ollama.';
 
   @override
   String get indirizzoNonValidoScrivilo =>
-      'Indirizzo non valido: scrivilo come http://IP:11434';
+      'Μη έγκυρη διεύθυνση: γράψ\' τη έτσι: http://IP:11434';
 
   @override
   String get mancaChiaveApiAggiungila2 =>
-      'Manca la chiave API: aggiungila nelle impostazioni.';
+      'Λείπει το κλειδί API: πρόσθεσέ το στις ρυθμίσεις.';
 
   @override
   String nonRiescoRaggiungereOllama3(Object p0, Object p1) {
-    return 'Non riesco a raggiungere Ollama a $p0. Il PC è acceso, nella stessa rete, con OLLAMA_HOST=0.0.0.0? ($p1)';
+    return 'Δεν μπορώ να φτάσω το Ollama στο $p0. Είναι ανοιχτός ο υπολογιστής, στο ίδιο δίκτυο, με OLLAMA_HOST=0.0.0.0; ($p1)';
   }
 
   @override
-  String get modelloCiStaMettendo =>
-      'Il modello ci sta mettendo troppo: riprova.';
+  String get modelloCiStaMettendo => 'Το μοντέλο αργεί πολύ: δοκίμασε ξανά.';
 
   @override
-  String get allenamentoInterrotto => 'Allenamento interrotto';
+  String get allenamentoInterrotto => 'Η προπόνηση διακόπηκε';
 
   @override
   String appSiEraChiusa(Object p0) {
-    return 'L\'app si era chiusa durante l\'allenamento: $p0. Riprendi da dove eri? Riparte in pausa.';
+    return 'Η εφαρμογή έκλεισε κατά την προπόνηση: $p0. Να συνεχίσεις από εκεί που έμεινες; Ξεκινά σε παύση.';
   }
 
   @override
-  String get scarta => 'Scarta';
+  String get scarta => 'Απόρριψη';
 
   @override
-  String get riprendi => 'Riprendi';
+  String get riprendi => 'Συνέχεια';
 
   @override
   String get rispostaRicevutaTroviCoach =>
-      'Risposta ricevuta: la trovi in Coach.';
+      'Η απάντηση ήρθε: θα τη βρεις στον Προπονητή.';
 
   @override
-  String get oggi => 'Oggi';
+  String get oggi => 'Σήμερα';
 
   @override
-  String get progressi => 'Progressi';
+  String get progressi => 'Πρόοδος';
 
   @override
-  String get coach => 'Coach';
+  String get coach => 'Προπονητής';
 
   @override
-  String get profilo => 'Profilo';
+  String get profilo => 'Προφίλ';
 
   @override
   String circaMb(Object p0) {
-    return 'circa $p0 MB';
+    return 'περίπου $p0 MB';
   }
 
   @override
   String get downloadNonRiuscitoServe =>
-      'Download non riuscito: serve la rete. Riprova più tardi.';
+      'Η λήψη απέτυχε: χρειάζεται σύνδεση. Δοκίμασε ξανά αργότερα.';
 
   @override
-  String get lunedi => 'Lunedì';
+  String get lunedi => 'Δευτέρα';
 
   @override
-  String get martedi => 'Martedì';
+  String get martedi => 'Τρίτη';
 
   @override
-  String get mercoledi => 'Mercoledì';
+  String get mercoledi => 'Τετάρτη';
 
   @override
-  String get giovedi => 'Giovedì';
+  String get giovedi => 'Πέμπτη';
 
   @override
-  String get venerdi => 'Venerdì';
+  String get venerdi => 'Παρασκευή';
 
   @override
-  String get sabato => 'Sabato';
+  String get sabato => 'Σάββατο';
 
   @override
-  String get domenica => 'Domenica';
+  String get domenica => 'Κυριακή';
 
   @override
   String intensita2(Object p0) {
-    return 'intensità $p0';
+    return 'ένταση $p0';
   }
 
   @override
   String recuperoS(Object p0) {
-    return 'recupero $p0 s';
+    return 'διάλειμμα $p0 δευτ.';
   }
 
   @override
-  String get tuaCorsaPiuLunga => 'La tua corsa più lunga';
+  String get tuaCorsaPiuLunga => 'Το πιο μεγάλο σου τρέξιμο';
 
   @override
-  String get tuaUscitaBiciPiu => 'La tua uscita in bici più lunga';
+  String get tuaUscitaBiciPiu => 'Η πιο μεγάλη σου βόλτα με ποδήλατο';
 
   @override
-  String get tuaNuotataPiuLunga => 'La tua nuotata più lunga';
+  String get tuaNuotataPiuLunga => 'Η πιο μεγάλη σου κολύμβηση';
 
   @override
-  String get tuaCamminataPiuLunga => 'La tua camminata più lunga';
+  String get tuaCamminataPiuLunga => 'Το πιο μεγάλο σου περπάτημα';
 
   @override
-  String get primoAllenamentoFatto => 'Primo allenamento fatto!';
+  String get primoAllenamentoFatto => 'Η πρώτη προπόνηση έγινε!';
 
   @override
   String haiFattoAllenamenti(Object p0) {
-    return 'Hai fatto $p0 allenamenti!';
+    return 'Έκανες $p0 προπονήσεις!';
   }
 
   @override
   String record(Object p0) {
-    return 'Record: $p0';
+    return 'Ρεκόρ: $p0';
   }
 
   @override
   String settimaneFilaGrande(Object p0) {
-    return '$p0 settimane di fila: grande!';
+    return '$p0 εβδομάδες στη σειρά: μπράβο!';
   }
 
   @override
   String settimaneFilaVai(Object p0, Object p1) {
-    return '$p0 settimane di fila. Vai per la $p1?';
+    return '$p0 εβδομάδες στη σειρά. Πάμε για $p1;';
   }
 
   @override
   String get nelFileNonC =>
-      'Nel file non c\'è un percorso: serve un GPX con una traccia.';
+      'Στο αρχείο δεν υπάρχει διαδρομή: χρειάζεσαι ένα GPX με ίχνος.';
 
   @override
   String get destra => 'δεξιά';
@@ -1708,90 +1718,90 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String recuperoPoi(Object p0) {
-    return 'Recupero · poi $p0';
+    return 'Διάλειμμα · μετά $p0';
   }
 
   @override
   String pausa(Object p0) {
-    return 'In pausa · $p0';
+    return 'Παύση · $p0';
   }
 
   @override
-  String get n5Km => '5 km';
+  String get n5Km => '5 χλμ.';
 
   @override
-  String get n10Km => '10 km';
+  String get n10Km => '10 χλμ.';
 
   @override
-  String get mezzaMaratona => 'Mezza maratona';
+  String get mezzaMaratona => 'Ημιμαραθώνιος';
 
   @override
-  String get maratona => 'Maratona';
+  String get maratona => 'Μαραθώνιος';
 
   @override
-  String get mediofondo => 'Mediofondo';
+  String get mediofondo => 'Medio fondo';
 
   @override
-  String get granfondo => 'Granfondo';
+  String get granfondo => 'Gran fondo';
 
   @override
-  String get triathlonSprint => 'Triathlon sprint';
+  String get triathlonSprint => 'Τρίαθλο sprint';
 
   @override
-  String get triathlonOlimpico => 'Triathlon olimpico';
+  String get triathlonOlimpico => 'Ολυμπιακό τρίαθλο';
 
   @override
-  String get triathlon703 => 'Triathlon 70.3';
+  String get triathlon703 => 'Τρίαθλο 70.3';
 
   @override
-  String get base => 'Base';
+  String get base => 'Βάση';
 
   @override
-  String get sviluppo => 'Sviluppo';
+  String get sviluppo => 'Ανάπτυξη';
 
   @override
-  String get rifinitura => 'Rifinitura';
+  String get rifinitura => 'Κορύφωση';
 
   @override
-  String get scaricoPreGara => 'Scarico pre-gara';
+  String get scaricoPreGara => 'Αποφόρτιση πριν τον αγώνα';
 
   @override
-  String get settimanaGara => 'Settimana della gara';
+  String get settimanaGara => 'Εβδομάδα αγώνα';
 
   @override
-  String get senzaObiettivo => 'Senza obiettivo';
+  String get senzaObiettivo => 'Χωρίς στόχο';
 
   @override
   String get volumeCrescePianoQuasi =>
-      'Volume che cresce piano, quasi tutto a bassa intensità.';
+      'Ο όγκος αυξάνεται αργά, σχεδόν όλος σε χαμηλή ένταση.';
 
   @override
   String get siAggiungonoSeduteQualita =>
-      'Si aggiungono le sedute di qualità, il lungo si allunga.';
+      'Προστίθενται προπονήσεις ποιότητας, η μεγάλη προπόνηση μεγαλώνει.';
 
   @override
-  String get lavoriAlRitmoGara => 'Lavori al ritmo gara, volume stabile.';
+  String get lavoriAlRitmoGara => 'Δουλειά σε ρυθμό αγώνα, σταθερός όγκος.';
 
   @override
   String get menoVolumePoIntensita =>
-      'Meno volume, un po\' di intensità per restare reattivo.';
+      'Λιγότερος όγκος, λίγη ένταση για να μείνεις σε φόρμα.';
 
   @override
   String get pocheSeduteCorteSi =>
-      'Poche sedute corte: si arriva freschi al via.';
+      'Λίγες σύντομες προπονήσεις: φτάνεις ξεκούραστος στην αφετηρία.';
 
   @override
   String get pianoMantenimentoImpostaGara =>
-      'Piano di mantenimento: imposta una gara per una preparazione.';
+      'Πρόγραμμα διατήρησης: όρισε έναν αγώνα για προετοιμασία.';
 
   @override
-  String get aerobica => 'Aerobica';
+  String get aerobica => 'Αερόβια';
 
   @override
-  String get medio => 'Medio';
+  String get medio => 'Μέτρια';
 
   @override
-  String get massimale => 'Massimale';
+  String get massimale => 'Μέγιστη';
 
   @override
   String zBpm(Object p0, Object p1, Object p2) {
@@ -1805,40 +1815,40 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get nelFileNonC2 =>
-      'Nel file non c\'è un percorso: serve un GPX con la traccia dell\'attività.';
+      'Στο αρχείο δεν υπάρχει διαδρομή: χρειάζεσαι ένα GPX με το ίχνος της δραστηριότητας.';
 
   @override
   String get pulse => 'Pulse';
 
   @override
-  String get strade => 'Strade';
+  String get strade => 'Δρόμοι';
 
   @override
-  String get satellite => 'Satellite';
+  String get satellite => 'Δορυφόρος';
 
   @override
-  String get facile => 'Facile';
+  String get facile => 'Εύκολη';
 
   @override
-  String get fondo => 'Fondo';
+  String get fondo => 'Αντοχή';
 
   @override
   String get vo2max => 'VO2max';
 
   @override
-  String get anaerobica => 'Anaerobica';
+  String get anaerobica => 'Αναερόβια';
 
   @override
-  String get sprint => 'Sprint';
+  String get sprint => 'Σπριντ';
 
   @override
   String finoW(Object p0) {
-    return 'fino a $p0 W';
+    return 'έως $p0 W';
   }
 
   @override
   String oltreW(Object p0) {
-    return 'oltre $p0 W';
+    return 'πάνω από $p0 W';
   }
 
   @override
@@ -1873,84 +1883,84 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get registraQuestaCorsaAnche =>
-      'Registra questa corsa anche con l\'orologio: è lui a misurare i watt.';
+      'Κατέγραψε αυτό το τρέξιμο και με το ρολόι σου: το ρολόι μετράει τα watt.';
 
   @override
   String get velociMaScioltiPoi =>
-      'Veloci ma sciolti, poi cammina o corri piano.';
+      'Γρήγορα αλλά χαλαρά, μετά περπάτα ή τρέξε πολύ αργά.';
 
   @override
-  String get test20MinutiAl => 'Test: 20 minuti al massimo';
+  String get test20MinutiAl => 'Τεστ: 20 λεπτά στο μέγιστο';
 
   @override
   String get ritmoPiuForteRiesci =>
-      'Il ritmo più forte che riesci a tenere fino alla fine, costante. Meglio partire un po\' piano e chiudere in crescendo.';
+      'Ο πιο δυνατός ρυθμός που μπορείς να κρατήσεις ως το τέλος, σταθερά. Καλύτερα να ξεκινήσεις λίγο χαλαρά και να τελειώσεις δυνατά.';
 
   @override
-  String get corsaLentissima => 'Corsa lentissima';
+  String get corsaLentissima => 'Πολύ χαλαρό τρέξιμο';
 
   @override
-  String get energiaBuona => 'Energia buona';
+  String get energiaBuona => 'Καλή ενέργεια';
 
   @override
-  String get energiaNormale => 'Energia normale';
+  String get energiaNormale => 'Κανονική ενέργεια';
 
   @override
-  String get energiaBassa => 'Energia bassa';
+  String get energiaBassa => 'Χαμηλή ενέργεια';
 
   @override
   String get giornataAdattaAncheSeduta =>
-      'Giornata adatta anche a una seduta di qualità.';
+      'Καλή μέρα ακόμα και για προπόνηση ποιότητας.';
 
   @override
   String get allenatiComePrevistoAscoltando =>
-      'Allenati come previsto, ascoltando le sensazioni.';
+      'Προπονήσου όπως προβλέπεται, ακούγοντας πώς νιώθεις.';
 
   @override
   String get meglioSedutaFacileO =>
-      'Meglio una seduta facile o un giorno di riposo: abbassa l\'intensità.';
+      'Καλύτερα μια χαλαρή προπόνηση ή μέρα ξεκούρασης: χαμήλωσε την ένταση.';
 
   @override
   String solitoMsPiuAlta(Object p0) {
-    return 'di solito $p0 ms · più alta è meglio';
+    return 'συνήθως $p0 ms · όσο πιο ψηλά τόσο καλύτερα';
   }
 
   @override
   String hrvMsSottoTua(Object p0, Object p1) {
-    return 'HRV $p0 ms, sotto la tua media ($p1 ms)';
+    return 'HRV $p0 ms, κάτω από τον μέσο όρο σου ($p1 ms)';
   }
 
   @override
   String hrvMsSopraTua(Object p0) {
-    return 'HRV $p0 ms, sopra la tua media';
+    return 'HRV $p0 ms, πάνω από τον μέσο όρο σου';
   }
 
   @override
   String solitoBpmPiuBassa(Object p0) {
-    return 'di solito $p0 bpm · più bassa è meglio';
+    return 'συνήθως $p0 bpm · όσο πιο χαμηλά τόσο καλύτερα';
   }
 
   @override
   String fcRiposoBpmPiu(Object p0, Object p1) {
-    return 'FC a riposo $p0 bpm, più alta del solito ($p1)';
+    return 'Παλμοί ηρεμίας $p0 bpm, πιο ψηλά από ό,τι συνήθως ($p1)';
   }
 
   @override
-  String get bene7H30 => 'bene da 7 h 30 in su, poco sotto le 6 h';
+  String get bene7H30 => 'καλός από 7 ώ. 30 και πάνω, λίγος κάτω από 6 ώ.';
 
   @override
   String haiDormitoPoco(Object p0) {
-    return 'Hai dormito poco ($p0)';
+    return 'Κοιμήθηκες λίγο ($p0)';
   }
 
   @override
   String haiDormitoBene(Object p0) {
-    return 'Hai dormito bene ($p0)';
+    return 'Κοιμήθηκες καλά ($p0)';
   }
 
   @override
   String kg(Object p0, Object p1) {
-    return '$p0 a $p1 kg';
+    return '$p0 με $p1 kg';
   }
 
   @override
@@ -1959,1810 +1969,1821 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get tempo => 'Tempo';
+  String get tempo => 'Χρόνος';
 
   @override
   String get passo => 'Ρυθμός';
 
   @override
-  String get battitoMedio => 'Battito medio';
+  String get battitoMedio => 'Μέσοι παλμοί';
 
   @override
-  String get sollevati => 'Sollevati';
+  String get sollevati => 'Σηκώθηκαν';
 
   @override
-  String get calorie => 'Calorie';
+  String get calorie => 'Θερμίδες';
 
   @override
-  String get classica => 'Classica';
+  String get classica => 'Κλασική';
 
   @override
-  String get mappa => 'Mappa';
+  String get mappa => 'Χάρτης';
 
   @override
-  String get poster => 'Poster';
+  String get poster => 'Αφίσα';
 
   @override
-  String get kmKm => 'Km per km';
+  String get kmKm => 'Χιλιόμετρο προς χιλιόμετρο';
 
   @override
-  String get salita => 'Salita';
+  String get salita => 'Ανάβαση';
 
   @override
-  String get esercizi => 'Esercizi';
+  String get esercizi => 'Ασκήσεις';
 
   @override
-  String get muscoli => 'Muscoli';
+  String get muscoli => 'Μύες';
 
   @override
-  String get seduta => 'Seduta';
+  String get seduta => 'Προπόνηση';
 
   @override
-  String get tuaFoto => 'La tua foto';
+  String get tuaFoto => 'Η φωτογραφία σου';
 
   @override
   String kgPrimaKg(Object p0, Object p1, Object p2) {
-    return '$p0 $p1 kg (prima $p2 kg)';
+    return '$p0 $p1 kg (πριν $p2 kg)';
   }
 
   @override
-  String get kgSollevatiTutto => 'kg sollevati in tutto';
+  String get kgSollevatiTutto => 'kg σηκώθηκαν συνολικά';
 
   @override
-  String get arrampicata => 'ARRAMPICATA';
+  String get arrampicata => 'ΑΝΑΡΡΙΧΗΣΗ';
 
   @override
-  String get indoor => 'INDOOR';
+  String get indoor => 'ΕΣΩΤΕΡΙΚΗ';
 
   @override
-  String get outdoor => 'OUTDOOR';
+  String get outdoor => 'ΕΞΩΤΕΡΙΚΗ';
 
   @override
-  String get gradoPiuAltoOggi => 'il grado più alto di oggi';
+  String get gradoPiuAltoOggi => 'ο πιο ψηλός βαθμός σήμερα';
 
   @override
-  String get blocchi => 'Blocchi';
+  String get blocchi => 'Boulder';
 
   @override
-  String get saliti => 'Saliti';
+  String get saliti => 'Ανάβαση';
 
   @override
-  String get attivita => 'Attività';
+  String get attivita => 'Δραστηριότητα';
 
   @override
-  String get altraAttivita => 'ALTRA ATTIVITÀ';
+  String get altraAttivita => 'ΑΛΛΗ ΔΡΑΣΤΗΡΙΟΤΗΤΑ';
 
   @override
   String miaSettimana(Object p0) {
-    return 'La mia settimana ($p0)';
+    return 'Η εβδομάδα μου ($p0)';
   }
 
   @override
   String sedute(Object p0, Object p1) {
-    return '$p0/$p1 sedute';
+    return '$p0/$p1 προπονήσεις';
   }
 
   @override
-  String get abbiamoAggiornatoRegole => 'Abbiamo aggiornato le regole';
+  String get abbiamoAggiornatoRegole => 'Ενημερώσαμε τους κανόνες';
 
   @override
-  String get benvenutoAvidididadi => 'Benvenuto in Avidididadi';
+  String get benvenutoAvidididadi => 'Καλώς ήρθες στο Avidididadi';
 
   @override
   String get terminiInformativaSonoCambiati =>
-      'Termini e informativa sono cambiati. Leggili e accettali per continuare.';
+      'Οι όροι και η πολιτική απορρήτου άλλαξαν. Διάβασέ τους και αποδέξου τους για να συνεχίσεις.';
 
   @override
   String get primaIniziareEccoBreve =>
-      'Prima di iniziare, ecco in breve come funziona l\'app con i tuoi dati.';
+      'Πριν ξεκινήσεις, μια σύντομη περίληψη για το πώς η εφαρμογή χειρίζεται τα δεδομένα σου.';
 
   @override
-  String get datiRestanoSulTelefono => 'I dati restano sul telefono';
+  String get datiRestanoSulTelefono => 'Τα δεδομένα σου μένουν στο κινητό';
 
   @override
   String get nessunAccountNessunServer =>
-      'Nessun account, nessun server, nessuna pubblicità.';
+      'Χωρίς λογαριασμό, χωρίς διακομιστή, χωρίς διαφημίσεις.';
 
   @override
-  String get healthConnectSoloLettura => 'Health Connect solo in lettura';
+  String get healthConnectSoloLettura => 'Health Connect μόνο για ανάγνωση';
 
   @override
   String get allenamentiBattitoSonnoPercorsi =>
-      'Allenamenti, battito, sonno e percorsi delle tue app (es. Garmin), solo se lo permetti.';
+      'Προπονήσεις, παλμοί, ύπνος και διαδρομές από τις εφαρμογές σου (π.χ. Garmin), μόνο αν το επιτρέψεις.';
 
   @override
-  String get gpsSoloDuranteCorsa => 'GPS solo durante corsa e bici';
+  String get gpsSoloDuranteCorsa => 'GPS μόνο κατά το τρέξιμο και το ποδήλατο';
 
   @override
   String get mentreTiAlleniApp =>
-      'Mentre ti alleni con l\'app, con una notifica fissa. Mai in altri momenti.';
+      'Ενώ προπονείσαι με την εφαρμογή, με μόνιμη ειδοποίηση. Ποτέ άλλη στιγμή.';
 
   @override
-  String get mappeImmaginiInternet => 'Mappe e immagini da internet';
+  String get mappeImmaginiInternet => 'Χάρτες και εικόνες από το internet';
 
   @override
   String get openfreemapEsriSatelliteGithub =>
-      'Da OpenFreeMap, Esri (satellite) e GitHub: il percorso non viene inviato.';
+      'Από OpenFreeMap, Esri (δορυφόρος) και GitHub: η διαδρομή σου δεν αποστέλλεται.';
 
   @override
-  String get assistenteFacoltativo => 'Assistente facoltativo';
+  String get assistenteFacoltativo => 'Προαιρετικός βοηθός';
 
   @override
   String get inviaRiassuntoDegliAllenamenti =>
-      'Invia un riassunto degli allenamenti al servizio che scegli, solo se lo attivi tu.';
+      'Στέλνει μια περίληψη των προπονήσεών σου στην υπηρεσία που διαλέγεις, μόνο αν τον ενεργοποιήσεις.';
 
   @override
-  String get nonConsiglioMedico => 'Non è un consiglio medico';
+  String get nonConsiglioMedico => 'Δεν είναι ιατρική συμβουλή';
 
   @override
   String get pianiConsigliSonoStime =>
-      'Piani e consigli sono stime: in caso di dubbi o problemi di salute, chiedi al medico.';
+      'Τα προγράμματα και οι συμβουλές είναι εκτιμήσεις: αν έχεις αμφιβολίες ή προβλήματα υγείας, ρώτα τον γιατρό σου.';
 
   @override
-  String get terminiCondizioni => 'Termini e condizioni';
+  String get terminiCondizioni => 'Όροι και προϋποθέσεις';
 
   @override
-  String get informativaPrivacy => 'Informativa privacy';
+  String get informativaPrivacy => 'Πολιτική απορρήτου';
 
   @override
   String get hoLettoAccettoTermini =>
-      'Ho letto e accetto i Termini e condizioni e l\'Informativa sulla privacy';
+      'Διάβασα και αποδέχομαι τους Όρους και προϋποθέσεις και την Πολιτική απορρήτου';
 
   @override
-  String get entra => 'Entra';
+  String get entra => 'Είσοδος';
 
   @override
-  String get nonAccettoEsci => 'Non accetto, esci';
+  String get nonAccettoEsci => 'Δεν αποδέχομαι, έξοδος';
 
   @override
-  String get usaTuoAssistente => 'Usa il tuo assistente';
+  String get usaTuoAssistente => 'Χρησιμοποίησε τον βοηθό σου';
 
   @override
   String get parliCoachNellApp =>
-      'Parli con il coach nell\'app del tuo assistente, con il tuo abbonamento (anche gratuito): nessuna chiave API.';
+      'Μιλάς με τον προπονητή στην εφαρμογή του βοηθού σου, με τη συνδρομή σου (ακόμα και δωρεάν): χωρίς κλειδί API.';
 
   @override
   String get avidididadiPreparaMessaggioTuoi =>
-      'Avidididadi prepara un messaggio con i tuoi dati: lo mandi all\'assistente con Condividi.';
+      'Το Avidididadi ετοιμάζει ένα μήνυμα με τα δεδομένα σου: το στέλνεις στον βοηθό με την Κοινοποίηση.';
 
   @override
   String get parliAssistenteNellaSua =>
-      'Parli con l\'assistente nella sua app, quanto vuoi.';
+      'Μιλάς με τον βοηθό στην εφαρμογή του, όσο θέλεις.';
 
   @override
   String get quandoProponeModificheO =>
-      'Quando propone modifiche o un piano nuovo, condividi la risposta con Avidididadi: vedi l\'anteprima e decidi tu.';
+      'Όταν προτείνει αλλαγές ή νέο πρόγραμμα, κοινοποίησε την απάντηση στο Avidididadi: βλέπεις μια προεπισκόπηση και αποφασίζεις εσύ.';
 
   @override
-  String get qualeAppUsi => 'Quale app usi?';
+  String get qualeAppUsi => 'Ποια εφαρμογή χρησιμοποιείς;';
 
   @override
-  String get primaIniziare => 'Prima di iniziare';
+  String get primaIniziare => 'Πριν ξεκινήσεις';
 
   @override
   String get abbonamentoNormaleChatPossono =>
-      'Con un abbonamento normale le chat possono servire ad addestrare il modello, secondo le impostazioni del tuo account. Nome, foto e percorsi GPS non vengono mai inviati.';
+      'Με κανονική συνδρομή, οι συνομιλίες μπορεί να χρησιμοποιηθούν για την εκπαίδευση του μοντέλου, ανάλογα με τις ρυθμίσεις του λογαριασμού σου. Όνομα, φωτογραφία και διαδρομές GPS δεν αποστέλλονται ποτέ.';
 
   @override
-  String get includiEtaSessoAltezza => 'Includi età, sesso, altezza e peso';
+  String get includiEtaSessoAltezza =>
+      'Συμπερίληψη ηλικίας, φύλου, ύψους και βάρους';
 
   @override
-  String get vediEsattamenteCosaViene => 'Vedi esattamente cosa viene inviato';
+  String get vediEsattamenteCosaViene => 'Δες ακριβώς τι αποστέλλεται';
 
   @override
   String acconsentoInviareQuestiDati(Object p0) {
-    return 'Acconsento a inviare questi dati a $p0 quando tocco Condividi o Copia';
+    return 'Συμφωνώ να στέλνονται αυτά τα δεδομένα στο $p0 όταν πατάω Κοινοποίηση ή Αντιγραφή';
   }
 
   @override
   String collega(Object p0) {
-    return 'Collega $p0';
+    return 'Σύνδεση $p0';
   }
 
   @override
-  String get privacyUsoDeiDati => 'Privacy e uso dei dati';
+  String get privacyUsoDeiDati => 'Απόρρητο και χρήση δεδομένων';
 
   @override
-  String get assistente => 'l\'assistente';
+  String get assistente => 'τον βοηθό';
 
   @override
   String manda(Object p0) {
-    return 'Manda a $p0';
+    return 'Αποστολή στο $p0';
   }
 
   @override
   String messaggioCopiatoIncollalo(Object p0) {
-    return 'Messaggio copiato: incollalo in $p0.';
+    return 'Το μήνυμα αντιγράφηκε: επικόλλησέ το στο $p0.';
   }
 
   @override
   String appuntiSonoVuotiCopia(Object p0) {
-    return 'Gli appunti sono vuoti: copia prima la risposta di $p0.';
+    return 'Το πρόχειρο είναι κενό: αντέγραψε πρώτα την απάντηση από το $p0.';
   }
 
   @override
   String scollegare(Object p0) {
-    return 'Scollegare $p0?';
+    return 'Αποσύνδεση από $p0;';
   }
 
   @override
   String get torniAlCoachDentro =>
-      'Torni al coach dentro l\'app (per esempio Ollama sul tuo PC). Le risposte della conversazione attuale non verranno più accettate: se ricolleghi, manda di nuovo i dati.';
+      'Επιστρέφεις στον προπονητή μέσα στην εφαρμογή (για παράδειγμα Ollama στον υπολογιστή σου). Οι απαντήσεις από την τρέχουσα συνομιλία δεν θα γίνονται πια δεκτές: αν συνδεθείς ξανά, στείλε ξανά τα δεδομένα.';
 
   @override
-  String get scollega => 'Scollega';
+  String get scollega => 'Αποσύνδεση';
 
   @override
-  String get rispostaNonUsabile => 'Risposta non usabile';
+  String get rispostaNonUsabile => 'Η απάντηση δεν μπορεί να χρησιμοποιηθεί';
 
   @override
   String n1Parla(Object p0) {
-    return '1 · Parla con $p0';
+    return '1 · Μίλα με το $p0';
   }
 
   @override
   String get haiFattoAllenamentiNuovi =>
-      'Hai fatto allenamenti nuovi? Manda i dati aggiornati nella stessa conversazione.';
+      'Έκανες νέες προπονήσεις; Στείλε τα ενημερωμένα δεδομένα στην ίδια συνομιλία.';
 
   @override
   String mandaPrimoMessaggioIstruzioni(Object p0) {
-    return 'Manda il primo messaggio: istruzioni da coach e i tuoi dati. Scegli $p0 dal menu Condividi.';
+    return 'Στείλε το πρώτο μήνυμα: οδηγίες για τον προπονητή και τα δεδομένα σου. Διάλεξε $p0 από το μενού Κοινοποίησης.';
   }
 
   @override
   String ultimoInvio(Object p0, Object p1, Object p2) {
-    return 'Ultimo invio: $p0, $p1:$p2';
+    return 'Τελευταία αποστολή: $p0, $p1:$p2';
   }
 
   @override
-  String get mandaDatiAggiornati => 'Manda dati aggiornati';
+  String get mandaDatiAggiornati => 'Στείλε τα ενημερωμένα δεδομένα';
 
   @override
   String inizia(Object p0) {
-    return 'Inizia con $p0';
+    return 'Ξεκίνα με το $p0';
   }
 
   @override
-  String get nuovaConversazione => 'Nuova conversazione';
+  String get nuovaConversazione => 'Νέα συνομιλία';
 
   @override
-  String get copiaInvece => 'Copia invece';
+  String get copiaInvece => 'Αντιγραφή αντί γι\' αυτό';
 
   @override
-  String get n2PortaQuiModifiche => '2 · Porta qui le modifiche';
+  String get n2PortaQuiModifiche => '2 · Φέρε τις αλλαγές εδώ';
 
   @override
   String quandoProponeCambiarePiano(Object p0) {
-    return 'Quando $p0 propone di cambiare il piano, nella sua risposta tocca Condividi e scegli Avidididadi. Oppure copiala e tocca qui sotto.';
+    return 'Όταν το $p0 προτείνει αλλαγή του προγράμματος, πάτα Κοινοποίηση στην απάντησή του και διάλεξε Avidididadi. Ή αντέγραψέ την και πάτα παρακάτω.';
   }
 
   @override
-  String get incollaRisposta => 'Incolla la risposta';
+  String get incollaRisposta => 'Επικόλληση απάντησης';
 
   @override
   String get consiglioIstruzioniVoltaSola =>
-      'Consiglio: le istruzioni una volta sola';
+      'Συμβουλή: οι οδηγίες μόνο μία φορά';
 
   @override
   String get incollaIstruzioniCoachProgetto =>
-      'Incolla le istruzioni da coach in un Progetto di Claude, in un GPT personalizzato o in un Gem di Gemini. Poi ti basta mandare i dati aggiornati.';
+      'Επικόλλησε τις οδηγίες του προπονητή σε ένα Claude Project, ένα custom GPT ή ένα Gemini Gem. Μετά αρκεί να στέλνεις τα ενημερωμένα δεδομένα.';
 
   @override
-  String get istruzioniCopiate => 'Istruzioni copiate.';
+  String get istruzioniCopiate => 'Οι οδηγίες αντιγράφηκαν.';
 
   @override
-  String get copiaSoloIstruzioni => 'Copia solo le istruzioni';
+  String get copiaSoloIstruzioni => 'Αντιγραφή μόνο των οδηγιών';
 
   @override
   String scollega2(Object p0) {
-    return 'Scollega $p0';
+    return 'Αποσύνδεση από $p0';
   }
 
   @override
-  String get allenamentiArrampicata => 'Allenamenti di arrampicata';
+  String get allenamentiArrampicata => 'Προπονήσεις αναρρίχησης';
 
   @override
-  String get nuovo => 'Nuovo';
+  String get nuovo => 'Νέα';
 
   @override
-  String get ancoraNessunAllenamento => 'Ancora nessun allenamento';
+  String get ancoraNessunAllenamento => 'Καμία προπόνηση ακόμα';
 
   @override
   String get crealoNuovoOppureChiedilo =>
-      'Crealo con \"Nuovo\", oppure chiedilo al tuo assistente (per esempio mandandogli lo screenshot di un\'altra app): nella sua risposta condividi il blocco con l\'app e qui trovi l\'allenamento, pronto da mettere nel calendario.';
+      'Δημιούργησε μία με το «Νέα», ή ζήτα τη από τον βοηθό σου (για παράδειγμα στέλνοντάς του ένα στιγμιότυπο από άλλη εφαρμογή): κοινοποίησε το μπλοκ της απάντησής του στην εφαρμογή και θα βρεις την προπόνηση εδώ, έτοιμη να μπει στο ημερολόγιο.';
 
   @override
-  String get altri => 'Altri';
+  String get altri => 'Άλλες';
 
   @override
-  String get giorno => 'In che giorno?';
+  String get giorno => 'Ποια μέρα;';
 
   @override
   String nelCalendario(Object p0, Object p1) {
-    return '$p0 è nel calendario: $p1.';
+    return 'Το $p0 είναι στο ημερολόγιο: $p1.';
   }
 
   @override
   String get nonStatoPossibileScegli =>
-      'Non è stato possibile: scegli oggi o un giorno dopo.';
+      'Δεν ήταν δυνατό: διάλεξε σήμερα ή κάποια επόμενη μέρα.';
 
   @override
   String eliminare(Object p0) {
-    return 'Eliminare \"$p0\"?';
+    return 'Διαγραφή του «$p0»;';
   }
 
   @override
   String get sparisceDallaRaccoltaSedute =>
-      'Sparisce dalla raccolta. Le sedute già nel calendario restano.';
+      'Εξαφανίζεται από τη συλλογή. Οι προπονήσεις που είναι ήδη στο ημερολόγιο μένουν.';
 
   @override
-  String get elimina => 'Elimina';
+  String get elimina => 'Διαγραφή';
 
   @override
-  String get allenamentoNonTrovato => 'Allenamento non trovato.';
+  String get allenamentoNonTrovato => 'Η προπόνηση δεν βρέθηκε.';
 
   @override
-  String get modifica => 'Modifica';
+  String get modifica => 'Επεξεργασία';
 
   @override
-  String get iniziaOra => 'Inizia ora';
+  String get iniziaOra => 'Ξεκίνα τώρα';
 
   @override
-  String get aggiungiAlPiano => 'Aggiungi al piano';
+  String get aggiungiAlPiano => 'Προσθήκη στο πρόγραμμα';
 
   @override
   String allaFineSegna(Object p0) {
-    return 'Alla fine segna: $p0';
+    return 'Στο τέλος, κατέγραψε: $p0';
   }
 
   @override
   String get servonoNomeAlmenoEsercizio =>
-      'Servono il nome e almeno un esercizio.';
+      'Χρειάζεσαι όνομα και τουλάχιστον μία άσκηση.';
 
   @override
-  String get durataVa0300 => 'La durata va da 0 a 300 minuti.';
+  String get durataVa0300 => 'Η διάρκεια είναι από 0 έως 300 λεπτά.';
 
   @override
-  String get nuovoAllenamento => 'Nuovo allenamento';
+  String get nuovoAllenamento => 'Νέα προπόνηση';
 
   @override
-  String get salva => 'Salva';
+  String get salva => 'Αποθήκευση';
 
   @override
-  String get nome => 'Nome';
+  String get nome => 'Όνομα';
 
   @override
-  String get es50507 => 'es. 50-50, 7:3s 40%';
+  String get es50507 => 'π.χ. 50-50, 7:3s 40%';
 
   @override
-  String get categoria => 'Categoria';
+  String get categoria => 'Κατηγορία';
 
   @override
-  String get dove => 'Dove';
+  String get dove => 'Πού';
 
   @override
-  String get vuotoCalcoloDagliEsercizi => 'Vuoto = la calcolo dagli esercizi.';
+  String get vuotoCalcoloDagliEsercizi =>
+      'Κενό = το υπολογίζω από τις ασκήσεις.';
 
   @override
-  String get descrizione => 'Descrizione';
+  String get descrizione => 'Περιγραφή';
 
   @override
-  String get cosaSegnareAllaFine => 'Cosa segnare alla fine';
+  String get cosaSegnareAllaFine => 'Τι να καταγράψεις στο τέλος';
 
   @override
-  String get esGradoMedioDelle => 'es. il grado medio delle due parti';
+  String get esGradoMedioDelle => 'π.χ. ο μέσος βαθμός των δύο μερών';
 
   @override
-  String get spostaSu => 'Sposta su';
+  String get spostaSu => 'Μετακίνηση πάνω';
 
   @override
-  String get togli => 'Togli';
+  String get togli => 'Αφαίρεση';
 
   @override
-  String get aggiungiEsercizio => 'Aggiungi un esercizio';
+  String get aggiungiEsercizio => 'Προσθήκη άσκησης';
 
   @override
   String get controllaNomeSerie1 =>
-      'Controlla: nome, serie 1-20, ripetizioni 1-100, secondi 0-3600.';
+      'Έλεγξε: όνομα, σετ 1-20, επαναλήψεις 1-100, δευτερόλεπτα 0-3600.';
 
   @override
-  String get esercizio3 => 'Esercizio';
+  String get esercizio3 => 'Άσκηση';
 
   @override
-  String get esSospensioniVieBlocchi => 'es. Sospensioni, Vie, Blocchi';
+  String get esSospensioniVieBlocchi => 'π.χ. Κρεμάσματα, Διαδρομές, Boulder';
 
   @override
-  String get serie2 => 'Serie';
+  String get serie2 => 'Σετ';
 
   @override
-  String get ripetizioni => 'Ripetizioni';
+  String get ripetizioni => 'Επαναλήψεις';
 
   @override
-  String get lavoro => 'Lavoro';
+  String get lavoro => 'Δουλειά';
 
   @override
-  String get pausa2 => 'Pausa';
+  String get pausa2 => 'Παύση';
 
   @override
-  String get traSerie => 'Tra le serie';
+  String get traSerie => 'Ανάμεσα στα σετ';
 
   @override
   String get lavoroVuotoFincheNon =>
-      'Lavoro vuoto = finché non hai finito (una via, un blocco): tocchi \"Fatto\". Pausa: tra una ripetizione e l\'altra.';
+      'Κενή δουλειά = μέχρι να τελειώσεις (μια διαδρομή, ένα boulder): πατάς «Έγινε». Παύση: ανάμεσα σε μια επανάληψη και την επόμενη.';
 
   @override
-  String get intensitaOGrado => 'Intensità o grado';
+  String get intensitaOGrado => 'Ένταση ή βαθμός';
 
   @override
-  String get es406bFacile => 'es. 40%, 6b+, facile';
+  String get es406bFacile => 'π.χ. 40%, 6b+, εύκολα';
 
   @override
-  String get note => 'Note';
+  String get note => 'Σημειώσεις';
 
   @override
   String get ok => 'OK';
 
   @override
-  String get attivita2 => 'Che attività è?';
+  String get attivita2 => 'Τι δραστηριότητα είναι;';
 
   @override
   String get nomeRestaSullaSessione =>
-      'Il nome resta sulla sessione, nel calendario e nello storico.';
+      'Το όνομα μένει στην προπόνηση, στο ημερολόγιο και στο ιστορικό.';
 
   @override
-  String get esKayakPadelSci => 'Es. Kayak, Padel, Sci';
+  String get esKayakPadelSci => 'Π.χ. Καγιάκ, Padel, Σκι';
 
   @override
-  String get registraPercorsoGps => 'Registra il percorso GPS';
+  String get registraPercorsoGps => 'Καταγραφή διαδρομής GPS';
 
   @override
   String get mappaDistanzaVelocitaAnche =>
-      'Mappa, distanza e velocità, anche a schermo spento. Spento: solo tempo e battito.';
+      'Χάρτης, απόσταση και ταχύτητα, ακόμα και με σβηστή οθόνη. Κλειστό: μόνο χρόνος και παλμοί.';
 
   @override
-  String get inizia2 => 'Inizia';
+  String get inizia2 => 'Έναρξη';
 
   @override
-  String get avanti => 'Avanti';
+  String get avanti => 'Επόμενο';
 
   @override
-  String get datiCollegamenti => 'Dati e collegamenti';
+  String get datiCollegamenti => 'Δεδομένα και συνδέσεις';
 
   @override
   String get collegaOrologioOApp =>
-      'Collega l\'orologio o le app che usi (Garmin, Freeletics…) tramite Health Connect: gli allenamenti fatti arrivano da soli.';
+      'Σύνδεσε το ρολόι ή τις εφαρμογές που χρησιμοποιείς (Garmin, Freeletics…) μέσω Health Connect: οι προπονήσεις που κάνεις έρχονται μόνες τους.';
 
   @override
-  String get paroleDellAllenamento => 'Le parole dell\'allenamento';
+  String get paroleDellAllenamento => 'Λέξεις της προπόνησης';
 
   @override
-  String get concetti => 'Concetti';
+  String get concetti => 'Έννοιες';
 
   @override
-  String get zoneComeTiDevi => 'Zone: come ti devi sentire';
+  String get zoneComeTiDevi => 'Ζώνες: πώς πρέπει να νιώθεις';
 
   @override
   String zona(Object p0) {
-    return 'Zona $p0';
+    return 'Ζώνη $p0';
   }
 
   @override
-  String get tipiSeduta => 'Tipi di seduta';
+  String get tipiSeduta => 'Είδη προπόνησης';
 
   @override
   String prova(Object p0) {
-    return ' · prova $p0';
+    return ' · δοκιμή $p0';
   }
 
   @override
   String avidididadiVersione(Object p0, Object p1, Object p2) {
-    return 'Avidididadi · versione $p0 ($p1)$p2';
+    return 'Avidididadi · έκδοση $p0 ($p1)$p2';
   }
 
   @override
-  String get tuaArrampicata => 'La tua arrampicata';
+  String get tuaArrampicata => 'Η αναρρίχησή σου';
 
   @override
-  String get palestra => 'Palestra';
+  String get palestra => 'Γυμναστήριο';
 
   @override
-  String get falesiaOZona => 'Falesia o zona';
+  String get falesiaOZona => 'Βράχος ή περιοχή';
 
   @override
-  String get facoltativo => 'Facoltativo';
+  String get facoltativo => 'Προαιρετικό';
 
   @override
-  String get cosaHaiFatto => 'Cosa hai fatto';
+  String get cosaHaiFatto => 'Τι έκανες';
 
   @override
   String get scegliVieOBoulder =>
-      'Scegli vie o boulder: i gradi hanno due scale diverse.';
+      'Διάλεξε διαδρομές ή boulder: οι βαθμοί έχουν δύο διαφορετικές κλίμακες.';
 
   @override
-  String get gradoPiuDifficileChiuso => 'Grado più difficile chiuso';
+  String get gradoPiuDifficileChiuso => 'Ο δυσκολότερος βαθμός που ολοκλήρωσες';
 
   @override
   String nuovoRecordPrimaEra(Object p0) {
-    return 'Nuovo record! Prima era $p0.';
+    return 'Νέο ρεκόρ! Πριν ήταν $p0.';
   }
 
   @override
   String tuoRecord(Object p0, Object p1, Object p2, Object p3) {
-    return 'Il tuo record: $p0 ($p1 $p2 $p3).';
+    return 'Το ρεκόρ σου: $p0 ($p1 $p2 $p3).';
   }
 
   @override
   String get alPrimoTentativoSenza =>
-      'Al primo tentativo, senza sapere niente prima.';
+      'Με την πρώτη προσπάθεια, χωρίς να ξέρεις τίποτα από πριν.';
 
   @override
   String get alPrimoTentativoSapendo =>
-      'Al primo tentativo, sapendo già i movimenti.';
+      'Με την πρώτη προσπάθεια, ξέροντας ήδη τις κινήσεις.';
 
   @override
-  String get chiusaDopoAverlaProvata => 'Chiusa dopo averla provata più volte.';
+  String get chiusaDopoAverlaProvata =>
+      'Ολοκληρώθηκε αφού τη δοκίμασες πολλές φορές.';
 
   @override
-  String get comeHaiChiusaFacoltativo => 'Come l\'hai chiusa? (facoltativo)';
+  String get comeHaiChiusaFacoltativo => 'Πώς την ολοκλήρωσες; (προαιρετικό)';
 
   @override
-  String get vieChiuse2 => 'Vie chiuse';
+  String get vieChiuse2 => 'Διαδρομές που ολοκληρώθηκαν';
 
   @override
-  String get blocchiChiusi2 => 'Blocchi chiusi';
+  String get blocchiChiusi2 => 'Boulder που ολοκληρώθηκαν';
 
   @override
   String provatSenzaChiuderl(Object p0, Object p1) {
-    return 'Provat$p0 senza chiuderl$p1';
+    return 'Δοκιμάστηκαν χωρίς ολοκλήρωση';
   }
 
   @override
-  String get altezzaMediaDelleVie => 'Altezza media delle vie (m)';
+  String get altezzaMediaDelleVie => 'Μέσο ύψος διαδρομών (μ.)';
 
   @override
   String circaMetriSaliti(Object p0) {
-    return 'Circa $p0 metri saliti.';
+    return 'Περίπου $p0 μέτρα ανάβαση.';
   }
 
   @override
-  String get progettoGradoStaiProvando =>
-      'Progetto (il grado che stai provando)';
+  String get progettoGradoStaiProvando => 'Project (ο βαθμός που δουλεύεις)';
 
   @override
-  String get nessuno => 'Nessuno';
+  String get nessuno => 'Κανένα';
 
   @override
-  String get meno => 'Meno';
+  String get meno => 'Λιγότερο';
 
   @override
-  String get piu => 'Più';
+  String get piu => 'Περισσότερο';
 
   @override
-  String get comAndataQuestaSettimana => 'Com\'è andata questa settimana?';
+  String get comAndataQuestaSettimana => 'Πώς πήγε αυτή η εβδομάδα;';
 
   @override
-  String get giovediHoPocoTempo => 'Giovedì ho poco tempo: cosa sposto?';
+  String get giovediHoPocoTempo =>
+      'Την Πέμπτη έχω λίγο χρόνο: τι να μετακινήσω;';
 
   @override
   String get adattaProssimiGiorniAl =>
-      'Adatta i prossimi giorni al mio recupero';
+      'Προσάρμοσε τις επόμενες μέρες στην αποκατάστασή μου';
 
   @override
-  String get sonoProntoGara => 'Sono pronto per la gara?';
+  String get sonoProntoGara => 'Είμαι έτοιμος για τον αγώνα;';
 
   @override
   String collegato2(Object p0) {
-    return 'Collegato a $p0';
+    return 'Συνδεδεμένο με $p0';
   }
 
   @override
-  String get impostazioniAssistente => 'Impostazioni assistente';
+  String get impostazioniAssistente => 'Ρυθμίσεις βοηθού';
 
   @override
   String get chiedimiDeiTuoiAllenamenti =>
-      'Chiedimi dei tuoi allenamenti: vedo le ultime 4 settimane, i feedback, il recupero e il piano dei prossimi 14 giorni. Se propongo di cambiare il piano, decidi tu se applicare.';
+      'Ρώτα με για τις προπονήσεις σου: βλέπω τις τελευταίες 4 εβδομάδες, τις αξιολογήσεις, την αποκατάστασή σου και το πρόγραμμα των επόμενων 14 ημερών. Αν προτείνω αλλαγή του προγράμματος, αποφασίζεις εσύ αν θα την εφαρμόσεις.';
 
   @override
-  String get stoPensando => 'Sto pensando…';
+  String get stoPensando => 'Σκέφτομαι…';
 
   @override
-  String get scriviMessaggio => 'Scrivi un messaggio';
+  String get scriviMessaggio => 'Γράψε ένα μήνυμα';
 
   @override
-  String get invia => 'Invia';
+  String get invia => 'Αποστολή';
 
   @override
   String get allenatoreCuiParlareDei =>
-      'Un allenatore con cui parlare dei tuoi allenamenti, che può proporre modifiche al piano. Usi il modello che preferisci:';
+      'Ένας προπονητής για να μιλάς για τις προπονήσεις σου, που μπορεί να προτείνει αλλαγές στο πρόγραμμα. Χρησιμοποίησε το μοντέλο που προτιμάς:';
 
   @override
   String get facoltativoSenzaAssistenteApp =>
-      'È facoltativo: senza assistente l\'app funziona come sempre.';
+      'Είναι προαιρετικό: χωρίς βοηθό η εφαρμογή λειτουργεί όπως πάντα.';
 
   @override
-  String get configuraAssistente => 'Configura assistente';
+  String get configuraAssistente => 'Ρύθμιση βοηθού';
 
   @override
-  String get modificheProposteAlPiano => 'Modifiche proposte al piano';
+  String get modificheProposteAlPiano => 'Προτεινόμενες αλλαγές στο πρόγραμμα';
 
   @override
-  String get applicateAlPiano => 'Applicate al piano.';
+  String get applicateAlPiano => 'Εφαρμόστηκαν στο πρόγραμμα.';
 
   @override
-  String get nonApplicabili => 'Non applicabili';
+  String get nonApplicabili => 'Δεν μπορούν να εφαρμοστούν';
 
   @override
   String get nienteApplicarePianoCambiato =>
-      'Niente da applicare: il piano è cambiato nel frattempo.';
+      'Τίποτα για εφαρμογή: το πρόγραμμα άλλαξε στο μεταξύ.';
 
   @override
   String pianoAggiornatoModificheVedi(Object p0) {
-    return 'Piano aggiornato: $p0 modifiche. Le vedi nel calendario.';
+    return 'Το πρόγραμμα ενημερώθηκε: $p0 αλλαγές. Μπορείς να τις δεις στο ημερολόγιο.';
   }
 
   @override
   String applicaModifiche(Object p0) {
-    return 'Applica $p0 modifiche';
+    return 'Εφαρμογή $p0 αλλαγών';
   }
 
   @override
   String get nessunModelloDisponibileQuesta =>
-      'Nessun modello disponibile con questa chiave.';
+      'Κανένα διαθέσιμο μοντέλο με αυτό το κλειδί.';
 
   @override
-  String get consigliato => 'Consigliato';
+  String get consigliato => 'Προτείνεται';
 
   @override
   String get coachNellaSuaApp =>
-      'Il coach è nella sua app. Scollega dalla pagina Coach per tornare al servizio qui sotto.';
+      'Ο προπονητής είναι στη δική του εφαρμογή. Αποσυνδέσου από τη σελίδα Προπονητής για να επιστρέψεις στην παρακάτω υπηρεσία.';
 
   @override
   String get usaTuoAbbonamentoClaude =>
-      'Usa il tuo abbonamento (Claude, ChatGPT, Gemini…)';
+      'Χρησιμοποίησε τη συνδρομή σου (Claude, ChatGPT, Gemini…)';
 
   @override
   String get senzaChiaveApiParli =>
-      'Senza chiave API: parli con il coach nell\'app del tuo assistente.';
+      'Χωρίς κλειδί API: μιλάς με τον προπονητή στην εφαρμογή του βοηθού σου.';
 
   @override
-  String get coachNellAppQuando => 'Coach nell\'app (quando scolleghi)';
+  String get coachNellAppQuando =>
+      'Προπονητής στην εφαρμογή (όταν αποσυνδεθείς)';
 
   @override
-  String get servizio => 'Servizio';
+  String get servizio => 'Υπηρεσία';
 
   @override
-  String get chiaveApi => 'Chiave API';
+  String get chiaveApi => 'Κλειδί API';
 
   @override
   String chiaveSalvata(Object p0) {
-    return 'Chiave salvata ••••$p0';
+    return 'Το κλειδί αποθηκεύτηκε ••••$p0';
   }
 
   @override
-  String get cifrataSulTelefono => 'Cifrata sul telefono.';
+  String get cifrataSulTelefono => 'Κρυπτογραφημένο στο κινητό.';
 
   @override
-  String get incollaChiaveApi => 'Incolla la chiave API';
+  String get incollaChiaveApi => 'Επικόλλησε το κλειδί API';
 
   @override
-  String get salvaChiave => 'Salva chiave';
+  String get salvaChiave => 'Αποθήκευση κλειδιού';
 
   @override
   String get siPagaConsumoSul =>
-      'Si paga a consumo sul tuo account: una domanda costa di solito pochi centesimi o meno. Puoi impostare un limite di spesa sul sito del servizio.';
+      'Πληρώνεις όσο χρησιμοποιείς, στον λογαριασμό σου: μια ερώτηση συνήθως κοστίζει λίγα λεπτά του ευρώ ή λιγότερο. Μπορείς να βάλεις όριο εξόδων στον ιστότοπο της υπηρεσίας.';
 
   @override
-  String get indirizzoOllama => 'Indirizzo di Ollama';
+  String get indirizzoOllama => 'Διεύθυνση Ollama';
 
   @override
-  String get indirizzoPc => 'Indirizzo del PC';
+  String get indirizzoPc => 'Διεύθυνση υπολογιστή';
 
   @override
   String get sulPcInstallaOllama =>
-      'Sul PC: installa Ollama, scarica un modello (ollama pull llama3.1) e avvialo con OLLAMA_HOST=0.0.0.0 così il telefono lo raggiunge. L\'indirizzo IP del PC lo trovi con \"ipconfig\".';
+      'Στον υπολογιστή: εγκατάστησε το Ollama, κατέβασε ένα μοντέλο (ollama pull llama3.1) και ξεκίνα το με OLLAMA_HOST=0.0.0.0 ώστε να το φτάνει το κινητό. Τη διεύθυνση IP του υπολογιστή τη βρίσκεις με «ipconfig».';
 
   @override
-  String get modello => 'Modello';
+  String get modello => 'Μοντέλο';
 
   @override
-  String get nomeModello => 'Nome del modello';
+  String get nomeModello => 'Όνομα μοντέλου';
 
   @override
-  String get vuotoPiuAdattoTra =>
-      'Vuoto = il più adatto tra quelli disponibili';
+  String get vuotoPiuAdattoTra => 'Κενό = το πιο κατάλληλο από τα διαθέσιμα';
 
   @override
-  String get scegliTraModelliDisponibili => 'Scegli tra i modelli disponibili';
+  String get scegliTraModelliDisponibili => 'Διάλεξε από τα διαθέσιμα μοντέλα';
 
   @override
-  String get datiInviati => 'Dati inviati';
+  String get datiInviati => 'Δεδομένα που αποστέλλονται';
 
   @override
-  String get nomeFotoNonVengono => 'Nome e foto non vengono mai inviati.';
+  String get nomeFotoNonVengono =>
+      'Όνομα και φωτογραφία δεν αποστέλλονται ποτέ.';
 
   @override
   String get acconsentoInviareQuestiDati2 =>
-      'Acconsento a inviare questi dati al mio PC con Ollama';
+      'Συμφωνώ να στέλνονται αυτά τα δεδομένα στον υπολογιστή μου με το Ollama';
 
   @override
   String acconsentoInviareQuestiDati3(Object p0) {
-    return 'Acconsento a inviare questi dati a $p0 a ogni messaggio';
+    return 'Συμφωνώ να στέλνονται αυτά τα δεδομένα στο $p0 με κάθε μήνυμα';
   }
 
   @override
   String nonRaggiungibile(Object p0) {
-    return '$p0 non raggiungibile';
+    return 'Το $p0 δεν είναι προσβάσιμο';
   }
 
   @override
   String verifica(Object p0) {
-    return 'Verifica di $p0…';
+    return 'Έλεγχος $p0…';
   }
 
   @override
-  String get provaConnessione2 => 'Prova connessione';
+  String get provaConnessione2 => 'Δοκιμή σύνδεσης';
 
   @override
   String collegamento(Object p0) {
-    return 'Collegamento a $p0…';
+    return 'Σύνδεση με $p0…';
   }
 
   @override
-  String get riprova => 'Riprova';
+  String get riprova => 'Ξανά';
 
   @override
   String nonCollegato(Object p0) {
-    return '$p0 non collegato';
+    return '$p0 δεν είναι συνδεδεμένο';
   }
 
   @override
   String togliere(Object p0) {
-    return 'Togliere $p0?';
+    return 'Αφαίρεση: $p0;';
   }
 
   @override
   String seduteFutureEsconoDal(Object p0) {
-    return 'Le sedute future di $p0 escono dal calendario. Quelle già fatte restano nello storico.';
+    return 'Οι μελλοντικές προπονήσεις $p0 βγαίνουν από το ημερολόγιο. Όσες έχουν ήδη γίνει μένουν στο ιστορικό.';
   }
 
   @override
-  String get tueAttivitaSonoAggiornate => 'Le tue attività sono aggiornate.';
+  String get tueAttivitaSonoAggiornate => 'Οι δραστηριότητές σου ενημερώθηκαν.';
 
   @override
-  String get mieAttivita => 'Le mie attività';
+  String get mieAttivita => 'Οι δραστηριότητές μου';
 
   @override
   String get nelPianoNeiMenu =>
-      'Nel piano e nei menu vedi solo queste. Dal \"+\" puoi sempre fare anche altro, e tutto quello che fai resta nello storico.';
+      'Στο πρόγραμμα και στα μενού βλέπεις μόνο αυτές. Από το «+» μπορείς πάντα να κάνεις και κάτι άλλο, και ό,τι κάνεις μένει στο ιστορικό.';
 
   @override
   String quando(Object p0) {
-    return '$p0: quando?';
+    return '$p0: πότε;';
   }
 
   @override
   String get scegliGiorniAllenamentoDecidi =>
-      'Scegli i giorni. L\'allenamento lo decidi tu, o lo chiedi all\'assistente: l\'app non ne scrive da sola.';
+      'Διάλεξε τις μέρες. Την προπόνηση την αποφασίζεις εσύ ή τη ζητάς από τον βοηθό: η εφαρμογή δεν γράφει μόνη της.';
 
   @override
   String get scegliGiorniMettiamoSedute =>
-      'Scegli i giorni: mettiamo le sedute nel calendario.';
+      'Διάλεξε τις μέρες: βάζουμε τις προπονήσεις στο ημερολόγιο.';
 
   @override
-  String get quantoDura => 'Quanto dura';
+  String get quantoDura => 'Πόσο διαρκεί';
 
   @override
-  String get nonOra => 'Non ora';
+  String get nonOra => 'Όχι τώρα';
 
   @override
-  String get mettiNelCalendario => 'Metti nel calendario';
+  String get mettiNelCalendario => 'Βάλε στο ημερολόγιο';
 
   @override
-  String get scriviAlmenoPeso => 'Scrivi almeno un peso';
+  String get scriviAlmenoPeso => 'Γράψε τουλάχιστον ένα βάρος';
 
   @override
-  String get pesiDisponibili => 'Pesi disponibili';
+  String get pesiDisponibili => 'Διαθέσιμα βάρη';
 
   @override
-  String get nessunPeso => 'Nessun peso';
+  String get nessunPeso => 'Κανένα βάρος';
 
   @override
   String letti(Object p0) {
-    return 'Letti: $p0';
+    return 'Διαβάστηκαν: $p0';
   }
 
   @override
-  String get miaAttrezzatura => 'La mia attrezzatura';
+  String get miaAttrezzatura => 'Ο εξοπλισμός μου';
 
   @override
   String corpoLiberoSempreIncluso(Object p0, Object p1) {
-    return 'Il corpo libero è sempre incluso. Con questa attrezzatura puoi fare $p0 esercizi su $p1.';
+    return 'Το βάρος σώματος περιλαμβάνεται πάντα. Με αυτόν τον εξοπλισμό μπορείς να κάνεις $p0 ασκήσεις από $p1.';
   }
 
   @override
-  String get palestra2 => 'In palestra';
+  String get palestra2 => 'Στο γυμναστήριο';
 
   @override
-  String get selezionaTutte => 'Seleziona tutte';
+  String get selezionaTutte => 'Επιλογή όλων';
 
   @override
-  String get salvaBackup => 'Salva il backup';
+  String get salvaBackup => 'Αποθήκευσε το αντίγραφο ασφαλείας';
 
   @override
   String get backupSalvatoCopialoAnche =>
-      'Backup salvato. Copialo anche fuori dal telefono (Drive, PC) per non perderlo.';
+      'Το αντίγραφο ασφαλείας αποθηκεύτηκε. Αντέγραψέ το και έξω από το κινητό (Drive, υπολογιστής) για να μην το χάσεις.';
 
   @override
   String backupNonRiuscito(Object p0) {
-    return 'Backup non riuscito: $p0';
+    return 'Το αντίγραφο ασφαλείας απέτυχε: $p0';
   }
 
   @override
   String impossibileLeggereFile(Object p0) {
-    return 'Impossibile leggere il file: $p0';
+    return 'Δεν διαβάζεται το αρχείο: $p0';
   }
 
   @override
-  String get ripristinareBackup => 'Ripristinare il backup?';
+  String get ripristinareBackup => 'Επαναφορά του αντιγράφου ασφαλείας;';
 
   @override
   String tuttiDatiAttualiDell(Object p0) {
-    return '$p0.\n\nTutti i dati attuali dell\'app verranno sostituiti. Se non sei sicuro, salva prima un backup di adesso.';
+    return '$p0.\n\nΌλα τα τωρινά δεδομένα της εφαρμογής θα αντικατασταθούν. Αν δεν είσαι σίγουρος, αποθήκευσε πρώτα ένα αντίγραφο ασφαλείας του τώρα.';
   }
 
   @override
-  String get ripristina => 'Ripristina';
+  String get ripristina => 'Επαναφορά';
 
   @override
   String get datiRipristinatiAllaProssima =>
-      'Dati ripristinati. Alla prossima sincronizzazione Health Connect rilegge lo storico.';
+      'Τα δεδομένα επανήλθαν. Στον επόμενο συγχρονισμό το Health Connect διαβάζει ξανά το ιστορικό.';
 
   @override
   String ripristinoNonRiuscito(Object p0) {
-    return 'Ripristino non riuscito: $p0';
+    return 'Η επαναφορά απέτυχε: $p0';
   }
 
   @override
-  String get backupSalvatoNellaCartella => 'Backup salvato nella cartella.';
+  String get backupSalvatoNellaCartella =>
+      'Το αντίγραφο ασφαλείας αποθηκεύτηκε στον φάκελο.';
 
   @override
-  String get backupAutomatico => 'Backup automatico';
+  String get backupAutomatico => 'Αυτόματο αντίγραφο ασφαλείας';
 
   @override
-  String get cartellaTelefono => 'una cartella del telefono';
+  String get cartellaTelefono => 'έναν φάκελο στο κινητό';
 
   @override
   String ultimo(Object p0) {
-    return ' · ultimo $p0';
+    return ' · τελευταίο $p0';
   }
 
   @override
   String inTesto(Object p0, Object p1) {
-    return 'In $p0$p1';
+    return 'Σε $p0$p1';
   }
 
   @override
   String cartellaScegliTuResta(Object p0) {
-    return 'In una cartella che scegli tu: resta anche se disinstalli l\'app. Tiene gli ultimi $p0.';
+    return 'Σε έναν φάκελο που διαλέγεις: μένει ακόμα κι αν απεγκαταστήσεις την εφαρμογή. Κρατά τα τελευταία $p0.';
   }
 
   @override
-  String get ogniGiorno => 'Ogni giorno';
+  String get ogniGiorno => 'Κάθε μέρα';
 
   @override
-  String get ogniSettimana => 'Ogni settimana';
+  String get ogniSettimana => 'Κάθε εβδομάδα';
 
   @override
   String get siFaSoloQuando =>
-      'Si fa da solo quando apri l\'app. Per non perderlo col telefono, ogni tanto copia la cartella sul PC o su Drive.';
+      'Γίνεται μόνο του όταν ανοίγεις την εφαρμογή. Για να μην το χάσεις μαζί με το κινητό, πού και πού αντέγραψε τον φάκελο στον υπολογιστή ή στο Drive.';
 
   @override
-  String get falloOra => 'Fallo ora';
+  String get falloOra => 'Κάν\' το τώρα';
 
   @override
-  String get cambiaCartella => 'Cambia cartella';
+  String get cambiaCartella => 'Αλλαγή φακέλου';
 
   @override
-  String get backup => 'Backup';
+  String get backup => 'Αντίγραφο ασφαλείας';
 
   @override
   String get unicoFileSessioniPiano =>
-      'Un unico file con sessioni, piano, profilo, misure, feedback, recupero e foto. La chiave dell\'assistente non è inclusa.';
+      'Ένα μόνο αρχείο με προπονήσεις, πρόγραμμα, προφίλ, μετρήσεις, αξιολογήσεις, αποκατάσταση και φωτογραφία. Το κλειδί του βοηθού δεν περιλαμβάνεται.';
 
   @override
-  String get salvaBackup2 => 'Salva backup';
+  String get salvaBackup2 => 'Αποθήκευση αντιγράφου';
 
   @override
   String get backupAttivoOraSi =>
-      'Backup attivo: da ora si salva da solo ogni settimana.';
+      'Το αντίγραφο ασφαλείας ενεργοποιήθηκε: από τώρα αποθηκεύεται μόνο του κάθε εβδομάδα.';
 
   @override
   String get mettiAlSicuroTuoi =>
-      'Metti al sicuro i tuoi allenamenti: l\'app ne salva da sola una copia in una cartella che scegli tu. Resta anche se disinstalli l\'app.';
+      'Κράτα ασφαλείς τις προπονήσεις σου: η εφαρμογή αποθηκεύει μόνη της ένα αντίγραφο σε φάκελο που διαλέγεις. Μένει ακόμα κι αν απεγκαταστήσεις την εφαρμογή.';
 
   @override
-  String get scegliNuovoCartella => 'Scegli di nuovo la cartella';
+  String get scegliNuovoCartella => 'Διάλεξε ξανά τον φάκελο';
 
   @override
-  String get attivaBackup => 'Attiva il backup';
+  String get attivaBackup => 'Ενεργοποίηση αντιγράφου ασφαλείας';
 
   @override
-  String get battitoDalSensore => 'Battito dal sensore';
+  String get battitoDalSensore => 'Παλμοί από αισθητήρα';
 
   @override
   String get fasciaCardioOOrologio =>
-      'Una fascia cardio o un orologio che trasmette il battito via Bluetooth. Lo vedi durante l\'allenamento; alla fine si salvano media e massimo.';
+      'Ζώνη καρδιακών παλμών ή ρολόι που μεταδίδει τους παλμούς μέσω Bluetooth. Τους βλέπεις κατά την προπόνηση· στο τέλος αποθηκεύονται ο μέσος όρος και ο μέγιστος.';
 
   @override
   String get garminSullOrologioCerca =>
-      'Garmin: sull\'orologio cerca \"Trasmetti frequenza cardiaca\" (di solito nei controlli, tenendo premuto il tasto della luce) e attivala: poi tocca \"Cerca\". Alcuni modelli vecchi la trasmettono solo in ANT+, che il telefono non legge.\nFascia cardio: indossala bagnando un po\' gli elettrodi, si accende da sola.\nUna volta scelto, il sensore si ricollega da solo a ogni allenamento.';
+      'Garmin: στο ρολόι ψάξε τη «Μετάδοση καρδιακών παλμών» (συνήθως στα χειριστήρια, κρατώντας πατημένο το κουμπί φωτισμού) και ενεργοποίησέ τη· μετά πάτα «Αναζήτηση». Μερικά παλιά μοντέλα μεταδίδουν μόνο μέσω ANT+, που το κινητό δεν διαβάζει.\nΖώνη: φόρεσέ τη βρέχοντας λίγο τα ηλεκτρόδια, ανοίγει μόνη της.\nΜόλις τον διαλέξεις, ο αισθητήρας συνδέεται ξανά μόνος του σε κάθε προπόνηση.';
 
   @override
-  String get sensoriBici => 'Sensori della bici';
+  String get sensoriBici => 'Αισθητήρες ποδηλάτου';
 
   @override
   String get rulliSmartTacxWahoo =>
-      'Rulli smart (Tacx, Wahoo, Elite…), misuratore di potenza o sensore di velocità e cadenza, via Bluetooth. Alla fine si salvano potenza e cadenza medie.';
+      'Έξυπνα προπονητήρια (Tacx, Wahoo, Elite…), μετρητής ισχύος ή αισθητήρας ταχύτητας και ρυθμού πεταλιού, μέσω Bluetooth. Στο τέλος αποθηκεύονται η μέση ισχύς και ο ρυθμός πεταλιού.';
 
   @override
   String get rulliAccendiliSmettiUsarli =>
-      'Rulli: accendili e smetti di usarli con altre app (Zwift, Tacx), perché molti si collegano a una sola app per volta.\nSensore di velocità o di cadenza: si sveglia girando la ruota o i pedali.\nLa circonferenza della ruota serve solo al sensore di velocità: la trovi scritta sul copertone (es. 700×25C = 2105 mm).';
+      'Προπονητήρια: άναψέ τα και σταμάτα να τα χρησιμοποιείς με άλλες εφαρμογές (Zwift, Tacx), γιατί πολλά συνδέονται μόνο με μία εφαρμογή τη φορά.\nΑισθητήρας ταχύτητας ή ρυθμού: ξυπνά όταν γυρίζεις τον τροχό ή τα πετάλια.\nΗ περίμετρος του τροχού χρειάζεται μόνο για τον αισθητήρα ταχύτητας: τη βρίσκεις γραμμένη στο λάστιχο (π.χ. 700×25C = 2105 mm).';
 
   @override
   String get servePermessoDispositiviNelle =>
-      'Serve il permesso \"Dispositivi nelle vicinanze\".';
+      'Χρειάζεται η άδεια «Συσκευές κοντά».';
 
   @override
-  String get apriImpostazioni => 'Apri le impostazioni';
+  String get apriImpostazioni => 'Άνοιγμα ρυθμίσεων';
 
   @override
   String get bluetoothSpentoAccendiloRiprova =>
-      'Il Bluetooth è spento: accendilo e riprova.';
+      'Το Bluetooth είναι κλειστό: άνοιξέ το και δοκίμασε ξανά.';
 
   @override
   String collegato3(Object p0) {
-    return 'Collegato · $p0';
+    return 'Συνδεδεμένο · $p0';
   }
 
   @override
-  String get collegatoAspettoDati => 'Collegato, aspetto i dati…';
+  String get collegatoAspettoDati => 'Συνδεδεμένο, περιμένω δεδομένα…';
 
   @override
-  String get miCollegoDevEssere => 'Mi collego… (dev\'essere acceso e vicino)';
+  String get miCollegoDevEssere =>
+      'Συνδέομαι… (πρέπει να είναι ανοιχτό και κοντά)';
 
   @override
-  String get nonCollegato2 => 'Non collegato';
+  String get nonCollegato2 => 'Δεν είναι συνδεδεμένο';
 
   @override
-  String get dimentica => 'Dimentica';
+  String get dimentica => 'Διαγραφή';
 
   @override
-  String get cercoSensoriVicini => 'Cerco i sensori vicini…';
+  String get cercoSensoriVicini => 'Ψάχνω αισθητήρες κοντά…';
 
   @override
-  String get sensoriTrovati => 'Sensori trovati';
+  String get sensoriTrovati => 'Αισθητήρες που βρέθηκαν';
 
   @override
-  String get nessunSensoreTrovato => 'Nessun sensore trovato.';
+  String get nessunSensoreTrovato => 'Δεν βρέθηκε κανένας αισθητήρας.';
 
   @override
-  String get cercaAltroSensore => 'Cerca un altro sensore';
+  String get cercaAltroSensore => 'Αναζήτηση άλλου αισθητήρα';
 
   @override
-  String get cercaNuovo => 'Cerca di nuovo';
+  String get cercaNuovo => 'Νέα αναζήτηση';
 
   @override
-  String get comeSiCollega => 'Come si collega';
+  String get comeSiCollega => 'Πώς συνδέεται';
 
   @override
-  String get segnaleForte => 'Segnale forte';
+  String get segnaleForte => 'Δυνατό σήμα';
 
   @override
-  String get segnaleMedio => 'Segnale medio';
+  String get segnaleMedio => 'Μέτριο σήμα';
 
   @override
-  String get segnaleDebole => 'Segnale debole';
+  String get segnaleDebole => 'Αδύναμο σήμα';
 
   @override
   String adessoKmH(Object p0) {
-    return ' Adesso: $p0 km/h.';
+    return ' Τώρα: $p0 χλμ./ώ.';
   }
 
   @override
-  String get maiFattaQui => 'Mai fatta da qui.';
+  String get maiFattaQui => 'Δεν έγινε ποτέ από εδώ.';
 
   @override
   String ultima(Object p0) {
-    return 'Ultima: $p0.';
+    return 'Τελευταία: $p0.';
   }
 
   @override
   String tienePrecisiWattFalla(Object p0) {
-    return '$p0 Tiene precisi i watt: falla ogni due settimane circa e quando sposti il rullo, meglio dopo 10 minuti di pedalata.';
+    return '$p0 Κρατά ακριβή τα watt: κάν\' τη περίπου κάθε δύο εβδομάδες και κάθε φορά που μετακινείς το προπονητήριο, ιδανικά μετά από 10 λεπτά ποδηλασίας.';
   }
 
   @override
-  String get chiedoAlRulloIniziare => 'Chiedo al rullo di iniziare…';
+  String get chiedoAlRulloIniziare => 'Ζητάω από το προπονητήριο να ξεκινήσει…';
 
   @override
   String pedalaAcceleraFincheRullo(Object p0) {
-    return 'Pedala e accelera finché il rullo non ti dice di smettere.$p0';
+    return 'Κάνε πετάλι και επιτάχυνε μέχρι να σου πει το προπονητήριο να σταματήσεις.$p0';
   }
 
   @override
   String acceleraFinoSuperareKm(Object p0, Object p1) {
-    return 'Accelera fino a superare $p0 km/h.$p1';
+    return 'Επιτάχυνε μέχρι να περάσεις τα $p0 χλμ./ώ.$p1';
   }
 
   @override
   String smettiPedalareAspettaRullo(Object p0) {
-    return 'Smetti di pedalare e aspetta che il rullo si fermi.$p0';
+    return 'Σταμάτα το πετάλι και περίμενε να σταματήσει το προπονητήριο.$p0';
   }
 
   @override
-  String get calibrazioneRiuscita => 'Calibrazione riuscita.';
+  String get calibrazioneRiuscita => 'Η βαθμονόμηση πέτυχε.';
 
   @override
   String get nonRiuscitaControllaNessun =>
-      'Non è riuscita. Controlla che nessun\'altra app usi il rullo e riprova.';
+      'Δεν πέτυχε. Έλεγξε ότι καμία άλλη εφαρμογή δεν χρησιμοποιεί το προπονητήριο και δοκίμασε ξανά.';
 
   @override
-  String get calibraRullo => 'Calibra il rullo';
+  String get calibraRullo => 'Βαθμονόμηση προπονητηρίου';
 
   @override
-  String get iniziaCalibrazione => 'Inizia la calibrazione';
+  String get iniziaCalibrazione => 'Έναρξη βαθμονόμησης';
 
   @override
-  String get circonferenzaRuota => 'Circonferenza della ruota';
+  String get circonferenzaRuota => 'Περίμετρος τροχού';
 
   @override
   String get soloSensoreVelocita700 =>
-      'Solo per il sensore di velocità. 700×25C: 2105 mm.';
+      'Μόνο για τον αισθητήρα ταχύτητας. 700×25C: 2105 mm.';
 
   @override
   String get tuoPianoProntoPrima =>
-      'Il tuo piano è pronto! La prima seduta è qui, in \"Oggi\". Giorni e durata li cambi quando vuoi dal Profilo.';
+      'Το πρόγραμμά σου είναι έτοιμο! Η πρώτη προπόνηση είναι εδώ, στο «Σήμερα». Μπορείς να αλλάξεις μέρες και διάρκεια όποτε θέλεις από το Προφίλ.';
 
   @override
   String get tuoPianoProntoOggi =>
-      'Il tuo piano è pronto! In \"Oggi\" trovi cosa fare ogni giorno.';
+      'Το πρόγραμμά σου είναι έτοιμο! Στο «Σήμερα» θα βρίσκεις τι να κάνεις κάθε μέρα.';
 
   @override
-  String get indietro => 'Indietro';
+  String get indietro => 'Πίσω';
 
   @override
-  String get comeTiChiami => 'Come ti chiami?';
+  String get comeTiChiami => 'Πώς σε λένε;';
 
   @override
-  String get cosiAppTiSaluta => 'Così l\'app ti saluta per nome.';
+  String get cosiAppTiSaluta => 'Για να σε χαιρετά η εφαρμογή με το όνομά σου.';
 
   @override
-  String get tuoNome => 'Il tuo nome';
+  String get tuoNome => 'Το όνομά σου';
 
   @override
-  String get cosaTiPiacerebbeFare => 'Cosa ti piacerebbe fare?';
+  String get cosaTiPiacerebbeFare => 'Τι θα ήθελες να κάνεις;';
 
   @override
   String get puoiScegliernePiuUno =>
-      'Puoi sceglierne più di uno. Con \"Inizia oggi\" parti con 3 sedute da 30 minuti a settimana (lunedì, mercoledì e venerdì), adatte a chi comincia, e la prima è già oggi. Potrai cambiare tutto quando vuoi.';
+      'Μπορείς να διαλέξεις περισσότερα από ένα. Με το «Ξεκίνα σήμερα» αρχίζεις με 3 προπονήσεις των 30 λεπτών την εβδομάδα (Δευτέρα, Τετάρτη και Παρασκευή), κατάλληλες για αρχάριους, και η πρώτη είναι σήμερα. Μπορείς να αλλάξεις τα πάντα όποτε θέλεις.';
 
   @override
-  String get quantoTempoHai => 'Quanto tempo hai?';
+  String get quantoTempoHai => 'Πόσο χρόνο έχεις;';
 
   @override
   String get meglioPocoMaCostanza =>
-      'Meglio poco ma con costanza: per iniziare 3 giorni da 30 minuti sono perfetti.';
+      'Καλύτερα λίγο αλλά συχνά: για αρχή, 3 μέρες των 30 λεπτών είναι ιδανικές.';
 
   @override
-  String get giorniSettimana => 'Giorni a settimana';
+  String get giorniSettimana => 'Μέρες την εβδομάδα';
 
   @override
-  String get minutiOgniVolta => 'Minuti ogni volta';
+  String get minutiOgniVolta => 'Λεπτά κάθε φορά';
 
   @override
   String giorniNonCSpazio(Object p0, Object p1) {
-    return 'Con $p0 giorni non c\'è spazio per tutti gli sport scelti: ne userò $p1.';
+    return 'Με $p0 μέρες δεν χωράνε όλα τα αθλήματα που διάλεξες: θα χρησιμοποιήσω $p1.';
   }
 
   @override
-  String get quantoTiAlleniSolito => 'Quanto ti alleni di solito?';
+  String get quantoTiAlleniSolito => 'Πόσο συχνά προπονείσαι συνήθως;';
 
   @override
   String get rispondiSinceramentePianoParte =>
-      'Rispondi sinceramente: il piano parte dal tuo livello e cresce insieme a te.';
+      'Απάντησε ειλικρινά: το πρόγραμμα ξεκινά από το επίπεδό σου και μεγαλώνει μαζί σου.';
 
   @override
-  String get iniziaOggi => 'Inizia oggi';
+  String get iniziaOggi => 'Ξεκίνα σήμερα';
 
   @override
-  String get primaScelgoGiorniDurata => 'Prima scelgo giorni, durata e livello';
+  String get primaScelgoGiorniDurata =>
+      'Πρώτα διαλέγω μέρες, διάρκεια και επίπεδο';
 
   @override
-  String get creaMioPiano => 'Crea il mio piano';
+  String get creaMioPiano => 'Δημιούργησε το πρόγραμμά μου';
 
   @override
-  String get scegliAlmenoUnoSport => 'Scegli almeno uno sport';
+  String get scegliAlmenoUnoSport => 'Διάλεξε τουλάχιστον ένα άθλημα';
 
   @override
-  String get benvenuto => 'Benvenuto!';
+  String get benvenuto => 'Καλώς ήρθες!';
 
   @override
   String get tiPreparoPianoAllenamento =>
-      'Ti preparo un piano di allenamento su misura, anche se non ti sei mai allenato. Ogni giorno ti dico cosa fare, passo passo, e il piano si adatta a come ti senti.';
+      'Σου ετοιμάζω ένα πρόγραμμα προπόνησης φτιαγμένο για σένα, ακόμα κι αν δεν έχεις προπονηθεί ποτέ. Κάθε μέρα σου λέω τι να κάνεις, βήμα βήμα, και το πρόγραμμα προσαρμόζεται στο πώς νιώθεις.';
 
   @override
-  String get scegliTuoiSportParti => 'Scegli i tuoi sport e parti subito.';
+  String get scegliTuoiSportParti =>
+      'Διάλεξε τα αθλήματά σου και ξεκίνα αμέσως.';
 
   @override
-  String get iniziamo => 'Iniziamo';
+  String get iniziamo => 'Ας ξεκινήσουμε';
 
   @override
-  String get saltaPreferiscoFareSolo => 'Salta, preferisco fare da solo';
+  String get saltaPreferiscoFareSolo =>
+      'Παράλειψη, προτιμώ να το κάνω μόνος μου';
 
   @override
-  String get haiOrologioSportivo => 'Hai un orologio sportivo?';
+  String get haiOrologioSportivo => 'Έχεις αθλητικό ρολόι;';
 
   @override
   String get vaBeneAncheSenza =>
-      'Va bene anche senza: l\'app funziona con il solo telefono.';
+      'Είναι εντάξει και χωρίς: η εφαρμογή δουλεύει μόνο με το κινητό.';
 
   @override
-  String get noSoloTelefono => 'No, solo il telefono';
+  String get noSoloTelefono => 'Όχι, μόνο το κινητό';
 
   @override
   String get nienteOrologioFasciaCardio =>
-      'Niente orologio, fascia cardio o altre app.';
+      'Χωρίς ρολόι, ζώνη παλμών ή άλλες εφαρμογές.';
 
   @override
-  String get siOrologioOFascia => 'Sì, un orologio o una fascia';
+  String get siOrologioOFascia => 'Ναι, ρολόι ή ζώνη';
 
   @override
   String get garminPolarSuuntoCoros => 'Garmin, Polar, Suunto, Coros, Wahoo…';
 
   @override
   String get corsaCamminataBiciRegistra =>
-      'Corsa, camminata e bici le registra il telefono con il GPS, e ti guida a voce passo passo.';
+      'Το κινητό καταγράφει τρέξιμο, περπάτημα και ποδήλατο με GPS, και σε καθοδηγεί με φωνή βήμα βήμα.';
 
   @override
   String get zoneEsempioZona2 =>
-      'Le zone (per esempio \"zona 2\") seguile a sensazione: in zona 2 riesci ancora a parlare.';
+      'Ακολούθησε τις ζώνες (για παράδειγμα «ζώνη 2») με την αίσθηση: στη ζώνη 2 μπορείς ακόμα να μιλάς.';
 
   @override
   String get dopoOgniSedutaRispondi =>
-      'Dopo ogni seduta rispondi a \"Com\'è andata?\": è così che il piano capisce la fatica e si adatta.';
+      'Μετά από κάθε προπόνηση απάντησε στο «Πώς πήγε;»: έτσι το πρόγραμμα καταλαβαίνει την κόπωσή σου και προσαρμόζεται.';
 
   @override
   String get nuotoSenzaOrologioSegni =>
-      'Il nuoto, senza orologio, lo segni a mano dopo la vasca.';
+      'Χωρίς ρολόι, την κολύμβηση την καταγράφεις με το χέρι μετά την πισίνα.';
 
   @override
   String get energiaSonnoRestanoVuoti =>
-      'Energia e sonno restano vuoti: servono i dati di un orologio.';
+      'Ενέργεια και ύπνος μένουν κενά: χρειάζονται δεδομένα από ρολόι.';
 
   @override
   String get dopoCollegaloProfiloDati =>
-      'Dopo collegalo da Profilo → Dati e collegamenti: con Health Connect, o con intervals.icu per Garmin e gli altri. Le attività arrivano da sole, con battito e sonno.';
+      'Σύνδεσέ το αργότερα από Προφίλ → Δεδομένα και συνδέσεις: με το Health Connect, ή με το intervals.icu για Garmin και τα άλλα. Οι δραστηριότητες έρχονται μόνες τους, με παλμούς και ύπνο.';
 
   @override
   String get haiRulloSmartCollegalo =>
-      'Hai un rullo smart? Collegalo durante l\'allenamento: l\'app gli manda i watt di ogni passo.';
+      'Έχεις έξυπνο προπονητήριο; Σύνδεσέ το κατά την προπόνηση: η εφαρμογή του στέλνει τα watt για κάθε βήμα.';
 
   @override
-  String get eccoTuaSettimana => 'Ecco la tua settimana';
+  String get eccoTuaSettimana => 'Αυτή είναι η εβδομάδα σου';
 
   @override
   String eccoTuaSettimana2(Object p0) {
-    return 'Ecco la tua settimana, $p0';
+    return 'Αυτή είναι η εβδομάδα σου, $p0';
   }
 
   @override
   String get ogniGiornoNellaPagina =>
-      'Ogni giorno, nella pagina \"Oggi\", trovi cosa fare. Potrai cambiare giorni e orari quando vuoi.';
+      'Κάθε μέρα, στη σελίδα «Σήμερα», θα βρίσκεις τι να κάνεις. Μπορείς να αλλάξεις μέρες και χρόνους όποτε θέλεις.';
 
   @override
   String minuti(Object p0, Object p1) {
-    return '$p0 · $p1 minuti';
+    return '$p0 · $p1 λεπτά';
   }
 
   @override
-  String get cosHaiFatto => 'Cos\'hai fatto?';
+  String get cosHaiFatto => 'Τι έκανες;';
 
   @override
-  String get poiScriviDurataTutto =>
-      'Poi scrivi durata e tutto quello che ti ricordi.';
+  String get poiScriviDurataTutto => 'Μετά γράψε τη διάρκεια και ό,τι θυμάσαι.';
 
   @override
-  String get ciao => 'Ciao!';
+  String get ciao => 'Γεια!';
 
   @override
   String ciao2(Object p0) {
-    return 'Ciao $p0';
+    return 'Γεια σου $p0';
   }
 
   @override
-  String get chiudiMese => 'Chiudi il mese';
+  String get chiudiMese => 'Κλείσιμο μήνα';
 
   @override
-  String get vediTuttoMese => 'Vedi tutto il mese';
+  String get vediTuttoMese => 'Δες όλο τον μήνα';
 
   @override
-  String get prossimi => 'Prossimi';
+  String get prossimi => 'Επόμενες';
 
   @override
-  String get tuoPiano => 'Il tuo piano';
+  String get tuoPiano => 'Το πρόγραμμά σου';
 
   @override
-  String get cambiaAllenamentiOggi => 'Cambia gli allenamenti di oggi';
+  String get cambiaAllenamentiOggi => 'Άλλαξε τις σημερινές προπονήσεις';
 
   @override
   String cambiaAllenamenti(Object p0) {
-    return 'Cambia gli allenamenti di $p0';
+    return 'Άλλαξε τις προπονήσεις της $p0';
   }
 
   @override
   String get spostaAggiungiOTogli =>
-      'Sposta, aggiungi o togli: solo per quel giorno';
+      'Μετακίνησε, πρόσθεσε ή αφαίρεσε: μόνο για εκείνη τη μέρα';
 
   @override
-  String get scriviAttivitaFattaOggi => 'Scrivi un\'attività fatta oggi';
+  String get scriviAttivitaFattaOggi =>
+      'Κατέγραψε μια δραστηριότητα που έκανες σήμερα';
 
   @override
   String scriviAttivitaFatta(Object p0) {
-    return 'Scrivi un\'attività fatta $p0';
+    return 'Κατέγραψε μια δραστηριότητα που έκανες $p0';
   }
 
   @override
   String get quelloNonHaiRegistrato =>
-      'Per quello che non hai registrato: durata, distanza, battito…';
+      'Για ό,τι δεν κατέγραψες: διάρκεια, απόσταση, παλμοί…';
 
   @override
-  String get miaSettimanaTipo => 'La mia settimana tipo';
+  String get miaSettimanaTipo => 'Η τυπική μου εβδομάδα';
 
   @override
-  String get qualiGiorniTiAlleni => 'Quali giorni ti alleni e per quanto tempo';
+  String get qualiGiorniTiAlleni => 'Ποιες μέρες προπονείσαι και για πόσο';
 
   @override
-  String get allungaCalendario => 'Allunga il calendario';
+  String get allungaCalendario => 'Επέκταση ημερολογίου';
 
   @override
   String get ripeteSettimanaTipoNei =>
-      'Ripete la settimana tipo nei prossimi mesi: decide i giorni, non gli esercizi';
+      'Επαναλαμβάνει την τυπική εβδομάδα τους επόμενους μήνες: αποφασίζει τις μέρες, όχι τις ασκήσεις';
 
   @override
-  String get mesePrima => 'Mese prima';
+  String get mesePrima => 'Προηγούμενος μήνας';
 
   @override
-  String get meseDopo => 'Mese dopo';
+  String get meseDopo => 'Επόμενος μήνας';
 
   @override
-  String get fare => 'da fare';
+  String get fare => 'να γίνει';
 
   @override
   String get toccaGiornoVederloTienilo =>
-      'Tocca un giorno per vederlo, tienilo premuto per cambiarlo.';
+      'Πάτα μια μέρα για να τη δεις, κράτα την πατημένη για να την αλλάξεις.';
 
   @override
-  String get buona => 'Buona';
+  String get buona => 'Καλή';
 
   @override
-  String get normale => 'Normale';
+  String get normale => 'Κανονική';
 
   @override
-  String get bassa => 'Bassa';
+  String get bassa => 'Χαμηλή';
 
   @override
   String energia(Object p0) {
-    return 'Energia $p0';
+    return 'Ενέργεια $p0';
   }
 
   @override
-  String get tuaSettimana => 'La tua settimana';
+  String get tuaSettimana => 'Η εβδομάδα σου';
 
   @override
   String settimanaDal2(Object p0, Object p1) {
-    return 'Settimana dal $p0 $p1';
+    return 'Εβδομάδα από $p0 $p1';
   }
 
   @override
   String fatti(Object p0) {
-    return ' di $p0 fatti';
+    return ' από $p0 έγιναν';
   }
 
   @override
   String settimanaCompletataAllenamenti(Object p0) {
-    return 'Settimana completata: $p0 allenamenti!';
+    return 'Η εβδομάδα ολοκληρώθηκε: $p0 προπονήσεις!';
   }
 
   @override
-  String get tornaOggi => 'Torna a oggi';
+  String get tornaOggi => 'Πίσω στο σήμερα';
 
   @override
   String get oggiSeiPocoRecuperato =>
-      'Oggi sei poco recuperato: al posto della seduta prevista puoi fare 20 minuti di mobilità.';
+      'Σήμερα δεν έχεις αποκατασταθεί καλά: αντί για την προγραμματισμένη προπόνηση μπορείς να κάνεις 20 λεπτά κινητικότητας.';
 
   @override
-  String get vediAllenamento => 'Vedi l\'allenamento';
+  String get vediAllenamento => 'Δες την προπόνηση';
 
   @override
-  String get primaGuardaEsercizi => 'Prima guarda gli esercizi';
+  String get primaGuardaEsercizi => 'Δες πρώτα τις ασκήσεις';
 
   @override
-  String get giornoRiposo => 'Giorno di riposo';
+  String get giornoRiposo => 'Μέρα ξεκούρασης';
 
   @override
-  String get quelGiornoNonRisultano => 'Quel giorno non risultano allenamenti.';
+  String get quelGiornoNonRisultano =>
+      'Εκείνη τη μέρα δεν υπάρχουν προπονήσεις.';
 
   @override
   String get riposoFaParteDell =>
-      'Il riposo fa parte dell\'allenamento: i muscoli si rinforzano mentre recuperi.';
+      'Η ξεκούραση είναι μέρος της προπόνησης: οι μύες δυναμώνουν όσο αποκαθίστασαι.';
 
   @override
-  String get seTiVa15 => 'Se ti va: 15 minuti di mobilità';
+  String get seTiVa15 => 'Αν έχεις όρεξη: 15 λεπτά κινητικότητας';
 
   @override
-  String get voglioAllenarmiStesso => 'Voglio allenarmi lo stesso';
+  String get voglioAllenarmiStesso => 'Θέλω να προπονηθώ ούτως ή άλλως';
 
   @override
-  String get nonFatto => 'non fatto';
+  String get nonFatto => 'δεν έγινε';
 
   @override
   String fatica10(Object p0) {
-    return 'Fatica $p0/10';
+    return 'Κόπωση $p0/10';
   }
 
   @override
-  String get comAndata => 'Com\'è andata?';
+  String get comAndata => 'Πώς πήγε;';
 
   @override
-  String get rigenerarePiano => 'Rigenerare il piano?';
+  String get rigenerarePiano => 'Νέα δημιουργία προγράμματος;';
 
   @override
   String sessioniDalPoiVerranno(Object p0) {
-    return 'Le sessioni dal $p0 in poi verranno sostituite. Quelle precedenti restano invariate.';
+    return 'Οι προπονήσεις από $p0 και μετά θα αντικατασταθούν. Οι προηγούμενες μένουν όπως είναι.';
   }
 
   @override
-  String get rigenera => 'Rigenera';
+  String get rigenera => 'Νέα δημιουργία';
 
   @override
-  String get pianoGenerato => 'Piano generato';
+  String get pianoGenerato => 'Το πρόγραμμα δημιουργήθηκε';
 
   @override
   String get ripeteTuaSettimanaTipo =>
-      'Ripete la tua settimana tipo (quali sport, che giorni, quanti minuti) sui mesi che scegli. Gli esercizi di ogni seduta si preparano dal Profilo, con \"Prepara le sedute\".';
+      'Επαναλαμβάνει την τυπική σου εβδομάδα (ποια αθλήματα, ποιες μέρες, πόσα λεπτά) για τους μήνες που διαλέγεις. Οι ασκήσεις κάθε προπόνησης ετοιμάζονται από το Προφίλ, με το «Ετοίμασε τις προπονήσεις».';
 
   @override
   String durata2(Object p0, Object p1) {
-    return 'Durata: $p0 $p1';
+    return 'Διάρκεια: $p0 $p1';
   }
 
   @override
   String parti(Object p0) {
-    return 'Parti da $p0';
+    return 'Ξεκίνα από $p0';
   }
 
   @override
   String modifica2(Object p0) {
-    return 'Modifica $p0';
+    return 'Επεξεργασία: $p0';
   }
 
   @override
   String get cambiaSoloQuestoGiorno =>
-      'Cambia solo questo giorno: le altre settimane restano come sono.';
+      'Αλλάζει μόνο αυτή τη μέρα: οι άλλες εβδομάδες μένουν όπως είναι.';
 
   @override
   String get nessunaAttivitaProgrammaGiorno =>
-      'Nessuna attività in programma (giorno di riposo).';
+      'Καμία προγραμματισμένη δραστηριότητα (μέρα ξεκούρασης).';
 
   @override
   String min3(Object p0, Object p1) {
-    return '$p0, $p1 min';
+    return '$p0, $p1 λεπ.';
   }
 
   @override
-  String get rimuovi => 'Rimuovi';
+  String get rimuovi => 'Αφαίρεση';
 
   @override
-  String get aggiungiAttivita => 'Aggiungi attività';
+  String get aggiungiAttivita => 'Προσθήκη δραστηριότητας';
 
   @override
   String get comAndataVotoAlla =>
-      'Com\'è andata? Un voto alla fatica rende il piano più preciso.';
+      'Πώς πήγε; Αν βαθμολογήσεις την κόπωση, το πρόγραμμα γίνεται πιο ακριβές.';
 
   @override
   String get calendarioVuotoAllungaloSapere =>
-      'Il calendario è vuoto: allungalo per sapere cosa fare ogni giorno.';
+      'Το ημερολόγιο είναι κενό: επέκτεινέ το για να ξέρεις τι να κάνεις κάθε μέρα.';
 
   @override
   String calendarioFinitoAllungaloProssimi(Object p0) {
-    return 'Il calendario è finito il $p0. Allungalo per i prossimi mesi.';
+    return 'Το ημερολόγιο τελείωσε στις $p0. Επέκτεινέ το για τους επόμενους μήνες.';
   }
 
   @override
   String traGiorni(Object p0) {
-    return 'tra $p0 giorni';
+    return 'σε $p0 μέρες';
   }
 
   @override
   String calendarioFinisceVuoiAllungarlo(Object p0, Object p1) {
-    return 'Il calendario finisce $p0 ($p1). Vuoi allungarlo?';
+    return 'Το ημερολόγιο τελειώνει $p0 ($p1). Θέλεις να το επεκτείνεις;';
   }
 
   @override
-  String get allunga => 'Allunga';
+  String get allunga => 'Επέκταση';
 
   @override
-  String get piuTardi => 'Più tardi';
+  String get piuTardi => 'Αργότερα';
 
   @override
   String scheda(Object p0) {
-    return 'La scheda di $p0';
+    return 'Το πρόγραμμα του/της $p0';
   }
 
   @override
   String scheda2(Object p0) {
-    return 'La scheda \"$p0\"';
+    return 'Το πρόγραμμα «$p0»';
   }
 
   @override
   String finitaIntantoSeduteSono(Object p0, Object p1) {
-    return '$p0 è finita il $p1. Intanto le sedute sono quelle preparate dall\'app.';
+    return '$p0 τελείωσε στις $p1. Στο μεταξύ οι προπονήσεις είναι αυτές που ετοιμάζει η εφαρμογή.';
   }
 
   @override
   String rinnovaGiorni(Object p0) {
-    return 'Rinnova per $p0 giorni';
+    return 'Ανανέωση για $p0 μέρες';
   }
 
   @override
-  String get cambiala => 'Cambiala';
+  String get cambiala => 'Άλλαξέ το';
 
   @override
-  String get usaQuellaDellApp => 'Usa quella dell\'app';
+  String get usaQuellaDellApp => 'Χρησιμοποίησε της εφαρμογής';
 
   @override
-  String get cosaVuoiFareAdesso => 'Cosa vuoi fare adesso?';
+  String get cosaVuoiFareAdesso => 'Τι θέλεις να κάνεις τώρα;';
 
   @override
   String get siAggiungeQuelloC =>
-      'Si aggiunge a quello che c\'è in programma oggi.';
+      'Προστίθεται σε ό,τι έχει προγραμματιστεί για σήμερα.';
 
   @override
-  String get iniziaAttivitaLibera => 'Inizia un\'attività libera';
+  String get iniziaAttivitaLibera => 'Ξεκίνα μια ελεύθερη δραστηριότητα';
 
   @override
-  String get catalogoEsercizi => 'Catalogo esercizi';
+  String get catalogoEsercizi => 'Κατάλογος ασκήσεων';
 
   @override
   String get toccaEsercizioVedereMuscoli =>
-      'Tocca un esercizio per vedere i muscoli che allena.';
+      'Πάτα μια άσκηση για να δεις τους μύες που δουλεύει.';
 
   @override
-  String get cercaNomeOMuscolo => 'Cerca per nome o muscolo';
+  String get cercaNomeOMuscolo => 'Αναζήτηση με όνομα ή μυ';
 
   @override
-  String get tutti => 'Tutti';
+  String get tutti => 'Όλα';
 
   @override
-  String get soloMiaAttrezzatura => 'Solo con la mia attrezzatura';
+  String get soloMiaAttrezzatura => 'Μόνο με τον εξοπλισμό μου';
 
   @override
-  String get nessunEsercizioQuestiFiltri =>
-      'Nessun esercizio con questi filtri.';
+  String get nessunEsercizioQuestiFiltri => 'Καμία άσκηση με αυτά τα φίλτρα.';
 
   @override
   String serve(Object p0) {
-    return 'Serve: $p0';
+    return 'Χρειάζεται: $p0';
   }
 
   @override
-  String get immaginiIstruzioni => 'Immagini e istruzioni';
+  String get immaginiIstruzioni => 'Εικόνες και οδηγίες';
 
   @override
   String principali(Object p0) {
-    return 'Principali: $p0';
+    return 'Κύριοι: $p0';
   }
 
   @override
   String secondari(Object p0) {
-    return 'Secondari: $p0';
+    return 'Δευτερεύοντες: $p0';
   }
 
   @override
-  String get comeSiEsegue => 'Come si esegue';
+  String get comeSiEsegue => 'Πώς γίνεται';
 
   @override
   String immaginiFreeExerciseDb(Object p0) {
-    return 'Immagini da free-exercise-db ($p0).';
+    return 'Εικόνες από το free-exercise-db ($p0).';
   }
 
   @override
-  String get tueSerie => 'Le tue serie';
+  String get tueSerie => 'Τα σετ σου';
 
   @override
   String recordKg(Object p0, Object p1) {
-    return 'Record: $p0 kg × $p1';
+    return 'Ρεκόρ: $p0 kg × $p1';
   }
 
   @override
   String recordRipetizioni(Object p0) {
-    return 'Record: $p0 ripetizioni';
+    return 'Ρεκόρ: $p0 επαναλήψεις';
   }
 
   @override
-  String get condividi => 'Condividi';
+  String get condividi => 'Κοινοποίηση';
 
   @override
-  String get mappaNonProntaRiprova => 'La mappa non è pronta: riprova.';
+  String get mappaNonProntaRiprova =>
+      'Ο χάρτης δεν είναι έτοιμος: δοκίμασε ξανά.';
 
   @override
-  String get immagineNonRiuscitaRiprova => 'Immagine non riuscita: riprova.';
+  String get immagineNonRiuscitaRiprova => 'Η εικόνα απέτυχε: δοκίμασε ξανά.';
 
   @override
   String get immagineSiCreaSul =>
-      'L\'immagine si crea sul telefono e va solo all\'app che scegli (WhatsApp, Instagram…).';
+      'Η εικόνα δημιουργείται στο κινητό και πηγαίνει μόνο στην εφαρμογή που διαλέγεις (WhatsApp, Instagram…).';
 
   @override
-  String get condividiSessione => 'Condividi la sessione';
+  String get condividiSessione => 'Κοινοποίηση προπόνησης';
 
   @override
-  String get grafica => 'Grafica';
+  String get grafica => 'Σχέδιο';
 
   @override
-  String get tipoMappa => 'Tipo di mappa';
+  String get tipoMappa => 'Τύπος χάρτη';
 
   @override
   String get mappaFaVedereDove =>
-      'La mappa fa vedere dove sei passato: occhio se parti da casa.';
+      'Ο χάρτης δείχνει πού πήγες: πρόσεχε αν ξεκινάς από το σπίτι.';
 
   @override
-  String get scegliAltraFoto => 'Scegli un\'altra foto';
+  String get scegliAltraFoto => 'Διάλεξε άλλη φωτογραφία';
 
   @override
   String get spostaIngrandisciFotoDue =>
-      'Sposta e ingrandisci la foto con due dita. Resta sul telefono: nell\'immagine non va la posizione in cui è stata scattata.';
+      'Μετακίνησε και μεγέθυνε τη φωτογραφία με δύο δάχτυλα. Μένει στο κινητό: το μέρος όπου τραβήχτηκε δεν μπαίνει στην εικόνα.';
 
   @override
-  String get mostraPercorso => 'Mostra il percorso';
+  String get mostraPercorso => 'Εμφάνιση διαδρομής';
 
   @override
   String get faVedereFormaGiro =>
-      'Fa vedere la forma del giro: occhio se parti da casa.';
+      'Δείχνει το σχήμα της διαδρομής: πρόσεχε αν ξεκινάς από το σπίτι.';
 
   @override
   String nuovoRecord(Object p0) {
-    return 'Nuovo record: $p0';
+    return 'Νέο ρεκόρ: $p0';
   }
 
   @override
-  String get passoMedio => 'Passo medio';
+  String get passoMedio => 'Μέσος ρυθμός';
 
   @override
-  String get kmPiuVeloce => 'Km più veloce';
+  String get kmPiuVeloce => 'Πιο γρήγορο χλμ.';
 
   @override
-  String get mSalita => 'm di salita';
+  String get mSalita => 'μ. ανάβασης';
 
   @override
-  String get quotaMassima => 'quota massima';
+  String get quotaMassima => 'μέγιστο υψόμετρο';
 
   @override
-  String get passoOgni100M => 'PASSO OGNI 100 m';
+  String get passoOgni100M => 'ΡΥΘΜΟΣ ΑΝΑ 100 μ.';
 
   @override
-  String get n100PiuVeloce => '100 più veloce';
+  String get n100PiuVeloce => 'Πιο γρήγορα 100';
 
   @override
-  String get gradoPiuAlto => 'grado più alto';
+  String get gradoPiuAlto => 'ο πιο ψηλός βαθμός';
 
   @override
   String gradoPiuAlto2(Object p0) {
-    return 'grado più alto · $p0';
+    return 'ο πιο ψηλός βαθμός · $p0';
   }
 
   @override
-  String get primaSedutaQuiSi => 'La prima seduta: da qui si sale';
+  String get primaSedutaQuiSi => 'Η πρώτη προπόνηση: από εδώ και πάνω';
 
   @override
   String gradoPiuAltoDelle(Object p0) {
-    return 'Il grado più alto delle ultime $p0 sedute';
+    return 'Ο πιο ψηλός βαθμός στις τελευταίες $p0 προπονήσεις';
   }
 
   @override
-  String get progetto2 => 'Progetto';
+  String get progetto2 => 'Project';
 
   @override
-  String get condividiSettimana => 'Condividi la settimana';
+  String get condividiSettimana => 'Κοινοποίηση εβδομάδας';
 
   @override
-  String get settimanaPrima => 'Settimana prima';
+  String get settimanaPrima => 'Προηγούμενη εβδομάδα';
 
   @override
-  String get questaSettimana => 'Questa settimana';
+  String get questaSettimana => 'Αυτή η εβδομάδα';
 
   @override
-  String get settimanaDopo => 'Settimana dopo';
+  String get settimanaDopo => 'Επόμενη εβδομάδα';
 
   @override
   String settimana(Object p0) {
-    return 'Settimana $p0';
+    return 'Εβδομάδα $p0';
   }
 
   @override
   String get nessunaSessioneQuestaSettimana =>
-      'Nessuna sessione in questa settimana.';
+      'Καμία προπόνηση αυτή την εβδομάδα.';
 
   @override
   String get eserciziSceltiTeTua =>
-      'Esercizi scelti per te e la tua attrezzatura, con serie, ripetizioni e pesi. Finisce sempre con un po\' di mobilità.';
+      'Ασκήσεις διαλεγμένες για σένα και τον εξοπλισμό σου, με σετ, επαναλήψεις και βάρη. Τελειώνει πάντα με λίγη κινητικότητα.';
 
   @override
   String get corseFaciliSedutaPiu =>
-      'Corse facili, una seduta più intensa (fartlek, tempo, ripetute) e il lungo che cresce verso la gara.';
+      'Χαλαρά τρεξίματα, μία πιο δύσκολη προπόνηση (fartlek, tempo, διαλειμματικά) και η μεγάλη απόσταση που μεγαλώνει προς τον αγώνα.';
 
   @override
   String get tecnicaSerieAlTuo =>
-      'Tecnica e serie al tuo ritmo, alternate a quelle più intense.';
+      'Τεχνική και σετ στον ρυθμό σου, εναλλάξ με πιο δύσκολα.';
 
   @override
   String get usciteFaciliIntervalliUscita =>
-      'Uscite facili, intervalli e uscita lunga.';
+      'Χαλαρές διαδρομές, διαλειμματικά και μία μεγάλη διαδρομή.';
 
   @override
   String get stretchingMovimentiLentiTempo =>
-      'Stretching e movimenti lenti, a tempo: ogni volta una zona del corpo diversa. Ottima anche per recuperare.';
+      'Διατάσεις και αργές κινήσεις, με χρόνο: κάθε φορά ένα διαφορετικό μέρος του σώματος. Ιδανικό και για αποκατάσταση.';
 
   @override
   String seduteRestanoNelCalendario(Object p0) {
-    return 'Le sedute di $p0 restano nel calendario, ma senza esercizi preparati. Quelle già fatte non cambiano.';
+    return 'Οι προπονήσεις $p0 μένουν στο ημερολόγιο, αλλά χωρίς έτοιμες ασκήσεις. Όσες έχουν ήδη γίνει δεν αλλάζουν.';
   }
 
   @override
-  String get sedutePreparateTolte => 'Sedute preparate tolte.';
+  String get sedutePreparateTolte => 'Οι έτοιμες προπονήσεις αφαιρέθηκαν.';
 
   @override
   String pronteSeduteTroviOggi(Object p0, Object p1) {
-    return 'Pronte $p0 sedute di $p1. Le trovi in Oggi.';
+    return '$p0 προπονήσεις $p1 έτοιμες. Θα τις βρεις στο Σήμερα.';
   }
 
   @override
-  String get forzaComeVuoi => 'Forza: come la vuoi';
+  String get forzaComeVuoi => 'Δύναμη: όπως τη θέλεις';
 
   @override
-  String get obiettivo => 'Obiettivo';
+  String get obiettivo => 'Στόχος';
 
   @override
-  String get livello => 'Livello';
+  String get livello => 'Επίπεδο';
 
   @override
   String get nonPreoccupartiSbagliareLivello =>
-      'Non preoccuparti di sbagliare: il livello si adatta ai voti che dai a fine seduta.';
+      'Μην ανησυχείς αν κάνεις λάθος: το επίπεδο προσαρμόζεται στις βαθμολογίες που δίνεις στο τέλος κάθε προπόνησης.';
 
   @override
-  String get attrezzatura => 'Attrezzatura';
+  String get attrezzatura => 'Εξοπλισμός';
 
   @override
-  String get soloCorpoLibero => 'Solo corpo libero';
+  String get soloCorpoLibero => 'Μόνο βάρος σώματος';
 
   @override
   String comeCrescere(Object p0) {
-    return '$p0: come crescere';
+    return '$p0: πώς να προοδεύσεις';
   }
 
   @override
-  String get sedutaLungaCosaFare => 'Seduta lunga, e cosa fare se è facile';
+  String get sedutaLungaCosaFare =>
+      'Μεγάλη προπόνηση, και τι να κάνεις αν είναι εύκολη';
 
   @override
-  String get sedutaLunga => 'Seduta lunga';
+  String get sedutaLunga => 'Μεγάλη προπόνηση';
 
   @override
   String get ultimaCorsaOUscita =>
-      'L\'ultima corsa o uscita in bici della settimana dura di più e cresce col tempo. Spenta, durano tutte quanto hai scelto.';
+      'Το τελευταίο τρέξιμο ή η τελευταία διαδρομή της εβδομάδας διαρκεί περισσότερο και μεγαλώνει με τον καιρό. Κλειστό: όλες διαρκούν όσο διάλεξες.';
 
   @override
-  String get preparaSedute => 'Prepara le sedute';
+  String get preparaSedute => 'Ετοίμασε τις προπονήσεις';
 
   @override
   String get scegliQualiSportVuoi =>
-      'Scegli per quali sport vuoi che l\'app scriva gli allenamenti passo passo. Prepara solo quelli che spunti.';
+      'Διάλεξε για ποια αθλήματα θέλεις η εφαρμογή να γράφει προπονήσεις βήμα βήμα. Ετοιμάζει μόνο όσα τσεκάρεις.';
 
   @override
-  String get qualiSport => 'Per quali sport?';
+  String get qualiSport => 'Ποια αθλήματα;';
 
   @override
-  String get giaPreparato => 'già preparato';
+  String get giaPreparato => 'ήδη έτοιμο';
 
   @override
   String settimana2(Object p0, Object p1) {
-    return '$p0 $p1 a settimana';
+    return '$p0 $p1 την εβδομάδα';
   }
 
   @override
   String calendario(Object p0, Object p1) {
-    return '$p0 $p1 in calendario';
+    return '$p0 $p1 στο ημερολόγιο';
   }
 
   @override
-  String get nessunaSedutaCalendario => 'nessuna seduta in calendario';
+  String get nessunaSedutaCalendario => 'καμία προπόνηση στο ημερολόγιο';
 
   @override
   String get cambiaGiorniMinutiSettimana =>
-      'Cambia giorni e minuti (settimana tipo)';
+      'Άλλαξε μέρες και λεπτά (τυπική εβδομάδα)';
 
   @override
-  String get tuePreferenze => 'Le tue preferenze';
+  String get tuePreferenze => 'Οι προτιμήσεις σου';
 
   @override
   String get senzaGaraSeduteCrescono =>
-      'Senza una gara le sedute crescono a blocchi di 4 settimane, con una più leggera. Puoi fissare una gara dal Profilo, alla voce Il mio obiettivo.';
+      'Χωρίς αγώνα, οι προπονήσεις μεγαλώνουν σε κύκλους 4 εβδομάδων, με μία πιο ελαφριά. Μπορείς να ορίσεις αγώνα από το Προφίλ, στο Ο στόχος μου.';
 
   @override
   String seduteCambianoAvvicinarsiGara(Object p0) {
-    return '$p0: le sedute cambiano con l\'avvicinarsi della gara.';
+    return '$p0: οι προπονήσεις αλλάζουν καθώς πλησιάζει ο αγώνας.';
   }
 
   @override
   String nessunGiornoNelCalendario(Object p0) {
-    return '$p0: nessun giorno nel calendario';
+    return '$p0: καμία μέρα στο ημερολόγιο';
   }
 
   @override
   String get nellaSettimanaTipoMa =>
-      'È nella settimana tipo ma non ancora nel calendario. Apri la settimana tipo e tocca \"Porta tutta la settimana nel calendario\".';
+      'Είναι στην τυπική εβδομάδα αλλά όχι ακόμα στο ημερολόγιο. Άνοιξε την τυπική εβδομάδα και πάτα «Φέρε όλη την εβδομάδα στο ημερολόγιο».';
 
   @override
-  String get calendarioVuoto => 'Il calendario è vuoto';
+  String get calendarioVuoto => 'Το ημερολόγιο είναι κενό';
 
   @override
   String get primaAllungaCalendarioPoi =>
-      'Prima allunga il calendario: poi le sedute si riempiono.';
+      'Επέκτεινε πρώτα το ημερολόγιο: μετά γεμίζουν οι προπονήσεις.';
 
   @override
   String seduteSiPreparanoFino(Object p0) {
-    return 'Le sedute si preparano fino a $p0; quando allunghi il calendario si aggiungono da sole.';
+    return 'Οι προπονήσεις ετοιμάζονται έως $p0· όταν επεκτείνεις το ημερολόγιο προστίθενται μόνες τους.';
   }
 
   @override
-  String get togliSedutePreparate => 'Togli le sedute preparate';
+  String get togliSedutePreparate => 'Αφαίρεσε τις έτοιμες προπονήσεις';
 
   @override
-  String get aggiornaSedute => 'Aggiorna le sedute';
+  String get aggiornaSedute => 'Ενημέρωσε τις προπονήσεις';
 
   @override
   String prepara(Object p0) {
-    return 'Prepara $p0';
+    return 'Ετοίμασε: $p0';
   }
 
   @override
-  String get dataNascita => 'Data di nascita';
+  String get dataNascita => 'Ημερομηνία γέννησης';
 
   @override
-  String get altezzaCmTra50 => 'Altezza in cm, tra 50 e 250';
+  String get altezzaCmTra50 => 'Ύψος σε cm, από 50 έως 250';
 
   @override
-  String get pesoKgTra20 => 'Peso in kg, tra 20 e 300';
+  String get pesoKgTra20 => 'Βάρος σε kg, από 20 έως 300';
 
   @override
-  String get datiPersonali => 'Dati personali';
+  String get datiPersonali => 'Προσωπικά στοιχεία';
 
   @override
-  String get cognome => 'Cognome';
+  String get cognome => 'Επώνυμο';
 
   @override
-  String get toccaSceglierla => 'Tocca per sceglierla';
+  String get toccaSceglierla => 'Πάτα για να τη διαλέξεις';
 
   @override
-  String get altezza => 'Altezza';
+  String get altezza => 'Ύψος';
 
   @override
-  String get peso => 'Peso';
+  String get peso => 'Βάρος';
 
   @override
   String get pesoNuovoSiRegistra =>
-      'Un peso nuovo si registra con la data di oggi.';
+      'Ένα νέο βάρος καταγράφεται με τη σημερινή ημερομηνία.';
 
   @override
-  String get ok2 => 'Ok';
+  String get ok2 => 'Εντάξει';
 
   @override
   String mancano(Object p0) {
@@ -3786,236 +3807,237 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get interrompereAllenamento => 'Interrompere l\'allenamento?';
+  String get interrompereAllenamento => 'Διακοπή της προπόνησης;';
 
   @override
   String get puoiTerminarloQuiVedere =>
-      'Puoi terminarlo qui e vedere il riepilogo, oppure uscire senza salvare.';
+      'Μπορείς να την τελειώσεις εδώ και να δεις την περίληψη, ή να βγεις χωρίς αποθήκευση.';
 
   @override
-  String get esci => 'Esci';
+  String get esci => 'Έξοδος';
 
   @override
-  String get terminaQui => 'Termina qui';
+  String get terminaQui => 'Τέλος εδώ';
 
   @override
-  String get continua => 'Continua';
+  String get continua => 'Συνέχεια';
 
   @override
-  String get questoAllenamentoNonHa => 'Questo allenamento non ha passi.';
+  String get questoAllenamentoNonHa => 'Αυτή η προπόνηση δεν έχει βήματα.';
 
   @override
-  String get tempoTotale => 'tempo totale';
+  String get tempoTotale => 'συνολικός χρόνος';
 
   @override
-  String get bipVibrazione => 'Bip e vibrazione';
+  String get bipVibrazione => 'Ήχοι και δόνηση';
 
   @override
-  String get cadenza => 'Cadenza';
+  String get cadenza => 'Ρυθμός πεταλιού';
 
   @override
-  String get poi => 'Poi';
+  String get poi => 'Μετά';
 
   @override
-  String get esercizioPrecedente => 'Esercizio precedente';
+  String get esercizioPrecedente => 'Προηγούμενη άσκηση';
 
   @override
-  String get iniziaSubito => 'Inizia subito';
+  String get iniziaSubito => 'Ξεκίνα τώρα';
 
   @override
-  String get saltaRecupero => 'Salta recupero';
+  String get saltaRecupero => 'Παράλειψη διαλείμματος';
 
   @override
-  String get fatto => 'Fatto';
+  String get fatto => 'Έγινε';
 
   @override
-  String get n15SecondiPiu => '15 secondi in più';
+  String get n15SecondiPiu => '15 δευτερόλεπτα ακόμα';
 
   @override
-  String get salta => 'Salta';
+  String get salta => 'Παράλειψη';
 
   @override
-  String get partiQuandoVuoi => 'Parti quando vuoi';
+  String get partiQuandoVuoi => 'Ξεκίνα όταν είσαι έτοιμος';
 
   @override
-  String get preparati => 'Preparati';
+  String get preparati => 'Ετοιμάσου';
 
   @override
   String esercizi2(Object p0, Object p1) {
-    return '$p0 · $p1 esercizi';
+    return '$p0 · $p1 ασκήσεις';
   }
 
   @override
   String siParte(Object p0) {
-    return 'Si parte con: $p0';
+    return 'Ξεκινάμε με: $p0';
   }
 
   @override
   String indoor2(Object p0) {
-    return 'Indoor ($p0)';
+    return 'Εσωτερικός χώρος ($p0)';
   }
 
   @override
   String get senzaGpsVelocitaKm =>
-      'Senza GPS: velocità e km arrivano dal rullo.';
+      'Χωρίς GPS: ταχύτητα και χιλιόμετρα έρχονται από το προπονητήριο.';
 
   @override
   String get senzaGpsAllaFine =>
-      'Senza GPS: alla fine scrivi i km del display.';
+      'Χωρίς GPS: στο τέλος γράψε τα χιλιόμετρα από την οθόνη.';
 
   @override
-  String get seguiPercorso => 'Segui un percorso';
+  String get seguiPercorso => 'Ακολούθησε μια διαδρομή';
 
   @override
   String get facoltativoGpxMappaIndicazioni =>
-      'Facoltativo: un GPX con mappa e indicazioni a voce';
+      'Προαιρετικό: ένα GPX με χάρτη και φωνητικές οδηγίες';
 
   @override
-  String get togliPercorso => 'Togli il percorso';
+  String get togliPercorso => 'Αφαίρεση διαδρομής';
 
   @override
-  String get rulloSensori => 'Rullo e sensori';
+  String get rulloSensori => 'Προπονητήριο και αισθητήρες';
 
   @override
-  String get sensoriBici2 => 'Sensori bici';
+  String get sensoriBici2 => 'Αισθητήρες ποδηλάτου';
 
   @override
-  String get collegatoOraCalibrarlo => 'Collegato · è ora di calibrarlo';
+  String get collegatoOraCalibrarlo => 'Συνδεδεμένο · ώρα για βαθμονόμηση';
 
   @override
-  String get toccaCollegare => 'Tocca per collegare';
+  String get toccaCollegare => 'Πάτα για σύνδεση';
 
   @override
-  String get battito => 'Battito';
+  String get battito => 'Παλμοί';
 
   @override
-  String get allenamentoCompletato2 => 'Allenamento completato!';
+  String get allenamentoCompletato2 => 'Η προπόνηση ολοκληρώθηκε!';
 
   @override
   String movimentoTotale(Object p0, Object p1) {
-    return 'In movimento $p0 · totale $p1';
+    return 'Σε κίνηση $p0 · σύνολο $p1';
   }
 
   @override
   String battitoMedioBpmMassimo(Object p0, Object p1) {
-    return 'Battito medio $p0 bpm · massimo $p1';
+    return 'Μέσοι παλμοί $p0 bpm · μέγιστοι $p1';
   }
 
   @override
   String potenzaMediaW(Object p0) {
-    return 'Potenza media $p0 W';
+    return 'Μέση ισχύς $p0 W';
   }
 
   @override
   String cadenzaRpm(Object p0) {
-    return 'cadenza $p0 rpm';
+    return 'ρυθμός πεταλιού $p0 rpm';
   }
 
   @override
   String cadenzaMediaRpm(Object p0) {
-    return 'Cadenza media $p0 rpm';
+    return 'Μέσος ρυθμός πεταλιού $p0 rpm';
   }
 
   @override
   String circaKcal(Object p0) {
-    return 'Circa $p0 kcal';
+    return 'Περίπου $p0 kcal';
   }
 
   @override
   String km(Object p0) {
-    return 'Km $p0';
+    return 'Χλμ. $p0';
   }
 
   @override
   String km2(Object p0) {
-    return 'Km del $p0';
+    return 'Χλμ. από το $p0';
   }
 
   @override
-  String get kmPercorsi => 'Km percorsi';
+  String get kmPercorsi => 'Χιλιόμετρα που διανύθηκαν';
 
   @override
   String get facoltativoSenzaSessioneResta =>
-      'Facoltativo: senza, la sessione resta senza distanza.';
+      'Προαιρετικό: χωρίς αυτό, η προπόνηση δεν έχει απόσταση.';
 
   @override
-  String get segnaComeFatto => 'Segna come fatto';
+  String get segnaComeFatto => 'Σημείωσε ως ολοκληρωμένο';
 
   @override
   String get seOrologioRegistraStesso =>
-      'Se l\'orologio registra lo stesso allenamento, vale il suo.';
+      'Αν το ρολόι σου καταγράφει την ίδια προπόνηση, κερδίζουν τα δικά του δεδομένα.';
 
   @override
-  String get inserisciDatiMano => 'Inserisci i dati a mano';
+  String get inserisciDatiMano => 'Βάλε τα δεδομένα με το χέρι';
 
   @override
   String segnaleGpsBuonoM(Object p0) {
-    return 'Segnale GPS buono · ±$p0 m';
+    return 'Καλό σήμα GPS · ±$p0 μ.';
   }
 
   @override
   String get cercoSegnaleGpsMeglio =>
-      'Cerco il segnale GPS… meglio all\'aperto';
+      'Ψάχνω σήμα GPS… καλύτερα σε ανοιχτό χώρο';
 
   @override
-  String get gpsNonPermessoTocca => 'GPS non permesso: tocca per attivarlo';
+  String get gpsNonPermessoTocca =>
+      'Το GPS δεν επιτρέπεται: πάτα για να το ενεργοποιήσεις';
 
   @override
   String get posizioneSpentaToccaAccenderla =>
-      'Posizione spenta: tocca per accenderla';
+      'Η τοποθεσία είναι κλειστή: πάτα για να την ανοίξεις';
 
   @override
-  String get dati => 'Dati';
+  String get dati => 'Δεδομένα';
 
   @override
-  String get ultimoKm => 'Ultimo km';
+  String get ultimoKm => 'Τελευταίο χλμ.';
 
   @override
   String ultimiKm(Object p0) {
-    return 'Ultimi $p0 km';
+    return 'Τελευταία $p0 χλμ.';
   }
 
   @override
-  String get velocitaMedia => 'Velocità media';
+  String get velocitaMedia => 'Μέση ταχύτητα';
 
   @override
   String potenzaZ(Object p0) {
-    return 'Potenza · Z$p0';
+    return 'Ισχύς · Z$p0';
   }
 
   @override
   String battitoZ(Object p0) {
-    return 'Battito · Z$p0';
+    return 'Παλμοί · Z$p0';
   }
 
   @override
-  String get miCollego => 'Mi collego…';
+  String get miCollego => 'Συνδέομαι…';
 
   @override
   String kmUltimi(Object p0, Object p1, Object p2) {
-    return 'Km $p0 · ultimi $p1 in $p2';
+    return 'Χλμ. $p0 · τελευταία $p1 σε $p2';
   }
 
   @override
   String mancanoSecondi(Object p0) {
-    return 'Mancano $p0 secondi';
+    return 'Μένουν $p0 δευτερόλεπτα';
   }
 
   @override
-  String get tempoTrascorso => 'Tempo trascorso';
+  String get tempoTrascorso => 'Χρόνος που πέρασε';
 
   @override
-  String get pausa4 => 'in pausa';
+  String get pausa4 => 'σε παύση';
 
   @override
-  String get poiPassaSolo => 'poi passa da solo';
+  String get poiPassaSolo => 'μετά προχωρά μόνο του';
 
   @override
-  String get toccaFattoQuandoHai2 => 'tocca Fatto quando hai finito';
+  String get toccaFattoQuandoHai2 => 'πάτα Έγινε όταν τελειώσεις';
 
   @override
   String guardaMovimento(Object p0) {
-    return 'Guarda il movimento di $p0';
+    return 'Δες πώς γίνεται: $p0';
   }
 
   @override
@@ -4023,338 +4045,337 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String ultimaVolta(Object p0) {
-    return 'Ultima volta: $p0';
+    return 'Την τελευταία φορά: $p0';
   }
 
   @override
   String get aveviFattoTutteRipetizioni =>
-      'Avevi fatto tutte le ripetizioni: prova un peso in più.';
+      'Έκανες όλες τις επαναλήψεις: δοκίμασε πιο βαρύ βάρος.';
 
   @override
   String meno2(Object p0) {
-    return '$p0: meno';
+    return '$p0: λιγότερο';
   }
 
   @override
   String piu2(Object p0) {
-    return '$p0: più';
+    return '$p0: περισσότερο';
   }
 
   @override
-  String get nessunPeso2 => 'nessun peso';
+  String get nessunPeso2 => 'χωρίς βάρος';
 
   @override
-  String get pesiDiversiDallaScheda => 'Pesi diversi dalla scheda';
+  String get pesiDiversiDallaScheda => 'Βάρη διαφορετικά από το πρόγραμμα';
 
   @override
-  String get scrittiNellaScheda => 'Scritti nella scheda.';
+  String get scrittiNellaScheda => 'Γράφτηκαν στο πρόγραμμα.';
 
   @override
-  String get aggiornaScheda => 'Aggiorna la scheda';
+  String get aggiornaScheda => 'Ενημέρωσε το πρόγραμμα';
 
   @override
-  String get segnaVieBlocchiGradi => 'Segna vie, blocchi e gradi';
+  String get segnaVieBlocchiGradi => 'Κατέγραψε διαδρομές, boulder και βαθμούς';
 
   @override
-  String get moltoLeggera => 'molto leggera';
+  String get moltoLeggera => 'πολύ ελαφριά';
 
   @override
-  String get moltoDura => 'molto dura';
+  String get moltoDura => 'πολύ δύσκολη';
 
   @override
-  String get alMassimo => 'al massimo';
+  String get alMassimo => 'στο μέγιστο';
 
   @override
-  String get feedbackSalvato2 => 'Feedback salvato';
+  String get feedbackSalvato2 => 'Η αξιολόγηση αποθηκεύτηκε';
 
   @override
   String fatica102(Object p0, Object p1) {
-    return 'Fatica: $p0/10, $p1';
+    return 'Κόπωση: $p0/10, $p1';
   }
 
   @override
   String tuoObiettivoFaticaGiusta(Object p0) {
-    return 'Per il tuo obiettivo la fatica giusta è circa $p0/10.';
+    return 'Για τον στόχο σου η σωστή κόπωση είναι περίπου $p0/10.';
   }
 
   @override
-  String get comeQuesta => 'come questa';
+  String get comeQuesta => 'σαν αυτή';
 
   @override
   String sedutaFaticaPrevistaCirca(Object p0, Object p1) {
-    return 'Per una seduta $p0 la fatica prevista è circa $p1/10.';
+    return 'Για μια προπόνηση $p0 η αναμενόμενη κόπωση είναι περίπου $p1/10.';
   }
 
   @override
-  String get hoCompletatoTutteSerie => 'Ho completato tutte le serie';
+  String get hoCompletatoTutteSerie => 'Ολοκλήρωσα όλα τα σετ';
 
   @override
-  String get hoFattoTuttaSeduta => 'Ho fatto tutta la seduta';
+  String get hoFattoTuttaSeduta => 'Έκανα όλη την προπόνηση';
 
   @override
   String passoNellaPartePrincipale(Object p0, Object p1) {
-    return 'Il passo nella parte principale (obiettivo $p0:$p1/100 m)';
+    return 'Ρυθμός στο κύριο μέρος (στόχος $p0:$p1/100 μ.)';
   }
 
   @override
-  String get oppurePassoHaiTenuto =>
-      'Oppure il passo che hai tenuto (es. 2:45)';
+  String get oppurePassoHaiTenuto => 'Ή ο ρυθμός που κράτησες (π.χ. 2:45)';
 
   @override
-  String get hoSentitoDoloreO => 'Ho sentito dolore o fastidio';
+  String get hoSentitoDoloreO => 'Ένιωσα πόνο ή ενόχληση';
 
   @override
-  String get noteFacoltative => 'Note (facoltative)';
+  String get noteFacoltative => 'Σημειώσεις (προαιρετικά)';
 
   @override
   String grafici(Object p0) {
-    return 'Grafici · $p0';
+    return 'Γραφήματα · $p0';
   }
 
   @override
   String get questaAttivitaNonCi =>
-      'Per questa attività non ci sono dati nel tempo: servono il battito o la velocità registrati dall\'orologio.';
+      'Γι\' αυτή τη δραστηριότητα δεν υπάρχουν δεδομένα στον χρόνο: χρειάζονται παλμοί ή ταχύτητα από το ρολόι.';
 
   @override
-  String get altitudine => 'Altitudine';
+  String get altitudine => 'Υψόμετρο';
 
   @override
-  String get minima => 'Minima';
+  String get minima => 'Ελάχιστο';
 
   @override
-  String get massima => 'Massima';
+  String get massima => 'Μέγιστο';
 
   @override
-  String get pendenza => 'Pendenza';
+  String get pendenza => 'Κλίση';
 
   @override
-  String get salitaMassima => 'Salita massima';
+  String get salitaMassima => 'Μέγιστη ανηφόρα';
 
   @override
-  String get discesaMassima => 'Discesa massima';
+  String get discesaMassima => 'Μέγιστη κατηφόρα';
 
   @override
   String get ftpCorsaStimataEta =>
-      'FTP di corsa stimata da età e peso: per averla precisa fai il test in Profilo → Le mie zone.';
+      'FTP τρεξίματος υπολογισμένο από ηλικία και βάρος: για ακριβές, κάνε το τεστ στο Προφίλ → Οι ζώνες μου.';
 
   @override
   String get zoneServeTuoPeso =>
-      'Per le zone serve il tuo peso (Profilo), oppure l\'FTP di corsa in Profilo → Le mie zone.';
+      'Για τις ζώνες χρειάζεται το βάρος σου (Προφίλ), ή το FTP τρεξίματος στο Προφίλ → Οι ζώνες μου.';
 
   @override
-  String get passiAlMinuto => 'Passi al minuto';
+  String get passiAlMinuto => 'Βήματα το λεπτό';
 
   @override
-  String get media => 'Media';
+  String get media => 'Μέσος όρος';
 
   @override
-  String get bracciateAlMinuto => 'Bracciate al minuto';
+  String get bracciateAlMinuto => 'Χεριές το λεπτό';
 
   @override
-  String get alMinuto => 'al minuto';
+  String get alMinuto => 'το λεπτό';
 
   @override
-  String get tempoNelleZone => 'Tempo nelle zone';
+  String get tempoNelleZone => 'Χρόνος στις ζώνες';
 
   @override
   String zoneCalcolateSullaTua(Object p0) {
-    return 'Zone calcolate sulla tua FC massima ($p0 bpm).';
+    return 'Ζώνες υπολογισμένες στους μέγιστους παλμούς σου ($p0 bpm).';
   }
 
   @override
-  String get migliore => 'Migliore';
+  String get migliore => 'Καλύτερο';
 
   @override
   String tuaFtpCorsaW(Object p0) {
-    return 'La tua FTP di corsa: $p0 W';
+    return 'Το FTP τρεξίματός σου: $p0 W';
   }
 
   @override
   String get n95DeiTuoiMigliori =>
-      'È il 95% dei tuoi migliori 20 minuti. Vale se in quei 20 minuti hai corso al massimo.';
+      'Είναι το 95% των καλύτερων 20 λεπτών σου. Ισχύει αν έτρεξες στο μέγιστο σε αυτά τα 20 λεπτά.';
 
   @override
-  String get usalaComeFtpCorsa => 'Usala come FTP di corsa';
+  String get usalaComeFtpCorsa => 'Χρησιμοποίησέ το ως FTP τρεξίματος';
 
   @override
-  String get normalizzata => 'Normalizzata';
+  String get normalizzata => 'Κανονικοποιημένη';
 
   @override
   String get zonePotenzaServeFtp =>
-      'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → Zone, oppure impostalo su intervals.icu.';
+      'Για τις ζώνες ισχύος χρειάζεται το FTP σου: βάλ\' το στο Προφίλ → Ζώνες, ή όρισέ το στο intervals.icu.';
 
   @override
-  String get tempoNelleZonePotenza => 'Tempo nelle zone di potenza';
+  String get tempoNelleZonePotenza => 'Χρόνος στις ζώνες ισχύος';
 
   @override
   String zoneCalcolateSulTuo(Object p0) {
-    return 'Zone calcolate sul tuo FTP ($p0 W).';
+    return 'Ζώνες υπολογισμένες στο FTP σου ($p0 W).';
   }
 
   @override
   String get intensitaPrevistaTenutaTutta =>
-      'Intensità prevista e tenuta in tutta la seduta';
+      'Προγραμματισμένη και πραγματική ένταση σε όλη την προπόνηση';
 
   @override
   String alle(Object p0, Object p1, Object p2, Object p3, Object p4) {
-    return '$p0/$p1/$p2 alle $p3:$p4';
+    return '$p0/$p1/$p2 στις $p3:$p4';
   }
 
   @override
-  String get controlloHealthConnect => 'Controllo Health Connect…';
+  String get controlloHealthConnect => 'Έλεγχος Health Connect…';
 
   @override
   String get healthConnectInstallatoMa =>
-      'Health Connect è installato ma va aggiornato.';
+      'Το Health Connect είναι εγκατεστημένο αλλά χρειάζεται ενημέρωση.';
 
   @override
   String get healthConnectNonInstallato2 =>
-      'Health Connect non è installato. Serve per leggere gli allenamenti di Garmin e Freeletics.';
+      'Το Health Connect δεν είναι εγκατεστημένο. Χρειάζεται για να διαβάζονται προπονήσεις από Garmin και Freeletics.';
 
   @override
-  String get aggiornaHealthConnect => 'Aggiorna Health Connect';
+  String get aggiornaHealthConnect => 'Ενημέρωση Health Connect';
 
   @override
-  String get installaHealthConnect => 'Installa Health Connect';
+  String get installaHealthConnect => 'Εγκατάσταση Health Connect';
 
   @override
   String get nonCollegatoMancaPermesso =>
-      'Non collegato: manca il permesso per le sessioni.';
+      'Δεν είναι συνδεδεμένο: λείπει η άδεια για τις προπονήσεις.';
 
   @override
-  String get permessi => 'Permessi';
+  String get permessi => 'Άδειες';
 
   @override
-  String get datiPiuVecchi30 => 'Dati più vecchi di 30 giorni';
+  String get datiPiuVecchi30 => 'Δεδομένα παλαιότερα από 30 μέρες';
 
   @override
-  String get maiSincronizzato => 'Mai sincronizzato.';
+  String get maiSincronizzato => 'Δεν έχει συγχρονιστεί ποτέ.';
 
   @override
   String ultimaSincronizzazione(Object p0) {
-    return 'Ultima sincronizzazione: $p0';
+    return 'Τελευταίος συγχρονισμός: $p0';
   }
 
   @override
   String sessioniHealthConnect(Object p0) {
-    return 'Sessioni da Health Connect: $p0';
+    return 'Προπονήσεις από Health Connect: $p0';
   }
 
   @override
-  String get fontiTrovate => 'Fonti trovate';
+  String get fontiTrovate => 'Πηγές που βρέθηκαν';
 
   @override
   String sessioni(Object p0, Object p1, Object p2) {
-    return '$p0: $p1 sessioni  ($p2)';
+    return '$p0: $p1 προπονήσεις  ($p2)';
   }
 
   @override
-  String get tipiAttivitaIgnorati => 'Tipi di attività ignorati';
+  String get tipiAttivitaIgnorati => 'Είδη δραστηριότητας που αγνοήθηκαν';
 
   @override
-  String get sincronizzaOra => 'Sincronizza ora';
+  String get sincronizzaOra => 'Συγχρονισμός τώρα';
 
   @override
-  String get rivediPermessi => 'Rivedi permessi';
+  String get rivediPermessi => 'Έλεγχος αδειών';
 
   @override
-  String get salvaModello => 'Salva il modello';
+  String get salvaModello => 'Αποθήκευσε το πρότυπο';
 
   @override
   String get modelloSalvatoCompilaloRiga =>
-      'Modello salvato. Compilalo (una riga per sessione) e importalo qui.';
+      'Το πρότυπο αποθηκεύτηκε. Συμπλήρωσέ το (μία γραμμή ανά προπόνηση) και εισήγαγέ το εδώ.';
 
   @override
   String impossibileSalvareModello(Object p0) {
-    return 'Impossibile salvare il modello: $p0';
+    return 'Δεν αποθηκεύεται το πρότυπο: $p0';
   }
 
   @override
   String impossibileAprireSelezioneDei(Object p0) {
-    return 'Impossibile aprire la selezione dei file: $p0';
+    return 'Δεν ανοίγει η επιλογή αρχείων: $p0';
   }
 
   @override
   String fileTroppoGrandeMassimo(Object p0) {
-    return '$p0: file troppo grande (massimo 20 MB).';
+    return '$p0: πολύ μεγάλο αρχείο (έως 20 MB).';
   }
 
   @override
   String impossibileLeggereFile2(Object p0, Object p1) {
-    return '$p0: impossibile leggere il file ($p1).';
+    return '$p0: δεν διαβάζεται το αρχείο ($p1).';
   }
 
   @override
-  String get opzioniAvanzate => 'Opzioni avanzate';
+  String get opzioniAvanzate => 'Προχωρημένες επιλογές';
 
   @override
   String get importManualeCsvSenza =>
-      'Import manuale da CSV, senza sincronizzazione';
+      'Χειροκίνητη εισαγωγή από CSV, χωρίς συγχρονισμό';
 
   @override
   String get seNonUsiApp =>
-      'Se non usi app collegate a Health Connect puoi inserire le sessioni a mano: scarica il modello, compilalo con un foglio di calcolo (una riga per sessione) e importalo. I dati restano solo sul telefono.';
+      'Αν δεν χρησιμοποιείς εφαρμογές συνδεδεμένες με το Health Connect, μπορείς να βάζεις τις προπονήσεις με το χέρι: κατέβασε το πρότυπο, συμπλήρωσέ το με ένα λογιστικό φύλλο (μία γραμμή ανά προπόνηση) και εισήγαγέ το. Τα δεδομένα μένουν μόνο στο κινητό.';
 
   @override
   String get colonneDataAaaaMm =>
-      'Colonne: data (AAAA-MM-GG), sport (Corsa, Bici, Nuoto, Forza), tipo_sessione, durata_min, distanza_km, fc_media, rpe, fonte, note. Servono almeno data e sport.';
+      'Στήλες: data (ΕΕΕΕ-ΜΜ-ΗΗ), sport (Corsa, Bici, Nuoto, Forza), tipo_sessione, durata_min, distanza_km, fc_media, rpe, fonte, note. Χρειάζονται τουλάχιστον data και sport. Τα ονόματα των στηλών και τα αθλήματα μένουν στα ιταλικά.';
 
   @override
-  String get scaricaModelloCsv => 'Scarica modello CSV';
+  String get scaricaModelloCsv => 'Λήψη προτύπου CSV';
 
   @override
-  String get importaCsv => 'Importa CSV';
+  String get importaCsv => 'Εισαγωγή CSV';
 
   @override
-  String get modificaIntervalli => 'Modifica gli intervalli';
+  String get modificaIntervalli => 'Επεξεργασία διαστημάτων';
 
   @override
   String get toccaTrattoCambiareNome =>
-      'Tocca un tratto per cambiare nome, metri o tempo, o per toglierlo. Tienilo premuto e trascinalo per spostarlo.';
+      'Πάτα ένα τμήμα για να αλλάξεις όνομα, μέτρα ή χρόνο, ή για να το αφαιρέσεις. Κράτα το πατημένο και σύρ\' το για να το μετακινήσεις.';
 
   @override
-  String get senzaNome => 'Senza nome';
+  String get senzaNome => 'Χωρίς όνομα';
 
   @override
-  String get aggiungiTratto => 'Aggiungi un tratto';
+  String get aggiungiTratto => 'Προσθήκη τμήματος';
 
   @override
-  String get tornaQuelliDellOrologio => 'Torna a quelli dell\'orologio';
+  String get tornaQuelliDellOrologio => 'Πίσω σε αυτά του ρολογιού';
 
   @override
-  String get scriviTempoEs5 => 'Scrivi il tempo, es. 5:30 o 45';
+  String get scriviTempoEs5 => 'Γράψε τον χρόνο, π.χ. 5:30 ή 45';
 
   @override
-  String get nuovoTratto => 'Nuovo tratto';
+  String get nuovoTratto => 'Νέο τμήμα';
 
   @override
-  String get modificaTratto => 'Modifica il tratto';
+  String get modificaTratto => 'Επεξεργασία τμήματος';
 
   @override
-  String get esDefaticamento => 'Es. Defaticamento';
+  String get esDefaticamento => 'Π.χ. Αποθεραπεία';
 
   @override
-  String get metri => 'Metri';
+  String get metri => 'Μέτρα';
 
   @override
-  String get togliQuestoTratto => 'Togli questo tratto';
+  String get togliQuestoTratto => 'Αφαίρεση αυτού του τμήματος';
 
   @override
-  String get scollegareIntervalsIcu => 'Scollegare intervals.icu?';
+  String get scollegareIntervalsIcu => 'Αποσύνδεση από το intervals.icu;';
 
   @override
   String get attivitaTornanoQuelleHealth =>
-      'Le attività tornano quelle di Health Connect, con meno dettagli. La chiave viene cancellata dal telefono.';
+      'Οι δραστηριότητες επιστρέφουν σε αυτές του Health Connect, με λιγότερες λεπτομέρειες. Το κλειδί διαγράφεται από το κινητό.';
 
   @override
   String get attivitaCompleteGarminPolar =>
-      'Attività complete da Garmin, Polar, Suunto, Coros, Wahoo, Zwift: nome vero, rulli, percorso, altitudine, potenza.';
+      'Πλήρεις δραστηριότητες από Garmin, Polar, Suunto, Coros, Wahoo, Zwift: πραγματικό όνομα, προπονητήριο, διαδρομή, υψόμετρο, ισχύς.';
 
   @override
-  String get sincronizzazioneCorso => 'Sincronizzazione in corso…';
+  String get sincronizzazioneCorso => 'Συγχρονισμός…';
 
   @override
-  String get collegato4 => 'Collegato.';
+  String get collegato4 => 'Συνδεδεμένο.';
 
   @override
   String collegatoUltimaSincronizzazioneAttivita(
@@ -4363,23 +4384,23 @@ class AppLocalizationsEl extends AppLocalizations {
     Object p2,
     Object p3,
   ) {
-    return 'Collegato · ultima sincronizzazione $p0, $p1:$p2 · $p3 attività';
+    return 'Συνδεδεμένο · τελευταίος συγχρονισμός $p0, $p1:$p2 · $p3 δραστηριότητες';
   }
 
   @override
   String get mandaPianoSeduteIntervals =>
-      'Manda piano e sedute a intervals.icu';
+      'Στείλε πρόγραμμα και προπονήσεις στο intervals.icu';
 
   @override
   String corsaBiciNuotoDei(Object p0) {
-    return 'Corsa, bici e nuoto dei prossimi $p0 giorni, passo per passo: si aggiornano da soli quando il piano cambia. Le sedute registrate con l\'app partono da sole appena finite, con il percorso se c\'è.';
+    return 'Τρέξιμο, ποδήλατο και κολύμβηση των επόμενων $p0 ημερών, βήμα βήμα: ενημερώνονται μόνα τους όταν αλλάζει το πρόγραμμα. Οι προπονήσεις που καταγράφεις με την εφαρμογή στέλνονται μόνες τους μόλις τελειώσουν, με τη διαδρομή αν υπάρχει.';
   }
 
   @override
-  String get invioCorso => 'Invio in corso…';
+  String get invioCorso => 'Αποστολή…';
 
   @override
-  String get nonAncoraMandato => 'Non ancora mandato.';
+  String get nonAncoraMandato => 'Δεν έχει σταλεί ακόμα.';
 
   @override
   String ultimoInvioSeduteCalendario(
@@ -4388,2085 +4409,2093 @@ class AppLocalizationsEl extends AppLocalizations {
     Object p2,
     Object p3,
   ) {
-    return 'Ultimo invio $p0, $p1:$p2 · $p3 sedute in calendario';
+    return 'Τελευταία αποστολή $p0, $p1:$p2 · $p3 προπονήσεις στο ημερολόγιο';
   }
 
   @override
-  String get inviaOra => 'Invia ora';
+  String get inviaOra => 'Αποστολή τώρα';
 
   @override
-  String get averleSullOrologioGarmin => 'Per averle sull\'orologio Garmin';
+  String get averleSullOrologioGarmin => 'Για να τις έχεις στο ρολόι Garmin';
 
   @override
   String get suIntervalsIcuImpostazioni =>
-      'Su intervals.icu: Impostazioni → Garmin Connect → attiva \"Upload planned workouts\". Le sedute passano nel calendario di Garmin Connect e da lì all\'orologio. Battito: zone di intervals.icu; nuoto: passo per 100 m.';
+      'Στο intervals.icu: Settings → Garmin Connect → ενεργοποίησε το «Upload planned workouts». Οι προπονήσεις μπαίνουν στο ημερολόγιο του Garmin Connect και από εκεί στο ρολόι. Παλμοί: ζώνες του intervals.icu· κολύμβηση: ρυθμός ανά 100 μ.';
 
   @override
   String get creaAccountGratuitoSu =>
-      'Crea un account gratuito su intervals.icu (dal browser).';
+      'Δημιούργησε δωρεάν λογαριασμό στο intervals.icu (από τον browser).';
 
   @override
   String get liImpostazioniCollegaGarmin =>
-      'Lì, in Impostazioni, collega Garmin Connect (o il tuo orologio): le attività arrivano da sole.';
+      'Εκεί, στα Settings, σύνδεσε το Garmin Connect (ή το ρολόι σου): οι δραστηριότητες έρχονται μόνες τους.';
 
   @override
   String get sempreImpostazioniFondoDeveloper =>
-      'Sempre in Impostazioni, in fondo, \"Developer settings\": crea la chiave API e copiala.';
+      'Πάλι στα Settings, στο τέλος, «Developer settings»: δημιούργησε το κλειδί API και αντέγραψέ το.';
 
   @override
-  String get incollalaQuiSottoTocca => 'Incollala qui sotto e tocca Collega.';
+  String get incollalaQuiSottoTocca =>
+      'Επικόλλησέ το παρακάτω και πάτα Σύνδεση.';
 
   @override
-  String get chiaveApiIntervalsIcu => 'Chiave API di intervals.icu';
+  String get chiaveApiIntervalsIcu => 'Κλειδί API του intervals.icu';
 
   @override
-  String get incollaDagliAppunti => 'Incolla dagli appunti';
+  String get incollaDagliAppunti => 'Επικόλληση από το πρόχειρο';
 
   @override
   String get chiaveRestaCifrataSul =>
-      'La chiave resta cifrata sul telefono. Serve a leggere le tue attività e, solo se lo accendi, a mandare il piano al tuo calendario.';
+      'Το κλειδί μένει κρυπτογραφημένο στο κινητό. Χρησιμοποιείται για να διαβάζονται οι δραστηριότητές σου και, μόνο αν το ενεργοποιήσεις, για να στέλνεται το πρόγραμμα στο ημερολόγιό σου.';
 
   @override
-  String get collega2 => 'Collega';
+  String get collega2 => 'Σύνδεση';
 
   @override
-  String get arrivo => 'Arrivo';
+  String get arrivo => 'Τερματισμός';
 
   @override
-  String get percorsoCompletato => 'Percorso completato';
+  String get percorsoCompletato => 'Η διαδρομή ολοκληρώθηκε';
 
   @override
-  String get cercoPosizione => 'Cerco la posizione';
+  String get cercoPosizione => 'Ψάχνω την τοποθεσία σου';
 
   @override
   String get percorsoQuestaParteRaggiungilo =>
-      'Il percorso è da questa parte: raggiungilo';
+      'Η διαδρομή είναι από εδώ: πήγαινε προς αυτήν';
 
   @override
-  String get fuoriPercorsoTornaSulla => 'Fuori percorso: torna sulla traccia';
+  String get fuoriPercorsoTornaSulla =>
+      'Εκτός διαδρομής: γύρνα πίσω στη γραμμή';
 
   @override
-  String get drittoFinoAllArrivo => 'Dritto fino all\'arrivo';
+  String get drittoFinoAllArrivo => 'Ευθεία μέχρι τον τερματισμό';
 
   @override
   String percorso(Object p0) {
-    return 'Percorso a $p0';
+    return 'Διαδρομή σε $p0';
   }
 
   @override
   String fuoriPercorso(Object p0) {
-    return 'Fuori percorso ($p0)';
+    return 'Εκτός διαδρομής ($p0)';
   }
 
   @override
   String arrivoTra(Object p0) {
-    return 'Arrivo tra $p0';
+    return 'Τερματισμός σε $p0';
   }
 
   @override
   String get percorsoNonConcessoPuoi =>
-      'Percorso non concesso. Puoi sempre permetterlo da Health Connect.';
+      'Η διαδρομή δεν επιτρέπεται. Μπορείς πάντα να την επιτρέψεις από το Health Connect.';
 
   @override
   String get fileTroppoGrandeGpx =>
-      'File troppo grande: un GPX di un allenamento pesa al massimo pochi MB.';
+      'Πολύ μεγάλο αρχείο: ένα GPX προπόνησης είναι το πολύ λίγα MB.';
 
   @override
-  String get giornoDiverso => 'Giorno diverso';
+  String get giornoDiverso => 'Διαφορετική μέρα';
 
   @override
   String fileSessioneUsarloStesso(Object p0, Object p1) {
-    return 'Il file è di $p0, la sessione di $p1. Usarlo lo stesso?';
+    return 'Το αρχείο είναι της $p0, η προπόνηση της $p1. Να χρησιμοποιηθεί ούτως ή άλλως;';
   }
 
   @override
-  String get usalo => 'Usalo';
+  String get usalo => 'Χρησιμοποίησέ το';
 
   @override
   String percorsoAggiunto(Object p0) {
-    return 'Percorso aggiunto: $p0';
+    return 'Η διαδρομή προστέθηκε: $p0';
   }
 
   @override
-  String get questaSessioneHaPercorso => 'Questa sessione ha il percorso GPS';
+  String get questaSessioneHaPercorso => 'Αυτή η προπόνηση έχει διαδρομή GPS';
 
   @override
   String get healthConnectChiedeTuo =>
-      'Health Connect chiede il tuo permesso per mostrarlo. Per non doverlo dare ogni volta: Health Connect → Avidididadi → Percorsi di allenamento → Consenti sempre.';
+      'Το Health Connect ζητά την άδειά σου για να τη δείξει. Για να μην τη δίνεις κάθε φορά: Health Connect → Avidididadi → Διαδρομές άσκησης → Να επιτρέπεται πάντα.';
 
   @override
-  String get consentiSempre => 'Consenti sempre';
+  String get consentiSempre => 'Να επιτρέπεται πάντα';
 
   @override
-  String get aggiungiGpx => 'Aggiungi GPX';
+  String get aggiungiGpx => 'Προσθήκη GPX';
 
   @override
-  String get appHaRegistratoSessione => 'L\'app che ha registrato la sessione';
+  String get appHaRegistratoSessione =>
+      'Η εφαρμογή που κατέγραψε την προπόνηση';
 
   @override
-  String get nessunPercorsoGps => 'Nessun percorso GPS';
+  String get nessunPercorsoGps => 'Χωρίς διαδρομή GPS';
 
   @override
   String nonHaCondivisoPuoi(Object p0) {
-    return '$p0 non lo ha condiviso. Puoi aggiungerlo tu: su connect.garmin.com apri l\'attività, ingranaggio → Esporta in GPX, poi carica qui il file.';
+    return 'Το $p0 δεν την κοινοποίησε. Μπορείς να την προσθέσεις εσύ: στο connect.garmin.com άνοιξε τη δραστηριότητα, γρανάζι → Εξαγωγή σε GPX, και μετά φόρτωσε το αρχείο εδώ.';
   }
 
   @override
-  String get ritmo => 'Ritmo';
+  String get ritmo => 'Ρυθμός';
 
   @override
-  String get scriviQuantiMinutiDurata => 'Scrivi quanti minuti è durata';
+  String get scriviQuantiMinutiDurata => 'Γράψε πόσα λεπτά κράτησε';
 
   @override
-  String get vasca => 'In vasca';
+  String get vasca => 'Στην πισίνα';
 
   @override
-  String get vasche => 'Vasche';
+  String get vasche => 'Μήκη';
 
   @override
-  String get lunghezzaVasca => 'Lunghezza vasca';
+  String get lunghezzaVasca => 'Μήκος πισίνας';
 
   @override
-  String get metriTotali => 'Metri totali';
+  String get metriTotali => 'Συνολικά μέτρα';
 
   @override
-  String get tempoMedio => 'Tempo medio';
+  String get tempoMedio => 'Μέσος χρόνος';
 
   @override
-  String get es155 => 'es. 1:55';
+  String get es155 => 'π.χ. 1:55';
 
   @override
-  String get stile => 'Stile';
+  String get stile => 'Στυλ';
 
   @override
-  String get modificaSessione => 'Modifica la sessione';
+  String get modificaSessione => 'Επεξεργασία προπόνησης';
 
   @override
-  String get eliminaSessione => 'Elimina la sessione';
+  String get eliminaSessione => 'Διαγραφή προπόνησης';
 
   @override
-  String get nomeDellAllenamento => 'Nome dell\'allenamento';
+  String get nomeDellAllenamento => 'Όνομα προπόνησης';
 
   @override
-  String get indoorRulliTacx => 'Indoor (rulli, Tacx)';
+  String get indoorRulliTacx => 'Εσωτερικός χώρος (προπονητήριο, Tacx)';
 
   @override
-  String get indoorTapisRoulant => 'Indoor (tapis roulant)';
+  String get indoorTapisRoulant => 'Εσωτερικός χώρος (διάδρομος)';
 
   @override
-  String get nienteMappaNeGpx => 'Niente mappa né GPX';
+  String get nienteMappaNeGpx => 'Χωρίς χάρτη ή GPX';
 
   @override
   String inizio(Object p0, Object p1) {
-    return 'Inizio $p0:$p1';
+    return 'Έναρξη $p0:$p1';
   }
 
   @override
-  String get vieBlocchiGradi => 'Vie, blocchi e gradi';
+  String get vieBlocchiGradi => 'Διαδρομές, boulder και βαθμοί';
 
   @override
-  String get eserciziSerieKg => 'Esercizi, serie e kg';
+  String get eserciziSerieKg => 'Ασκήσεις, σετ και kg';
 
   @override
-  String get comeAndata => 'Come è andata';
+  String get comeAndata => 'Πώς πήγε';
 
   @override
-  String get battitoMassimo => 'Battito massimo';
+  String get battitoMassimo => 'Μέγιστοι παλμοί';
 
   @override
-  String get fatica => 'Fatica';
+  String get fatica => 'Κόπωση';
 
   @override
-  String get su10 => 'su 10';
+  String get su10 => 'στα 10';
 
   @override
-  String get tuttoQuelloTiRicordi => 'Tutto quello che ti ricordi';
+  String get tuttoQuelloTiRicordi => 'Ό,τι θυμάσαι';
 
   @override
-  String get tornaAiDatiOriginali => 'Torna ai dati originali';
+  String get tornaAiDatiOriginali => 'Πίσω στα αρχικά δεδομένα';
 
   @override
-  String get dataGara => 'Data della gara';
+  String get dataGara => 'Ημερομηνία αγώνα';
 
   @override
-  String get scriviOreMinutiEs => 'Scrivi ore:minuti, es. 1:45';
+  String get scriviOreMinutiEs => 'Γράψε ώρες:λεπτά, π.χ. 1:45';
 
   @override
-  String get scegliDataGara => 'Scegli la data della gara.';
+  String get scegliDataGara => 'Διάλεξε την ημερομηνία του αγώνα.';
 
   @override
-  String get tempoObiettivoFacoltativo => 'Tempo obiettivo (facoltativo)';
+  String get tempoObiettivoFacoltativo => 'Χρόνος-στόχος (προαιρετικό)';
 
   @override
-  String get oreMinutiEs1 => 'ore:minuti, es. 1:45';
+  String get oreMinutiEs1 => 'ώρες:λεπτά, π.χ. 1:45';
 
   @override
   String traSettimane(Object p0) {
-    return 'Tra $p0 settimane';
+    return 'Σε $p0 εβδομάδες';
   }
 
   @override
   String faseAttuale(Object p0, Object p1) {
-    return 'Fase attuale: $p0. $p1';
+    return 'Τρέχουσα φάση: $p0. $p1';
   }
 
   @override
   String get fasiAvanzanoSoleVerso =>
-      'Le fasi avanzano da sole verso la gara: base, sviluppo, rifinitura e scarico.';
+      'Οι φάσεις προχωρούν μόνες τους προς τον αγώνα: βάση, ανάπτυξη, κορύφωση και αποφόρτιση.';
 
   @override
-  String get rimuoviObiettivo => 'Rimuovi obiettivo';
+  String get rimuoviObiettivo => 'Αφαίρεση στόχου';
 
   @override
   String get controllaValoriFcMax =>
-      'Controlla i valori: FC max 120-230, FC riposo 30-100, passo m:ss, FTP 50-600 W.';
+      'Έλεγξε τις τιμές: μέγιστοι παλμοί 120-230, παλμοί ηρεμίας 30-100, ρυθμός λ:δδ, FTP 50-600 W.';
 
   @override
   String get n15MinutiFacili3 =>
-      '15 minuti facili e 3 allunghi, poi 20 minuti al massimo che riesci a tenere, poi 10 minuti lentissimi. Circa 50 minuti.';
+      '15 χαλαρά λεπτά και 3 επιταχύνσεις, μετά 20 λεπτά όσο πιο δυνατά αντέχεις, μετά 10 πολύ χαλαρά λεπτά. Περίπου 50 λεπτά.';
 
   @override
   String get telefonoNonMisuraWatt =>
-      'Il telefono non misura i watt di corsa: registra la corsa anche con l\'orologio. Poi apri i grafici di quella corsa: lì trovi la tua FTP e il tasto per salvarla.';
+      'Το κινητό δεν μετράει watt στο τρέξιμο: κατέγραψε το τρέξιμο και με το ρολόι σου. Μετά άνοιξε τα γραφήματα εκείνου του τρεξίματος: εκεί θα βρεις το FTP σου και το κουμπί για να το αποθηκεύσεις.';
 
   @override
   String testNelCalendarioPrende(Object p0) {
-    return 'Test nel calendario: $p0. Prende il posto della corsa di quel giorno.';
+    return 'Το τεστ στο ημερολόγιο: $p0. Παίρνει τη θέση του τρεξίματος εκείνης της μέρας.';
   }
 
   @override
-  String get scegliOggiOGiorno => 'Scegli oggi o un giorno dopo.';
+  String get scegliOggiOGiorno => 'Διάλεξε σήμερα ή κάποια επόμενη μέρα.';
 
   @override
-  String get mettiloNelCalendario => 'Mettilo nel calendario';
+  String get mettiloNelCalendario => 'Βάλ\' το στο ημερολόγιο';
 
   @override
-  String get zone => 'Zone';
+  String get zone => 'Ζώνες';
 
   @override
-  String get tueZoneFrequenzaCardiaca => 'Le tue zone di frequenza cardiaca';
+  String get tueZoneFrequenzaCardiaca => 'Οι ζώνες καρδιακών παλμών σου';
 
   @override
   String calcolateRiservaCardiacaFc(Object p0, Object p1) {
-    return 'Calcolate con la riserva cardiaca (FC max $p0, a riposo $p1).';
+    return 'Υπολογίζονται με την καρδιακή εφεδρεία (μέγιστοι παλμοί $p0, ηρεμίας $p1).';
   }
 
   @override
   String calcolateComePercentualeFc(Object p0) {
-    return 'Calcolate come percentuale della FC max ($p0). Con la FC a riposo diventano più precise.';
+    return 'Υπολογίζονται ως ποσοστό των μέγιστων παλμών ($p0). Με τους παλμούς ηρεμίας γίνονται πιο ακριβείς.';
   }
 
   @override
-  String get fcMassima => 'FC massima';
+  String get fcMassima => 'Μέγιστοι παλμοί';
 
   @override
   String vuotoStimaDaiTuoi(Object p0) {
-    return 'Vuoto = stima dai tuoi dati: $p0 bpm (la più alta dell\'ultimo anno, o dall\'età).';
+    return 'Κενό = εκτίμηση από τα δεδομένα σου: $p0 bpm (οι πιο ψηλοί του τελευταίου έτους, ή από την ηλικία).';
   }
 
   @override
   String vuotoQuellaMisurataBpm(Object p0) {
-    return 'Vuoto = quella misurata: $p0 bpm.';
+    return 'Κενό = οι μετρημένοι: $p0 bpm.';
   }
 
   @override
   String get misuralaAppenaSveglioO =>
-      'Misurala appena sveglio, o lascia vuoto.';
+      'Μέτρησέ τους μόλις ξυπνήσεις, ή άφησέ το κενό.';
 
   @override
-  String get passoCriticoNuoto => 'Passo critico del nuoto';
+  String get passoCriticoNuoto => 'Κρίσιμος ρυθμός κολύμβησης';
 
   @override
-  String get mSsEs2 => 'm:ss, es. 2:05';
+  String get mSsEs2 => 'λ:δδ, π.χ. 2:05';
 
   @override
   String get vuotoStimaDalleSessioni =>
-      'Vuoto = stima dalle sessioni in piscina (non ancora disponibile).';
+      'Κενό = εκτίμηση από τις προπονήσεις στην πισίνα (δεν υπάρχει ακόμα).';
 
   @override
   String vuotoStimaDalleSessioni2(Object p0) {
-    return 'Vuoto = stima dalle sessioni in piscina: $p0.';
+    return 'Κενό = εκτίμηση από τις προπονήσεις στην πισίνα: $p0.';
   }
 
   @override
-  String get tueZonePotenzaBici => 'Le tue zone di potenza (bici)';
+  String get tueZonePotenzaBici => 'Οι ζώνες ισχύος σου (ποδήλατο)';
 
   @override
   String get partonoDallFtpPotenza =>
-      'Partono dall\'FTP, la potenza che riesci a tenere per circa un\'ora. Le sedute di bici ti danno il range di watt da tenere.';
+      'Ξεκινούν από το FTP, την ισχύ που αντέχεις για περίπου μία ώρα. Οι προπονήσεις ποδηλάτου σου δίνουν το εύρος watt που πρέπει να κρατήσεις.';
 
   @override
   String get ftp => 'FTP';
 
   @override
   String vuotoQuelloIntervalsIcu(Object p0) {
-    return 'Vuoto = quello di intervals.icu: $p0 W.';
+    return 'Κενό = αυτό του intervals.icu: $p0 W.';
   }
 
   @override
   String get seNonSaiPedala =>
-      'Se non lo sai: pedala 20 minuti più forte che puoi, l\'FTP è circa il 95% della potenza media.';
+      'Αν δεν το ξέρεις: κάνε πετάλι 20 λεπτά όσο πιο δυνατά μπορείς· το FTP είναι περίπου το 95% της μέσης ισχύος.';
 
   @override
-  String get tueZonePotenzaCorsa => 'Le tue zone di potenza (corsa)';
+  String get tueZonePotenzaCorsa => 'Οι ζώνες ισχύος σου (τρέξιμο)';
 
   @override
   String get ftpBiciNonVale =>
-      'L\'FTP della bici non vale correndo: la corsa ha la sua. Serve ai grafici delle corse registrate con un orologio che misura i watt.';
+      'Το FTP του ποδηλάτου δεν ισχύει για το τρέξιμο: το τρέξιμο έχει το δικό του. Χρησιμοποιείται στα γραφήματα των τρεξιμάτων που καταγράφονται με ρολόι που μετράει watt.';
 
   @override
-  String get ftpCorsa => 'FTP di corsa';
+  String get ftpCorsa => 'FTP τρεξίματος';
 
   @override
   String vuotoStimaEtaPeso(Object p0) {
-    return 'Vuoto = stima da età e peso: $p0 W. È solo un punto di partenza.';
+    return 'Κενό = εκτίμηση από ηλικία και βάρος: $p0 W. Είναι μόνο ένα σημείο εκκίνησης.';
   }
 
   @override
   String get vuotoStimaEtaPeso2 =>
-      'Vuoto = stima da età e peso: scrivi il peso nel Profilo.';
+      'Κενό = εκτίμηση από ηλικία και βάρος: βάλε το βάρος σου στο Προφίλ.';
 
   @override
-  String get faiTestCalcolarla => 'Fai il test per calcolarla';
+  String get faiTestCalcolarla => 'Κάνε το τεστ για να το υπολογίσεις';
 
   @override
-  String get duranteAllenamento => 'Durante l\'allenamento';
+  String get duranteAllenamento => 'Κατά την προπόνηση';
 
   @override
-  String get avvisi => 'Avvisi';
+  String get avvisi => 'Ειδοποιήσεις';
 
   @override
-  String get voce => 'Voce';
+  String get voce => 'Φωνή';
 
   @override
   String get diceEsercizioIniziaKm =>
-      'Dice l\'esercizio che inizia, i km e se sei fuori zona o fuori passo. Durante le chiamate sta zitta.';
+      'Λέει την άσκηση που ξεκινά, τα χιλιόμετρα και αν είσαι εκτός ζώνης ή εκτός ρυθμού. Σωπαίνει στις κλήσεις.';
 
   @override
-  String get bip => 'Bip';
+  String get bip => 'Ήχος';
 
   @override
   String negliUltimiSecondiRecuperi(Object p0) {
-    return 'Negli ultimi $p0 secondi di recuperi ed esercizi a tempo, e a ogni km (5 km in bici). Usa il volume dei media.';
+    return 'Στα τελευταία $p0 δευτερόλεπτα των διαλειμμάτων και των ασκήσεων με χρόνο, και σε κάθε χιλιόμετρο (5 χλμ. στο ποδήλατο). Χρησιμοποιεί την ένταση πολυμέσων.';
   }
 
   @override
-  String get vibrazione => 'Vibrazione';
+  String get vibrazione => 'Δόνηση';
 
   @override
-  String get insiemeAiBip => 'Insieme ai bip.';
+  String get insiemeAiBip => 'Μαζί με τους ήχους.';
 
   @override
-  String get pausaAutomatica => 'Pausa automatica';
+  String get pausaAutomatica => 'Αυτόματη παύση';
 
   @override
   String get corsaBiciCamminataTempo =>
-      'Corsa, bici e camminata: il tempo si ferma quando ti fermi e riparte da solo. Mai durante i recuperi.';
+      'Τρέξιμο, ποδήλατο και περπάτημα: ο χρόνος σταματά όταν σταματάς και ξεκινά ξανά μόνος του. Ποτέ στα διαλείμματα.';
 
   @override
-  String get spenta => 'Spenta';
+  String get spenta => 'Κλειστή';
 
   @override
-  String get tempoNonSiFerma => 'Il tempo non si ferma mai da solo.';
+  String get tempoNonSiFerma => 'Ο χρόνος δεν σταματά ποτέ μόνος του.';
 
   @override
-  String get soloQuandoSeiFermo => 'Solo quando sei fermo';
+  String get soloQuandoSeiFermo => 'Μόνο όταν είσαι σταματημένος';
 
   @override
   String get alSemaforoOSosta =>
-      'Al semaforo o a una sosta. Se vai piano, anche in salita, il tempo continua.';
+      'Σε φανάρι ή σε στάση. Αν πηγαίνεις αργά, ακόμα και σε ανηφόρα, ο χρόνος συνεχίζει.';
 
   @override
   String sottoKmH(Object p0) {
-    return 'Sotto i $p0 km/h';
+    return 'Κάτω από $p0 χλμ./ώ.';
   }
 
   @override
   String get comeCerteAppAttento =>
-      'Come certe app: attento, se vai più piano di così il tempo si ferma.';
+      'Όπως κάποιες εφαρμογές: πρόσεχε, αν πας πιο αργά από αυτό ο χρόνος σταματά.';
 
   @override
   String get camminataTranquilla45 =>
-      'Camminata tranquilla 4-5 km/h, corsa lenta 8-10, bici in salita anche 6-8.';
+      'Χαλαρό περπάτημα 4-5 χλμ./ώ., αργό τρέξιμο 8-10, ποδήλατο σε ανηφόρα ακόμα και 6-8.';
 
   @override
-  String get soloMovimento => 'Solo in movimento';
+  String get soloMovimento => 'Μόνο σε κίνηση';
 
   @override
   String get sosteNonContanoAnche =>
-      'Le soste non contano, anche con la pausa automatica spenta: è il passo con cui ti sei mosso.';
+      'Οι στάσεις δεν μετράνε, ακόμα και με κλειστή την αυτόματη παύση: είναι ο ρυθμός με τον οποίο κινήθηκες.';
 
   @override
-  String get soste => 'Con le soste';
+  String get soste => 'Με τις στάσεις';
 
   @override
   String get distanzaDivisoTuttoTempo =>
-      'Distanza diviso tutto il tempo, soste comprese.';
+      'Απόσταση διά όλο τον χρόνο, μαζί με τις στάσεις.';
 
   @override
   String get allaFineRiepilogoMostra =>
-      'Alla fine il riepilogo mostra comunque tutti e due i tempi: in movimento e totale.';
+      'Στο τέλος η περίληψη δείχνει έτσι κι αλλιώς και τους δύο χρόνους: σε κίνηση και συνολικό.';
 
   @override
   String get corsaCamminataBiciAll =>
-      'Corsa, camminata e bici all\'aperto: dove sta la mappa che segue la tua posizione (e il percorso, se ne segui uno).';
+      'Τρέξιμο, περπάτημα και ποδήλατο σε εξωτερικό χώρο: πού να μπει ο χάρτης που ακολουθεί τη θέση σου (και τη διαδρομή, αν ακολουθείς μία).';
 
   @override
   String get scorriLatoTimerDati =>
-      'Scorri di lato: in una timer e dati, nell\'altra la mappa grande.';
+      'Σύρε στο πλάι: χρονόμετρο και δεδομένα στη μία, ο μεγάλος χάρτης στην άλλη.';
 
   @override
   String get mappaPiccolaSempreVista =>
-      'Una mappa piccola sempre in vista, sopra il timer.';
+      'Ένας μικρός χάρτης πάντα ορατός, πάνω από το χρονόμετρο.';
 
   @override
   String get mappaOccupaTuttoTempo =>
-      'La mappa occupa tutto, con tempo e dati sopra.';
+      'Ο χάρτης γεμίζει την οθόνη, με χρόνο και δεδομένα από πάνω.';
 
   @override
   String get fileTroppoGrandeGpx2 =>
-      'File troppo grande: un GPX pesa al massimo pochi MB.';
+      'Πολύ μεγάλο αρχείο: ένα GPX είναι το πολύ λίγα MB.';
 
   @override
   String aggiunto(Object p0, Object p1) {
-    return 'Aggiunto: $p0 · $p1';
+    return 'Προστέθηκε: $p0 · $p1';
   }
 
   @override
   String mSalita2(Object p0) {
-    return '$p0 m di salita';
+    return '$p0 μ. ανάβασης';
   }
 
   @override
-  String get scegliPercorso => 'Scegli il percorso';
+  String get scegliPercorso => 'Διάλεξε τη διαδρομή';
 
   @override
-  String get mieiPercorsi => 'I miei percorsi';
+  String get mieiPercorsi => 'Οι διαδρομές μου';
 
   @override
-  String get nessunPercorso => 'Nessun percorso';
+  String get nessunPercorso => 'Καμία διαδρομή';
 
   @override
   String get aggiungiFileGpxGara =>
-      'Aggiungi il file GPX di una gara, di un giro famoso o di un amico. Durante corsa, camminata o bici l\'app ti mostra dove sei sulla mappa e ti dice a voce dove girare.';
+      'Πρόσθεσε το αρχείο GPX ενός αγώνα, μιας γνωστής διαδρομής ή μιας διαδρομής ενός φίλου. Ενώ τρέχεις, περπατάς ή κάνεις ποδήλατο, η εφαρμογή σου δείχνει πού είσαι στον χάρτη και σου λέει με φωνή πού να στρίψεις.';
 
   @override
-  String get doveTrovoGpx => 'Dove trovo un GPX?';
+  String get doveTrovoGpx => 'Πού βρίσκω ένα GPX;';
 
   @override
   String get sitoGaraSpessoC =>
-      '• Sito della gara: spesso c\'è \"Scarica la traccia GPX\".\n• Strava, Komoot, Garmin Connect: apri un percorso o un\'attività → Esporta GPX.\n• Un amico: può mandarti il GPX della sua attività.\nPoi qui: Aggiungi GPX e scegli il file.';
+      '• Ιστότοπος του αγώνα: συχνά υπάρχει «Λήψη ίχνους GPX».\n• Strava, Komoot, Garmin Connect: άνοιξε μια διαδρομή ή μια δραστηριότητα → Εξαγωγή GPX.\n• Ένας φίλος: μπορεί να σου στείλει το GPX της δραστηριότητάς του.\nΜετά εδώ: Προσθήκη GPX και διάλεξε το αρχείο.';
 
   @override
-  String get ancheSenzaRete => 'Anche senza rete';
+  String get ancheSenzaRete => 'Λειτουργεί και χωρίς σύνδεση';
 
   @override
-  String get vediPercorso => 'Vedi il percorso';
+  String get vediPercorso => 'Δες τη διαδρομή';
 
   @override
-  String get nomePercorso => 'Nome del percorso';
+  String get nomePercorso => 'Όνομα διαδρομής';
 
   @override
-  String get eliminarePercorso => 'Eliminare il percorso?';
+  String get eliminarePercorso => 'Διαγραφή της διαδρομής;';
 
   @override
   String sparisceDallaRaccoltaDalle(Object p0) {
-    return '\"$p0\" sparisce dalla raccolta e dalle sedute a cui era assegnato. Gli allenamenti già fatti restano.';
+    return 'Το «$p0» εξαφανίζεται από τη συλλογή και από τις προπονήσεις στις οποίες είχε ανατεθεί. Οι προπονήσεις που έχουν ήδη γίνει μένουν.';
   }
 
   @override
-  String get usaQuestoPercorso => 'Usa questo percorso';
+  String get usaQuestoPercorso => 'Χρησιμοποίησε αυτή τη διαδρομή';
 
   @override
-  String get rinomina => 'Rinomina';
+  String get rinomina => 'Μετονομασία';
 
   @override
-  String get filePercorsoMancante => 'File del percorso mancante.';
+  String get filePercorsoMancante => 'Λείπει το αρχείο της διαδρομής.';
 
   @override
-  String get curve => 'Curve';
+  String get curve => 'Στροφές';
 
   @override
-  String get altimetria => 'Altimetria';
+  String get altimetria => 'Υψομετρικό προφίλ';
 
   @override
   String get giroAdAnelloSi =>
-      'Giro ad anello: si parte e si arriva nello stesso punto.';
+      'Κυκλική διαδρομή: εκκίνηση και τερματισμός στο ίδιο σημείο.';
 
   @override
   String get partenzaAlPallinoVerde =>
-      'Partenza al pallino verde, arrivo all\'altro capo.';
+      'Εκκίνηση στην πράσινη κουκκίδα, τερματισμός στην άλλη άκρη.';
 
   @override
   String get seguirloPrimaPartireCorsa =>
-      'Per seguirlo: prima di partire con corsa, camminata o bici tocca \"Segui un percorso\", oppure assegnalo prima a una seduta in programma.';
+      'Για να την ακολουθήσεις: πριν ξεκινήσεις τρέξιμο, περπάτημα ή ποδήλατο πάτα «Ακολούθησε μια διαδρομή», ή ανάθεσέ τη από πριν σε μια προγραμματισμένη προπόνηση.';
 
   @override
   String mMinM(Object p0, Object p1) {
-    return '$p0 m · min $p1 m';
+    return '$p0 μ. · ελάχ. $p1 μ.';
   }
 
   @override
-  String get percorsoSeguire => 'Percorso da seguire';
+  String get percorsoSeguire => 'Διαδρομή που θα ακολουθήσεις';
 
   @override
-  String get scegli => 'Scegli';
+  String get scegli => 'Επιλογή';
 
   @override
-  String get cambia => 'Cambia';
+  String get cambia => 'Αλλαγή';
 
   @override
   String scaricoMappa(Object p0) {
-    return 'Scarico la mappa… $p0%';
+    return 'Λήψη χάρτη… $p0%';
   }
 
   @override
-  String get puoiUsareAppIntanto => 'Puoi usare l\'app intanto.';
+  String get puoiUsareAppIntanto =>
+      'Μπορείς να χρησιμοποιείς την εφαρμογή στο μεταξύ.';
 
   @override
-  String get mappaScaricata => 'Mappa scaricata';
+  String get mappaScaricata => 'Ο χάρτης κατέβηκε';
 
   @override
   String get stradePercorsoSiVedono =>
-      'Strade e percorso si vedono anche senza rete (non il satellite).';
+      'Δρόμοι και διαδρομή φαίνονται και χωρίς σύνδεση (όχι ο δορυφόρος).';
 
   @override
-  String get mappaSenzaRete => 'Mappa senza rete';
+  String get mappaSenzaRete => 'Χάρτης χωρίς σύνδεση';
 
   @override
   String scaricaZonaAttornoAl(Object p0) {
-    return 'Scarica la zona attorno al percorso ($p0), per vederla anche dove il telefono non prende.';
+    return 'Κατέβασε την περιοχή γύρω από τη διαδρομή ($p0), για να τη βλέπεις ακόμα και όπου το κινητό δεν έχει σήμα.';
   }
 
   @override
-  String get scarica => 'Scarica';
+  String get scarica => 'Λήψη';
 
   @override
   String ultimoAggiornamento(Object p0) {
-    return 'Ultimo aggiornamento: $p0';
+    return 'Τελευταία ενημέρωση: $p0';
   }
 
   @override
   String get breveTuoiDatiRestano =>
-      'In breve: i tuoi dati restano sul telefono. L\'app non ha server, account né pubblicità e non vende né condivide i tuoi dati. Escono dal telefono solo nei casi descritti qui sotto, quasi tutti scelti da te.';
+      'Με λίγα λόγια: τα δεδομένα σου μένουν στο κινητό. Η εφαρμογή δεν έχει διακομιστή, λογαριασμό ή διαφημίσεις, και δεν πουλά ούτε μοιράζεται τα δεδομένα σου. Βγαίνουν από το κινητό μόνο στις περιπτώσεις που περιγράφονται παρακάτω, σχεδόν όλες επιλεγμένες από σένα.';
 
   @override
-  String get datiInserisciTu => 'Dati che inserisci tu';
+  String get datiInserisciTu => 'Δεδομένα που βάζεις εσύ';
 
   @override
   String get nomeDataNascitaSesso =>
-      'Nome, data di nascita, sesso, altezza, peso e misure, foto del profilo, obiettivo e gara, settimana tipo, attrezzatura, feedback dopo gli allenamenti (fatica, completata, dolore), ripetizioni e kg delle serie di forza, vie, blocchi, gradi e allenamenti dell\'arrampicata, vasche, tempi e altri dati delle sedute scritti a mano, schede scritte a mano e sessioni importate da file CSV. Servono a preparare il piano e a mostrare i progressi.';
+      'Όνομα, ημερομηνία γέννησης, φύλο, ύψος, βάρος και μετρήσεις, φωτογραφία προφίλ, στόχος και αγώνας, τυπική εβδομάδα, εξοπλισμός, αξιολογήσεις μετά τις προπονήσεις (κόπωση, ολοκλήρωση, πόνος), επαναλήψεις και kg των σετ δύναμης, διαδρομές αναρρίχησης, boulder, βαθμοί και προπονήσεις, μήκη, χρόνοι και άλλα δεδομένα προπονήσεων γραμμένα με το χέρι, προγράμματα γραμμένα με το χέρι και προπονήσεις που εισάγονται από αρχεία CSV. Χρησιμοποιούνται για να ετοιμαστεί το πρόγραμμα και να φαίνεται η πρόοδος.';
 
   @override
   String get datiLettiHealthConnect =>
-      'Dati letti da Health Connect (solo lettura)';
+      'Δεδομένα που διαβάζονται από το Health Connect (μόνο ανάγνωση)';
 
   @override
   String get tuoPermessoAppLegge =>
-      'Con il tuo permesso l\'app legge da Health Connect le sessioni di allenamento (tipo, titolo, inizio e fine) e, nel tempo di ogni sessione, frequenza cardiaca, distanza, calorie, passi e velocità. Legge anche FC a riposo, variabilità cardiaca (HRV) e sonno per valutare il recupero, e lo storico oltre i 30 giorni se lo concedi. Sono i dati scritti da Garmin Connect, Freeletics e dalle altre app collegate a Health Connect. L\'app non scrive, non modifica e non cancella nulla in Health Connect.';
+      'Με την άδειά σου η εφαρμογή διαβάζει από το Health Connect τις προπονήσεις (είδος, τίτλος, έναρξη και λήξη) και, μέσα στον χρόνο κάθε προπόνησης, καρδιακούς παλμούς, απόσταση, θερμίδες, βήματα και ταχύτητα. Διαβάζει επίσης τους παλμούς ηρεμίας, τη μεταβλητότητα καρδιακού ρυθμού (HRV) και τον ύπνο για να εκτιμήσει την αποκατάσταση, και το ιστορικό παλαιότερο από 30 μέρες αν το επιτρέψεις. Είναι τα δεδομένα που γράφουν το Garmin Connect, το Freeletics και οι άλλες εφαρμογές που είναι συνδεδεμένες με το Health Connect. Η εφαρμογή δεν γράφει, δεν αλλάζει και δεν διαγράφει τίποτα στο Health Connect.';
 
   @override
-  String get percorsiGpsDelleSessioni => 'Percorsi GPS delle sessioni';
+  String get percorsiGpsDelleSessioni => 'Διαδρομές GPS των προπονήσεων';
 
   @override
   String get seAppHaRegistrato =>
-      'Se l\'app che ha registrato una corsa o un\'uscita in bici ha salvato anche il percorso in Health Connect, Avidididadi lo legge solo con il tuo permesso: per la singola sessione (te lo chiede Health Connect) oppure per tutte, se scegli \"Consenti sempre\" nelle impostazioni di Health Connect. Puoi anche aggiungere tu un percorso caricando un file GPX (per esempio esportato da Garmin Connect). Una copia del percorso resta nell\'app per mostrare la mappa. I percorsi da seguire che aggiungi a \"I miei percorsi\" (file GPX di gare, giri, amici) restano solo sul telefono e nel backup; non vanno all\'assistente.';
+      'Αν η εφαρμογή που κατέγραψε ένα τρέξιμο ή μια διαδρομή με ποδήλατο αποθήκευσε και τη διαδρομή στο Health Connect, το Avidididadi τη διαβάζει μόνο με την άδειά σου: για τη μεμονωμένη προπόνηση (σε ρωτά το Health Connect) ή για όλες, αν διαλέξεις «Να επιτρέπεται πάντα» στις ρυθμίσεις του Health Connect. Μπορείς επίσης να προσθέσεις μόνος σου μια διαδρομή φορτώνοντας ένα αρχείο GPX (για παράδειγμα εξαγμένο από το Garmin Connect). Ένα αντίγραφο της διαδρομής μένει στην εφαρμογή για να φαίνεται ο χάρτης. Οι διαδρομές για να ακολουθήσεις που προσθέτεις στις «Οι διαδρομές μου» (αρχεία GPX αγώνων, διαδρομών, φίλων) μένουν μόνο στο κινητό και στο αντίγραφο ασφαλείας· δεν πηγαίνουν στον βοηθό.';
 
   @override
-  String get posizioneDuranteAllenamento => 'Posizione durante l\'allenamento';
+  String get posizioneDuranteAllenamento => 'Τοποθεσία κατά την προπόνηση';
 
   @override
   String get soloCorsaCamminataBici =>
-      'Solo per corsa, camminata e bici (e per un\'altra attività se scegli tu di registrare il percorso), e solo mentre la modalità allenamento è aperta, l\'app usa la posizione precisa (GPS e servizio di posizione di Google Play sul telefono) per registrare percorso, distanza e ritmo. Mentre registra mostra una notifica fissa e continua anche a schermo spento; quando chiudi l\'allenamento il GPS si spegne. L\'app non usa la posizione in nessun altro momento e non la raccoglie in background. Il percorso viene salvato solo sul telefono: non va in Health Connect, non va all\'assistente e non viene inviato a nessuno, a meno che sia tu ad accendere l\'invio a intervals.icu o a salvarlo in un file GPX. Mentre ti alleni, una copia della seduta in corso (percorso compreso) resta sul telefono per riprenderla se l\'app si chiude; si cancella quando finisci.';
+      'Μόνο για τρέξιμο, περπάτημα και ποδήλατο (και για άλλη δραστηριότητα αν διαλέξεις να καταγράψεις τη διαδρομή), και μόνο όσο είναι ανοιχτή η λειτουργία προπόνησης, η εφαρμογή χρησιμοποιεί την ακριβή τοποθεσία (GPS και την υπηρεσία τοποθεσίας Google Play στο κινητό) για να καταγράψει διαδρομή, απόσταση και ρυθμό. Κατά την καταγραφή δείχνει μόνιμη ειδοποίηση και συνεχίζει ακόμα και με σβηστή οθόνη· όταν κλείνεις την προπόνηση το GPS σβήνει. Η εφαρμογή δεν χρησιμοποιεί την τοποθεσία καμία άλλη στιγμή και δεν τη συλλέγει στο παρασκήνιο. Η διαδρομή αποθηκεύεται μόνο στο κινητό: δεν πηγαίνει στο Health Connect, δεν πηγαίνει στον βοηθό και δεν στέλνεται σε κανέναν, εκτός αν ενεργοποιήσεις την αποστολή στο intervals.icu ή την αποθηκεύσεις σε αρχείο GPX. Όσο προπονείσαι, ένα αντίγραφο της τρέχουσας προπόνησης (μαζί με τη διαδρομή) μένει στο κινητό για να μπορεί να συνεχιστεί αν κλείσει η εφαρμογή· διαγράφεται όταν τελειώσεις.';
 
   @override
   String get sensoriBluetoothBattitoBici =>
-      'Sensori Bluetooth (battito e bici)';
+      'Αισθητήρες Bluetooth (παλμοί και ποδήλατο)';
 
   @override
   String get soloSeScegliTu =>
-      'Solo se lo scegli tu, durante la modalità allenamento o dalla pagina \"I miei sensori\" del Profilo, l\'app si collega via Bluetooth a una fascia cardio, a un orologio che trasmette il battito o ai sensori della bici (rulli, potenza, velocità e cadenza), per mostrarteli mentre ti alleni. Chiusa quella pagina o finito l\'allenamento, si scollega. Alla fine della seduta salva nella sessione battito medio e massimo, potenza e cadenza medie e, per i grafici, un valore al secondo di battito, potenza, cadenza e velocità: tutto sul telefono. Nome e indirizzo Bluetooth dei sensori (e la circonferenza della ruota) restano sul telefono per ricollegarsi la volta dopo: li cancelli con \"Dimentica\". Il permesso \"Dispositivi nelle vicinanze\" serve solo a trovare il sensore, non a sapere dove sei.';
+      'Μόνο αν το διαλέξεις, κατά τη λειτουργία προπόνησης ή από τη σελίδα «Οι αισθητήρες μου» στο Προφίλ, η εφαρμογή συνδέεται μέσω Bluetooth σε ζώνη παλμών, σε ρολόι που μεταδίδει παλμούς ή σε αισθητήρες ποδηλάτου (προπονητήριο, ισχύς, ταχύτητα και ρυθμός πεταλιού), για να τα δείχνει όσο προπονείσαι. Όταν κλείνει εκείνη η σελίδα ή τελειώνει η προπόνηση, αποσυνδέεται. Στο τέλος της προπόνησης αποθηκεύει σε αυτήν τους μέσους και μέγιστους παλμούς, τη μέση ισχύ και τον μέσο ρυθμό πεταλιού και, για τα γραφήματα, μία τιμή ανά δευτερόλεπτο για παλμούς, ισχύ, ρυθμό πεταλιού και ταχύτητα: όλα στο κινητό. Το όνομα και η διεύθυνση Bluetooth των αισθητήρων (και η περίμετρος του τροχού) μένουν στο κινητό για να ξανασυνδεθούν την επόμενη φορά: τα διαγράφεις με το «Διαγραφή». Η άδεια «Συσκευές κοντά» χρησιμοποιείται μόνο για να βρεθεί ο αισθητήρας, όχι για να ξέρει η εφαρμογή πού είσαι.';
 
   @override
-  String get mappe => 'Mappe';
+  String get mappe => 'Χάρτες';
 
   @override
   String get disegnareMappaAppScarica =>
-      'Per disegnare la mappa l\'app scarica i riquadri della zona mostrata: da OpenFreeMap (tiles.openfreemap.org, dati © OpenStreetMap) per le mappe Pulse e Strade, e da Esri (server.arcgisonline.com) solo se scegli la vista Satellite. Come per qualsiasi sito, quei servizi ricevono l\'indirizzo IP del telefono e quali riquadri vengono chiesti, quindi possono capire quale zona stai guardando. Il percorso, i tempi e gli altri dati dell\'allenamento non vengono inviati: la linea viene disegnata sul telefono. Per i percorsi da seguire l\'app scarica in anticipo i riquadri della fascia attorno alla traccia, per vederli senza rete: OpenFreeMap riceve quei riquadri, e quindi la zona del percorso. Restano nella memoria dell\'app finché non togli la mappa o il percorso.';
+      'Για να σχεδιάσει τον χάρτη η εφαρμογή κατεβάζει τα πλακίδια της περιοχής που φαίνεται: από το OpenFreeMap (tiles.openfreemap.org, δεδομένα © OpenStreetMap) για τους χάρτες Pulse και Δρόμοι, και από την Esri (server.arcgisonline.com) μόνο αν διαλέξεις την προβολή Δορυφόρος. Όπως σε κάθε ιστότοπο, αυτές οι υπηρεσίες λαμβάνουν τη διεύθυνση IP του κινητού και ποια πλακίδια ζητούνται, οπότε μπορούν να καταλάβουν ποια περιοχή κοιτάς. Η διαδρομή, οι χρόνοι και τα άλλα δεδομένα της προπόνησης δεν στέλνονται: η γραμμή σχεδιάζεται στο κινητό. Για τις διαδρομές που ακολουθείς, η εφαρμογή κατεβάζει από πριν τα πλακίδια της λωρίδας γύρω από το ίχνος, για να τα βλέπεις χωρίς σύνδεση: το OpenFreeMap λαμβάνει αυτά τα πλακίδια, άρα και την περιοχή της διαδρομής. Μένουν στη μνήμη της εφαρμογής μέχρι να αφαιρέσεις τον χάρτη ή τη διαδρομή.';
 
   @override
-  String get intervalsIcuFacoltativo => 'intervals.icu (facoltativo)';
+  String get intervalsIcuFacoltativo => 'intervals.icu (προαιρετικό)';
 
   @override
   String get seColleghiIntervalsIcu =>
-      'Se colleghi intervals.icu con la tua chiave API, l\'app scarica da lì le tue attività di corsa, bici e nuoto (nome, orari, distanza, battito, velocità, altitudine, potenza, percorso GPS) e il tuo FTP di bici e corsa, per le zone di potenza. intervals.icu le riceve dal tuo orologio (Garmin, Polar, Suunto…) perché lo hai collegato tu, con le sue condizioni sulla privacy. La chiave resta cifrata sul telefono. Solo se accendi \"Manda piano e sedute a intervals.icu\", l\'app scrive nel tuo calendario di intervals.icu le sedute di corsa, bici e nuoto dei prossimi 14 giorni (data, sport, nome, durata, passi con zone di battito, potenza o passo): niente nome, foto, misure, feedback o forza. Spegnendolo, le sedute future mandate dall\'app vengono tolte. Con questo invio acceso, ogni sessione che registri con l\'app (forza compresa) va da sola sul tuo account appena finita; spento, solo se tocchi \"Invia a intervals.icu\" su quella sessione. Partono orario, sport, nome, durata, distanza, battito medio e massimo e, se c\'è, il percorso GPS. Allo stesso modo \"Salva GPX\" crea un file col percorso dove scegli tu. Le attività scaricate restano sul telefono ed entrano nel backup; scollegando, vengono tolte.';
+      'Αν συνδέσεις το intervals.icu με το κλειδί API σου, η εφαρμογή κατεβάζει από εκεί τις δραστηριότητες τρεξίματος, ποδηλάτου και κολύμβησης (όνομα, χρόνοι, απόσταση, παλμοί, ταχύτητα, υψόμετρο, ισχύς, διαδρομή GPS) και το FTP ποδηλάτου και τρεξίματος, για τις ζώνες ισχύος. Το intervals.icu τα λαμβάνει από το ρολόι σου (Garmin, Polar, Suunto…) επειδή το συνέδεσες, με τους δικούς του όρους απορρήτου. Το κλειδί μένει κρυπτογραφημένο στο κινητό. Μόνο αν ενεργοποιήσεις το «Στείλε πρόγραμμα και προπονήσεις στο intervals.icu» η εφαρμογή γράφει στο ημερολόγιό σου στο intervals.icu τις προπονήσεις τρεξίματος, ποδηλάτου και κολύμβησης των επόμενων 14 ημερών (ημερομηνία, άθλημα, όνομα, διάρκεια, βήματα με ζώνες παλμών, ισχύος ή ρυθμού): χωρίς όνομα, φωτογραφία, μετρήσεις, αξιολογήσεις ή δύναμη. Αν το απενεργοποιήσεις, αφαιρούνται οι μελλοντικές προπονήσεις που έστειλε η εφαρμογή. Με αυτή την αποστολή ενεργή, κάθε προπόνηση που καταγράφεις με την εφαρμογή (και η δύναμη) πηγαίνει μόνη της στον λογαριασμό σου μόλις τελειώσει· αν είναι κλειστή, μόνο αν πατήσεις «Αποστολή στο intervals.icu» σε εκείνη την προπόνηση. Τι στέλνεται: ώρα, άθλημα, όνομα, διάρκεια, απόσταση, μέσοι και μέγιστοι παλμοί και, αν υπάρχει, η διαδρομή GPS. Με τον ίδιο τρόπο το «Αποθήκευση GPX» δημιουργεί ένα αρχείο με τη διαδρομή όπου διαλέξεις. Οι δραστηριότητες που κατεβαίνουν μένουν στο κινητό και μπαίνουν στο αντίγραφο ασφαλείας· με την αποσύνδεση αφαιρούνται.';
 
   @override
-  String get immaginiDegliEsercizi => 'Immagini degli esercizi';
+  String get immaginiDegliEsercizi => 'Εικόνες των ασκήσεων';
 
   @override
   String get fotoDegliEserciziVengono =>
-      'Le foto degli esercizi vengono scaricate, quando servono, dalla raccolta pubblica free-exercise-db su GitHub. GitHub riceve l\'indirizzo IP del telefono e quale immagine viene chiesta, nient\'altro.';
+      'Οι φωτογραφίες των ασκήσεων κατεβαίνουν, όταν χρειάζονται, από τη δημόσια συλλογή free-exercise-db στο GitHub. Το GitHub λαμβάνει τη διεύθυνση IP του κινητού και ποια εικόνα ζητείται, τίποτα άλλο.';
 
   @override
-  String get assistenteFacoltativo2 => 'Assistente (facoltativo)';
+  String get assistenteFacoltativo2 => 'Βοηθός (προαιρετικό)';
 
   @override
   String get soloSeAttiviTu =>
-      'Solo se lo attivi tu, l\'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.';
+      'Μόνο αν τον ενεργοποιήσεις, ο βοηθός στέλνει μια περίληψη των προπονήσεών σου (προπονήσεις των τελευταίων 4 εβδομάδων, αξιολογήσεις, αποκατάσταση, ζώνες παλμών και FTP ποδηλάτου, πρόγραμμα των επόμενων 14 ημερών) στην υπηρεσία που διαλέγεις: Anthropic, OpenAI, Google ή Ollama στον υπολογιστή σου. Όνομα, φωτογραφία και διαδρομές GPS δεν στέλνονται ποτέ· ηλικία, φύλο και βάρος μόνο αν το επιτρέψεις. Πριν τον ενεργοποιήσεις μπορείς να δεις ακριβώς τι στέλνεται. Το κλειδί API μένει κρυπτογραφημένο στο κινητό. Για τις υπηρεσίες στο internet ισχύουν οι δικοί τους όροι απορρήτου και τυχόν κόστη της συνδρομής σου.';
 
   @override
-  String get assistenteNellaTuaApp => 'Assistente nella tua app (facoltativo)';
+  String get assistenteNellaTuaApp => 'Βοηθός στην εφαρμογή σου (προαιρετικό)';
 
   @override
   String get seColleghiAppTuo =>
-      'Se colleghi l\'app del tuo assistente (Claude, ChatGPT, Gemini o altre), Avidididadi prepara un messaggio con lo stesso riassunto descritto sopra e lo passa a quell\'app solo quando tocchi Condividi o Copia. Da quel momento i dati sono nella chat del servizio scelto e valgono le sue regole: con un abbonamento normale le chat possono servire ad addestrare il modello, secondo le impostazioni del tuo account. Le risposte che condividi o incolli nell\'app vengono lette solo se contengono il codice del tuo collegamento, e le modifiche al piano si applicano solo dopo la tua conferma. Finché non lo colleghi, Avidididadi non riceve testo da altre app; quando lo scolleghi, il codice smette di valere.';
+      'Αν συνδέσεις την εφαρμογή του βοηθού σου (Claude, ChatGPT, Gemini ή άλλες), το Avidididadi ετοιμάζει ένα μήνυμα με την ίδια περίληψη που περιγράφεται παραπάνω και το δίνει σε εκείνη την εφαρμογή μόνο όταν πατάς Κοινοποίηση ή Αντιγραφή. Από εκεί και πέρα τα δεδομένα είναι στη συνομιλία της υπηρεσίας που διάλεξες και ισχύουν οι κανόνες της: με κανονική συνδρομή οι συνομιλίες μπορεί να χρησιμοποιηθούν για την εκπαίδευση του μοντέλου, ανάλογα με τις ρυθμίσεις του λογαριασμού σου. Οι απαντήσεις που κοινοποιείς ή επικολλάς στην εφαρμογή διαβάζονται μόνο αν περιέχουν τον κωδικό της σύνδεσής σου, και οι αλλαγές στο πρόγραμμα εφαρμόζονται μόνο αφού επιβεβαιώσεις. Μέχρι να τη συνδέσεις, το Avidididadi δεν δέχεται κείμενο από άλλες εφαρμογές· όταν την αποσυνδέσεις, ο κωδικός παύει να ισχύει.';
 
   @override
-  String get widgetSullaSchermataHome => 'Widget sulla schermata home';
+  String get widgetSullaSchermataHome => 'Widget στην αρχική οθόνη';
 
   @override
   String get seAggiungiWidgetSeduta =>
-      'Se aggiungi il widget, la seduta di oggi e la settimana sono visibili sulla schermata home, quindi anche a chi vede il telefono sbloccato.';
+      'Αν προσθέσεις το widget, η σημερινή προπόνηση και η εβδομάδα φαίνονται στην αρχική οθόνη, άρα και σε όποιον βλέπει το κινητό ξεκλείδωτο.';
 
   @override
-  String get doveRestanoDati => 'Dove restano i dati';
+  String get doveRestanoDati => 'Πού μένουν τα δεδομένα';
 
   @override
   String get nellaCartellaPrivataDell =>
-      'Nella cartella privata dell\'app sul telefono, a cui le altre app non possono accedere. Non finiscono nel backup automatico di Android su Google né nel trasferimento a un nuovo telefono: per spostarli usa il backup dell\'app.';
+      'Στον ιδιωτικό φάκελο της εφαρμογής στο κινητό, στον οποίο οι άλλες εφαρμογές δεν έχουν πρόσβαση. Δεν μπαίνουν στο αυτόματο αντίγραφο ασφαλείας του Android στο Google ούτε στη μεταφορά σε νέο κινητό: για να τα μεταφέρεις χρησιμοποίησε το αντίγραφο ασφαλείας της εφαρμογής.';
 
   @override
   String get fileBackupCreiContiene =>
-      'Il file di backup che crei contiene tutti i dati dell\'app, compresi dati sulla salute, foto e percorsi GPS (non la chiave API). Lo salvi dove scegli tu: tienilo in un posto sicuro e non condividerlo. Se accendi il backup automatico, l\'app scrive lo stesso file da sola nella cartella che hai scelto e tiene gli ultimi 5; le altre app che leggono quella cartella possono vederlo.';
+      'Το αρχείο αντιγράφου ασφαλείας που δημιουργείς περιέχει όλα τα δεδομένα της εφαρμογής, μαζί με τα δεδομένα υγείας, τις φωτογραφίες και τις διαδρομές GPS (όχι το κλειδί API). Το αποθηκεύεις όπου διαλέξεις: κράτα το σε ασφαλές μέρος και μην το μοιράζεσαι. Αν ενεργοποιήσεις το αυτόματο αντίγραφο ασφαλείας, η εφαρμογή γράφει μόνη της το ίδιο αρχείο στον φάκελο που διάλεξες και κρατά τα 5 τελευταία· άλλες εφαρμογές που διαβάζουν εκείνον τον φάκελο μπορούν να το δουν.';
 
   @override
-  String get permessiTelefono => 'Permessi del telefono';
+  String get permessiTelefono => 'Άδειες του κινητού';
 
   @override
   String get healthConnectLetturaDei =>
-      'Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), internet (mappe, immagini, assistente), notifiche (solo quella dell\'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l\'app continua a funzionare senza la parte che ne ha bisogno.';
+      'Health Connect (ανάγνωση των δεδομένων που αναφέρονται παραπάνω), ακριβής τοποθεσία (μόνο κατά το τρέξιμο, το περπάτημα και το ποδήλατο), συσκευές κοντά (μόνο για τον αισθητήρα παλμών), internet (χάρτες, εικόνες, βοηθός), ειδοποιήσεις (μόνο αυτή της τρέχουσας προπόνησης, με χρόνο και δεδομένα, ορατή και στην οθόνη κλειδώματος). Μπορείς να αρνηθείς καθεμία από αυτές τις άδειες: η εφαρμογή συνεχίζει να λειτουργεί χωρίς το μέρος που τη χρειάζεται.';
 
   @override
-  String get comeRevocareOCancellare => 'Come revocare o cancellare';
+  String get comeRevocareOCancellare => 'Πώς να ανακαλέσεις ή να διαγράψεις';
 
   @override
   String get healthConnectImpostazioniHealth =>
-      'Health Connect: Impostazioni di Health Connect → Permessi delle app → Avidididadi, oppure dal Profilo con \"Rivedi permessi\". Posizione e dispositivi nelle vicinanze: Impostazioni di Android → App → Avidididadi → Permessi. Sensore del battito: \"Dimentica\" nel foglio del battito, durante l\'allenamento. Assistente: disattivalo e cancella la chiave nella pagina Coach. Per cancellare tutto: Impostazioni di Android → App → Avidididadi → Memoria → Cancella dati, oppure disinstalla l\'app. I dati in Health Connect restano lì, perché sono delle app che li hanno scritti.';
+      'Health Connect: ρυθμίσεις του Health Connect → Άδειες εφαρμογών → Avidididadi, ή από το Προφίλ με το «Έλεγχος αδειών». Τοποθεσία και συσκευές κοντά: ρυθμίσεις Android → Εφαρμογές → Avidididadi → Άδειες. Αισθητήρας παλμών: «Διαγραφή» στο φύλλο των παλμών, κατά την προπόνηση. Βοηθός: απενεργοποίησέ τον και διάγραψε το κλειδί στη σελίδα Προπονητής. Για να διαγράψεις τα πάντα: ρυθμίσεις Android → Εφαρμογές → Avidididadi → Αποθηκευτικός χώρος → Διαγραφή δεδομένων, ή απεγκατάστησε την εφαρμογή. Τα δεδομένα στο Health Connect μένουν εκεί, γιατί ανήκουν στις εφαρμογές που τα έγραψαν.';
 
   @override
-  String get modifiche => 'Modifiche';
+  String get modifiche => 'Αλλαγές';
 
   @override
   String get seQuestaInformativaCambia =>
-      'Se questa informativa cambia, all\'apertura l\'app te lo dice e ti chiede di accettarla di nuovo.';
+      'Αν αλλάξει αυτή η πολιτική, η εφαρμογή σου το λέει όταν την ανοίγεις και σου ζητά να την αποδεχτείς ξανά.';
 
   @override
-  String get cosAvidididadi => 'Cos\'è Avidididadi';
+  String get cosAvidididadi => 'Τι είναι το Avidididadi';
 
   @override
   String get appPersonalePianificareSeguire =>
-      'Un\'app personale per pianificare e seguire allenamenti di forza, corsa, nuoto, bici e mobilità, e per vedere storico e progressi. Usandola accetti questi termini e l\'informativa sulla privacy.';
+      'Μια προσωπική εφαρμογή για να σχεδιάζεις και να ακολουθείς προπονήσεις δύναμης, τρεξίματος, κολύμβησης, ποδηλάτου και κινητικότητας, και να βλέπεις ιστορικό και πρόοδο. Χρησιμοποιώντας την αποδέχεσαι αυτούς τους όρους και την πολιτική απορρήτου.';
 
   @override
   String get pianiCarichiZoneFrequenza =>
-      'Piani, carichi, zone di frequenza cardiaca, valutazione del recupero e risposte dell\'assistente sono stime automatiche a scopo informativo. Non sono una diagnosi né un parere medico e non sostituiscono medico, fisioterapista o allenatore. Prima di iniziare un programma di allenamento, soprattutto se hai problemi di salute, sei in gravidanza o non ti alleni da tempo, chiedi a un medico. Se senti dolore, vertigini, fiato corto anomalo o dolore al petto, fermati e cerca assistenza.';
+      'Προγράμματα, φορτία, ζώνες παλμών, εκτίμηση αποκατάστασης και οι απαντήσεις του βοηθού είναι αυτόματες εκτιμήσεις μόνο για ενημέρωση. Δεν είναι διάγνωση ή ιατρική συμβουλή και δεν αντικαθιστούν γιατρό, φυσικοθεραπευτή ή προπονητή. Πριν ξεκινήσεις ένα πρόγραμμα προπόνησης, ειδικά αν έχεις προβλήματα υγείας, είσαι έγκυος ή δεν έχεις προπονηθεί εδώ και καιρό, ρώτα έναν γιατρό. Αν νιώσεις πόνο, ζαλάδα, ασυνήθιστη δύσπνοια ή πόνο στο στήθος, σταμάτα και ζήτα βοήθεια.';
 
   @override
-  String get allenatiSicurezza => 'Allenati in sicurezza';
+  String get allenatiSicurezza => 'Προπονήσου με ασφάλεια';
 
   @override
   String get tiAlleniSottoTua =>
-      'Ti alleni sotto la tua responsabilità: scegli carichi e ritmi adatti a te, usa attrezzatura in buono stato e rispetta il codice della strada. Durante corsa, camminata e bici non guardare il telefono mentre ti muovi nel traffico.';
+      'Προπονείσαι με δική σου ευθύνη: διάλεξε φορτία και ρυθμούς που σου ταιριάζουν, χρησιμοποίησε εξοπλισμό σε καλή κατάσταση και τήρησε τον κώδικα οδικής κυκλοφορίας. Όταν τρέχεις, περπατάς ή κάνεις ποδήλατο μην κοιτάς το κινητό ενώ κινείσαι μέσα στην κίνηση.';
 
   @override
-  String get precisioneDeiDati => 'Precisione dei dati';
+  String get precisioneDeiDati => 'Ακρίβεια των δεδομένων';
 
   @override
   String get gpsDistanzeRitmoPassi =>
-      'GPS, distanze, ritmo, passi e i dati letti da Health Connect possono contenere errori (per esempio tra palazzi alti o sotto gli alberi). Calcoli e grafici dipendono da questi dati e dalla loro completezza.';
+      'Το GPS, οι αποστάσεις, ο ρυθμός, τα βήματα και τα δεδομένα από το Health Connect μπορεί να έχουν λάθη (για παράδειγμα ανάμεσα σε ψηλά κτίρια ή κάτω από δέντρα). Οι υπολογισμοί και τα γραφήματα εξαρτώνται από αυτά τα δεδομένα και από το πόσο πλήρη είναι.';
 
   @override
-  String get serviziTerzi => 'Servizi di terzi';
+  String get serviziTerzi => 'Υπηρεσίες τρίτων';
 
   @override
   String get alcuneFunzioniUsanoServizi =>
-      'Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.';
+      'Κάποιες λειτουργίες χρησιμοποιούν υπηρεσίες άλλων: το Health Connect και τις εφαρμογές που γράφουν σε αυτό (π.χ. Garmin Connect), το OpenFreeMap και το OpenStreetMap για τους χάρτες, το GitHub για τις εικόνες των ασκήσεων και, αν το ενεργοποιήσεις, την υπηρεσία τεχνητής νοημοσύνης που διαλέγεις. Αυτές οι υπηρεσίες έχουν τους δικούς τους όρους και μπορεί να αλλάξουν ή να μην είναι διαθέσιμες. Το κλειδί API και τα κόστη της υπηρεσίας τεχνητής νοημοσύνης είναι δική σου ευθύνη.';
 
   @override
-  String get tuoiDati => 'I tuoi dati';
+  String get tuoiDati => 'Τα δεδομένα σου';
 
   @override
   String get datiRestanoSulTuo =>
-      'I dati restano sul tuo telefono e ne sei responsabile tu: fai backup periodici e conserva il file in un posto sicuro. Disinstallando l\'app senza backup i dati vanno persi.';
+      'Τα δεδομένα μένουν στο κινητό σου και είσαι υπεύθυνος γι\' αυτά: κάνε τακτικά αντίγραφα ασφαλείας και κράτα το αρχείο σε ασφαλές μέρος. Αν απεγκαταστήσεις την εφαρμογή χωρίς αντίγραφο ασφαλείας, τα δεδομένα χάνονται.';
 
   @override
-  String get nessunaGaranzia => 'Nessuna garanzia';
+  String get nessunaGaranzia => 'Χωρίς εγγύηση';
 
   @override
   String get appFornitaCosiCom =>
-      'L\'app è fornita così com\'è, senza garanzie di funzionamento continuo o privo di errori. Nei limiti consentiti dalla legge, chi l\'ha sviluppata non risponde di danni derivanti dall\'uso dell\'app, da dati non corretti o dalla perdita di dati.';
+      'Η εφαρμογή παρέχεται ως έχει, χωρίς εγγύηση ότι θα λειτουργεί συνεχώς ή χωρίς λάθη. Στον βαθμό που επιτρέπει ο νόμος, ο δημιουργός της δεν ευθύνεται για ζημιές από τη χρήση της εφαρμογής, από λανθασμένα δεδομένα ή από απώλεια δεδομένων.';
 
   @override
   String get questiTerminiPossonoEssere =>
-      'Questi termini possono essere aggiornati. Se cambiano, all\'apertura l\'app te lo dice e ti chiede di accettarli di nuovo prima di continuare.';
+      'Αυτοί οι όροι μπορεί να ενημερωθούν. Αν αλλάξουν, η εφαρμογή σου το λέει όταν την ανοίγεις και σου ζητά να τους αποδεχτείς ξανά πριν συνεχίσεις.';
 
   @override
   String impossibileCaricareFoto(Object p0) {
-    return 'Impossibile caricare la foto: $p0';
+    return 'Δεν φορτώνεται η φωτογραφία: $p0';
   }
 
   @override
-  String get scegliDallaGalleria => 'Scegli dalla galleria';
+  String get scegliDallaGalleria => 'Επιλογή από τη συλλογή';
 
   @override
-  String get scattaFoto => 'Scatta una foto';
+  String get scattaFoto => 'Λήψη φωτογραφίας';
 
   @override
-  String get rimuoviFoto => 'Rimuovi foto';
+  String get rimuoviFoto => 'Αφαίρεση φωτογραφίας';
 
   @override
   String get siRegistraDataOggi =>
-      'Si registra con la data di oggi. Lascia vuoto per cancellare.';
+      'Καταγράφεται με τη σημερινή ημερομηνία. Άφησέ το κενό για διαγραφή.';
 
   @override
   String anni(Object p0, Object p1) {
-    return '$p0 ($p1 anni)';
+    return '$p0 ($p1 ετών)';
   }
 
   @override
-  String get tuoProfilo => 'Il tuo profilo';
+  String get tuoProfilo => 'Το προφίλ σου';
 
   @override
-  String get inserisciTuoiDati => 'Inserisci i tuoi dati';
+  String get inserisciTuoiDati => 'Βάλε τα στοιχεία σου';
 
   @override
-  String get modificaTuoiDati => 'Modifica i tuoi dati';
+  String get modificaTuoiDati => 'Επεξεργασία στοιχείων';
 
   @override
-  String get mioAllenamento => 'Il mio allenamento';
+  String get mioAllenamento => 'Η προπόνησή μου';
 
   @override
-  String get mioObiettivo => 'Il mio obiettivo';
+  String get mioObiettivo => 'Ο στόχος μου';
 
   @override
   String get nessunaGaraTiAlleni =>
-      'Nessuna gara: ti alleni per stare in forma';
+      'Χωρίς αγώνα: προπονείσαι για να είσαι σε φόρμα';
 
   @override
   String get scegliSportAppScrive =>
-      'Scegli gli sport: l\'app scrive gli allenamenti passo passo';
+      'Διάλεξε τα αθλήματα: η εφαρμογή γράφει προπονήσεις βήμα βήμα';
 
   @override
   String forza(Object p0) {
-    return 'Forza: $p0';
+    return 'Δύναμη: $p0';
   }
 
   @override
-  String get mieSchede => 'Le mie schede';
+  String get mieSchede => 'Τα προγράμματά μου';
 
   @override
   String get schedePersonalTrainerO =>
-      'Le schede del personal trainer o dell\'allenatore';
+      'Προγράμματα από τον personal trainer ή τον προπονητή σου';
 
   @override
   String corso(Object p0) {
-    return 'In corso: $p0';
+    return 'Σε εξέλιξη: $p0';
   }
 
   @override
   String get comeSiFannoImmagini =>
-      'Come si fanno, con immagini e muscoli usati';
+      'Πώς γίνονται, με εικόνες και τους μύες που δουλεύουν';
 
   @override
-  String get mieZone => 'Le mie zone';
+  String get mieZone => 'Οι ζώνες μου';
 
   @override
   String get quantoSpingereBattitiAl =>
-      'Quanto spingere: battiti al minuto e watt in bici';
+      'Πόσο να πιέσεις: παλμοί το λεπτό και watt στο ποδήλατο';
 
   @override
-  String get mioCorpo => 'Il mio corpo';
+  String get mioCorpo => 'Το σώμα μου';
 
   @override
   String get toccaMisuraInserirlaVedrai =>
-      'Tocca una misura per inserirla: vedrai come cambi nel tempo.';
+      'Πάτα μια μέτρηση για να τη βάλεις: θα βλέπεις πώς αλλάζεις με τον καιρό.';
 
   @override
   String ultimoAggiornamentoToccaMisura(Object p0) {
-    return 'Ultimo aggiornamento: $p0. Tocca una misura per aggiornarla.';
+    return 'Τελευταία ενημέρωση: $p0. Πάτα μια μέτρηση για να την ενημερώσεις.';
   }
 
   @override
-  String get impostazioniAiuto => 'Impostazioni e aiuto';
+  String get impostazioniAiuto => 'Ρυθμίσεις και βοήθεια';
 
   @override
-  String get temaScuro => 'Tema scuro';
+  String get temaScuro => 'Σκούρο θέμα';
 
   @override
-  String get fondoGrafiteOppureBianco => 'Fondo grafite oppure bianco';
+  String get fondoGrafiteOppureBianco => 'Φόντο γραφίτη ή λευκό';
 
   @override
-  String get versioneNeon => 'Versione neon';
+  String get versioneNeon => 'Έκδοση νέον';
 
   @override
   String get rosaVerdeAcquaAzzurro =>
-      'Rosa, verde acqua e azzurro al posto del rosso';
+      'Ροζ, τιρκουάζ και γαλάζιο αντί για κόκκινο';
 
   @override
-  String get mieiSensori => 'I miei sensori';
+  String get mieiSensori => 'Οι αισθητήρες μου';
 
   @override
   String get fasciaCardioRulloSensori =>
-      'Fascia cardio, rullo e sensori della bici';
+      'Ζώνη παλμών, προπονητήριο και αισθητήρες ποδηλάτου';
 
   @override
-  String get funzioniAvanzate => 'Funzioni avanzate';
+  String get funzioniAvanzate => 'Προχωρημένες λειτουργίες';
 
   @override
   String get zoneWattSensoriBluetooth =>
-      'Zone, watt, sensori Bluetooth, rullo e intervals.icu';
+      'Ζώνες, watt, αισθητήρες Bluetooth, προπονητήριο και intervals.icu';
 
   @override
   String get voceBipPausaAutomatica =>
-      'Voce, bip, pausa automatica e passo medio';
+      'Φωνή, ήχοι, αυτόματη παύση και μέσος ρυθμός';
 
   @override
   String get tuoiAllenamentiCrealiFalli =>
-      'I tuoi allenamenti: creali, falli o mettili nel piano';
+      'Οι προπονήσεις σου: δημιούργησέ τες, κάν\' τες ή πρόσθεσέ τες στο πρόγραμμα';
 
   @override
   String get gpxSeguireMappaIndicazioni =>
-      'GPX da seguire con mappa e indicazioni a voce';
+      'GPX για να ακολουθείς με χάρτη και φωνητικές οδηγίες';
 
   @override
-  String get orologioAppBackupDei => 'Orologio e app, backup dei dati';
+  String get orologioAppBackupDei =>
+      'Ρολόι και εφαρμογές, αντίγραφο ασφαλείας δεδομένων';
 
   @override
-  String get giroGuidatoDellApp => 'Giro guidato dell\'app';
+  String get giroGuidatoDellApp => 'Ξενάγηση στην εφαρμογή';
 
   @override
-  String get n10FunzioniPrincipaliAlla =>
-      'Le 10 funzioni principali, una alla volta';
+  String get n10FunzioniPrincipaliAlla => 'Οι 10 βασικές λειτουργίες, μία μία';
 
   @override
   String get zoneCaricoFartlekSpiegati =>
-      'Zone, carico, fartlek… spiegati semplici';
+      'Ζώνες, φορτίο, fartlek… με απλά λόγια';
 
   @override
-  String get configurazioneGuidata => 'Configurazione guidata';
+  String get configurazioneGuidata => 'Καθοδηγούμενη ρύθμιση';
 
   @override
   String get rifaiPianoRispondendoPoche =>
-      'Rifai il piano rispondendo a poche domande';
+      'Ξαναφτιάξε το πρόγραμμα απαντώντας σε λίγες ερωτήσεις';
 
   @override
-  String get rifareConfigurazione => 'Rifare la configurazione?';
+  String get rifareConfigurazione => 'Νέα ρύθμιση;';
 
   @override
   String get settimanaTipoPianoOggi =>
-      'Settimana tipo e piano da oggi in poi verranno sostituiti. Gli allenamenti già fatti e le misure restano.';
+      'Η τυπική εβδομάδα και το πρόγραμμα από σήμερα και μετά θα αντικατασταθούν. Οι προπονήσεις που έγιναν και οι μετρήσεις μένουν.';
 
   @override
-  String get inserisciNumeroValido => 'Inserisci un numero valido';
+  String get inserisciNumeroValido => 'Βάλε έναν έγκυρο αριθμό';
 
   @override
-  String get diagrammaDellAllenamento => 'Diagramma dell\'allenamento';
+  String get diagrammaDellAllenamento => 'Διάγραμμα της προπόνησης';
 
   @override
   String get wattPrevistiTenutiTutta =>
-      'Watt previsti e tenuti in tutta la seduta';
+      'Προγραμματισμένα και πραγματικά watt σε όλη την προπόνηση';
 
   @override
-  String get n1Mese => '1 mese';
+  String get n1Mese => '1 μήνας';
 
   @override
-  String get n3Mesi => '3 mesi';
+  String get n3Mesi => '3 μήνες';
 
   @override
-  String get n6Mesi => '6 mesi';
+  String get n6Mesi => '6 μήνες';
 
   @override
-  String get n1Anno => '1 anno';
+  String get n1Anno => '1 έτος';
 
   @override
   String get quiVedraiComeVanno =>
-      'Qui vedrai come vanno i tuoi allenamenti. Collega l\'orologio o le app di allenamento dal Profilo (Dati e collegamenti), oppure segna le sedute fatte.';
+      'Εδώ θα βλέπεις πώς πάνε οι προπονήσεις σου. Σύνδεσε το ρολόι ή τις εφαρμογές προπόνησης από το Προφίλ (Δεδομένα και συνδέσεις), ή κατέγραψε τις προπονήσεις που έκανες.';
 
   @override
-  String get quantoTiAlleni => 'Quanto ti alleni';
+  String get quantoTiAlleni => 'Πόσο προπονείσαι';
 
   @override
-  String get alMese => 'al mese';
+  String get alMese => 'τον μήνα';
 
   @override
-  String get settimana3 => 'a settimana';
+  String get settimana3 => 'την εβδομάδα';
 
   @override
   String fatica2(Object p0) {
-    return 'Fatica $p0';
+    return 'Κόπωση $p0';
   }
 
   @override
   String ore(Object p0) {
-    return 'Ore $p0';
+    return 'Ώρες $p0';
   }
 
   @override
   String get durataFaticaContaAnche =>
-      'Durata per fatica: conta anche quanto è stata dura.';
+      'Διάρκεια επί κόπωση: μετράει και πόσο δύσκολο ήταν.';
 
   @override
   String get nessunAllenamentoQuestoPeriodo =>
-      'Nessun allenamento in questo periodo.';
+      'Καμία προπόνηση σε αυτή την περίοδο.';
 
   @override
-  String get toccaColonnaDettagli => 'Tocca una colonna per i dettagli.';
+  String get toccaColonnaDettagli => 'Πάτα μια στήλη για λεπτομέρειες.';
 
   @override
-  String get tuoiSport => 'I tuoi sport';
+  String get tuoiSport => 'Τα αθλήματά σου';
 
   @override
   String get toccaUnoSportVedere =>
-      'Tocca uno sport per vedere tutto il dettaglio.';
+      'Πάτα ένα άθλημα για να δεις όλες τις λεπτομέρειες.';
 
   @override
-  String get staiRallentando => 'Stai rallentando';
+  String get staiRallentando => 'Επιβραδύνεις';
 
   @override
-  String get staiAndandoBene => 'Stai andando bene';
+  String get staiAndandoBene => 'Πας καλά';
 
   @override
-  String get staiAccelerando => 'Stai accelerando';
+  String get staiAccelerando => 'Επιταχύνεις';
 
   @override
-  String get troppoTroppoFretta => 'Troppo, troppo in fretta';
+  String get troppoTroppoFretta => 'Πολλά, πολύ γρήγορα';
 
   @override
   String get tiAlleniMenoDelle =>
-      'Ti alleni meno delle settimane scorse. Va bene se è voluto (riposo, impegni); altrimenti riprendi con calma.';
+      'Προπονείσαι λιγότερο από τις προηγούμενες εβδομάδες. Είναι εντάξει αν είναι σκόπιμο (ξεκούραση, υποχρεώσεις)· αλλιώς ξαναξεκίνα σιγά σιγά.';
 
   @override
   String get aumentiPocoAllaVolta =>
-      'Aumenti poco alla volta, come si deve: così migliori senza farti male.';
+      'Αυξάνεις λίγο λίγο, όπως πρέπει: έτσι βελτιώνεσαι χωρίς να τραυματιστείς.';
 
   @override
   String get staiFacendoParecchioPiu =>
-      'Stai facendo parecchio più del solito. Ascolta le sensazioni e non aggiungere altro questa settimana.';
+      'Κάνεις αρκετά περισσότερα από ό,τι συνήθως. Άκου πώς νιώθεις και μην προσθέσεις τίποτα άλλο αυτή την εβδομάδα.';
 
   @override
   String get haiAumentatoMoltoPoco =>
-      'Hai aumentato molto in poco tempo: è così che arrivano gli infortuni. Fai qualche giorno più leggero.';
+      'Αύξησες πολύ σε λίγο χρόνο: έτσι γίνονται οι τραυματισμοί. Κάνε λίγες πιο ελαφριές μέρες.';
 
   @override
-  String get buono => 'Buono';
+  String get buono => 'Καλό';
 
   @override
-  String get basso => 'Basso';
+  String get basso => 'Χαμηλό';
 
   @override
-  String get tiStoConoscendo => 'Ti sto conoscendo';
+  String get tiStoConoscendo => 'Σε γνωρίζω ακόμα';
 
   @override
   String get dopo3SettimaneAllenamenti =>
-      'Dopo 3 settimane di allenamenti ti dirò se stai aumentando nel modo giusto.';
+      'Μετά από 3 εβδομάδες προπονήσεων θα σου πω αν αυξάνεις με τον σωστό τρόπο.';
 
   @override
-  String get comeCalcolo => 'Come lo calcolo';
+  String get comeCalcolo => 'Πώς το υπολογίζω';
 
   @override
   String rispettoAllaMediaDelle(Object p0) {
-    return 'Rispetto alla media delle ultime 4 settimane: $p0 (bene tra 0,8 e 1,3).';
+    return 'Σε σχέση με τον μέσο όρο των τελευταίων 4 εβδομάδων: $p0 (καλό από 0,8 έως 1,3).';
   }
 
   @override
   String ultimi7GiorniPunti(Object p0, Object p1) {
-    return 'Ultimi 7 giorni: $p0 punti (minuti × fatica). $p1';
+    return 'Τελευταίες 7 μέρες: $p0 πόντοι (λεπτά × κόπωση). $p1';
   }
 
   @override
-  String get settScorsa => 'sett. scorsa';
+  String get settScorsa => 'προηγ. εβδ.';
 
   @override
   String saltati(Object p0) {
-    return 'Saltati: $p0';
+    return 'Παραλείφθηκαν: $p0';
   }
 
   @override
-  String get comAndata2 => 'Com\'è andata';
+  String get comAndata2 => 'Πώς πήγε';
 
   @override
   String get tuoiWattTuttaSeduta =>
-      'I tuoi watt in tutta la seduta (media ogni 10 secondi).';
+      'Τα watt σου σε όλη την προπόνηση (μέσος όρος ανά 10 δευτερόλεπτα).';
 
   @override
   String get barreColorateSonoProgramma =>
-      'Le barre colorate sono il programma: i watt da tenere blocco per blocco. La linea sono i watt che hai tenuto (media ogni 10 secondi); quella tratteggiata è la tua FTP.';
+      'Οι χρωματιστές μπάρες είναι το πρόγραμμα: τα watt που πρέπει να κρατήσεις τμήμα προς τμήμα. Η γραμμή είναι τα watt που κράτησες (μέσος όρος ανά 10 δευτερόλεπτα)· η διακεκομμένη είναι το FTP σου.';
 
   @override
   String get barreColorateSonoWatt =>
-      'Le barre colorate sono i watt medi di ogni blocco. La linea sono i watt che hai tenuto (media ogni 10 secondi); quella tratteggiata è la tua FTP.';
+      'Οι χρωματιστές μπάρες είναι τα μέσα watt κάθε τμήματος. Η γραμμή είναι τα watt που κράτησες (μέσος όρος ανά 10 δευτερόλεπτα)· η διακεκομμένη είναι το FTP σου.';
 
   @override
   String get barraBloccoLargaQuanto =>
-      'Una barra per blocco, larga quanto è durato: alta e colorata secondo i watt da tenere; il trattino sono i watt medi che hai tenuto. La linea è la tua FTP.';
+      'Μία μπάρα ανά τμήμα, τόσο φαρδιά όσο κράτησε: ύψος και χρώμα από τα watt που πρέπει να κρατήσεις· η παύλα είναι τα μέσα watt που κράτησες. Η γραμμή είναι το FTP σου.';
 
   @override
   String get barraBloccoLargaQuanto2 =>
-      'Una barra per blocco: larga quanto è durato, alta e colorata secondo i watt medi. La linea è la tua FTP.';
+      'Μία μπάρα ανά τμήμα: τόσο φαρδιά όσο κράτησε, ύψος και χρώμα από τα μέσα watt. Η γραμμή είναι το FTP σου.';
 
   @override
-  String get allenamentoNuovo => 'Allenamento nuovo';
+  String get allenamentoNuovo => 'Νέα προπόνηση';
 
   @override
   String allenamentiNuovi(Object p0) {
-    return '$p0 allenamenti nuovi';
+    return '$p0 νέες προπονήσεις';
   }
 
   @override
   String min4(Object p0) {
-    return ' · $p0 min';
+    return ' · $p0 λεπ.';
   }
 
   @override
   String prendePostoSedutaQuel(Object p0) {
-    return 'Prende il posto della seduta di $p0 di quel giorno.';
+    return 'Παίρνει τη θέση της προπόνησης $p0 εκείνης της μέρας.';
   }
 
   @override
-  String get unoGiornoPassatoNon => 'Uno è in un giorno passato: non si mette.';
+  String get unoGiornoPassatoNon =>
+      'Μία είναι σε μέρα που πέρασε: δεν προστίθεται.';
 
   @override
   String sonoGiorniPassatiNon(Object p0) {
-    return '$p0 sono in giorni passati: non si mettono.';
+    return '$p0 είναι σε μέρες που πέρασαν: δεν προστίθενται.';
   }
 
   @override
-  String get messoNelCalendario => 'Messo nel calendario.';
+  String get messoNelCalendario => 'Μπήκε στο ημερολόγιο.';
 
   @override
   String get nienteMettereDateSono =>
-      'Niente da mettere: le date sono passate.';
+      'Τίποτα για προσθήκη: οι ημερομηνίες πέρασαν.';
 
   @override
   String get allenamentoMessoNelCalendario =>
-      'Allenamento messo nel calendario.';
+      'Η προπόνηση μπήκε στο ημερολόγιο.';
 
   @override
   String allenamentiMessiNelCalendario(Object p0) {
-    return '$p0 allenamenti messi nel calendario.';
+    return '$p0 προπονήσεις μπήκαν στο ημερολόγιο.';
   }
 
   @override
   String pianoNuovo(Object p0) {
-    return 'Piano nuovo da $p0';
+    return 'Νέο πρόγραμμα από $p0';
   }
 
   @override
   String get applicatoTroviNelCalendario =>
-      'Applicato: lo trovi nel calendario.';
+      'Εφαρμόστηκε: θα το βρεις στο ημερολόγιο.';
 
   @override
   String seduteSettimaneSostituisceCalendario(Object p0, Object p1) {
-    return '$p0 sedute in $p1 settimane. Sostituisce il calendario da quel giorno in poi.';
+    return '$p0 προπονήσεις σε $p1 εβδομάδες. Αντικαθιστά το ημερολόγιο από εκείνη τη μέρα και μετά.';
   }
 
   @override
   String settimana5(Object p0, Object p1, Object p2) {
-    return 'Settimana del $p0/$p1: $p2';
+    return 'Εβδομάδα $p0/$p1: $p2';
   }
 
   @override
-  String get altreSettimane => '…e le altre settimane.';
+  String get altreSettimane => '…και οι άλλες εβδομάδες.';
 
   @override
-  String get nonApplicabile => 'Non applicabile';
+  String get nonApplicabile => 'Δεν μπορεί να εφαρμοστεί';
 
   @override
-  String get scriviAlCoachCorreggerlo => 'Scrivi al coach di correggerlo.';
+  String get scriviAlCoachCorreggerlo =>
+      'Ζήτα από τον προπονητή να το διορθώσει.';
 
   @override
   String copiatoIncollaloCorreggere(Object p0) {
-    return 'Copiato: incollalo in $p0 per correggere.';
+    return 'Αντιγράφηκε: επικόλλησέ το στο $p0 για να το διορθώσει.';
   }
 
   @override
   String copiaProblemi(Object p0) {
-    return 'Copia i problemi per $p0';
+    return 'Αντιγραφή των προβλημάτων για το $p0';
   }
 
   @override
   String get pianoNonPiuApplicabile =>
-      'Il piano non è più applicabile: riprova.';
+      'Το πρόγραμμα δεν μπορεί πια να εφαρμοστεί: δοκίμασε ξανά.';
 
   @override
   String pianoApplicatoSeduteNel(Object p0) {
-    return 'Piano applicato: $p0 sedute nel calendario.';
+    return 'Το πρόγραμμα εφαρμόστηκε: $p0 προπονήσεις στο ημερολόγιο.';
   }
 
   @override
-  String get applicaPiano => 'Applica il piano';
+  String get applicaPiano => 'Εφαρμογή προγράμματος';
 
   @override
-  String get allenamentoArrampicata => 'Allenamento di arrampicata';
+  String get allenamentoArrampicata => 'Προπόνηση αναρρίχησης';
 
   @override
   String allenamentiArrampicata2(Object p0) {
-    return '$p0 allenamenti di arrampicata';
+    return '$p0 προπονήσεις αναρρίχησης';
   }
 
   @override
-  String get nellaRaccolta => 'nella raccolta';
+  String get nellaRaccolta => 'στη συλλογή';
 
   @override
   String nelCalendario2(Object p0) {
-    return 'nel calendario $p0';
+    return 'στο ημερολόγιο $p0';
   }
 
   @override
   String get datePassateNonVanno =>
-      'Le date passate non vanno nel calendario, ma l\'allenamento si salva lo stesso.';
+      'Οι ημερομηνίες που πέρασαν δεν μπαίνουν στο ημερολόγιο, αλλά η προπόνηση αποθηκεύεται έτσι κι αλλιώς.';
 
   @override
-  String get salvato => 'Salvato.';
+  String get salvato => 'Αποθηκεύτηκε.';
 
   @override
   String get salvatoNegliAllenamentiArrampicata =>
-      'Salvato negli allenamenti di arrampicata.';
+      'Αποθηκεύτηκε στις προπονήσεις αναρρίχησης.';
 
   @override
   String salvatiNegliAllenamentiArrampicata(Object p0) {
-    return '$p0 salvati negli allenamenti di arrampicata.';
+    return '$p0 αποθηκεύτηκαν στις προπονήσεις αναρρίχησης.';
   }
 
   @override
-  String get unoNelCalendario => 'Uno è nel calendario.';
+  String get unoNelCalendario => 'Μία είναι στο ημερολόγιο.';
 
   @override
   String sonoNelCalendario(Object p0) {
-    return '$p0 sono nel calendario.';
+    return '$p0 είναι στο ημερολόγιο.';
   }
 
   @override
-  String get salvaMettiNelCalendario => 'Salva e metti nel calendario';
+  String get salvaMettiNelCalendario =>
+      'Αποθήκευση και προσθήκη στο ημερολόγιο';
 
   @override
-  String get eserciziSerieRipetizioniKg => 'Esercizi, serie, ripetizioni e kg';
+  String get eserciziSerieRipetizioniKg => 'Ασκήσεις, σετ, επαναλήψεις και kg';
 
   @override
   String get passiTempoODistanza =>
-      'Passi a tempo o distanza, con zona o passo';
+      'Βήματα με χρόνο ή απόσταση, με ζώνη ή ρυθμό';
 
   @override
-  String get passiTempoODistanza2 => 'Passi a tempo o distanza, con zona';
+  String get passiTempoODistanza2 => 'Βήματα με χρόνο ή απόσταση, με ζώνη';
 
   @override
-  String get vaschePasso100M => 'Vasche, passo per 100 m e pause';
+  String get vaschePasso100M => 'Μήκη, ρυθμός ανά 100 μ. και διαλείμματα';
 
   @override
   String scheda3(Object p0) {
-    return 'Scheda di $p0';
+    return 'Πρόγραμμα $p0';
   }
 
   @override
   String get scriviSchedaTuoPersonal =>
-      'Scrivi la scheda del tuo personal trainer o del tuo allenatore: forza, corsa, bici o nuoto. Nei giorni che scegli prende il posto delle sedute preparate dall\'app, che non la cambia da sola.';
+      'Γράψε το πρόγραμμα του personal trainer ή του προπονητή σου: δύναμη, τρέξιμο, ποδήλατο ή κολύμβηση. Τις μέρες που διαλέγεις αντικαθιστά τις προπονήσεις που ετοιμάζει η εφαρμογή, η οποία δεν θα το αλλάξει μόνη της.';
 
   @override
-  String get nuovaScheda => 'Nuova scheda';
+  String get nuovaScheda => 'Νέο πρόγραμμα';
 
   @override
-  String get corso2 => 'In corso';
+  String get corso2 => 'Σε εξέλιξη';
 
   @override
-  String get finite => 'Finite';
+  String get finite => 'Ολοκληρωμένα';
 
   @override
-  String get archiviata => 'Archiviata';
+  String get archiviata => 'Αρχειοθετημένο';
 
   @override
   String dalSenzaScadenza(Object p0) {
-    return 'Dal $p0, senza scadenza';
+    return 'Από $p0, χωρίς λήξη';
   }
 
   @override
   String dalAl(Object p0, Object p1) {
-    return 'Dal $p0 al $p1';
+    return 'Από $p0 έως $p1';
   }
 
   @override
-  String get giorno2 => 'Giorno';
+  String get giorno2 => 'Μέρα';
 
   @override
-  String get aggiungiAlmenoEsercizio => 'Aggiungi almeno un esercizio.';
+  String get aggiungiAlmenoEsercizio => 'Πρόσθεσε τουλάχιστον μία άσκηση.';
 
   @override
-  String get aggiungiAlmenoPasso => 'Aggiungi almeno un passo.';
+  String get aggiungiAlmenoPasso => 'Πρόσθεσε τουλάχιστον ένα βήμα.';
 
   @override
-  String get settimanaTipoAggiornata => 'Settimana tipo aggiornata.';
+  String get settimanaTipoAggiornata => 'Η τυπική εβδομάδα ενημερώθηκε.';
 
   @override
   String nellaSettimanaTipo(Object p0) {
-    return '$p0 nella settimana tipo';
+    return '$p0 στην τυπική εβδομάδα';
   }
 
   @override
   String aggiungo(Object p0) {
-    return 'Aggiungo: $p0.';
+    return 'Προσθέτω: $p0.';
   }
 
   @override
   String giornoRiposoNonTolgo(Object p0) {
-    return '$p0 è un giorno di riposo: non tolgo niente.';
+    return 'Η $p0 είναι μέρα ξεκούρασης: δεν αφαιρώ τίποτα.';
   }
 
   @override
   String get fargliPostoTolgoQuesto =>
-      'Per fargli posto tolgo da questo giorno:';
+      'Για να κάνω χώρο αφαιρώ από αυτή τη μέρα:';
 
   @override
   String get oppurePuoiTenerleFare =>
-      'Oppure puoi tenerle e fare tutte e due le cose.';
+      'Ή μπορείς να τις κρατήσεις και να κάνεις και τα δύο.';
 
   @override
-  String get tieniEntrambe => 'Tieni entrambe';
+  String get tieniEntrambe => 'Κράτα και τα δύο';
 
   @override
-  String get aggiungi => 'Aggiungi';
+  String get aggiungi => 'Προσθήκη';
 
   @override
-  String get sostituisci => 'Sostituisci';
+  String get sostituisci => 'Αντικατάσταση';
 
   @override
-  String get eliminareScheda => 'Eliminare la scheda?';
+  String get eliminareScheda => 'Διαγραφή του προγράμματος;';
 
   @override
   String get seduteGiaFatteRestano =>
-      'Le sedute già fatte restano. Da oggi tornano quelle preparate dall\'app.';
+      'Οι προπονήσεις που έγιναν μένουν. Από σήμερα επιστρέφουν αυτές που ετοιμάζει η εφαρμογή.';
 
   @override
-  String get uscireSenzaSalvare => 'Uscire senza salvare?';
+  String get uscireSenzaSalvare => 'Έξοδος χωρίς αποθήκευση;';
 
   @override
-  String get resta => 'Resta';
+  String get resta => 'Μείνε';
 
   @override
-  String get scheda4 => 'Scheda';
+  String get scheda4 => 'Πρόγραμμα';
 
   @override
-  String get nomeScheda => 'Nome della scheda';
+  String get nomeScheda => 'Όνομα προγράμματος';
 
   @override
-  String get esSchedaNovembre => 'Es. Scheda di novembre';
+  String get esSchedaNovembre => 'Π.χ. Πρόγραμμα Νοεμβρίου';
 
   @override
-  String get fincheNonCambio => 'Finché non la cambio';
+  String get fincheNonCambio => 'Μέχρι να το αλλάξω';
 
   @override
-  String get inizio2 => 'Inizio';
+  String get inizio2 => 'Έναρξη';
 
   @override
-  String get giorni => 'Giorni';
+  String get giorni => 'Μέρες';
 
   @override
   String get ogniGiornoSchedaBusto =>
-      'Ogni giorno della scheda (Busto, Gambe…) va nei giorni della settimana che scegli. Valgono quelli con la forza nella settimana tipo.';
+      'Κάθε μέρα του προγράμματος (Πάνω μέρος, Πόδια…) μπαίνει στις μέρες της εβδομάδας που διαλέγεις. Μετράνε αυτές με δύναμη στην τυπική εβδομάδα.';
 
   @override
   String ogniSedutaSchedaRipetute(Object p0) {
-    return 'Ogni seduta della scheda (Ripetute, Lungo…) va nei giorni della settimana che scegli. Valgono quelli con $p0 nella settimana tipo.';
+    return 'Κάθε προπόνηση του προγράμματος (Διαλειμματικά, Μεγάλη απόσταση…) μπαίνει στις μέρες της εβδομάδας που διαλέγεις. Μετράνε αυτές με $p0 στην τυπική εβδομάδα.';
   }
 
   @override
   String nellaSettimanaTipoNon(Object p0, Object p1) {
-    return '$p0: nella settimana tipo non c\'è $p1.';
+    return '$p0: δεν υπάρχει $p1 στην τυπική εβδομάδα.';
   }
 
   @override
-  String get modificaSettimana => 'Modifica settimana';
+  String get modificaSettimana => 'Επεξεργασία εβδομάδας';
 
   @override
-  String get aggiungiGiorno => 'Aggiungi un giorno';
+  String get aggiungiGiorno => 'Προσθήκη μέρας';
 
   @override
-  String get aggiungiSeduta => 'Aggiungi una seduta';
+  String get aggiungiSeduta => 'Προσθήκη προπόνησης';
 
   @override
-  String get salvaScheda => 'Salva la scheda';
+  String get salvaScheda => 'Αποθήκευση προγράμματος';
 
   @override
-  String get nomeGiorno => 'Nome del giorno';
+  String get nomeGiorno => 'Όνομα μέρας';
 
   @override
-  String get esBusto => 'Es. Busto';
+  String get esBusto => 'Π.χ. Πάνω μέρος';
 
   @override
-  String get togliQuestoGiorno => 'Togli questo giorno';
+  String get togliQuestoGiorno => 'Αφαίρεση αυτής της μέρας';
 
   @override
-  String get nessunEsercizio => 'Nessun esercizio.';
+  String get nessunEsercizio => 'Καμία άσκηση.';
 
   @override
-  String get nessunPasso => 'Nessun passo.';
+  String get nessunPasso => 'Κανένα βήμα.';
 
   @override
-  String get spostaGiu => 'Sposta giù';
+  String get spostaGiu => 'Μετακίνηση κάτω';
 
   @override
-  String get aggiungiEsercizio2 => 'Aggiungi esercizio';
+  String get aggiungiEsercizio2 => 'Προσθήκη άσκησης';
 
   @override
-  String get aggiungiPasso => 'Aggiungi un passo';
+  String get aggiungiPasso => 'Προσθήκη βήματος';
 
   @override
-  String get serieMeno => 'Una serie in meno';
+  String get serieMeno => 'Ένα σετ λιγότερο';
 
   @override
-  String get seriePiu => 'Una serie in più';
+  String get seriePiu => 'Ένα σετ περισσότερο';
 
   @override
-  String get es10810 => 'Es. 10, 8-10, oppure 30 s per gli esercizi a tempo';
+  String get es10810 => 'Π.χ. 10, 8-10, ή 30 s για ασκήσεις με χρόνο';
 
   @override
-  String get recuperoSecondi => 'Recupero (secondi)';
+  String get recuperoSecondi => 'Διάλειμμα (δευτερόλεπτα)';
 
   @override
   String get pesoTutteSerie20 =>
-      'Un peso per tutte le serie (20), oppure uno per serie (20 22,5 25). Vuoto a corpo libero.';
+      'Ένα βάρος για όλα τα σετ (20), ή ένα για κάθε σετ (20 22.5 25). Κενό για βάρος σώματος.';
 
   @override
-  String get notePersonalTrainer => 'Note del personal trainer';
+  String get notePersonalTrainer => 'Σημειώσεις του personal trainer';
 
   @override
-  String get esScendi3Secondi => 'Es. scendi in 3 secondi';
+  String get esScendi3Secondi => 'Π.χ. κατέβα σε 3 δευτερόλεπτα';
 
   @override
-  String get esercizioNonCatalogo => 'Esercizio non in catalogo';
+  String get esercizioNonCatalogo => 'Άσκηση εκτός καταλόγου';
 
   @override
-  String get scegliEsercizio => 'Scegli un esercizio';
+  String get scegliEsercizio => 'Διάλεξε μια άσκηση';
 
   @override
-  String get cercaEsLatPanca => 'Cerca (es. lat, panca, squat)';
+  String get cercaEsLatPanca => 'Αναζήτηση (π.χ. τροχαλία, πάγκος, squat)';
 
   @override
-  String get nonCScriviloMano => 'Non c\'è? Scrivilo a mano';
+  String get nonCScriviloMano => 'Δεν υπάρχει; Γράψ\' το με το χέρι';
 
   @override
-  String get principale => 'Principale';
+  String get principale => 'Κύριο μέρος';
 
   @override
-  String get defaticamento => 'Defaticamento';
+  String get defaticamento => 'Αποθεραπεία';
 
   @override
   String passo2(Object p0) {
-    return 'Passo di $p0';
+    return 'Βήμα $p0';
   }
 
   @override
-  String get cosaFare => 'Cosa fare';
+  String get cosaFare => 'Τι να κάνεις';
 
   @override
-  String get esStileLiberoGambe => 'Es. Stile libero, gambe con tavoletta';
+  String get esStileLiberoGambe => 'Π.χ. Ελεύθερο, πόδια με σανίδα';
 
   @override
-  String get esCorsaFacileRipetute => 'Es. Corsa facile, ripetute, salita';
+  String get esCorsaFacileRipetute =>
+      'Π.χ. Χαλαρό τρέξιμο, διαλειμματικά, ανηφόρες';
 
   @override
-  String get quanteVolte => 'Quante volte';
+  String get quanteVolte => 'Πόσες φορές';
 
   @override
-  String get meno3 => 'Una in meno';
+  String get meno3 => 'Μία λιγότερη';
 
   @override
-  String get piu3 => 'Una in più';
+  String get piu3 => 'Μία περισσότερη';
 
   @override
-  String get tempo2 => 'A tempo';
+  String get tempo2 => 'Με χρόνο';
 
   @override
-  String get distanza2 => 'A distanza';
+  String get distanza2 => 'Με απόσταση';
 
   @override
-  String get minuti2 => 'Minuti';
+  String get minuti2 => 'Λεπτά';
 
   @override
-  String get es400 => 'Es. 400';
+  String get es400 => 'Π.χ. 400';
 
   @override
-  String get es10Oppure1 => 'Es. 10, oppure 1,5';
+  String get es10Oppure1 => 'Π.χ. 10, ή 1.5';
 
   @override
-  String get obiettivoPrincipale => 'Obiettivo principale';
+  String get obiettivoPrincipale => 'Κύριος στόχος';
 
   @override
-  String get libera => 'Libera';
+  String get libera => 'Ελεύθερο';
 
   @override
   String get watt => 'Watt';
 
   @override
-  String get es150100 => 'Es. 1:50/100 m';
+  String get es150100 => 'Π.χ. 1:50/100 m';
 
   @override
-  String get es500Km => 'Es. 5:00/km';
+  String get es500Km => 'Π.χ. 5:00/km';
 
   @override
-  String get es200Oppure190 => 'Es. 200, oppure 190-210, oppure 88-94%';
+  String get es200Oppure190 => 'Π.χ. 200, ή 190-210, ή 88-94%';
 
   @override
   String get obiettivoSecondarioFacoltativo =>
-      'Obiettivo secondario (facoltativo)';
+      'Δευτερεύων στόχος (προαιρετικό)';
 
   @override
-  String get es8590Rpm => 'Es. 85-90 rpm';
+  String get es8590Rpm => 'Π.χ. 85-90 rpm';
 
   @override
-  String get es170180Ppm => 'Es. 170-180 ppm';
+  String get es170180Ppm => 'Π.χ. 170-180 βήματα το λεπτό';
 
   @override
-  String get es40BracciateAl => 'Es. 40 bracciate al minuto';
+  String get es40BracciateAl => 'Π.χ. 40 χεριές το λεπτό';
 
   @override
-  String get pausaBordoVascaDopo => 'Pausa a bordo vasca dopo ogni ripetizione';
+  String get pausaBordoVascaDopo =>
+      'Διάλειμμα στο τοίχωμα της πισίνας μετά από κάθε επανάληψη';
 
   @override
   String get traRipetizioneAltraVuoto =>
-      'Tra una ripetizione e l\'altra; vuoto se non c\'è';
+      'Ανάμεσα σε μια επανάληψη και την επόμενη· κενό αν δεν υπάρχει';
 
   @override
-  String get scriviMetri => 'Scrivi i metri.';
+  String get scriviMetri => 'Γράψε τα μέτρα.';
 
   @override
-  String get scriviMinuti => 'Scrivi i minuti.';
+  String get scriviMinuti => 'Γράψε τα λεπτά.';
 
   @override
   String get scriviWattEsempio200 =>
-      'Scrivi i watt: per esempio 200, 190-210 o 88-94%.';
+      'Γράψε τα watt: για παράδειγμα 200, 190-210 ή 88-94%.';
 
   @override
   String get sensoreCollegatoHoAcceso =>
-      'Sensore collegato: ho acceso le funzioni avanzate.';
+      'Ο αισθητήρας συνδέθηκε: ενεργοποίησα τις προχωρημένες λειτουργίες.';
 
   @override
   String ricordato(Object p0) {
-    return 'Ricordato: $p0';
+    return 'Αποθηκεύτηκε: $p0';
   }
 
   @override
   String get collegaQuiSensoriBluetooth =>
-      'Collega qui i sensori Bluetooth: li scegli una volta sola, poi si ricollegano da soli a ogni allenamento.';
+      'Σύνδεσε εδώ τους αισθητήρες Bluetooth: τους διαλέγεις μόνο μία φορά, μετά ξανασυνδέονται μόνοι τους σε κάθε προπόνηση.';
 
   @override
   String get fasciaCardioOOrologio2 =>
-      'Fascia cardio o orologio che trasmette il battito';
+      'Ζώνη παλμών ή ρολόι που μεταδίδει τους παλμούς';
 
   @override
   String get rulloSmartPotenzaVelocita =>
-      'Rullo smart, potenza, velocità e cadenza';
+      'Έξυπνο προπονητήριο, ισχύς, ταχύτητα και ρυθμός πεταλιού';
 
   @override
   String get bluetoothSiUsaSolo =>
-      'Il Bluetooth si usa solo mentre questa pagina o l\'allenamento sono aperti.';
+      'Το Bluetooth χρησιμοποιείται μόνο όσο είναι ανοιχτή αυτή η σελίδα ή η προπόνηση.';
 
   @override
-  String get togliEsercizio => 'Togli l\'esercizio';
+  String get togliEsercizio => 'Αφαίρεση άσκησης';
 
   @override
-  String get ripetizioniKg => 'Ripetizioni e kg';
+  String get ripetizioniKg => 'Επαναλήψεις και kg';
 
   @override
-  String get secondi => 'Secondi';
+  String get secondi => 'Δευτερόλεπτα';
 
   @override
-  String get togliSerie => 'Togli la serie';
+  String get togliSerie => 'Αφαίρεση σετ';
 
   @override
-  String get eserciziSerie => 'Esercizi e serie';
+  String get eserciziSerie => 'Ασκήσεις και σετ';
 
   @override
   String forza2(Object p0) {
-    return 'Forza · $p0';
+    return 'Δύναμη · $p0';
   }
 
   @override
   String get scriviCosaHaiFatto =>
-      'Scrivi cosa hai fatto: ripetizioni e kg di ogni serie (kg vuoto = corpo libero), oppure il tempo per plank e tenute. Restano nello storico dell\'esercizio.';
+      'Γράψε τι έκανες: επαναλήψεις και kg για κάθε σετ (κενά kg = βάρος σώματος), ή τον χρόνο για σανίδες και κρατήματα. Μένουν στο ιστορικό της άσκησης.';
 
   @override
-  String get distanzaTotale => 'distanza totale';
+  String get distanzaTotale => 'συνολική απόσταση';
 
   @override
-  String get passoMedioMinKm => 'passo medio (min/km)';
+  String get passoMedioMinKm => 'μέσος ρυθμός (λεπ./χλμ.)';
 
   @override
-  String get corsaPiuLunga => 'corsa più lunga';
+  String get corsaPiuLunga => 'πιο μεγάλο τρέξιμο';
 
   @override
-  String get passoMigliore3Km => 'passo migliore (≥ 3 km)';
+  String get passoMigliore3Km => 'καλύτερος ρυθμός (≥ 3 χλμ.)';
 
   @override
-  String get fcMedia => 'FC media';
+  String get fcMedia => 'μέσοι παλμοί';
 
   @override
-  String get kmSettimana => 'Km a settimana';
+  String get kmSettimana => 'Χλμ. την εβδομάδα';
 
   @override
-  String get passoUscitaMinKm => 'Passo per uscita (min/km)';
+  String get passoUscitaMinKm => 'Ρυθμός ανά τρέξιμο (λεπ./χλμ.)';
 
   @override
-  String get distanzaUscitaKm => 'Distanza per uscita (km)';
+  String get distanzaUscitaKm => 'Απόσταση ανά τρέξιμο (χλμ.)';
 
   @override
   String get efficienzaAerobicaMetriBattito =>
-      'Efficienza aerobica (metri per battito)';
+      'Αερόβια απόδοση (μέτρα ανά παλμό)';
 
   @override
-  String get fcMediaUscitaBpm => 'FC media per uscita (bpm)';
+  String get fcMediaUscitaBpm => 'Μέσοι παλμοί ανά τρέξιμο (bpm)';
 
   @override
-  String get passoMedioMin100 => 'passo medio (min/100 m)';
+  String get passoMedioMin100 => 'μέσος ρυθμός (λεπ./100 μ.)';
 
   @override
-  String get sessionePiuLunga => 'sessione più lunga';
+  String get sessionePiuLunga => 'πιο μεγάλη προπόνηση';
 
   @override
-  String get passoMigliore300M => 'passo migliore (≥ 300 m)';
+  String get passoMigliore300M => 'καλύτερος ρυθμός (≥ 300 μ.)';
 
   @override
-  String get metriSettimana => 'Metri a settimana';
+  String get metriSettimana => 'Μέτρα την εβδομάδα';
 
   @override
-  String get passoSessioneMin100 => 'Passo per sessione (min/100 m)';
+  String get passoSessioneMin100 => 'Ρυθμός ανά προπόνηση (λεπ./100 μ.)';
 
   @override
-  String get metriSessione => 'Metri per sessione';
+  String get metriSessione => 'Μέτρα ανά προπόνηση';
 
   @override
-  String get fcMediaSessioneBpm => 'FC media per sessione (bpm)';
+  String get fcMediaSessioneBpm => 'Μέσοι παλμοί ανά προπόνηση (bpm)';
 
   @override
-  String get velocitaMediaKmH => 'velocità media (km/h)';
+  String get velocitaMediaKmH => 'μέση ταχύτητα (χλμ./ώ.)';
 
   @override
-  String get uscitaPiuLunga => 'uscita più lunga';
+  String get uscitaPiuLunga => 'πιο μεγάλη διαδρομή';
 
   @override
-  String get velocitaMassimaMedia => 'velocità massima media';
+  String get velocitaMassimaMedia => 'καλύτερη μέση ταχύτητα';
 
   @override
-  String get velocitaMediaUscitaKm => 'Velocità media per uscita (km/h)';
+  String get velocitaMediaUscitaKm => 'Μέση ταχύτητα ανά διαδρομή (χλμ./ώ.)';
 
   @override
-  String get durataMedia => 'durata media';
+  String get durataMedia => 'μέση διάρκεια';
 
   @override
-  String get sessioniSettimana => 'sessioni a settimana';
+  String get sessioniSettimana => 'προπονήσεις την εβδομάδα';
 
   @override
-  String get sessioniSettimana2 => 'Sessioni a settimana';
+  String get sessioniSettimana2 => 'Προπονήσεις την εβδομάδα';
 
   @override
-  String get minutiSettimana => 'Minuti a settimana';
+  String get minutiSettimana => 'Λεπτά την εβδομάδα';
 
   @override
-  String get durataSessioneMin => 'Durata per sessione (min)';
+  String get durataSessioneMin => 'Διάρκεια ανά προπόνηση (λεπ.)';
 
   @override
-  String get vieBlocchiChiusi => 'vie e blocchi chiusi';
+  String get vieBlocchiChiusi => 'διαδρομές και boulder που ολοκληρώθηκαν';
 
   @override
-  String get metriSaliti => 'metri saliti';
+  String get metriSaliti => 'μέτρα ανάβασης';
 
   @override
-  String get viaPiuDifficile => 'via più difficile';
+  String get viaPiuDifficile => 'δυσκολότερη διαδρομή';
 
   @override
-  String get bloccoPiuDifficile => 'blocco più difficile';
+  String get bloccoPiuDifficile => 'δυσκολότερο boulder';
 
   @override
-  String get vieBlocchiChiusiSettimana => 'Vie e blocchi chiusi a settimana';
+  String get vieBlocchiChiusiSettimana => 'Διαδρομές και boulder την εβδομάδα';
 
   @override
-  String get gradoPiuDifficileVie => 'Grado più difficile: vie';
+  String get gradoPiuDifficileVie => 'Δυσκολότερος βαθμός: διαδρομές';
 
   @override
-  String get gradoPiuDifficileBlocchi => 'Grado più difficile: blocchi';
+  String get gradoPiuDifficileBlocchi => 'Δυσκολότερος βαθμός: boulder';
 
   @override
-  String get tipiSessione => 'Tipi di sessione';
+  String get tipiSessione => 'Είδη προπόνησης';
 
   @override
   String fcBpm(Object p0) {
-    return 'FC $p0 bpm';
+    return 'Παλμοί $p0 bpm';
   }
 
   @override
   String settimanaDal3(Object p0, Object p1, Object p2, Object p3) {
-    return '$p0 $p1\nSettimana dal $p2$p3';
+    return '$p0 $p1\nΕβδομάδα από $p2$p3';
   }
 
   @override
-  String get storicoPesoMisure => 'Storico di peso e misure';
+  String get storicoPesoMisure => 'Ιστορικό βάρους και μετρήσεων';
 
   @override
-  String get storicoMisure => 'Storico misure';
+  String get storicoMisure => 'Ιστορικό μετρήσεων';
 
   @override
   String nessunValoreAncoraInserito(Object p0) {
-    return 'Nessun valore di $p0 ancora inserito.';
+    return 'Δεν έχει μπει ακόμα καμία τιμή για $p0.';
   }
 
   @override
   String get almenoDueValoriComparira =>
-      'Con almeno due valori comparirà il grafico.';
+      'Με τουλάχιστον δύο τιμές θα εμφανιστεί το γράφημα.';
 
   @override
   String dal(Object p0) {
-    return 'Dal $p0';
+    return 'Από $p0';
   }
 
   @override
   String invariato(Object p0) {
-    return '$p0: invariato';
+    return '$p0: χωρίς αλλαγή';
   }
 
   @override
-  String get valoriInseriti => 'Valori inseriti';
+  String get valoriInseriti => 'Τιμές που μπήκαν';
 
   @override
-  String get barraBasso => 'La barra in basso';
+  String get barraBasso => 'Η κάτω μπάρα';
 
   @override
   String get quattroSezioniOggiProgressi =>
-      'Quattro sezioni: Oggi, Progressi, Coach e Profilo. Puoi anche scorrere di lato per passare dall\'una all\'altra.';
+      'Τέσσερις ενότητες: Σήμερα, Πρόοδος, Προπονητής και Προφίλ. Μπορείς επίσης να σύρεις στο πλάι για να πας από τη μία στην άλλη.';
 
   @override
-  String get sedutaGiorno => 'La seduta del giorno';
+  String get sedutaGiorno => 'Η σημερινή προπόνηση';
 
   @override
   String get quiTroviCosaFare =>
-      'Qui trovi cosa fare oggi. Tocca la seduta per vedere i dettagli e ▶ per l\'allenamento guidato passo passo, con timer, bip e GPS.';
+      'Εδώ βρίσκεις τι να κάνεις σήμερα. Πάτα την προπόνηση για να δεις τις λεπτομέρειες και το ▶ για την καθοδηγούμενη προπόνηση βήμα βήμα, με χρονόμετρο, ήχους και GPS.';
 
   @override
-  String get energia2 => 'L\'energia';
+  String get energia2 => 'Ενέργεια';
 
   @override
   String get comTuoRecuperoOggi =>
-      'Com\'è il tuo recupero oggi, da sonno, battito a riposo e HRV. Toccala per i dettagli: se è bassa, meglio una seduta leggera.';
+      'Πόσο έχεις αποκατασταθεί σήμερα, από τον ύπνο, τους παλμούς ηρεμίας και το HRV. Πάτα για λεπτομέρειες: αν είναι χαμηλή, καλύτερα μια ελαφριά προπόνηση.';
 
   @override
   String get compariraAltoDestraQuando =>
-      'Comparirà in alto a destra quando l\'orologio manda sonno e battito a riposo (Profilo → Dati e collegamenti).';
+      'Θα εμφανιστεί πάνω δεξιά όταν το ρολόι σου στέλνει ύπνο και παλμούς ηρεμίας (Προφίλ → Δεδομένα και συνδέσεις).';
 
   @override
   String get cerchioGiornoPienoSe =>
-      'Un cerchio per giorno: pieno se fatto, col bordo se da fare. Tocca un giorno per vederlo sopra; scorri di lato sui cerchi per la settimana prima o dopo.';
+      'Ένας κύκλος για κάθε μέρα: γεμάτος αν έγινε, περίγραμμα αν μένει να γίνει. Πάτα μια μέρα για να τη δεις πάνω· σύρε στο πλάι στους κύκλους για την προηγούμενη ή την επόμενη εβδομάδα.';
 
   @override
-  String get settimanaTipo => 'La settimana tipo';
+  String get settimanaTipo => 'Η τυπική εβδομάδα';
 
   @override
   String get qualiGiorniTiAlleni2 =>
-      'Quali giorni ti alleni, quale sport e per quanto tempo. Da qui nasce tutto il calendario: cambiala quando cambiano i tuoi impegni.';
+      'Ποιες μέρες προπονείσαι, ποιο άθλημα και για πόσο. Όλο το ημερολόγιο βγαίνει από εδώ: άλλαξέ τη όταν αλλάζουν οι υποχρεώσεις σου.';
 
   @override
   String get dopoOgniAllenamentoDai =>
-      'Dopo ogni allenamento dai un voto alla fatica: le sedute dopo si adattano, più facili o più impegnative.';
+      'Μετά από κάθε προπόνηση βαθμολόγησε την κόπωση: οι επόμενες προπονήσεις προσαρμόζονται, πιο εύκολες ή πιο δύσκολες.';
 
   @override
   String get quandoAllenamentoFattoNon =>
-      'Quando un allenamento fatto non ha ancora un voto, qui in Oggi compare \"Com\'è andata?\". Puoi darlo anche toccando la seduta fatta.';
+      'Όταν μια προπόνηση που έκανες δεν έχει ακόμα βαθμολογία, εμφανίζεται εδώ στο Σήμερα το «Πώς πήγε;». Μπορείς επίσης να τη δώσεις πατώντας την προπόνηση που έκανες.';
 
   @override
   String get caricoAllenamentoGraficiResoconti =>
-      'Il carico di allenamento, i grafici e i resoconti di ogni sport: tocca uno sport per i dettagli.';
+      'Προπονητικό φορτίο, γραφήματα και αναφορές για κάθε άθλημα: πάτα ένα άθλημα για λεπτομέρειες.';
 
   @override
   String get assistenteChiedigliConsigliSul =>
-      'L\'assistente: chiedigli consigli sul piano o su come ti senti. Lo colleghi dalle impostazioni in alto (sul tuo PC o con la tua app).';
+      'Ο βοηθός: ζήτα του συμβουλές για το πρόγραμμα ή για το πώς νιώθεις. Τον συνδέεις από τις ρυθμίσεις πάνω (στον υπολογιστή σου ή με την εφαρμογή σου).';
 
   @override
-  String get seduteSchede => 'Sedute e schede';
+  String get seduteSchede => 'Προπονήσεις και προγράμματα';
 
   @override
   String get preparaSeduteAppScrive =>
-      '\"Prepara le sedute\": l\'app scrive gli allenamenti per te. \"Le mie schede\": scrivi quelli del tuo personal trainer o allenatore.';
+      '«Ετοίμασε τις προπονήσεις»: η εφαρμογή γράφει τις προπονήσεις για σένα. «Τα προγράμματά μου»: γράψε αυτά του personal trainer ή του προπονητή σου.';
 
   @override
   String get collegaOrologioHealthConnect =>
-      'Collega l\'orologio (Health Connect o intervals.icu) e fai il backup dei tuoi dati. Il giro lo ritrovi sempre qui sotto, in \"Giro guidato dell\'app\".';
+      'Σύνδεσε το ρολόι σου (Health Connect ή intervals.icu) και κράτα αντίγραφο ασφαλείας των δεδομένων σου. Την ξενάγηση τη βρίσκεις πάντα εδώ κάτω, στο «Ξενάγηση στην εφαρμογή».';
 
   @override
-  String get toccaAvantiContinuare => 'Tocca Avanti per continuare.';
+  String get toccaAvantiContinuare => 'Πάτα Επόμενο για να συνεχίσεις.';
 
   @override
-  String get fine => 'Fine';
+  String get fine => 'Τέλος';
 
   @override
   String get vuoiGiroGuidatoDell =>
-      'Vuoi un giro guidato dell\'app? Dieci passi, un minuto.';
+      'Θέλεις μια ξενάγηση στην εφαρμογή; Δέκα βήματα, ένα λεπτό.';
 
   @override
-  String get noGrazie => 'No, grazie';
+  String get noGrazie => 'Όχι, ευχαριστώ';
 
   @override
-  String get si => 'Sì';
+  String get si => 'Ναι';
 
   @override
-  String get ultimoBlocco => 'Ultimo blocco';
+  String get ultimoBlocco => 'Τελευταίο τμήμα';
 
   @override
   String poi2(Object p0) {
-    return 'Poi: $p0';
+    return 'Μετά: $p0';
   }
 
   @override
-  String get recupero2 => 'di recupero';
+  String get recupero2 => 'διαλείμματος';
 
   @override
-  String get fineBlocco => 'a fine blocco';
+  String get fineBlocco => 'στο τέλος του τμήματος';
 
   @override
   String get collegaRulloOMisuratore =>
-      'Collega il rullo o il misuratore: vedrai potenza, cadenza e velocità.';
+      'Σύνδεσε το προπονητήριο ή τον μετρητή ισχύος: θα βλέπεις ισχύ, ρυθμό πεταλιού και ταχύτητα.';
 
   @override
   String mediaWMassimoW(Object p0, Object p1) {
-    return 'Media $p0 W · Massimo $p1 W';
+    return 'Μέση $p0 W · Μέγιστη $p1 W';
   }
 
   @override
   String blocco(Object p0, Object p1) {
-    return 'Blocco $p0 di $p1';
+    return 'Τμήμα $p0 από $p1';
   }
 
   @override
-  String get siParte2 => 'Si parte';
+  String get siParte2 => 'Ξεκινάμε';
 
   @override
   String fineTra(Object p0) {
-    return 'Fine tra $p0';
+    return 'Τελειώνει σε $p0';
   }
 
   @override
-  String get rulloErg => 'Rullo in ERG';
+  String get rulloErg => 'Προπονητήριο σε ERG';
 
   @override
-  String get rulloLibero => 'Rullo libero';
+  String get rulloLibero => 'Ελεύθερο προπονητήριο';
 
   @override
-  String get senzaObiettivo2 => 'senza obiettivo';
+  String get senzaObiettivo2 => 'χωρίς στόχο';
 
   @override
   String tieneW(Object p0) {
-    return 'tiene $p0 W';
+    return 'κρατά $p0 W';
   }
 
   @override
-  String get wattLiDecidiTu => 'i watt li decidi tu';
+  String get wattLiDecidiTu => 'τα watt τα αποφασίζεις εσύ';
 
   @override
-  String get n5Meno => '5% in meno';
+  String get n5Meno => '5% λιγότερο';
 
   @override
-  String get n5Piu => '5% in più';
+  String get n5Piu => '5% περισσότερο';
 
   @override
   String get riportareSettimanaNelCalendario =>
-      'Riportare la settimana nel calendario?';
+      'Να ξαναμπεί η εβδομάδα στο ημερολόγιο;';
 
   @override
   String get giorniOggiPoiDiventano =>
-      'I giorni da oggi in poi diventano uguali alla settimana tipo: le modifiche fatte a mano su quei giorni vengono sostituite. I giorni già fatti restano.';
+      'Οι μέρες από σήμερα και μετά γίνονται ίδιες με την τυπική εβδομάδα: οι αλλαγές που έκανες με το χέρι εκείνες τις μέρες αντικαθίστανται. Οι μέρες που έγιναν μένουν.';
 
   @override
-  String get riporta => 'Riporta';
+  String get riporta => 'Επαναφορά';
 
   @override
   String get settimanaSalvataCalendarioVuoto =>
-      'Settimana salvata. Il calendario è vuoto: allungalo da Oggi.';
+      'Η εβδομάδα αποθηκεύτηκε. Το ημερολόγιο είναι κενό: επέκτεινέ το από το Σήμερα.';
 
   @override
-  String get settimanaSalvata => 'Settimana salvata.';
+  String get settimanaSalvata => 'Η εβδομάδα αποθηκεύτηκε.';
 
   @override
   String calendarioAggiornatoOggiAl(Object p0, Object p1, Object p2) {
-    return 'Calendario aggiornato: $p0 $p1 da oggi al $p2.';
+    return 'Το ημερολόγιο ενημερώθηκε: $p0 $p1 από σήμερα έως $p2.';
   }
 
   @override
-  String get settimanaTipo2 => 'Settimana tipo';
+  String get settimanaTipo2 => 'Τυπική εβδομάδα';
 
   @override
   String get scegliCosaFaiQuale =>
-      'Scegli cosa fai e in quale giorno. I cambi valgono subito nel calendario, da oggi in poi; i giorni già fatti non cambiano.';
+      'Διάλεξε τι κάνεις και ποια μέρα. Οι αλλαγές εφαρμόζονται αμέσως στο ημερολόγιο, από σήμερα και μετά· οι μέρες που έγιναν δεν αλλάζουν.';
 
   @override
-  String get portaTuttaSettimanaNel =>
-      'Porta tutta la settimana nel calendario';
+  String get portaTuttaSettimanaNel => 'Φέρε όλη την εβδομάδα στο ημερολόγιο';
 
   @override
   String get rifaGiorniOggiPoi =>
-      'Rifà i giorni da oggi in poi uguali alla settimana tipo. Utile se il calendario non corrisponde più.';
+      'Ξαναφτιάχνει τις μέρες από σήμερα και μετά ώστε να ταιριάζουν με την τυπική εβδομάδα. Χρήσιμο αν το ημερολόγιο δεν ταιριάζει πια.';
 
   @override
-  String get aggiungiSessione => 'Aggiungi sessione';
+  String get aggiungiSessione => 'Προσθήκη προπόνησης';
 
   @override
-  String get nessunaSessione => 'Nessuna sessione';
+  String get nessunaSessione => 'Καμία προπόνηση';
 
   @override
-  String get sport => 'Sport';
+  String get sport => 'Άθλημα';
 
   @override
-  String get fascia => 'Fascia';
+  String get fascia => 'Ώρα της μέρας';
 
   @override
-  String get tipoSessioneFacoltativo => 'Tipo di sessione (facoltativo)';
+  String get tipoSessioneFacoltativo => 'Είδος προπόνησης (προαιρετικό)';
 
   @override
-  String get durataMinuti => 'Durata (minuti)';
+  String get durataMinuti => 'Διάρκεια (λεπτά)';
 
   @override
   String get haiFattoAllenamentoDiverso =>
-      'Hai fatto un allenamento diverso da quello in programma: il feedback vale per quello che hai fatto davvero.';
+      'Έκανες διαφορετική προπόνηση από την προγραμματισμένη: η αξιολόγηση αφορά αυτό που έκανες πραγματικά.';
 
   @override
   String get tuoFeedbackRegolaProssime =>
-      'Il tuo feedback regola le prossime sessioni.';
+      'Η αξιολόγησή σου ρυθμίζει τις επόμενες προπονήσεις.';
 
   @override
   String get serveCalcolareCaricoAllenamento =>
-      'Serve a calcolare il carico di allenamento.';
+      'Χρησιμεύει για τον υπολογισμό του προπονητικού φορτίου.';
 
   @override
-  String get completata => 'Completata';
+  String get completata => 'Ολοκληρώθηκε';
 
   @override
-  String get nonCompletata => 'Non completata';
+  String get nonCompletata => 'Δεν ολοκληρώθηκε';
 
   @override
-  String get doloreSegnalato => 'dolore segnalato';
+  String get doloreSegnalato => 'αναφέρθηκε πόνος';
 
   @override
-  String get rispondi => 'Rispondi';
+  String get rispondi => 'Απάντησε';
 
   @override
-  String get hoGiaFattaScrivi => 'L\'ho già fatta: scrivi i dati';
+  String get hoGiaFattaScrivi => 'Την έχω ήδη κάνει: βάλε τα δεδομένα';
 
   @override
   String get tiGuidoEsercizioEsercizio =>
-      'Ti guido esercizio per esercizio: tocchi \"Fatto\" quando finisci, i recuperi e le parti a tempo li conto io.';
+      'Σε καθοδηγώ άσκηση προς άσκηση: πάτα «Έγινε» όταν τελειώνεις, μετράω εγώ τα διαλείμματα και τα κομμάτια με χρόνο.';
 
   @override
   String allenamentoPrevisto(Object p0) {
-    return 'Allenamento previsto: $p0';
+    return 'Προγραμματισμένη προπόνηση: $p0';
   }
 
   @override
   String durataTotaleMin(Object p0) {
-    return 'Durata totale: $p0 min';
+    return 'Συνολική διάρκεια: $p0 λεπ.';
   }
 
   @override
   String comeTiDeviSentire(Object p0) {
-    return 'Come ti devi sentire: $p0';
+    return 'Πώς πρέπει να νιώθεις: $p0';
   }
 
   @override
-  String get iniziaAllenamento => 'Inizia allenamento';
+  String get iniziaAllenamento => 'Έναρξη προπόνησης';
 
   @override
   String muscoliSessioneToccaEsercizio(Object p0) {
-    return 'Muscoli della sessione: $p0. Tocca un esercizio per vedere i suoi, la freccia per come si fa.';
+    return 'Μύες της προπόνησης: $p0. Πάτα μια άσκηση για να δεις τους δικούς της, το βελάκι για το πώς γίνεται.';
   }
 
   @override
   String cos(Object p0) {
-    return 'Cos\'è: $p0';
+    return 'Τι είναι: $p0';
   }
 
   @override
-  String get sedutaArrampicata => 'Seduta di arrampicata';
+  String get sedutaArrampicata => 'Προπόνηση αναρρίχησης';
 
   @override
   String get scegliUnoDeiTuoi =>
-      'Scegli uno dei tuoi allenamenti o chiedilo all\'assistente. Puoi anche partire e segnare vie e gradi alla fine.';
+      'Διάλεξε μία από τις προπονήσεις σου ή ρώτα τον βοηθό. Μπορείς επίσης να ξεκινήσεις και να καταγράψεις διαδρομές και βαθμούς στο τέλος.';
 
   @override
-  String get iniziaSeduta => 'Inizia la seduta';
+  String get iniziaSeduta => 'Ξεκίνα την προπόνηση';
 
   @override
-  String get scegliAllenamento => 'Scegli un allenamento';
+  String get scegliAllenamento => 'Διάλεξε μια προπόνηση';
 
   @override
-  String get questaSedutaNonHa => 'Questa seduta non ha ancora esercizi';
+  String get questaSedutaNonHa => 'Αυτή η προπόνηση δεν έχει ακόμα ασκήσεις';
 
   @override
-  String get sedutaLibera => 'Seduta libera';
+  String get sedutaLibera => 'Ελεύθερη προπόνηση';
 
   @override
   String get faiPreparareAllApp =>
-      'Fai preparare all\'app la forza: sceglie gli esercizi adatti a te e alla tua attrezzatura. Ci vuole un minuto.';
+      'Άφησε την εφαρμογή να ετοιμάσει τη δύναμη: διαλέγει τις ασκήσεις που ταιριάζουν σε σένα και στον εξοπλισμό σου. Θέλει ένα λεπτό.';
 
   @override
   String faiPreparareAllApp2(Object p0) {
-    return 'Fai preparare all\'app le sedute di $p0: ognuna con le sue indicazioni passo passo.';
+    return 'Άφησε την εφαρμογή να ετοιμάσει τις προπονήσεις $p0: καθεμία με τις δικές της οδηγίες βήμα βήμα.';
   }
 
   @override
-  String get tempoHai => 'il tempo che hai';
+  String get tempoHai => 'τον χρόνο που έχεις';
 
   @override
   String muovitiRitmoFacileDevi(Object p0) {
-    return 'Muoviti per $p0 a ritmo facile: devi riuscire a parlare.';
+    return 'Κινήσου για $p0 σε χαλαρό ρυθμό: πρέπει να μπορείς να μιλάς.';
   }
 
   @override
   String preparaSedute2(Object p0) {
-    return 'Prepara le sedute di $p0';
+    return 'Ετοίμασε τις προπονήσεις $p0';
   }
 
   @override
-  String get invioIntervalsIcu => 'Invio a intervals.icu…';
+  String get invioIntervalsIcu => 'Αποστολή στο intervals.icu…';
 
   @override
   String get questaSessioneAppNon =>
-      'Per questa sessione l\'app non ha un percorso GPS.';
+      'Η εφαρμογή δεν έχει διαδρομή GPS για αυτή την προπόνηση.';
 
   @override
-  String get salvaPercorso => 'Salva il percorso';
+  String get salvaPercorso => 'Αποθήκευση διαδρομής';
 
   @override
   String get gpxSalvatoPuoiCaricarlo =>
-      'GPX salvato: puoi caricarlo su Strava o Garmin Connect.';
+      'Το GPX αποθηκεύτηκε: μπορείς να το ανεβάσεις στο Strava ή στο Garmin Connect.';
 
   @override
   String gpxNonSalvato(Object p0) {
-    return 'GPX non salvato: $p0';
+    return 'Το GPX δεν αποθηκεύτηκε: $p0';
   }
 
   @override
-  String get eliminareSessione => 'Eliminare la sessione?';
+  String get eliminareSessione => 'Διαγραφή της προπόνησης;';
 
   @override
   String get nonTorneraSincronizzazioneNell =>
-      ' Non tornerà con la sincronizzazione; nell\'app dell\'orologio resta com\'è.';
+      ' Δεν θα επιστρέψει με τον συγχρονισμό· στην εφαρμογή του ρολογιού μένει όπως είναι.';
 
   @override
   String sparisceDalCalendarioDai(Object p0) {
-    return 'Sparisce dal calendario, dai Progressi e dal carico, insieme al suo \"Com\'è andata?\".$p0';
+    return 'Εξαφανίζεται από το ημερολόγιο, την Πρόοδο και το φορτίο, μαζί με το «Πώς πήγε;».$p0';
   }
 
   @override
-  String get sessioneEliminata => 'Sessione eliminata';
+  String get sessioneEliminata => 'Η προπόνηση διαγράφηκε';
 
   @override
-  String get orario => 'Orario';
+  String get orario => 'Ώρα';
 
   @override
   String m(Object p0, Object p1) {
-    return '$p0 da $p1 m';
+    return '$p0 από $p1 μ.';
   }
 
   @override
-  String get ritmoMedio => 'Ritmo medio';
+  String get ritmoMedio => 'Μέσος ρυθμός';
 
   @override
-  String get calorieAttiveStima => 'Calorie attive (stima)';
+  String get calorieAttiveStima => 'Ενεργές θερμίδες (εκτίμηση)';
 
   @override
-  String get calorieTotaliStima => 'Calorie totali (stima)';
+  String get calorieTotaliStima => 'Συνολικές θερμίδες (εκτίμηση)';
 
   @override
-  String get potenzaMedia => 'Potenza media';
+  String get potenzaMedia => 'Μέση ισχύς';
 
   @override
-  String get cadenzaMedia => 'Cadenza media';
+  String get cadenzaMedia => 'Μέσος ρυθμός πεταλιού';
 
   @override
-  String get faticaRpe => 'Fatica (RPE)';
+  String get faticaRpe => 'Κόπωση (RPE)';
 
   @override
   String fonteCorrettaMano(Object p0) {
-    return 'Fonte: $p0 · corretta a mano';
+    return 'Πηγή: $p0 · διορθώθηκε με το χέρι';
   }
 
   @override
   String fonte(Object p0) {
-    return 'Fonte: $p0';
+    return 'Πηγή: $p0';
   }
 
   @override
-  String get sulleVie => 'sulle vie';
+  String get sulleVie => 'σε διαδρομές';
 
   @override
-  String get nelBoulder => 'nel boulder';
+  String get nelBoulder => 'στο boulder';
 
   @override
   String record2(Object p0, Object p1, Object p2, Object p3, Object p4) {
-    return 'Record $p0: $p1 ($p2 $p3 $p4)';
+    return 'Ρεκόρ $p0: $p1 ($p2 $p3 $p4)';
   }
 
   @override
-  String get grafici2 => 'Grafici';
+  String get grafici2 => 'Γραφήματα';
 
   @override
-  String get inviaIntervalsIcu => 'Invia a intervals.icu';
+  String get inviaIntervalsIcu => 'Αποστολή στο intervals.icu';
 
   @override
-  String get salvaGpx => 'Salva GPX';
+  String get salvaGpx => 'Αποθήκευση GPX';
 
   @override
-  String get suIntervalsIcu => 'Su intervals.icu';
+  String get suIntervalsIcu => 'Στο intervals.icu';
 
   @override
   String get parteSolaIntervalsIcu =>
-      'Parte da sola per intervals.icu appena c\'è rete';
+      'Φεύγει μόνη της για το intervals.icu μόλις υπάρξει σύνδεση';
 
   @override
-  String get previstoFatto => 'Previsto e fatto';
+  String get previstoFatto => 'Προγραμματισμένο και πραγματικό';
 
   @override
   String fasceColorateSonoIntensita(Object p0) {
-    return 'Le fasce colorate sono l\'intensità da tenere blocco per blocco, la linea quella che hai tenuto: dentro la fascia eri nell\'obiettivo, sopra andavi più forte, sotto più piano.$p0';
+    return 'Οι χρωματιστές ζώνες είναι η ένταση που πρέπει να κρατήσεις τμήμα προς τμήμα, η γραμμή είναι αυτό που κράτησες: μέσα στη ζώνη ήσουν στον στόχο, από πάνω πήγες πιο δυνατά, από κάτω πιο χαλαρά.$p0';
   }
 
   @override
   String get doveObiettivoEraZona =>
-      ' Dove l\'obiettivo era una zona si guarda il battito, dove era un passo si guarda il passo.';
+      ' Όπου ο στόχος ήταν ζώνη κοιτάμε τους παλμούς, όπου ήταν ρυθμός κοιτάμε τον ρυθμό.';
 
   @override
-  String get siGuardaPasso => ' Si guarda il passo.';
+  String get siGuardaPasso => ' Κοιτάμε τον ρυθμό.';
 
   @override
-  String get siGuardaBattito => ' Si guarda il battito.';
+  String get siGuardaBattito => ' Κοιτάμε τους παλμούς.';
 
   @override
   String tenere(Object p0) {
-    return 'Da tenere $p0';
+    return 'Στόχος $p0';
   }
 
   @override
-  String get fuoriProgramma => 'Fuori programma';
+  String get fuoriProgramma => 'Εκτός προγράμματος';
 
   @override
-  String get intervalliCorrettiMano => 'Intervalli (corretti a mano)';
+  String get intervalliCorrettiMano => 'Διαστήματα (διορθωμένα με το χέρι)';
 
   @override
-  String get sensoreBici => 'Sensore bici';
+  String get sensoreBici => 'Αισθητήρας ποδηλάτου';
 
   @override
-  String get altitudinePendenza => 'Altitudine e pendenza';
+  String get altitudinePendenza => 'Υψόμετρο και κλίση';
 
   @override
-  String get altitudinePendenzaPotenza => 'Altitudine, pendenza e potenza';
+  String get altitudinePendenzaPotenza => 'Υψόμετρο, κλίση και ισχύς';
 
   @override
   String nonCiSonoAverle(Object p0) {
-    return '$p0 non ci sono: per averle collega intervals.icu (Profilo → Dati e collegamenti).';
+    return 'Δεν υπάρχουν $p0: για να τα έχεις σύνδεσε το intervals.icu (Προφίλ → Δεδομένα και συνδέσεις).';
   }
 
   @override
@@ -6543,108 +6572,108 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String fatto2(Object p0) {
-    return 'Fatto: $p0';
+    return 'Έγινε: $p0';
   }
 
   @override
-  String get ancheRiposoAllenamento => 'Anche il riposo è allenamento';
+  String get ancheRiposoAllenamento => 'Και η ξεκούραση είναι προπόνηση';
 
   @override
-  String get alternaRecupero6Volte => 'Alterna con il recupero, 6 volte';
+  String get alternaRecupero6Volte => 'Εναλλάξ με την αποκατάσταση, 6 φορές';
 
   @override
-  String get recuperoCorricchiando => 'Recupero corricchiando';
+  String get recuperoCorricchiando => 'Αποκατάσταση με ελαφρύ τρέξιμο';
 
   @override
-  String get corsaLentaContinua => 'Corsa lenta continua';
+  String get corsaLentaContinua => 'Συνεχές χαλαρό τρέξιμο';
 
   @override
-  String get restaZona2Tutta => 'Resta in zona 2 per tutta la durata';
+  String get restaZona2Tutta => 'Μείνε σε ζώνη 2 όλη την ώρα';
 
   @override
-  String get piscinaBase1150M => 'Piscina Base (1150 m, vasca 25 m)';
+  String get piscinaBase1150M => 'Βασική πισίνα (1150 μ., πισίνα 25 μ.)';
 
   @override
-  String get stileScelta => 'Stile a scelta';
+  String get stileScelta => 'Στυλ της επιλογής σου';
 
   @override
-  String get stileLiberoGambeTavoletta => 'Stile libero, gambe con tavoletta';
+  String get stileLiberoGambeTavoletta => 'Ελεύθερο, πόδια με σανίδα';
 
   @override
-  String get tavolettaFront => 'Tavoletta front';
+  String get tavolettaFront => 'Σανίδα μπροστά';
 
   @override
-  String get dorsoGambeTavoletta => 'Dorso, gambe con tavoletta';
+  String get dorsoGambeTavoletta => 'Ύπτιο, πόδια με σανίδα';
 
   @override
-  String get tavolettaDorso => 'Tavoletta dorso';
+  String get tavolettaDorso => 'Σανίδα για ύπτιο';
 
   @override
-  String get stileLiberoBracciaPull => 'Stile libero, braccia con pull buoy';
+  String get stileLiberoBracciaPull => 'Ελεύθερο, χέρια με pull buoy';
 
   @override
   String get n25MSoloBraccio =>
-      '25 m solo braccio DX, 25 m solo braccio SX, 50 m alternato';
+      '25 μ. μόνο δεξί χέρι, 25 μ. μόνο αριστερό χέρι, 50 μ. εναλλάξ';
 
   @override
-  String get dorsoDoppioGambeRana => 'Dorso doppio, gambe rana';
+  String get dorsoDoppioGambeRana => 'Ύπτιο με δύο χέρια μαζί, πόδια προσθίου';
 
   @override
-  String get parolaTolta => 'tolta';
+  String get parolaTolta => 'αφαιρέθηκε';
 
   @override
-  String get parolaTolte => 'tolte';
+  String get parolaTolte => 'αφαιρέθηκαν';
 
   @override
-  String get parolaSessione => 'sessione';
+  String get parolaSessione => 'προπόνηση';
 
   @override
-  String get parolaSessioni => 'sessioni';
+  String get parolaSessioni => 'προπονήσεις';
 
   @override
-  String get parolaRulli => 'rulli';
+  String get parolaRulli => 'προπονητήριο';
 
   @override
-  String get parolaTapisRoulant => 'tapis roulant';
+  String get parolaTapisRoulant => 'διάδρομος';
 
   @override
-  String get parolaNessuno => 'nessuno';
+  String get parolaNessuno => 'κανένα';
 
   @override
-  String get parolaGennaio => 'gennaio';
+  String get parolaGennaio => 'Ιανουαρίου';
 
   @override
-  String get parolaFebbraio => 'febbraio';
+  String get parolaFebbraio => 'Φεβρουαρίου';
 
   @override
-  String get parolaMarzo => 'marzo';
+  String get parolaMarzo => 'Μαρτίου';
 
   @override
-  String get parolaAprile => 'aprile';
+  String get parolaAprile => 'Απριλίου';
 
   @override
-  String get parolaMaggio => 'maggio';
+  String get parolaMaggio => 'Μαΐου';
 
   @override
-  String get parolaGiugno => 'giugno';
+  String get parolaGiugno => 'Ιουνίου';
 
   @override
-  String get parolaLuglio => 'luglio';
+  String get parolaLuglio => 'Ιουλίου';
 
   @override
-  String get parolaAgosto => 'agosto';
+  String get parolaAgosto => 'Αυγούστου';
 
   @override
-  String get parolaSettembre => 'settembre';
+  String get parolaSettembre => 'Σεπτεμβρίου';
 
   @override
-  String get parolaOttobre => 'ottobre';
+  String get parolaOttobre => 'Οκτωβρίου';
 
   @override
-  String get parolaNovembre => 'novembre';
+  String get parolaNovembre => 'Νοεμβρίου';
 
   @override
-  String get parolaDicembre => 'dicembre';
+  String get parolaDicembre => 'Δεκεμβρίου';
 
   @override
   String get parolaChilometro => 'χιλιόμετρο';
@@ -6659,67 +6688,67 @@ class AppLocalizationsEl extends AppLocalizations {
   String get parolaMinuti => 'λεπτά';
 
   @override
-  String get parolaFatto => 'fatto';
+  String get parolaFatto => 'έγινε';
 
   @override
-  String get parolaOggi => 'oggi';
+  String get parolaOggi => 'σήμερα';
 
   @override
-  String get parolaDomani => 'domani';
+  String get parolaDomani => 'αύριο';
 
   @override
-  String get parolaIeri => 'ieri';
+  String get parolaIeri => 'χθες';
 
   @override
-  String get parolaMese => 'mese';
+  String get parolaMese => 'μήνας';
 
   @override
-  String get parolaMesi => 'mesi';
+  String get parolaMesi => 'μήνες';
 
   @override
-  String get parolaSedute => 'sedute';
+  String get parolaSedute => 'προπονήσεις';
 
   @override
-  String get parolaVolta => 'volta';
+  String get parolaVolta => 'φορά';
 
   @override
-  String get parolaVolte => 'volte';
+  String get parolaVolte => 'φορές';
 
   @override
-  String get parolaSeduta => 'seduta';
+  String get parolaSeduta => 'προπόνηση';
 
   @override
-  String get parolaMancano => 'mancano';
+  String get parolaMancano => 'μένουν';
 
   @override
-  String get parolaLeggera => 'leggera';
+  String get parolaLeggera => 'ελαφριά';
 
   @override
-  String get parolaModerata => 'moderata';
+  String get parolaModerata => 'μέτρια';
 
   @override
-  String get parolaImpegnativa => 'impegnativa';
+  String get parolaImpegnativa => 'δύσκολη';
 
   @override
-  String get parolaAllenamento => 'allenamento';
+  String get parolaAllenamento => 'προπόνηση';
 
   @override
-  String get parolaAllenamenti => 'allenamenti';
+  String get parolaAllenamenti => 'προπονήσεις';
 
   @override
-  String get parolaPercorsi => 'percorsi';
+  String get parolaPercorsi => 'διανύθηκαν';
 
   @override
-  String get parolaUscite => 'uscite';
+  String get parolaUscite => 'διαδρομές';
 
   @override
-  String get parolaPassati => 'passati';
+  String get parolaPassati => 'πέρασαν';
 
   @override
-  String get parolaGiorno => 'giorno';
+  String get parolaGiorno => 'μέρα';
 
   @override
-  String get parolaGiorni => 'giorni';
+  String get parolaGiorni => 'μέρες';
 
   @override
   String get parolaSecondo => 'δευτερόλεπτο';
@@ -6740,60 +6769,60 @@ class AppLocalizationsEl extends AppLocalizations {
   String get parolaMetri => 'μέτρα';
 
   @override
-  String get glossarioRecupero => 'Recupero';
+  String get glossarioRecupero => 'Αποκατάσταση';
 
   @override
-  String get glossarioMobilita => 'Mobilità';
+  String get glossarioMobilita => 'Κινητικότητα';
 
   @override
-  String get widgetOggi => 'OGGI';
+  String get widgetOggi => 'ΣΗΜΕΡΑ';
 
   @override
-  String get widgetApri => 'Apri l\'app per vedere il piano';
+  String get widgetApri => 'Άνοιξε την εφαρμογή για να δεις το πρόγραμμα';
 
   @override
-  String get widgetNessuno => 'Nessun allenamento questa settimana';
+  String get widgetNessuno => 'Καμία προπόνηση αυτή την εβδομάδα';
 
   @override
   String widgetFatti(Object fatti, Object totale) {
-    return '$fatti di $totale fatti questa settimana';
+    return '$fatti από $totale έγιναν αυτή την εβδομάδα';
   }
 
   @override
-  String get widgetLettere => 'L,M,M,G,V,S,D';
+  String get widgetLettere => 'Δ,Τ,Τ,Π,Π,Σ,Κ';
 
   @override
-  String get notificaCanale => 'Allenamento in corso';
+  String get notificaCanale => 'Προπόνηση σε εξέλιξη';
 
   @override
-  String get notificaAllenamento => 'Allenamento';
+  String get notificaAllenamento => 'Προπόνηση';
 
   @override
-  String get lingua => 'Lingua';
+  String get lingua => 'Γλώσσα';
 
   @override
-  String get linguaTitolo => 'Scegli la lingua';
+  String get linguaTitolo => 'Διάλεξε τη γλώσσα σου';
 
   @override
   String get linguaSpiega =>
-      'Potrai cambiarla quando vuoi dal Profilo. I dati che hai già scritto restano come sono.';
+      'Μπορείς να την αλλάξεις όποτε θέλεις από το Προφίλ. Τα δεδομένα που έχεις ήδη βάλει μένουν όπως είναι.';
 
   @override
-  String get linguaSotto => 'Italiano o inglese';
+  String get linguaSotto => 'Ιταλικά, αγγλικά ή ελληνικά';
 
   @override
-  String get sostieniProgetto => 'Sostieni il progetto';
+  String get sostieniProgetto => 'Στήριξε το έργο';
 
   @override
   String get sostieniSotto =>
-      'Una donazione aiuta lo sviluppo. Non sblocca nulla: l\'app è tutta gratuita.';
+      'Μια δωρεά βοηθά την ανάπτυξη. Δεν ξεκλειδώνει τίποτα: όλη η εφαρμογή είναι δωρεάν.';
 
   @override
-  String get linkNonAperto => 'Non riesco ad aprire il link.';
+  String get linkNonAperto => 'Δεν μπορώ να ανοίξω τον σύνδεσμο.';
 
   @override
   String battitiAlMinuto(Object p0) {
-    return '$p0 battiti/min';
+    return '$p0 bpm';
   }
 
   @override
@@ -6803,37 +6832,37 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String mancanoAncora(Object p0) {
-    return 'mancano $p0';
+    return 'μένουν $p0';
   }
 
   @override
   String recuperoDi(Object p0) {
-    return 'recupero $p0';
+    return 'διάλειμμα $p0';
   }
 
   @override
   String quanteSerie(Object p0) {
-    return '$p0 serie';
+    return '$p0 σετ';
   }
 
   @override
   String quanteRipetizioni(Object p0) {
-    return '$p0 ripetizioni';
+    return '$p0 επαναλήψεις';
   }
 
   @override
   String quanteAggiornate(Object p0) {
-    return '$p0 aggiornate';
+    return '$p0 ενημερώθηκαν';
   }
 
   @override
   String quanteRimosse(Object p0) {
-    return '$p0 rimosse';
+    return '$p0 αφαιρέθηκαν';
   }
 
   @override
   String aggiornato(Object p0) {
-    return '$p0 aggiornato';
+    return '$p0 ενημερώθηκε';
   }
 
   @override
@@ -6858,62 +6887,62 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String connesso(Object p0) {
-    return '$p0 connesso';
+    return '$p0 συνδέθηκε';
   }
 
   @override
   String passoDiTour(Object p0, Object p1) {
-    return '$p0 di $p1';
+    return '$p0 από $p1';
   }
 
   @override
   String quantiEsercizi(Object p0) {
-    return '$p0 esercizi';
+    return '$p0 ασκήσεις';
   }
 
   @override
   String backupSessioni(Object p0) {
-    return '$p0 sessioni';
+    return '$p0 προπονήσεις';
   }
 
   @override
   String backupMisure(Object p0) {
-    return '$p0 misure';
+    return '$p0 μετρήσεις';
   }
 
   @override
   String backupFeedback(Object p0) {
-    return '$p0 feedback';
+    return '$p0 αξιολογήσεις';
   }
 
   @override
   String quantiGiorni(Object p0) {
-    return '$p0 giorni';
+    return '$p0 μέρες';
   }
 
   @override
   String quanteOre(Object p0) {
-    return '$p0 ore';
+    return '$p0 ώρες';
   }
 
   @override
   String quantiMinuti(Object p0) {
-    return '$p0 minuti';
+    return '$p0 λεπτά';
   }
 
   @override
   String quanteSedute(Object p0) {
-    return '$p0 sedute';
+    return '$p0 προπονήσεις';
   }
 
   @override
   String quanteProvate(Object p0, Object p1) {
-    return '$p0 provat$p1';
+    return '$p0 δοκιμάστηκαν';
   }
 
   @override
   String quantiPunti(Object p0) {
-    return '$p0 punti';
+    return '$p0 πόντοι';
   }
 
   @override
@@ -6925,26 +6954,44 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get linguaVoce => 'Lingua della voce';
+  String get linguaVoce => 'Γλώσσα φωνής';
 
   @override
-  String get linguaVoceComeApp => 'Come l\'app';
+  String get linguaVoceComeApp => 'Όπως η εφαρμογή';
 
   @override
-  String get linguaVoceComeTelefono => 'Come il telefono';
+  String get linguaVoceComeTelefono => 'Όπως το κινητό';
 
   @override
   String get linguaVoceSpiega =>
-      'Indicazioni stradali, km, ritmo e zone. In una lingua diversa da quella dell\'app, i nomi degli esercizi restano nella lingua dell\'app.';
+      'Οδηγίες διαδρομής, χιλιόμετρα, ρυθμός και ζώνες. Σε γλώσσα διαφορετική από της εφαρμογής, τα ονόματα των ασκήσεων μένουν στη γλώσσα της εφαρμογής.';
 
   @override
   String voceNonInstallata(Object p0) {
-    return 'La voce in $p0 non è installata sul telefono: installala dalle impostazioni della sintesi vocale, poi riprova.';
+    return 'Η φωνή $p0 δεν είναι εγκατεστημένη στο κινητό: εγκατάστησέ τη από τις ρυθμίσεις μετατροπής κειμένου σε ομιλία και δοκίμασε ξανά.';
   }
 
   @override
-  String get installaVoce => 'Installa la voce';
+  String get installaVoce => 'Εγκατάσταση φωνής';
 
   @override
-  String get provaVoce => 'Prova la voce';
+  String get provaVoce => 'Δοκιμή φωνής';
+
+  @override
+  String get oppure => ' ή ';
+
+  @override
+  String get mPerBattito => 'm/παλμό';
+
+  @override
+  String get parolaSettimana => 'εβδομάδα';
+
+  @override
+  String get parolaRecupero => 'Διάλειμμα';
+
+  @override
+  String get assistenteTitolo => 'Βοηθός';
+
+  @override
+  String get etichettaRecupero => 'ανάκαμψη';
 }

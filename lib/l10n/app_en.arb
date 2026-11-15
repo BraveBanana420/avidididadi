@@ -1869,7 +1869,7 @@
   "lingua": "Language",
   "linguaTitolo": "Choose your language",
   "linguaSpiega": "You can change it anytime from Profile. The data you've already entered stays as it is.",
-  "linguaSotto": "Italian or English",
+  "linguaSotto": "Italian, English or Greek",
   "sostieniProgetto": "Support the project",
   "sostieniSotto": "A donation helps development. It doesn't unlock anything: the whole app is free.",
   "linkNonAperto": "I can't open the link.",
@@ -1906,5 +1906,11 @@
   "linguaVoceSpiega": "Turn-by-turn directions, km, pace and zones. In a language other than the app's, exercise names stay in the app's language.",
   "voceNonInstallata": "The {p0} voice isn't installed on the phone: install it from the text-to-speech settings, then try again.",
   "installaVoce": "Install the voice",
-  "provaVoce": "Test the voice"
+  "provaVoce": "Test the voice",
+  "oppure": " or ",
+  "mPerBattito": "m/beat",
+  "parolaSettimana": "week",
+  "parolaRecupero": "Rest",
+  "assistenteTitolo": "Assistant",
+  "etichettaRecupero": "recovery"
 }

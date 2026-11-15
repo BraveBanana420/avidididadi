@@ -125,16 +125,16 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
             Text(l10n.tuaArrampicata, style: t.titleLarge),
             _Titolo(l10n.dove),
             SegmentedButton<Ambiente>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: Ambiente.indoor,
-                  label: Text('Indoor'),
-                  icon: Icon(Icons.roofing_rounded),
+                  label: Text(mostra('Indoor')),
+                  icon: const Icon(Icons.roofing_rounded),
                 ),
                 ButtonSegment(
                   value: Ambiente.outdoor,
-                  label: Text('Outdoor'),
-                  icon: Icon(Icons.landscape_rounded),
+                  label: Text(mostra('Outdoor')),
+                  icon: const Icon(Icons.landscape_rounded),
                 ),
               ],
               selected: {ambiente!},
@@ -153,11 +153,14 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
             _Titolo(l10n.cosaHaiFatto),
             SegmentedButton<Disciplina>(
               emptySelectionAllowed: true,
-              segments: const [
-                ButtonSegment(value: Disciplina.falesia, label: Text('Vie')),
+              segments: [
+                ButtonSegment(
+                  value: Disciplina.falesia,
+                  label: Text(mostra('Vie')),
+                ),
                 ButtonSegment(
                   value: Disciplina.boulder,
-                  label: Text('Boulder'),
+                  label: Text(mostra('Boulder')),
                 ),
               ],
               selected: {?d},

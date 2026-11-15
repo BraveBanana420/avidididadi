@@ -134,7 +134,9 @@ String fraseBlocco(Blocco b) {
         : l10nVoce.recupero4(parlaDurata(Duration(seconds: b.secondi!)));
   }
   final pezzi = [
-    l10nVoce.ora(gradiParlati(b.titolo)),
+    // Il nome del blocco è salvato in italiano: si dice nella lingua
+    // della voce, se è tra quelli noti.
+    l10nVoce.ora(gradiParlati(nomePerVoce(b.titolo))),
     if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
     // Intensità e obiettivo sono scritti in italiano nei dati.
     if (b.intensita.isNotEmpty) parlato(testoPerVoce(b.intensita)),

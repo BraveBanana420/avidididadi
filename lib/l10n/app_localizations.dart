@@ -11327,7 +11327,7 @@ abstract class AppLocalizations {
   /// aggiunta a mano
   ///
   /// In it, this message translates to:
-  /// **'Italiano o inglese'**
+  /// **'Italiano, inglese o greco'**
   String get linguaSotto;
 
   /// aggiunta a mano
@@ -11551,6 +11551,42 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Prova la voce'**
   String get provaVoce;
+
+  /// tra due attrezzi alternativi, con gli spazi
+  ///
+  /// In it, this message translates to:
+  /// **' o '**
+  String get oppure;
+
+  /// unità dell'efficienza aerobica
+  ///
+  /// In it, this message translates to:
+  /// **'m/battito'**
+  String get mPerBattito;
+
+  /// sotto il numero nell'anello di Progressi
+  ///
+  /// In it, this message translates to:
+  /// **'settimana'**
+  String get parolaSettimana;
+
+  /// la pausa tra due esercizi o ripetizioni
+  ///
+  /// In it, this message translates to:
+  /// **'Recupero'**
+  String get parolaRecupero;
+
+  /// titolo della pagina
+  ///
+  /// In it, this message translates to:
+  /// **'Assistente'**
+  String get assistenteTitolo;
+
+  /// sotto lo stato del recupero, in Progressi
+  ///
+  /// In it, this message translates to:
+  /// **'recupero'**
+  String get etichettaRecupero;
 }
 
 class _AppLocalizationsDelegate

@@ -6752,7 +6752,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You can change it anytime from Profile. The data you\'ve already entered stays as it is.';
 
   @override
-  String get linguaSotto => 'Italian or English';
+  String get linguaSotto => 'Italian, English or Greek';
 
   @override
   String get sostieniProgetto => 'Support the project';
@@ -6920,4 +6920,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get provaVoce => 'Test the voice';
+
+  @override
+  String get oppure => ' or ';
+
+  @override
+  String get mPerBattito => 'm/beat';
+
+  @override
+  String get parolaSettimana => 'week';
+
+  @override
+  String get parolaRecupero => 'Rest';
+
+  @override
+  String get assistenteTitolo => 'Assistant';
+
+  @override
+  String get etichettaRecupero => 'recovery';
 }

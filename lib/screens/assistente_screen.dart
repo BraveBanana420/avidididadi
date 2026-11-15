@@ -114,7 +114,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Assistente', style: t.titleLarge),
+                            Text(l10n.assistenteTitolo, style: t.titleLarge),
                             if (esterno)
                               Text(
                                 l10n.collegato2(state.assistente.appEsterna),

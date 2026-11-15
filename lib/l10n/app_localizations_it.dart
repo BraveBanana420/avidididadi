@@ -6778,7 +6778,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Potrai cambiarla quando vuoi dal Profilo. I dati che hai già scritto restano come sono.';
 
   @override
-  String get linguaSotto => 'Italiano o inglese';
+  String get linguaSotto => 'Italiano, inglese o greco';
 
   @override
   String get sostieniProgetto => 'Sostieni il progetto';
@@ -6946,4 +6946,22 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get provaVoce => 'Prova la voce';
+
+  @override
+  String get oppure => ' o ';
+
+  @override
+  String get mPerBattito => 'm/battito';
+
+  @override
+  String get parolaSettimana => 'settimana';
+
+  @override
+  String get parolaRecupero => 'Recupero';
+
+  @override
+  String get assistenteTitolo => 'Assistente';
+
+  @override
+  String get etichettaRecupero => 'recupero';
 }

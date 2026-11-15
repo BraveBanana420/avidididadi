@@ -342,7 +342,7 @@ String _unitaDa(String titolo) {
     l10n.metriSessione: 'm',
     l10n.sessioniSettimana2: l10n.parolaSessioni,
     l10n.minutiSettimana: 'min',
-    l10n.efficienzaAerobicaMetriBattito: inInglese ? 'm/beat' : 'm/battito',
+    l10n.efficienzaAerobicaMetriBattito: l10n.mPerBattito,
   };
   final f = fisse[titolo];
   if (f != null) return f;

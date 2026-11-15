@@ -9764,7 +9764,7 @@
   "@linguaSpiega": {
     "description": "aggiunta a mano"
   },
-  "linguaSotto": "Italiano o inglese",
+  "linguaSotto": "Italiano, inglese o greco",
   "@linguaSotto": {
     "description": "aggiunta a mano"
   },
@@ -10059,5 +10059,29 @@
   "provaVoce": "Prova la voce",
   "@provaVoce": {
     "description": "aggiunta a mano"
+  },
+  "oppure": " o ",
+  "@oppure": {
+    "description": "tra due attrezzi alternativi, con gli spazi"
+  },
+  "mPerBattito": "m/battito",
+  "@mPerBattito": {
+    "description": "unità dell'efficienza aerobica"
+  },
+  "parolaSettimana": "settimana",
+  "@parolaSettimana": {
+    "description": "sotto il numero nell'anello di Progressi"
+  },
+  "parolaRecupero": "Recupero",
+  "@parolaRecupero": {
+    "description": "la pausa tra due esercizi o ripetizioni"
+  },
+  "assistenteTitolo": "Assistente",
+  "@assistenteTitolo": {
+    "description": "titolo della pagina"
+  },
+  "etichettaRecupero": "recupero",
+  "@etichettaRecupero": {
+    "description": "sotto lo stato del recupero, in Progressi"
   }
 }

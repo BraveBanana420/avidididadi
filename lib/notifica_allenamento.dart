@@ -5,6 +5,7 @@ import 'esecuzione.dart';
 import 'models.dart';
 import 'percorso.dart';
 import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 // La notifica dell'allenamento in corso, visibile anche dalla schermata di
 // blocco: esercizio, tempo (che scorre da solo), km, passo e battito, con il
@@ -62,11 +63,14 @@ String titoloNotifica(
   required bool inPausa,
   Blocco? prossimo,
 }) {
+  final titolo = mostra(b.titolo);
   final cosa = libera
-      ? nome
+      ? mostra(nome)
       : b.tipo == TipoBlocco.recupero
-      ? (prossimo == null ? 'Recupero' : l10n.recuperoPoi(prossimo.titolo))
-      : (b.dettaglio.isEmpty ? b.titolo : '${b.titolo} · ${b.dettaglio}');
+      ? (prossimo == null
+            ? l10n.parolaRecupero
+            : l10n.recuperoPoi(mostra(prossimo.titolo)))
+      : (b.dettaglio.isEmpty ? titolo : '$titolo · ${b.dettaglio}');
   return inPausa ? l10n.pausa(cosa) : cosa;
 }
 

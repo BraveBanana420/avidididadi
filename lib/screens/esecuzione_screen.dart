@@ -1604,7 +1604,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Recupero', style: t.titleMedium),
+                                Text(l10n.parolaRecupero, style: t.titleMedium),
                                 if (b.note.isNotEmpty)
                                   Text(b.note, style: t.bodySmall),
                               ],
@@ -1638,7 +1638,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                           // Solo il nome, piccolo: titolo e durata
                                           // della seduta sono già stati scelti.
                                           TestoUnaRiga(
-                                            b.titolo,
+                                            mostra(b.titolo),
                                             style: t.titleSmall,
                                           ),
                                           if (dettaglioBreve(b).isNotEmpty)
@@ -1873,14 +1873,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               const SizedBox(height: 4),
               TestoUnaRiga(
                 widget.libera
-                    ? widget.nome
+                    ? mostra(widget.nome)
                     : l10n.esercizi2(widget.nome, nPassi),
                 style: t.bodySmall,
                 textAlign: TextAlign.center,
               ),
               if (prossimo != null)
                 TestoUnaRiga(
-                  l10n.siParte(prossimo.titolo),
+                  l10n.siParte(mostra(prossimo.titolo)),
                   style: t.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -2034,7 +2034,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           velocita: fmtVelocita(widget.sport, sensoreBici.velocita),
           km: (_metriSensore / 1000).toStringAsFixed(2).replaceAll('.', ','),
           sensoriRicordati: sensoreBici.ricordato,
-          titolo: recupero ? 'Recupero' : b.titolo,
+          titolo: recupero ? l10n.parolaRecupero : mostra(b.titolo),
           dettaglio: dettaglioBreve(b),
           intensita: intensitaCon(
             b.intensita,
@@ -2172,7 +2172,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     children: [
                       Expanded(
                         child: TestoUnaRiga(
-                          recupero ? 'Recupero' : b.titolo,
+                          recupero ? l10n.parolaRecupero : mostra(b.titolo),
                           style: t.titleSmall,
                         ),
                       ),

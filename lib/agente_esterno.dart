@@ -48,7 +48,7 @@ ${datiAgente(codice: codice, contesto: contesto, oggi: oggi)}''';
 /// Solo le istruzioni fisse (per un Progetto di Claude, un GPT o un Gem).
 String istruzioniAgente(String codice) =>
     '''Da adesso sei il mio allenatore personale. Io seguo gli allenamenti nell'app Avidididadi (corsa, nuoto, bici, forza, mobilità); tu mi aiuti a capire come vanno e prepari o cambi il piano.
-Rispondi in ${inInglese ? 'inglese (in English), lasciando in italiano i valori dei blocchi JSON' : 'italiano'}, in modo breve e concreto, basandoti sui miei dati più recenti. Non fare diagnosi mediche: se segnalo un dolore che continua, consigliami di fermarmi e sentire un medico.
+Rispondi in $linguaRisposta, in modo breve e concreto, basandoti sui miei dati più recenti. Non fare diagnosi mediche: se segnalo un dolore che continua, consigliami di fermarmi e sentire un medico.
 
 ${_formato(codice)}''';
 
