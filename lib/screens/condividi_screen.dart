@@ -600,9 +600,12 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
     return f.path;
   }
 
-  LatLngBounds get _limiti {
-    final (a, b, c, d) = widget.percorso.limiti;
-    return LatLngBounds(southwest: LatLng(a, b), northeast: LatLng(c, d));
+  /// Le misure della mappa in punti (quelle dell'immagine, 360 × 450).
+  Size? get _lato {
+    final box = context.findRenderObject();
+    return box is RenderBox && box.hasSize && !box.size.isEmpty
+        ? box.size
+        : null;
   }
 
   /// La mappa com'è adesso, in PNG; null se non è ancora pronta.
@@ -610,14 +613,11 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
     final c = _controllo;
     if (c == null || !_pronta) return null;
     // Senza misure la foto prende i pixel veri dello schermo e li usa come
-    // punti: con lo stesso zoom ne esce un'immagine 3 volte più larga e il
-    // percorso piccolo in mezzo. Le misure in punti, quelle della mappa che
-    // si vede (rimpicciolita nell'anteprima), tengono l'inquadratura.
-    final box = context.findRenderObject();
-    if (box is! RenderBox || !box.hasSize) return null;
-    final lato =
-        box.localToGlobal(box.size.bottomRight(Offset.zero)) -
-        box.localToGlobal(Offset.zero);
+    // punti: con lo stesso zoom ne esce un'immagine 3 volte più larga. Le
+    // misure giuste sono quelle della mappa in punti, prima che l'anteprima
+    // la rimpicciolisca (box.size, non le misure sullo schermo).
+    final lato = _lato;
+    if (lato == null) return null;
     try {
       await c.waitUntilMapTilesAreLoaded().timeout(const Duration(seconds: 8));
     } catch (_) {
@@ -625,8 +625,8 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
     }
     try {
       return await c.takeSnapshot(
-        width: lato.dx.round(),
-        height: lato.dy.round(),
+        width: lato.width.round(),
+        height: lato.height.round(),
       );
     } catch (_) {
       return null;
@@ -656,14 +656,21 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
               _pronta = false;
             },
             onStyleLoadedCallback: () {
+              final lato = _lato;
+              if (lato == null) return;
               // Il percorso nella parte alta: sotto c'è la fascia dei numeri.
+              final q = inquadratura(
+                widget.percorso.limiti,
+                larghezza: lato.width,
+                altezza: lato.height,
+                sinistra: 40,
+                sopra: 70,
+                destra: 40,
+                sotto: 170,
+              );
               _controllo?.moveCamera(
-                CameraUpdate.newLatLngBounds(
-                  _limiti,
-                  left: 40,
-                  top: 70,
-                  right: 40,
-                  bottom: 170,
+                CameraUpdate.newCameraPosition(
+                  CameraPosition(target: LatLng(q.lat, q.lon), zoom: q.zoom),
                 ),
               );
               _pronta = true;

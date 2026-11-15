@@ -550,3 +550,50 @@ String stileStrade(
   ];
   return jsonEncode(stile);
 }
+
+/// Centro e zoom che mettono i limiti (latMin, lonMin, latMax, lonMax) in una
+/// mappa di [larghezza] × [altezza] punti, lasciando i margini dati.
+///
+/// Lo fa a mano invece di `newLatLngBounds` con i margini: quelli restano
+/// nella camera della mappa in pixel veri, e la foto della mappa
+/// (MapSnapshotter, a 1 pixel per punto) li applica tre volte più grandi,
+/// spostando il percorso in alto e tagliandolo. Con centro e zoom senza
+/// margini la foto inquadra come la mappa che si vede.
+({double lat, double lon, double zoom}) inquadratura(
+  (double, double, double, double) limiti, {
+  required double larghezza,
+  required double altezza,
+  double sinistra = 0,
+  double sopra = 0,
+  double destra = 0,
+  double sotto = 0,
+  double zoomMassimo = 17,
+}) {
+  final (a, b, c, d) = limiti;
+  // Web Mercator tra 0 e 1; a zoom z il mondo è largo 512 · 2^z punti.
+  double x(double lon) => (lon + 180) / 360;
+  double y(double lat) {
+    final r = lat.clamp(-85.0, 85.0) * math.pi / 180;
+    return (1 - math.log(math.tan(r) + 1 / math.cos(r)) / math.pi) / 2;
+  }
+
+  final x0 = x(b), x1 = x(d), y0 = y(c), y1 = y(a);
+  final w = math.max(larghezza - sinistra - destra, 1.0);
+  final h = math.max(altezza - sopra - sotto, 1.0);
+  final dx = math.max(x1 - x0, 1e-9), dy = math.max(y1 - y0, 1e-9);
+  final mondo = math.min(w / dx, h / dy);
+  final zoom = math.min(math.log(mondo / 512) / math.ln2, zoomMassimo);
+  final scala = 512 * math.pow(2, zoom);
+  // Il centro del percorso va al centro dello spazio libero: il centro della
+  // mappa si sposta della metà della differenza tra i margini.
+  final cx = (x0 + x1) / 2 + (destra - sinistra) / 2 / scala;
+  final cy = (y0 + y1) / 2 + (sotto - sopra) / 2 / scala;
+  final lat =
+      math.atan(
+        (math.exp(math.pi * (1 - 2 * cy)) - math.exp(-math.pi * (1 - 2 * cy))) /
+            2,
+      ) *
+      180 /
+      math.pi;
+  return (lat: lat, lon: cx * 360 - 180, zoom: zoom);
+}
