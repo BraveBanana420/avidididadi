@@ -262,6 +262,25 @@ void main() {
       expect((nuoto.grande, nuoto.sotto), ('1500', 'm'));
     });
 
+    test('la classica senza percorso: il primo grafico che c\'è', () {
+      final t0 = DateTime(2026, 11, 8, 9);
+      final piatta = [
+        for (var i = 0; i < 50; i++)
+          Campione(t0.add(Duration(minutes: i)), 700),
+      ];
+      // Niente dati: resta lo spazio (nessun grafico).
+      expect(graficoClassica(sport: 'Camminata'), isNull);
+      // Quota piatta (senza salita): meglio i km.
+      expect(
+        graficoClassica(sport: 'Camminata', quota: piatta, tempi: [600, 620]),
+        isNotNull,
+      );
+      expect(
+        graficoClassica(sport: 'Camminata', quota: piatta, tempi: [600]),
+        isNull,
+      );
+    });
+
     test('la salita si conta senza il rumore', () {
       final t0 = DateTime(2026, 11, 8, 9);
       // Sale di 400 m in 200 punti, con un tremolio di ±1 m.
@@ -363,6 +382,36 @@ void main() {
         punti: const [('6a', 12, false), ('6a+', 13, false), ('6b+', 15, true)],
       ),
       'foto': ImmagineFoto(sessione: corsa, foto: png),
+      'classica con la salita': ImmagineSessione(
+        sessione: camminata,
+        grafico: graficoClassica(
+          sport: 'Camminata',
+          quota: [
+            for (var i = 0; i < 100; i++)
+              Campione(
+                oggi.add(Duration(minutes: i)),
+                760 + (i < 50 ? i * 8 : (100 - i) * 8),
+              ),
+          ],
+        ),
+      ),
+      'classica km per km': ImmagineSessione(
+        sessione: corsa,
+        grafico: graficoClassica(
+          sport: 'Corsa',
+          tempi: const [318, 310, 307, 305, 306, 304, 302, 298, 301, 303],
+        ),
+      ),
+      'classica battito': ImmagineSessione(
+        sessione: corsa,
+        grafico: graficoClassica(
+          sport: 'Corsa',
+          battito: [
+            for (var i = 0; i < 60; i++)
+              Campione(oggi.add(Duration(minutes: i)), 120 + (i % 20) * 2.0),
+          ],
+        ),
+      ),
     };
     for (final (nome, tema) in [
       ('scuro rosso', creaTema(Brightness.dark)),

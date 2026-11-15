@@ -977,7 +977,7 @@ class _HeroSeduta extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    etichetta.toUpperCase(),
+                    maiuscole(etichetta),
                     style: TextStyle(
                       color: ink,
                       fontWeight: FontWeight.w800,
@@ -1780,7 +1780,7 @@ class PulsanteLibera extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Pulse.di(context);
     return Tooltip(
-      message: 'Attività libera',
+      message: mostra('Attività libera'),
       child: Semantics(
         button: true,
         label: l10n.iniziaAttivitaLibera,

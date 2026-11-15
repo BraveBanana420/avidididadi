@@ -255,16 +255,20 @@ String contestoAllenamento({
   return b.toString().trim();
 }
 
-/// In che lingua deve rispondere il coach: quella dell'app. I valori dei
-/// blocchi JSON restano in italiano, perché l'app li rilegge così.
+/// In che lingua deve rispondere il coach: quella dell'app.
 String get linguaRisposta => switch (codiceLingua) {
-  'en' =>
-    'inglese (in English), lasciando in italiano i valori dei blocchi JSON',
-  'el' =>
-    'greco (in Greek, στα ελληνικά), lasciando in italiano i valori dei '
-        'blocchi JSON',
+  'en' => 'inglese (in English)$_valoriJson',
+  'el' => 'greco (in Greek, στα ελληνικά)$_valoriJson',
   _ => 'italiano',
 };
+
+/// Nei blocchi JSON restano in italiano solo i valori che l'app rilegge
+/// (sport, tipo, fascia, fase, intensità); i nomi e le note si vedono così
+/// come sono, quindi vanno nella lingua dell'utente.
+const _valoriJson =
+    ', lasciando in italiano nei blocchi JSON i valori di "sport", "tipo", '
+    '"fascia", "fase" e "intensita" ma scrivendo nella stessa lingua della '
+    'risposta "nome", "motivo" e "note"';
 
 /// Istruzioni di sistema: ruolo, sicurezza e formato delle proposte.
 String istruzioniAssistente(String contesto) =>

@@ -1919,5 +1919,5 @@
   "passiDalTelefono": "Steps from the phone",
   "passiDalTelefonoSpiega": "While running and walking the app counts your steps with the phone's sensor (\"Physical activity\" permission), even without a watch.",
   "permessoPassiNegato": "The \"Physical activity\" permission is not granted: you can allow it in the app settings, under Permissions.",
-  "traccia": "Track"
+  "intervalliFatti": "Intervals"
 }

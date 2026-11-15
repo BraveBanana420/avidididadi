@@ -426,7 +426,9 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   ),
                   title: Text(giorniSettimana[g - 1]),
                   subtitle: Text(
-                    s == null ? 'Riposo' : l10n.minuti(s.sport, s.durataMin),
+                    s == null
+                        ? mostra('Riposo')
+                        : l10n.minuti(s.sport, s.durataMin),
                   ),
                 );
               }(),

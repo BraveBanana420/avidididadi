@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 import '../avviso.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
-import '../attivita_libera.dart';
 import '../carico.dart';
 import '../condivisione.dart';
 import '../esercizi.dart';
@@ -21,6 +20,7 @@ import '../health_connect.dart';
 import '../intervalli.dart';
 import '../models.dart';
 import '../percorso.dart';
+import '../potenza.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../riepilogo_condiviso.dart';
@@ -186,11 +186,11 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   // Spento di base: il percorso dice da dove si parte (spesso casa).
   bool _conPercorso = false;
   GraficaCondivisa? _grafica; // null: la prima dello sport
-  /// null: solo la traccia, disegnata dall'app e nitida (di base); le
-  /// mappe vere si fotografano e vengono un po' sfocate.
-  TipoMappa? _tipo;
+  /// La traccia senza mappa sta già nella Classica: qui solo mappe vere.
+  TipoMappa _tipo = TipoMappa.pulse;
   List<IntervalloFatto> _tratti = const [];
-  List<Campione> _quota = const [];
+  SerieSessione _serie = const SerieSessione();
+  List<Campione> get _quota => _serie.altitudine;
 
   /// La mappa fotografata subito prima di condividere: le mappe vere non
   /// finiscono da sole nell'immagine.
@@ -217,10 +217,12 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         if (mounted) setState(() => _tratti = l);
       });
     }
-    // Camminata: la quota per il profilo della salita.
-    if (stessoSport(s.sport, sportCamminata)) {
+    // Quota e battito: il profilo della salita (camminata) e il grafico
+    // della Classica quando il percorso non si mostra.
+    if (!stessoSport(s.sport, 'Forza') &&
+        !stessoSport(s.sport, sportArrampicata)) {
       widget.state.serieDi(s).then((x) {
-        if (mounted) setState(() => _quota = x.altitudine);
+        if (mounted) setState(() => _serie = x);
       });
     }
   }
@@ -247,7 +249,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   }
 
   Future<bool> _fotografa(GraficaCondivisa grafica) async {
-    if (grafica != GraficaCondivisa.mappa || _tipo == null) return true;
+    if (grafica != GraficaCondivisa.mappa) return true;
     final foto = await _mappa.currentState?.istantanea();
     if (foto == null || !mounted) return false;
     await precacheImage(MemoryImage(foto), context);
@@ -327,23 +329,19 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
       immagine: switch (grafica) {
         GraficaCondivisa.mappa => ImmagineMappa(
           sessione: s,
-          mappa: switch (_tipo) {
-            null => SoloTraccia(percorso: _percorso!, sport: s.sport),
-            final TipoMappa tipo => Stack(
-              fit: StackFit.expand,
-              children: [
-                _MappaCondivisa(
-                  key: _mappa,
-                  percorso: _percorso!,
-                  sport: s.sport,
-                  tipo: tipo,
-                ),
-                if (_istantanea case final f?)
-                  Image.memory(f, fit: BoxFit.cover),
-              ],
-            ),
-          },
-          crediti: _tipo == null ? null : creditiMappe[_tipo],
+          mappa: Stack(
+            fit: StackFit.expand,
+            children: [
+              _MappaCondivisa(
+                key: _mappa,
+                percorso: _percorso!,
+                sport: s.sport,
+                tipo: _tipo,
+              ),
+              if (_istantanea case final f?) Image.memory(f, fit: BoxFit.cover),
+            ],
+          ),
+          crediti: creditiMappe[_tipo],
         ),
         GraficaCondivisa.poster => ImmaginePoster(
           sessione: s,
@@ -405,6 +403,14 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         GraficaCondivisa.esercizi => ImmagineSessione(
           sessione: s,
           percorso: percorso,
+          grafico: graficoClassica(
+            sport: s.sport,
+            barre: barre,
+            zone: zp,
+            quota: _quota,
+            tempi: tempi,
+            battito: _serie.fc,
+          ),
           kgTotali: kg,
           esercizi: esercizi.take(5).toList(),
           passoNuoto: passoNuoto,
@@ -437,23 +443,18 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         if (grafica == GraficaCondivisa.mappa) ...[
           Text(l10n.tipoMappa, style: t.titleSmall),
           const SizedBox(height: 8),
-          SegmentedButton<TipoMappa?>(
-            segments: [
-              ButtonSegment(
-                value: null,
-                label: Text(l10n.traccia),
-                icon: const Icon(Icons.route_rounded),
-              ),
+          // Un menu a tendina: i nomi affiancati andavano a capo.
+          DropdownButtonFormField<TipoMappa>(
+            initialValue: _tipo,
+            isExpanded: true,
+            decoration: InputDecoration(prefixIcon: Icon(iconeMappe[_tipo])),
+            items: [
               for (final m in TipoMappa.values)
-                ButtonSegment(
-                  value: m,
-                  label: Text(nomiMappe[m]!),
-                  icon: Icon(iconeMappe[m]),
-                ),
+                DropdownMenuItem(value: m, child: Text(nomiMappe[m]!)),
             ],
-            selected: {_tipo},
-            showSelectedIcon: false,
-            onSelectionChanged: (v) => setState(() => _tipo = v.first),
+            onChanged: (v) {
+              if (v != null) setState(() => _tipo = v);
+            },
           ),
           const SizedBox(height: 8),
           Text(l10n.mappaFaVedereDove, style: t.bodySmall),
@@ -816,33 +817,6 @@ class ImmagineMappa extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Solo la traccia sul fondo del tema, senza mappa: la disegna l'app, quindi
-/// resta nitida nell'immagine. Sta nella parte alta, sopra la fascia dei
-/// numeri, con il pallino della partenza e l'anello dell'arrivo.
-class SoloTraccia extends StatelessWidget {
-  final Percorso percorso;
-  final String sport;
-  const SoloTraccia({super.key, required this.percorso, required this.sport});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        for (final g in Pulse.di(context).sfondo)
-          DecoratedBox(decoration: BoxDecoration(gradient: g)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 64, 32, 168),
-          child: CustomPaint(
-            painter: _Giro(percorso, coloreSport(sport), fondo: scheme.surface),
           ),
         ),
       ],
@@ -1543,7 +1517,11 @@ class ImmagineProgressi extends StatelessWidget {
           const SizedBox(height: 14),
           _treNumeri([
             if (seduta.chiuse > 0)
-              (seduta.falesia ? 'Vie' : l10n.blocchi, '${seduta.chiuse}', ''),
+              (
+                seduta.falesia ? mostra('Vie') : l10n.blocchi,
+                '${seduta.chiuse}',
+                '',
+              ),
             (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
             if (seduta.progetto.isNotEmpty)
               (l10n.progetto2, seduta.progetto, ''),
@@ -1762,10 +1740,14 @@ class ImmagineSessione extends StatelessWidget {
   final double kgTotali;
   final List<(String, String)> esercizi; // nome, serie fatte
   final int passoNuoto; // secondi ai 100 m; 0 = dalla durata
+
+  /// Senza percorso né esercizi: un grafico al posto dello spazio vuoto.
+  final Widget? grafico;
   const ImmagineSessione({
     super.key,
     required this.sessione,
     this.percorso,
+    this.grafico,
     this.kgTotali = 0,
     this.esercizi = const [],
     this.passoNuoto = 0,
@@ -1814,7 +1796,7 @@ class ImmagineSessione extends StatelessWidget {
             Expanded(
               child: CustomPaint(
                 size: Size.infinite,
-                painter: _Giro(p, colore),
+                painter: _Giro(p, colore, fondo: scheme.surface),
               ),
             )
           else if (esercizi.isNotEmpty)
@@ -1849,6 +1831,8 @@ class ImmagineSessione extends StatelessWidget {
                 ],
               ),
             )
+          else if (grafico case final g?)
+            Expanded(child: g)
           else
             const Spacer(),
           const SizedBox(height: 12),
@@ -1865,6 +1849,137 @@ class ImmagineSessione extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Il grafico della Classica quando il percorso resta nascosto: i blocchi
+/// della bici, la quota, i tempi km per km o il battito, il primo che c'è.
+/// Null se non c'è niente da disegnare.
+Widget? graficoClassica({
+  required String sport,
+  List<BarraAllenamento> barre = const [],
+  ZonePotenza? zone,
+  List<Campione> quota = const [],
+  List<int> tempi = const [],
+  List<Campione> battito = const [],
+}) {
+  final colore = coloreSport(sport);
+  if (barre.isNotEmpty && zone != null) {
+    return _ConTitolo(
+      mostra('Allenamento'),
+      ProfiloAllenamento(barre: barre, zone: zone, altezza: 120),
+    );
+  }
+  if (quota.length >= 10 && salitaTotale(quota) >= 10) {
+    return _ConTitolo(
+      '${l10n.altitudine} · +${salitaTotale(quota)} ${l10n.mSalita}',
+      Builder(
+        builder: (context) => CustomPaint(
+          size: Size.infinite,
+          painter: _Quota(
+            ricampiona(quota, punti: 150),
+            colore,
+            Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+  if (tempi.length >= 2) {
+    final veloce = tempi.reduce(math.min);
+    return _ConTitolo(
+      '${l10n.kmPiuVeloce} ${fmtMinSec(veloce.toDouble())} /km',
+      Builder(
+        builder: (context) => CustomPaint(
+          size: Size.infinite,
+          painter: _BarreKm(
+            tempi,
+            colore,
+            Theme.of(context).colorScheme.surfaceContainerHighest,
+          ),
+        ),
+      ),
+    );
+  }
+  if (battito.length >= 10) {
+    return _ConTitolo(
+      l10n.battito,
+      Builder(
+        builder: (context) => CustomPaint(
+          size: Size.infinite,
+          painter: _Quota(
+            ricampiona(battito, punti: 150),
+            colore,
+            Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+      ),
+    );
+  }
+  return null;
+}
+
+/// Un grafico con il suo nome sopra, piccolo.
+class _ConTitolo extends StatelessWidget {
+  final String titolo;
+  final Widget grafico;
+  const _ConTitolo(this.titolo, this.grafico);
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          titolo,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: t.labelMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Align(alignment: Alignment.bottomCenter, child: grafico),
+        ),
+      ],
+    );
+  }
+}
+
+/// Una barra per km: più alta se più veloce, la più veloce nel colore
+/// dello sport.
+class _BarreKm extends CustomPainter {
+  final List<int> tempi;
+  final Color colore;
+  final Color altre;
+  _BarreKm(this.tempi, this.colore, this.altre);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final veloce = tempi.reduce(math.min);
+    final lento = tempi.reduce(math.max);
+    final passo = size.width / tempi.length;
+    final larga = math.min(passo * 0.7, 40.0);
+    for (final (i, sec) in tempi.indexed) {
+      final f = lento == veloce
+          ? 1.0
+          : 0.35 + 0.65 * (lento - sec) / (lento - veloce);
+      final h = size.height * f;
+      final x = passo * i + (passo - larga) / 2;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(x, size.height - h, larga, h),
+          Radius.circular(math.min(larga / 2, 8)),
+        ),
+        Paint()..color = sec == veloce ? colore : altre,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_BarreKm old) =>
+      old.tempi != tempi || old.colore != colore || old.altre != altre;
 }
 
 /// La forma del giro, nel colore dello sport.

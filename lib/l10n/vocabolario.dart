@@ -1,4 +1,5 @@
 import 'lingua.dart';
+import 'testi_salvati.dart';
 
 /// Nomi che l'app salva in italiano nei CSV (sport, fasce, tipi di seduta,
 /// stili, categorie): restano così nei file, perché il codice li confronta
@@ -243,6 +244,16 @@ String mostra(String s) => traduciNome(s, codiceLingua);
 /// voce in greco, "Riscaldamento" si sente "Ζέσταμα".
 String nomePerVoce(String s) => traduciNome(s, codiceVoce);
 
+/// Nomi degli esercizi del catalogo: nome italiano (salvato nei passi) →
+/// nome nelle altre lingue. Si riempie quando si carica il catalogo.
+final _esercizi = <String, Map<String, String>>{};
+
+/// Registra il nome di un esercizio del catalogo nelle varie lingue, perché i
+/// passi salvati in italiano si vedano nella lingua scelta.
+void registraNomeEsercizio(String italiano, Map<String, String> altri) {
+  if (italiano.isNotEmpty) _esercizi[italiano] = altri;
+}
+
 /// [s] (un nome salvato in italiano) in [lingua], se è tra quelli noti;
 /// altrimenti con le parole note tradotte.
 String traduciNome(String s, String lingua) {
@@ -250,6 +261,10 @@ String traduciNome(String s, String lingua) {
   if (nomi == null || s.isEmpty) return s;
   final esatto = nomi[s] ?? nomi[s.trim()];
   if (esatto != null) return esatto;
+  final esercizio = _esercizi[s.trim()]?[lingua];
+  if (esercizio != null && esercizio.isNotEmpty) return esercizio;
+  final salvato = _testoSalvato(s.trim(), lingua);
+  if (salvato != null) return salvato;
   final maiuscolo = s[0].toUpperCase() + s.substring(1);
   final m = nomi[maiuscolo];
   if (m != null) return s[0] == maiuscolo[0] ? m : m.toLowerCase();
@@ -263,13 +278,71 @@ String mostraTesto(String s) => traduciTesto(s, codiceLingua);
 /// Come [mostraTesto], per quello che dice la voce (nella sua lingua).
 String testoPerVoce(String s) => traduciTesto(s, codiceVoce);
 
-/// [s] (scritto in italiano nei dati) con le parole note in [lingua].
+/// [s] (scritto in italiano nei dati) con le parole note in [lingua]. Le note
+/// fatte di più frasi dei generatori si traducono frase per frase.
 String traduciTesto(String s, String lingua) {
   final parole = _parole[lingua];
   if (parole == null || s.isEmpty) return s;
+  final intero = _testoSalvato(s.trim(), lingua);
+  if (intero != null) return intero;
+  final frasi = s.split(RegExp(r'(?<=[.!?])\s+'));
+  return [
+    for (final f in frasi) _testoSalvato(f, lingua) ?? _soloParole(f, parole),
+  ].join(' ');
+}
+
+String _soloParole(String s, List<(RegExp, String)> parole) {
   var t = s;
   for (final (rx, tradotta) in parole) {
     t = t.replaceAll(rx, tradotta);
   }
   return t;
 }
+
+/// Un testo dei generatori ([testiSalvati]) salvato in italiano, nella
+/// [lingua] scelta: uguale, o con i valori ({p0}…) al loro posto (tradotti
+/// anche loro, se sono nomi noti). Null se non è tra quelli noti.
+String? _testoSalvato(String s, String lingua) {
+  final indice = switch (lingua) {
+    'en' => 1,
+    'el' => 2,
+    _ => 0,
+  };
+  if (indice == 0 || s.isEmpty) return null;
+  final esatto = _esattiSalvati[s];
+  if (esatto != null) return indice == 1 ? esatto.$2 : esatto.$3;
+  for (final (rx, segnaposto, testi) in _modelliSalvati) {
+    final m = rx.firstMatch(s);
+    if (m == null) continue;
+    var out = indice == 1 ? testi.$2 : testi.$3;
+    for (var g = 0; g < segnaposto.length; g++) {
+      final valore = m.group(g + 1)!;
+      out = out.replaceAll('{${segnaposto[g]}}', traduciNome(valore, lingua));
+    }
+    return out;
+  }
+  return null;
+}
+
+final _segnaposto = RegExp(r'\{(p\d)\}');
+
+final _esattiSalvati = {
+  for (final t in testiSalvati)
+    if (!_segnaposto.hasMatch(t.$1)) t.$1: t,
+};
+
+/// I testi con valori, come espressioni regolari: prima quelli con più
+/// parole fisse, che sono i più precisi.
+final _modelliSalvati = () {
+  final out = <(RegExp, List<String>, (String, String, String))>[];
+  for (final t in testiSalvati) {
+    final nomi = [for (final m in _segnaposto.allMatches(t.$1)) m.group(1)!];
+    if (nomi.isEmpty) continue;
+    final pezzi = t.$1.split(_segnaposto);
+    final rx = '^${pezzi.map(RegExp.escape).join('(.+?)')}\$';
+    out.add((RegExp(rx), nomi, t));
+  }
+  int fisse(String s) => s.replaceAll(_segnaposto, '').length;
+  out.sort((a, b) => fisse(b.$3.$1).compareTo(fisse(a.$3.$1)));
+  return out;
+}();

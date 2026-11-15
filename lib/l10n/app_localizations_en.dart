@@ -6963,5 +6963,5 @@ class AppLocalizationsEn extends AppLocalizations {
       'The \"Physical activity\" permission is not granted: you can allow it in the app settings, under Permissions.';
 
   @override
-  String get traccia => 'Track';
+  String get intervalliFatti => 'Intervals';
 }

@@ -10113,8 +10113,8 @@
   "@permessoPassiNegato": {
     "description": "quando il permesso dei passi è negato"
   },
-  "traccia": "Traccia",
-  "@traccia": {
-    "description": "tipo di immagine: solo il percorso, senza mappa sotto"
+  "intervalliFatti": "Intervalli",
+  "@intervalliFatti": {
+    "description": "workout_screen.dart: titolo degli intervalli registrati di una sessione"
   }
 }

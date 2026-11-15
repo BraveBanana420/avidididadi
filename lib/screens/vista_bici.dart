@@ -276,7 +276,7 @@ class _Grande extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  etichetta.toUpperCase(),
+                  maiuscole(etichetta),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: t.labelSmall?.copyWith(

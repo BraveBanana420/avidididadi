@@ -125,3 +125,25 @@ void ridisegnaTutto() {
 
   radice.visitChildren(segna);
 }
+
+/// [s] tutto in maiuscolo, come si scrive in ogni lingua: in greco le
+/// maiuscole non hanno accenti ("Ζέσταμα" → "ΖΕΣΤΑΜΑ", non "ΖΈΣΤΑΜΑ").
+String maiuscole(String s) {
+  const senzaAccento = {
+    'Ά': 'Α',
+    'Έ': 'Ε',
+    'Ή': 'Η',
+    'Ί': 'Ι',
+    'Ό': 'Ο',
+    'Ύ': 'Υ',
+    'Ώ': 'Ω',
+    'ΐ': 'Ϊ',
+    'ΰ': 'Ϋ',
+  };
+  final m = s.toUpperCase();
+  final b = StringBuffer();
+  for (final c in m.replaceAll('\u0301', '').split('')) {
+    b.write(senzaAccento[c] ?? c);
+  }
+  return b.toString();
+}
