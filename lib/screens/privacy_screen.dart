@@ -4,8 +4,8 @@ import '../widgets.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-07.1';
-const aggiornamentoTermini = '30 ottobre 2026';
+const versioneTermini = '2026-11-15.1';
+const aggiornamentoTermini = '15 novembre 2026';
 
 /// Una pagina di testo a sezioni (informativa, termini).
 class PaginaTesto extends StatelessWidget {
@@ -118,6 +118,16 @@ class PrivacyScreen extends StatelessWidget {
             "copia della seduta "
             "in corso (percorso compreso) resta sul telefono per riprenderla "
             "se l'app si chiude; si cancella quando finisci.",
+      ),
+      (
+        'Passi durante l\'allenamento',
+        "Solo per corsa e camminata, e solo mentre la modalità allenamento è "
+            "aperta, l'app legge il contapassi del telefono (permesso "
+            "\"Attività fisica\") per mostrarti i passi e i passi al minuto. "
+            "Nella sessione salva il totale dei passi fatti a cronometro "
+            "acceso: resta sul telefono e nel backup. Chiuso l'allenamento "
+            "l'app non legge più il sensore. Senza il permesso l'allenamento "
+            "funziona lo stesso, solo senza passi.",
       ),
       (
         'Sensori Bluetooth (battito e bici)',

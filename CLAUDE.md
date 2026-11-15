@@ -10,7 +10,7 @@ Funzioni principali:
 - **Le mie attività**: al primo avvio si scelgono gli sport e si vedono solo quelli; dal Profilo se ne aggiungono o tolgono (e il calendario si aggiorna). Dal "+" ci sono sempre tutti, e nello storico resta tutto quello fatto.
 - **Piano**: calendario, anche senza settimana tipo (i passi nascono dalle sedute in calendario); la settimana tipo è facoltativa. Generatori per forza, corsa/nuoto/bici e mobilità. Adattamento ai feedback (fatica, passo).
 - **Oggi**: seduta del giorno, settimana, energia/recupero (sonno, HRV, FC a riposo), feedback "Com'è andata?".
-- **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento).
+- **Allenamento guidato**: player passo passo con timer e recuperi, GPS per corsa e bici (anche a schermo spento), passi contati dal telefono in corsa e camminata (senza orologio).
 - **Health Connect** (solo lettura): sessioni di Garmin e Freeletics, battito, sonno, HRV, percorsi.
 - **intervals.icu** (facoltativo, chiave API dell'utente): corsa, bici e nuoto complete da Garmin, Polar, Suunto… (nome, rulli, percorso, altitudine, pendenza, potenza). Sostituiscono le stesse attività di Health Connect, senza doppioni. Se l'utente lo accende, corsa, bici e nuoto dei prossimi 14 giorni vanno nel suo calendario di intervals.icu (e da lì a Garmin), e le sedute registrate con l'app partono da sole appena finite.
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
@@ -43,7 +43,7 @@ Funzioni principali:
 | `flutter_reactive_ble` | battito e sensori bici live (Bluetooth) |
 
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
-  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
+  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, contapassi, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
 - **Nessuna libreria di state management**: un solo `AppState` (`ChangeNotifier`). I dati sono CSV nella cartella privata dell'app.
 
@@ -51,7 +51,7 @@ Funzioni principali:
 
 ```
 lib/
-  main.dart            avvio, tema, barra in basso (Oggi, Progressi, Coach, Profilo)
+  main.dart            avvio, tema, barra in basso (Oggi, Progressi, Coach, Profilo); tasto indietro: torna a Oggi, da Oggi esce
   app_state.dart       stato unico: carica e salva i CSV, sincronizza, rigenera il piano
   models.dart          PianoRiga, Sessione, WorkoutStep, Slot e funzioni di data e formato
   storage.dart         lettura e scrittura dei CSV (path_provider)
@@ -85,6 +85,7 @@ lib/
   modifica_sessione.dart  dati di una seduta scritti a mano dopo la fine (nuoto.csv, sessioni_modificate.csv)
   allenamento_agente.dart  allenamenti passo per passo scritti dall'assistente, nel calendario al posto della seduta
   percorso.dart / gps.dart   GPS, GPX, stile della mappa
+  contapassi.dart      passi dal sensore del telefono in corsa e camminata: conto a cronometro acceso, passi al minuto
   dati_live.dart       passo/velocità di adesso, giri (1 km, 5 in bici), soste e pausa automatica
   sensore_ble.dart     base dei sensori Bluetooth: ricerca, ricollegamento, sensore ricordato
   battito.dart         battito live (sensore_battito.txt)
@@ -223,7 +224,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici. Bluetooth del battito solo con la modalità allenamento aperta.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici. Bluetooth del battito solo con la modalità allenamento aperta. Contapassi del telefono (permesso "Attività fisica") solo durante l'allenamento di corsa e camminata.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.

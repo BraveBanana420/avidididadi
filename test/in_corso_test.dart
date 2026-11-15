@@ -58,6 +58,7 @@ void main() {
     fcMax: 158,
     idPercorso: 'p1730450000',
     progressoPercorso: 4210.5,
+    passiContati: 5480,
   );
 
   test('salvata e riletta resta uguale', () {
@@ -88,17 +89,20 @@ void main() {
     expect(r.riassunto, 'Corsa lenta · 32 min · 5,23 km');
     expect(r.idPercorso, 'p1730450000');
     expect(r.progressoPercorso, 4210.5);
+    expect(r.passiContati, 5480);
   });
 
   test('file di una versione prima: senza percorso seguito', () {
     final j = seduta.toJson()
       ..remove('percorso')
-      ..remove('progresso_percorso');
+      ..remove('progresso_percorso')
+      ..remove('passi_contati');
     final r = AllenamentoInCorso.daJson(
       jsonDecode(jsonEncode(j)) as Map<String, dynamic>,
     )!;
     expect(r.idPercorso, '');
     expect(r.progressoPercorso, isNull);
+    expect(r.passiContati, 0);
   });
 
   test('file rovinato: non si propone', () {

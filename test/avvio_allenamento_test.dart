@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:allenamenti_app/app_state.dart';
 import 'package:allenamenti_app/avvisi.dart';
 import 'package:allenamenti_app/models.dart';
@@ -6,6 +8,7 @@ import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/sensore_ble.dart';
 import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 const _notaLibera = 'Tocca "Fatto" quando hai finito.';
@@ -95,6 +98,60 @@ void main() {
     expect(find.text('Parti quando vuoi'), findsOneWidget);
     expect(find.text('Rullo e sensori'), findsNothing);
     expect(find.text('Battito'), findsOneWidget);
+    await _chiudi(tester);
+  });
+
+  testWidgets('camminata: i passi del telefono si contano dal via', (
+    tester,
+  ) async {
+    // Il contapassi del telefono: passi dall'accensione e ultimo passo (ms).
+    var totale = 48210.0;
+    var ms = 0.0;
+    const canale = MethodChannel('avidididadi/avvio');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canale, (
+      call,
+    ) async {
+      if (call.method == 'passiAvvia') return true;
+      if (call.method == 'passiLetti') {
+        return Float64List.fromList([totale, ms]);
+      }
+      return null;
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        canale,
+        null,
+      ),
+    );
+    await _apri(tester, 'Camminata', 'Tapis roulant');
+    await tester.pump(const Duration(seconds: 2));
+    // Prima del via si cammina verso il tapis roulant: non conta.
+    totale += 35;
+    ms += 20000;
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('PASSI'), findsNothing);
+
+    await tester.tap(find.text('Inizia'));
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('PASSI'), findsOneWidget);
+    expect(find.text('PASSI AL MINUTO'), findsOneWidget);
+    expect(find.text('0', findRichText: true), findsOneWidget);
+
+    for (var k = 0; k < 4; k++) {
+      totale += 11;
+      ms += 6000;
+      await tester.pump(const Duration(seconds: 2));
+    }
+    expect(find.text('44', findRichText: true), findsOneWidget);
+    expect(find.text('110', findRichText: true), findsOneWidget);
+
+    // In pausa i passi non entrano nel conto.
+    await tester.tap(find.byTooltip('Pausa'));
+    await tester.pump(const Duration(seconds: 2));
+    totale += 60;
+    ms += 40000;
+    await tester.pump(const Duration(seconds: 2));
+    expect(find.text('44', findRichText: true), findsOneWidget);
     await _chiudi(tester);
   });
 

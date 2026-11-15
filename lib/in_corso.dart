@@ -42,6 +42,7 @@ class AllenamentoInCorso {
   final List<int> potenza; // somma, quanti, massimo
   final List<int> cadenza;
   final double metriSensore; // dai sensori della bici
+  final int passiContati; // dal contapassi del telefono (corsa, camminata)
   final String idPercorso; // percorso seguito ('' = nessuno)
   final double? progressoPercorso; // metri fatti sulla traccia
 
@@ -72,6 +73,7 @@ class AllenamentoInCorso {
     this.potenza = const [0, 0, 0],
     this.cadenza = const [0, 0, 0],
     this.metriSensore = 0,
+    this.passiContati = 0,
     this.idPercorso = '',
     this.progressoPercorso,
   });
@@ -116,6 +118,7 @@ class AllenamentoInCorso {
     'potenza': potenza,
     'cadenza': cadenza,
     'metri_sensore': metriSensore,
+    'passi_contati': passiContati,
     'percorso': idPercorso,
     'progresso_percorso': progressoPercorso,
   };
@@ -183,6 +186,7 @@ class AllenamentoInCorso {
         potenza: _tre(j['potenza']),
         cadenza: _tre(j['cadenza']),
         metriSensore: (j['metri_sensore'] as num? ?? 0).toDouble(),
+        passiContati: (j['passi_contati'] as num? ?? 0).toInt(),
         idPercorso: j['percorso'] as String? ?? '',
         progressoPercorso: (j['progresso_percorso'] as num?)?.toDouble(),
       );

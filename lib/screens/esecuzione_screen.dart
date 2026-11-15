@@ -9,6 +9,7 @@ import '../attivita_libera.dart';
 import '../avvisi.dart';
 import '../navigazione.dart';
 import '../calorie.dart';
+import '../contapassi.dart';
 import '../battito.dart';
 import '../animazioni_esercizi.dart';
 import '../dati_live.dart';
@@ -261,6 +262,14 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final _serieCadenza = <Campione>[];
   final _serieVelocita = <Campione>[];
 
+  /// Corsa e camminata: i passi dal sensore del telefono, a cronometro acceso.
+  late final bool _siCammina = siCammina(widget.sport);
+  final contaPassi = ContaPassi();
+  late final sensorePassi = SensorePassi(
+    contaPassi,
+    attivo: () => !preparati && !finito && !_inPausa,
+  );
+
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
   final ritmo = ControlloRitmo();
@@ -282,7 +291,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     super.initState();
     _schermoAcceso(true);
     caricaAvvisi();
-    permessoNotifiche();
+    final notifiche = permessoNotifiche();
+    Future<void>? gpsAcceso;
     pausaDaNotifica = _pausaDaNotifica;
     sensoreBattito.avvia();
     if (_bici) sensoreBici.avvia();
@@ -292,19 +302,33 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final r = widget.ripresa;
     if (r != null) {
       _ripristina(r);
-      if (gps != null && !finito) _accendiGps();
+      if (gps != null && !finito) gpsAcceso = _accendiGps();
       _notifica();
     } else if (gps == null) {
       blocco.start();
     } else {
       // Il conto alla rovescia parte dopo l'eventuale richiesta del permesso.
-      _accendiGps();
+      gpsAcceso = _accendiGps();
     }
+    if (_siCammina && !finito) _accendiPassi([notifiche, ?gpsAcceso]);
     _caricaPercorso();
     _tic = Timer.periodic(
       const Duration(milliseconds: 200),
       (_) => _aggiorna(),
     );
+  }
+
+  /// Accende il contapassi dopo le altre richieste: Android mostra un
+  /// permesso alla volta.
+  Future<void> _accendiPassi(List<Future<void>> prima) async {
+    for (final f in prima) {
+      try {
+        await f;
+      } catch (_) {}
+    }
+    if (!mounted) return;
+    await sensorePassi.avvia();
+    if (mounted) setState(() {});
   }
 
   /// Il percorso assegnato alla seduta di oggi, o quello che si seguiva
@@ -441,6 +465,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     potenza.ripristina(r.potenza[0], r.potenza[1], r.potenza[2]);
     cadenza.ripristina(r.cadenza[0], r.cadenza[1], r.cadenza[2]);
     _metriSensore = r.metriSensore;
+    contaPassi.passi = r.passiContati;
     if (gps != null) {
       gps!.filtro.punti.addAll(r.punti);
       gps!.filtro.metri = r.metri;
@@ -481,6 +506,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         potenza: potenza.comeLista,
         cadenza: cadenza.comeLista,
         metriSensore: _metriSensore,
+        passiContati: contaPassi.passi,
         idPercorso: _percorso?.id ?? '',
         progressoPercorso: _guida?.progresso,
       ),
@@ -518,6 +544,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           bpm: bpm,
           zona: bpm == null ? 0 : _zone.zonaDi(bpm),
           watt: _bici ? sensoreBici.potenza : null,
+          passi: contaPassi.passi,
         ),
         ?testoGuida(_guida),
       ].where((x) => x.isNotEmpty).join(' · '),
@@ -652,6 +679,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (pausaDaNotifica == _pausaDaNotifica) pausaDaNotifica = null;
     togliNotifica();
     sensoreBattito.ferma();
+    sensorePassi.ferma();
     if (_bici) sensoreBici.libera().whenComplete(sensoreBici.ferma);
     _schermoAcceso(false);
     gps?.dispose();
@@ -979,6 +1007,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void _fine({bool aMano = true}) {
     totale.stop();
     blocco.stop();
+    sensorePassi.ferma();
     if (_bici) sensoreBici.libera();
     // Spento il GPS se ne va anche la sua notifica; poi si toglie la nostra.
     (gps?.ferma() ?? Future<void>.value()).then((_) => togliNotifica());
@@ -1101,6 +1130,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         fcMax: fc.massimo,
         potenzaMedia: potenza.media,
         cadenzaMedia: cadenza.media,
+        passi: contaPassi.passi,
         fonte: fonteApp,
         note: widget.nome,
       );
@@ -1428,6 +1458,32 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                                     mostraSensoreBici(context),
                                               ),
                                             ),
+                                        ],
+                                      ),
+                                    if (sensorePassi.disponibile)
+                                      Row(
+                                        spacing: 8,
+                                        children: [
+                                          Expanded(
+                                            child: _Dato(
+                                              etichetta: 'Passi',
+                                              valore: fmtPassi(
+                                                contaPassi.passi,
+                                              ),
+                                              unita: '',
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: _Dato(
+                                              etichetta: 'Passi al minuto',
+                                              valore:
+                                                  contaPassi
+                                                      .cadenza(DateTime.now())
+                                                      ?.toString() ??
+                                                  '–',
+                                              unita: '',
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     if (gps == null && sensoreBattito.ricordato)
@@ -2116,6 +2172,19 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           const SizedBox(height: 8),
           Text(
             'Battito medio ${fc.media} bpm · massimo ${fc.massimo}',
+            style: t.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
+        if (contaPassi.passi > 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            [
+              '${fmtPassi(contaPassi.passi)} passi',
+              if (mediaPassiAlMinuto(contaPassi.passi, _tempoTotale)
+                  case final c?)
+                '$c al minuto',
+            ].join(' · '),
             style: t.titleMedium,
             textAlign: TextAlign.center,
           ),
