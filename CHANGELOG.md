@@ -4,6 +4,10 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 ## 0.1.0
 
+- Icone tutte arrotondate, con lo stesso stile in ogni pagina.
+- Prepara le sedute: titoli corti, che non vanno più a capo sui telefoni stretti.
+- Numeri che non "ballano" quando cambiano, e che entrano con un piccolo movimento; nell'allenamento guidato l'esercizio nuovo entra senza scatti.
+- Grafico delle ore a settimana: un filo di spazio tra gli sport della colonna e asse "2 h, 4 h, 6 h".
 - Colori degli sport più leggibili: stessa tinta, più scuri sul fondo chiaro (e bici più chiara sullo scuro).
 - Grafici: assi su numeri tondi (0, 200, 400 W), passo sui tempi tondi senza che le soste schiaccino la scala.
 - Mappa a tema: strade, acqua e verde staccano di più dal fondo.

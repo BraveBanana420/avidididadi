@@ -132,6 +132,14 @@ Fatto (su `staging`, da provare sul telefono e nei 4 temi):
   niente tratti di zero secondi. La prova "rosso e oro" è stata annullata.
   `tool/schermate` disegna le schermate nei 4 temi senza telefono. Da
   guardare sul telefono nei 4 temi.
+- [x] **Rifiniture grafiche** (15/11): "Prepara le sedute" con titoli corti;
+  icone tutte arrotondate (a contorno solo dove dice uno stato); cifre a
+  larghezza fissa (`cifreFisse`); `EntrataMorbida` per numeri ed esercizi;
+  2 px tra i pezzi delle colonne; `tool/schermate` disegna anche la bici al
+  chiuso col rullo (`31_bici_rullo.png`). Da guardare sul telefono.
+- [ ] **Bici al chiuso senza fascia**: il riquadro "Battito – bpm" c'è anche
+  senza dati (serve a collegare la fascia). Decidere se toglierlo, visto che
+  gli altri riquadri compaiono solo coi dati veri.
 
 Da riprendere, forse:
 - [ ] **Provare il primo avvio** su un telefono pulito (o dopo un backup):

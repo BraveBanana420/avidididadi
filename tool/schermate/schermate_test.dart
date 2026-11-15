@@ -20,6 +20,8 @@ import 'package:allenamenti_app/recupero.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/screens/privacy_screen.dart';
 import 'package:allenamenti_app/screens/tour.dart';
+import 'package:allenamenti_app/sensore_ble.dart';
+import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:allenamenti_app/storage.dart';
 import 'package:allenamenti_app/tema.dart';
 import 'package:flutter/material.dart';
@@ -394,6 +396,110 @@ void main() {
           await _assesta(t, 6);
         }
         await _foto(t, nome, '30_bici_dati');
+        await t.pumpWidget(const SizedBox());
+        await t.pump(const Duration(seconds: 3));
+      } finally {
+        debugDisableShadows = true;
+      }
+    });
+  }
+  // La bici al chiuso col rullo (vista_bici.dart): il rullo è finto, potenza
+  // e cadenza arrivano come pacchetti "Indoor Bike Data".
+  for (final (nome, scuro, conNeon) in const [
+    ('scuro_neon', true, true),
+    ('scuro_rosso', true, false),
+    ('chiaro_neon', false, true),
+    ('chiaro_rosso', false, false),
+  ]) {
+    testWidgets('bici al chiuso col rullo: $nome', (t) async {
+      t.view.physicalSize = const Size(1080, 2340);
+      t.view.devicePixelRatio = 3;
+      t.view.padding = const FakeViewPadding(top: 84, bottom: 48);
+      addTearDown(t.view.reset);
+      addTearDown(() {
+        sensoreBici.comandabile = false;
+        sensoreBici.stato = StatoSensore.spento;
+        sensoreBici.azzera();
+      });
+      temaScuroAttivo = scuro;
+      neonAttivo = conNeon;
+      debugDisableShadows = false;
+      // 36 km/h e 90 pedalate al minuto, con i watt che cambiano.
+      List<int> rullo(int watt) => [
+        0x44, 0x00, 0x10, 0x0E, 0xB4, 0x00, watt & 0xFF, watt >> 8, //
+      ];
+      WorkoutStep passo(
+        int k,
+        String nome,
+        String minuti,
+        String intensita, {
+        String serie = '',
+        String recupero = '',
+      }) => WorkoutStep(
+        id: 'rullo',
+        sport: 'Bici',
+        nome: 'Intervalli',
+        durataTot: 43,
+        ordine: k,
+        fase: 'principale',
+        descrizione: nome,
+        serie: serie,
+        ripetizioni: '',
+        distanzaM: '',
+        durataMin: minuti,
+        intensita: intensita,
+        recuperoS: recupero,
+        note: '',
+      );
+      try {
+        sensoreBici.stato = StatoSensore.collegato;
+        sensoreBici.leggi(0, rullo(150));
+        await t.pumpWidget(
+          RepaintBoundary(
+            key: _cornice,
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              theme: creaTema(
+                scuro ? Brightness.dark : Brightness.light,
+                neon: conNeon,
+              ),
+              home: EsecuzioneScreen(
+                state: AppState()..profilo.ftpManuale = 214,
+                sport: 'Bici',
+                tipo: 'Intervalli',
+                nome: 'Intervalli 2 × 6 min',
+                passi: [
+                  passo(1, 'Riscaldamento', '15', 'zona 2'),
+                  passo(
+                    2,
+                    'Ripetute',
+                    '6',
+                    'zona 4',
+                    serie: '2',
+                    recupero: '180',
+                  ),
+                  passo(3, 'Defaticamento', '10', 'zona 1'),
+                ],
+              ),
+            ),
+          ),
+        );
+        await _assesta(t, 6);
+        final inizia = find.textContaining('Inizia');
+        if (inizia.evaluate().isNotEmpty) {
+          await t.tap(inizia.first);
+          await _assesta(t, 4);
+        }
+        // Qualche secondo di pedalata, per riempire il grafico dei watt.
+        for (final w in [138, 146, 152, 149, 155, 151]) {
+          sensoreBici.leggi(0, rullo(w));
+          await t.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 1100)),
+          );
+          await t.pump(const Duration(seconds: 1));
+        }
+        await _assesta(t, 4);
+        await _foto(t, nome, '31_bici_rullo');
         await t.pumpWidget(const SizedBox());
         await t.pump(const Duration(seconds: 3));
       } finally {
