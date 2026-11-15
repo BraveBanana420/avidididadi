@@ -137,9 +137,9 @@ Fatto (su `staging`, da provare sul telefono e nei 4 temi):
   larghezza fissa (`cifreFisse`); `EntrataMorbida` per numeri ed esercizi;
   2 px tra i pezzi delle colonne; `tool/schermate` disegna anche la bici al
   chiuso col rullo (`31_bici_rullo.png`). Da guardare sul telefono.
-- [ ] **Bici al chiuso senza fascia**: il riquadro "Battito – bpm" c'è anche
-  senza dati (serve a collegare la fascia). Decidere se toglierlo, visto che
-  gli altri riquadri compaiono solo coi dati veri.
+- [x] **Bici al chiuso senza fascia** (15/11): il riquadro del battito
+  compare solo se il battito arriva; senza, la potenza prende tutta la riga
+  (la fascia si collega dal cuore in alto o da "I miei sensori").
 
 Da riprendere, forse:
 - [ ] **Provare il primo avvio** su un telefono pulito (o dopo un backup):

@@ -220,17 +220,21 @@ class _Principali extends StatelessWidget {
               onTap: apriSensori,
             ),
           ),
-          Expanded(
-            child: _Grande(
-              icona: Icons.favorite_rounded,
-              etichetta: zb > 0 ? 'Battito · Z$zb' : 'Battito',
-              valore: d.bpm?.toString() ?? '–',
-              unita: 'bpm',
-              colori: coloriZoneBattito,
-              zona: zb,
-              onTap: apriBattito,
+          // Il battito compare solo se arriva davvero: senza fascia la
+          // potenza prende tutta la riga (la fascia si collega dal cuore
+          // in alto).
+          if (d.bpm != null)
+            Expanded(
+              child: _Grande(
+                icona: Icons.favorite_rounded,
+                etichetta: zb > 0 ? 'Battito · Z$zb' : 'Battito',
+                valore: d.bpm?.toString() ?? '–',
+                unita: 'bpm',
+                colori: coloriZoneBattito,
+                zona: zb,
+                onTap: apriBattito,
+              ),
             ),
-          ),
         ],
       ),
     );

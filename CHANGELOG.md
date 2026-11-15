@@ -4,6 +4,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 ## 0.1.0
 
+- Bici al chiuso: il riquadro del battito compare solo con la fascia collegata; senza, la potenza prende tutta la riga.
 - Icone tutte arrotondate, con lo stesso stile in ogni pagina.
 - Prepara le sedute: titoli corti, che non vanno più a capo sui telefoni stretti.
 - Numeri che non "ballano" quando cambiano, e che entrano con un piccolo movimento; nell'allenamento guidato l'esercizio nuovo entra senza scatti.
