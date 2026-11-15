@@ -12,7 +12,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Colori degli sport più leggibili: stessa tinta, più scuri sul fondo chiaro (e bici più chiara sullo scuro).
 - Grafici: assi su numeri tondi (0, 200, 400 W), passo sui tempi tondi senza che le soste schiaccino la scala.
 - Mappa a tema: strade, acqua e verde staccano di più dal fondo.
-- Bici all'aperto senza sensori: nella pagina "Dati" un dato per riga con numeri grandi; con watt o cadenza torna la griglia a due colonne.
+- Corsa, camminata e bici all'aperto: nella pagina "Dati" un dato per riga con numeri grandi finché ci stanno; quando arrivano passi, watt o cadenza la pagina passa da sola alla griglia a due colonne, senza scorrere.
 - Oggi: il "+" si fa da parte mentre scorri in giù e torna risalendo; anello e barra di avanzamento si riempiono quando compaiono.
 - Settimana: con più allenamenti del previsto si legge "5 fatti"; "1 esercizio" al posto di "1 esercizi".
 - Riepilogo: non compaiono più i tratti di zero secondi in coda agli intervalli.
@@ -43,7 +43,13 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
 - Avvisi in basso più brevi: si chiudono scorrendo in qualsiasi direzione e "Annulla" ha il bordo, per non confonderlo con la chiusura.
 - Menu del "+" e altri fogli dal basso: non finiscono più sotto i tasti del telefono.
-- All'apertura riaccetta l'informativa (posizione per "Altra attività").
+- Lingua: al primo avvio e dal Profilo scegli italiano, inglese o greco; app, esercizi, coach e widget della schermata home seguono la lingua scelta.
+- Voce dell'allenamento: ha una lingua sua (Durante l'allenamento → Lingua della voce), anche diversa da quella dell'app.
+- Corsa e camminata: i passi contati dal telefono, con i passi al minuto, durante l'allenamento, nella notifica e nel riepilogo.
+- Passi: il permesso "Attività fisica" si chiede solo la prima volta; si accendono e spengono da Profilo → Dati e collegamenti → Passi dal telefono.
+- Tasto indietro: da Progressi, Coach e Profilo torna a Oggi; da Oggi chiude l'app.
+- Giro guidato: "Avanti" ed "Esci" restano sempre sopra la barra di Android.
+- All'apertura riaccetta l'informativa (posizione per "Altra attività", passi dal telefono).
 
 ## 1.12.3
 
