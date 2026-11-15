@@ -12,6 +12,7 @@ import '../percorso.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'mappa_percorso.dart';
+import '../l10n/lingua.dart';
 
 /// Sceglie un file GPX e lo aggiunge a "I miei percorsi". Null se annullato
 /// o non valido (con il motivo in un messaggio).
@@ -25,9 +26,7 @@ Future<PercorsoSalvato?> aggiungiGpx(
     if (files.isEmpty) return null;
     final f = files.first;
     if ((await f.length() ?? 0) > maxByteGpx) {
-      throw const FormatException(
-        'File troppo grande: un GPX pesa al massimo pochi MB.',
-      );
+      throw FormatException(l10n.fileTroppoGrandeGpx2);
     }
     final nomeFile = f.name.replaceFirst(
       RegExp(r'\.gpx$', caseSensitive: false),
@@ -40,14 +39,14 @@ Future<PercorsoSalvato?> aggiungiGpx(
     final p = await state.aggiungiPercorso(t);
     scaricaMappa(state, p);
     messenger.showSnackBar(
-      avviso(content: Text('Aggiunto: ${p.nome} · ${fmtKm(p.km)}')),
+      avviso(content: Text(l10n.aggiunto(p.nome, fmtKm(p.km)))),
     );
     return p;
   } on FormatException catch (e) {
     messenger.showSnackBar(avviso(content: Text(e.message)));
   } catch (e) {
     messenger.showSnackBar(
-      avviso(content: Text('Impossibile leggere il file: $e')),
+      avviso(content: Text(l10n.impossibileLeggereFile(e))),
     );
   }
   return null;
@@ -66,7 +65,7 @@ Future<void> scaricaMappa(AppState state, PercorsoSalvato p) async {
 /// "42,20 km · 320 m di salita".
 String descriviPercorso(PercorsoSalvato p) => [
   fmtKm(p.km),
-  if (p.dislivello > 0) '${p.dislivello} m di salita',
+  if (p.dislivello > 0) l10n.mSalita2(p.dislivello),
 ].join(' · ');
 
 /// "I miei percorsi": i GPX da seguire. Con [scegli] un tocco sceglie il
@@ -83,7 +82,7 @@ class PercorsiScreen extends StatelessWidget {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: Text(scegli ? 'Scegli il percorso' : 'I miei percorsi'),
+        title: Text(scegli ? l10n.scegliPercorso : l10n.mieiPercorsi),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
@@ -93,7 +92,7 @@ class PercorsiScreen extends StatelessWidget {
           }
         },
         icon: const Icon(Icons.upload_file_rounded),
-        label: const Text('Aggiungi GPX'),
+        label: Text(l10n.aggiungiGpx),
       ),
       body: ListenableBuilder(
         listenable: state,
@@ -106,15 +105,13 @@ class PercorsiScreen extends StatelessWidget {
                 Icon(Icons.route_rounded, size: 56, color: scheme.primary),
                 const SizedBox(height: 12),
                 Text(
-                  'Nessun percorso',
+                  l10n.nessunPercorso,
                   style: t.titleLarge,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Aggiungi il file GPX di una gara, di un giro famoso o di '
-                  'un amico. Durante corsa, camminata o bici l\'app ti mostra '
-                  'dove sei sulla mappa e ti dice a voce dove girare.',
+                  l10n.aggiungiFileGpxGara,
                   textAlign: TextAlign.center,
                   style: t.bodyMedium,
                 ),
@@ -166,19 +163,11 @@ class _DoveTrovarli extends StatelessWidget {
   Widget build(BuildContext context) => Card(
     child: Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: const ExpansionTile(
+      child: ExpansionTile(
         leading: Icon(Icons.help_outline_rounded),
-        title: Text('Dove trovo un GPX?'),
+        title: Text(l10n.doveTrovoGpx),
         childrenPadding: EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [
-          Text(
-            '• Sito della gara: spesso c\'è "Scarica la traccia GPX".\n'
-            '• Strava, Komoot, Garmin Connect: apri un percorso o '
-            'un\'attività → Esporta GPX.\n'
-            '• Un amico: può mandarti il GPX della sua attività.\n'
-            'Poi qui: Aggiungi GPX e scegli il file.',
-          ),
-        ],
+        children: [Text(l10n.sitoGaraSpessoC)],
       ),
     ),
   );
@@ -250,7 +239,7 @@ class _VocePercorso extends StatelessWidget {
                                   color: scheme.primary,
                                 ),
                                 const SizedBox(width: 4),
-                                Text('Anche senza rete', style: t.labelSmall),
+                                Text(l10n.ancheSenzaRete, style: t.labelSmall),
                               ],
                             )
                           : const SizedBox.shrink(),
@@ -260,7 +249,7 @@ class _VocePercorso extends StatelessWidget {
               ),
               if (onInfo != null)
                 IconButton(
-                  tooltip: 'Vedi il percorso',
+                  tooltip: l10n.vediPercorso,
                   onPressed: onInfo,
                   icon: const Icon(Icons.map_rounded),
                 )
@@ -300,7 +289,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
     final nome = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Nome del percorso'),
+        title: Text(l10n.nomePercorso),
         content: TextField(
           controller: c,
           autofocus: true,
@@ -311,11 +300,11 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, c.text),
-            child: const Text('Salva'),
+            child: Text(l10n.salva),
           ),
         ],
       ),
@@ -327,19 +316,16 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminare il percorso?'),
-        content: Text(
-          '"${p.nome}" sparisce dalla raccolta e dalle sedute a cui era '
-          'assegnato. Gli allenamenti già fatti restano.',
-        ),
+        title: Text(l10n.eliminarePercorso),
+        content: Text(l10n.sparisceDallaRaccoltaDalle(p.nome)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.elimina),
           ),
         ],
       ),
@@ -362,7 +348,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
             ? SafeArea(
                 minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: PulsantePrincipale(
-                  testo: 'Usa questo percorso',
+                  testo: l10n.usaQuestoPercorso,
                   icona: Icons.check_rounded,
                   onPressed: () => Navigator.pop(context, p.id),
                 ),
@@ -372,12 +358,12 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
           title: Text(p.nome, maxLines: 1, overflow: TextOverflow.ellipsis),
           actions: [
             IconButton(
-              tooltip: 'Rinomina',
+              tooltip: l10n.rinomina,
               onPressed: () => _rinomina(p),
               icon: const Icon(Icons.edit_rounded),
             ),
             IconButton(
-              tooltip: 'Elimina',
+              tooltip: l10n.elimina,
               onPressed: () => _elimina(p),
               icon: const Icon(Icons.delete_outline_rounded),
             ),
@@ -391,7 +377,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
             }
             final tr = snap.data;
             if (tr == null) {
-              return const Center(child: Text('File del percorso mancante.'));
+              return Center(child: Text(l10n.filePercorsoMancante));
             }
             final curve = curveDi(tr);
             final conQuota = tr.punti.any((x) => x.quota != null);
@@ -425,9 +411,9 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
                   child: Row(
                     children: [
                       for (final (valore, etichetta) in [
-                        (fmtKm(p.km), 'Distanza'),
-                        (conQuota ? '${p.dislivello} m' : '–', 'Salita'),
-                        ('${curve.length}', 'Curve'),
+                        (fmtKm(p.km), l10n.distanza),
+                        (conQuota ? '${p.dislivello} m' : '–', l10n.salita),
+                        ('${curve.length}', l10n.curve),
                       ])
                         Expanded(
                           child: Column(
@@ -446,25 +432,17 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
                 MappaOfflineCard(state: widget.state, percorso: p, traccia: tr),
                 if (conQuota) ...[
                   const SizedBox(height: 16),
-                  Text('Altimetria', style: t.titleMedium),
+                  Text(l10n.altimetria, style: t.titleMedium),
                   const SizedBox(height: 8),
                   SizedBox(height: 120, child: ProfiloAltimetrico(traccia: tr)),
                 ],
                 const SizedBox(height: 16),
                 Text(
-                  tr.anello
-                      ? 'Giro ad anello: si parte e si arriva nello stesso '
-                            'punto.'
-                      : 'Partenza al pallino verde, arrivo all\'altro capo.',
+                  tr.anello ? l10n.giroAdAnelloSi : l10n.partenzaAlPallinoVerde,
                   style: t.bodySmall,
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  'Per seguirlo: prima di partire con corsa, camminata o bici '
-                  'tocca "Segui un percorso", oppure assegnalo prima a una '
-                  'seduta in programma.',
-                  style: t.bodySmall,
-                ),
+                Text(l10n.seguirloPrimaPartireCorsa, style: t.bodySmall),
               ],
             );
           },
@@ -680,7 +658,7 @@ class _PittoreProfilo extends CustomPainter {
     final alta = quote.reduce(math.max).round();
     final bassa = quote.reduce(math.min).round();
     final tp = TextPainter(
-      text: TextSpan(text: '$alta m · min $bassa m', style: testo),
+      text: TextSpan(text: l10n.mMinM(alta, bassa), style: testo),
       textDirection: TextDirection.ltr,
     )..layout(maxWidth: size.width);
     tp.paint(canvas, Offset(0, 0));
@@ -733,12 +711,12 @@ class PercorsoDellaSeduta extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    p == null ? 'Percorso da seguire' : p.nome,
+                    p == null ? l10n.percorsoSeguire : p.nome,
                     style: t.titleSmall,
                   ),
                   Text(
                     p == null
-                        ? 'Facoltativo: un GPX con mappa e indicazioni a voce'
+                        ? l10n.facoltativoGpxMappaIndicazioni
                         : descriviPercorso(p),
                     style: t.bodySmall?.copyWith(
                       color: scheme.onSurfaceVariant,
@@ -749,13 +727,13 @@ class PercorsoDellaSeduta extends StatelessWidget {
             ),
             if (p != null)
               IconButton(
-                tooltip: 'Togli il percorso',
+                tooltip: l10n.togliPercorso,
                 onPressed: () => state.assegnaPercorso(giorno, sport, null),
                 icon: const Icon(Icons.close_rounded),
               ),
             TextButton(
               onPressed: () => _scegli(context),
-              child: Text(p == null ? 'Scegli' : 'Cambia'),
+              child: Text(p == null ? l10n.scegli : l10n.cambia),
             ),
           ],
         ),
@@ -803,22 +781,19 @@ class _MappaOfflineCardState extends State<MappaOfflineCard> {
         final (IconData icona, String titolo, String testo) = avanti != null
             ? (
                 Icons.downloading_rounded,
-                'Scarico la mappa… ${(avanti * 100).round()}%',
-                'Puoi usare l\'app intanto.',
+                l10n.scaricoMappa((avanti * 100).round()),
+                l10n.puoiUsareAppIntanto,
               )
             : fatto
             ? (
                 Icons.offline_pin_rounded,
-                'Mappa scaricata',
-                'Strade e percorso si vedono anche senza rete (non il '
-                    'satellite).',
+                l10n.mappaScaricata,
+                l10n.stradePercorsoSiVedono,
               )
             : (
                 Icons.cloud_download_rounded,
-                'Mappa senza rete',
-                errore ??
-                    'Scarica la zona attorno al percorso ($_peso), per '
-                        'vederla anche dove il telefono non prende.',
+                l10n.mappaSenzaRete,
+                errore ?? l10n.scaricaZonaAttornoAl(_peso),
               );
         return Card(
           child: Padding(
@@ -853,10 +828,10 @@ class _MappaOfflineCardState extends State<MappaOfflineCard> {
                             : () => mappeOffline.scarica(id, widget.traccia),
                         child: Text(
                           fatto
-                              ? 'Togli'
+                              ? l10n.togli
                               : errore != null
-                              ? 'Riprova'
-                              : 'Scarica',
+                              ? l10n.riprova
+                              : l10n.scarica,
                         ),
                       ),
                   ],

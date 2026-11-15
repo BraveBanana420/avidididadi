@@ -26,6 +26,8 @@ import 'sensori_screen.dart';
 import 'tour.dart';
 import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 class ProfileScreen extends StatelessWidget {
   final AppState state;
@@ -45,7 +47,7 @@ class ProfileScreen extends StatelessWidget {
       await state.impostaFoto(x.path);
     } catch (e) {
       messenger.showSnackBar(
-        avviso(content: Text('Impossibile caricare la foto: $e')),
+        avviso(content: Text(l10n.impossibileCaricareFoto(e))),
       );
     }
   }
@@ -59,7 +61,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: const Text('Scegli dalla galleria'),
+              title: Text(l10n.scegliDallaGalleria),
               onTap: () {
                 Navigator.pop(ctx);
                 _scegliFoto(context, ImageSource.gallery);
@@ -67,7 +69,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera_rounded),
-              title: const Text('Scatta una foto'),
+              title: Text(l10n.scattaFoto),
               onTap: () {
                 Navigator.pop(ctx);
                 _scegliFoto(context, ImageSource.camera);
@@ -76,7 +78,7 @@ class ProfileScreen extends StatelessWidget {
             if (state.fileFoto != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline_rounded),
-                title: const Text('Rimuovi foto'),
+                title: Text(l10n.rimuoviFoto),
                 onTap: () {
                   Navigator.pop(ctx);
                   state.rimuoviFoto();
@@ -99,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
       titolo,
       unita,
       state.ultimaMisura(campo)?.$1 ?? 0,
-      aiuto: 'Si registra con la data di oggi. Lascia vuoto per cancellare.',
+      aiuto: l10n.siRegistraDataOggi,
     );
     if (v == null) return;
     await state.salvaMisura(campo, v);
@@ -133,8 +135,8 @@ class ProfileScreen extends StatelessWidget {
 
         final datiPersonali = [
           if (p.nomeCompleto.isNotEmpty) p.nomeCompleto,
-          if (p.nascita != null) '${_data(p.nascita!)} (${p.eta} anni)',
-          if (p.sesso.isNotEmpty) p.sesso,
+          if (p.nascita != null) l10n.anni(_data(p.nascita!), p.eta ?? 0),
+          if (p.sesso.isNotEmpty) mostra(p.sesso),
           if (p.altezzaCm > 0) '${fmtNum(p.altezzaCm)} cm',
           if (peso != null) '${fmtNum(peso.$1)} kg',
         ];
@@ -216,7 +218,7 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           Text(
                             p.nomeCompleto.isEmpty
-                                ? 'Il tuo profilo'
+                                ? l10n.tuoProfilo
                                 : p.nomeCompleto,
                             style: t.headlineSmall,
                           ),
@@ -234,8 +236,8 @@ class ProfileScreen extends StatelessWidget {
                             icon: const Icon(Icons.edit_rounded, size: 18),
                             label: Text(
                               datiPersonali.isEmpty
-                                  ? 'Inserisci i tuoi dati'
-                                  : 'Modifica i tuoi dati',
+                                  ? l10n.inserisciTuoiDati
+                                  : l10n.modificaTuoiDati,
                             ),
                           ),
                         ],
@@ -243,20 +245,20 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const TitoloSezione('Il mio allenamento'),
+                TitoloSezione(l10n.mioAllenamento),
                 Column(
                   children: [
                     voce(
                       Icons.flag_rounded,
-                      'Il mio obiettivo',
+                      l10n.mioObiettivo,
                       o == null
-                          ? 'Nessuna gara: ti alleni per stare in forma'
+                          ? l10n.nessunaGaraTiAlleni
                           : '${o.nome} · ${dataLunga(o.data)}',
                       ObiettivoScreen(state: state),
                     ),
                     voce(
                       Icons.tune_rounded,
-                      'Le mie attività',
+                      l10n.mieAttivita,
                       state.attivitaScelte.join(', '),
                       AttivitaScreen(state: state),
                     ),
@@ -266,12 +268,16 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         voce(
                           Icons.auto_awesome_rounded,
-                          'Prepara le sedute',
+                          l10n.preparaSedute,
                           p.obiettivo.isEmpty && p.sportGenerati.isEmpty
-                              ? "Scegli gli sport: l'app scrive gli allenamenti passo passo"
+                              ? l10n.scegliSportAppScrive
                               : [
                                   if (p.obiettivo.isNotEmpty)
-                                    'Forza: ${obiettivi[p.obiettivo]?.$1.toLowerCase() ?? p.obiettivo}',
+                                    l10n.forza(
+                                      obiettivi[p.obiettivo]?.$1
+                                              .toLowerCase() ??
+                                          p.obiettivo,
+                                    ),
                                   ...p.sportGenerati,
                                 ].join(' · '),
                           CreaPianoScreen(state: state),
@@ -279,19 +285,26 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         voce(
                           Icons.assignment_rounded,
-                          'Le mie schede',
+                          l10n.mieSchede,
                           state.schedeAttive.isEmpty
-                              ? "Le schede del personal trainer o dell'allenatore"
-                              : 'In corso: ${state.schedeAttive.map((s) => s.nome.isEmpty ? s.sport : s.nome).join(', ')}',
+                              ? l10n.schedePersonalTrainerO
+                              : l10n.corso(
+                                  state.schedeAttive
+                                      .map(
+                                        (s) =>
+                                            s.nome.isEmpty ? s.sport : s.nome,
+                                      )
+                                      .join(', '),
+                                ),
                           SchedeScreen(state: state),
                         ),
                       ],
                     ),
                     voce(
                       Icons.fitness_center_rounded,
-                      'La mia attrezzatura',
+                      l10n.miaAttrezzatura,
                       state.attrezzatura.isEmpty
-                          ? 'Solo corpo libero'
+                          ? l10n.soloCorpoLibero
                           : state.attrezzatura.keys
                                 .map((k) => attrezzoDa(k)?.nome ?? k)
                                 .join(', '),
@@ -299,30 +312,29 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     voce(
                       Icons.menu_book_rounded,
-                      'Esercizi',
-                      'Come si fanno, con immagini e muscoli usati',
+                      l10n.esercizi,
+                      l10n.comeSiFannoImmagini,
                       CatalogoScreen(state: state),
                       linea: p.modoAvanzato,
                     ),
                     if (p.modoAvanzato)
                       voce(
                         Icons.monitor_heart_rounded,
-                        'Le mie zone',
-                        'Quanto spingere: battiti al minuto e watt in bici',
+                        l10n.mieZone,
+                        l10n.quantoSpingereBattitiAl,
                         ZoneScreen(state: state),
                         linea: false,
                       ),
                   ],
                 ),
                 TitoloSezione(
-                  'Il mio corpo',
+                  l10n.mioCorpo,
                   destra: PulsanteStorico(state: state),
                 ),
                 Text(
                   ultimoAgg == null
-                      ? 'Tocca una misura per inserirla: vedrai come cambi nel tempo.'
-                      : 'Ultimo aggiornamento: ${_data(ultimoAgg)}. Tocca una '
-                            'misura per aggiornarla.',
+                      ? l10n.toccaMisuraInserirlaVedrai
+                      : l10n.ultimoAggiornamentoToccaMisura(_data(ultimoAgg)),
                   style: t.bodySmall,
                 ),
                 const SizedBox(height: 8),
@@ -343,13 +355,13 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const TitoloSezione('Impostazioni e aiuto'),
+                TitoloSezione(l10n.impostazioniAiuto),
                 Column(
                   children: [
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.dark_mode_rounded),
-                      titolo: 'Tema scuro',
-                      sottotitolo: 'Fondo grafite oppure bianco',
+                      titolo: l10n.temaScuro,
+                      sottotitolo: l10n.fondoGrafiteOppureBianco,
                       onTap: cambiaTema,
                       fine: Switch(
                         value: Theme.of(context).brightness == Brightness.dark,
@@ -358,9 +370,8 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.auto_awesome_rounded),
-                      titolo: 'Versione neon',
-                      sottotitolo:
-                          'Rosa, verde acqua e azzurro al posto del rosso',
+                      titolo: l10n.versioneNeon,
+                      sottotitolo: l10n.rosaVerdeAcquaAzzurro,
                       onTap: cambiaNeon,
                       fine: Switch(
                         value: neon.value,
@@ -369,14 +380,14 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     voce(
                       Icons.bluetooth_rounded,
-                      'I miei sensori',
-                      'Fascia cardio, rullo e sensori della bici',
+                      l10n.mieiSensori,
+                      l10n.fasciaCardioRulloSensori,
                       SensoriScreen(state: state),
                     ),
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.speed_rounded),
-                      titolo: 'Funzioni avanzate',
-                      sottotitolo: 'Zone, watt, sensori Bluetooth, rullo e intervals.icu',
+                      titolo: l10n.funzioniAvanzate,
+                      sottotitolo: l10n.zoneWattSensoriBluetooth,
                       onTap: () => state.impostaAvanzata(!p.modoAvanzato),
                       fine: Switch(
                         value: p.modoAvanzato,
@@ -385,47 +396,47 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     voce(
                       Icons.directions_run_rounded,
-                      "Durante l'allenamento",
-                      'Voce, bip, pausa automatica e passo medio',
+                      l10n.duranteAllenamento,
+                      l10n.voceBipPausaAutomatica,
                       const OpzioniAllenamentoScreen(),
                     ),
                     if (state.attivitaScelta('Arrampicata'))
                       voce(
                         Icons.terrain_rounded,
-                        'Allenamenti di arrampicata',
-                        'I tuoi allenamenti: creali, falli o mettili nel piano',
+                        l10n.allenamentiArrampicata,
+                        l10n.tuoiAllenamentiCrealiFalli,
                         AllenamentiArrampicataScreen(state: state),
                       ),
                     voce(
                       Icons.route_rounded,
-                      'I miei percorsi',
-                      'GPX da seguire con mappa e indicazioni a voce',
+                      l10n.mieiPercorsi,
+                      l10n.gpxSeguireMappaIndicazioni,
                       PercorsiScreen(state: state),
                     ),
                     voce(
                       Icons.sync_rounded,
-                      'Dati e collegamenti',
-                      'Orologio e app, backup dei dati',
+                      l10n.datiCollegamenti,
+                      l10n.orologioAppBackupDei,
                       DatiCollegamentiScreen(state: state),
                       chiave: ChiaviTour.collegamenti,
                     ),
                     // Il giro guidato, vicino agli altri aiuti.
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.help_outline_rounded),
-                      titolo: "Giro guidato dell'app",
-                      sottotitolo: 'Le 10 funzioni principali, una alla volta',
+                      titolo: l10n.giroGuidatoDellApp,
+                      sottotitolo: l10n.n10FunzioniPrincipaliAlla,
                       onTap: () => avviaTour(context),
                     ),
                     voce(
                       Icons.school_rounded,
-                      "Le parole dell'allenamento",
-                      'Zone, carico, fartlek… spiegati semplici',
+                      l10n.paroleDellAllenamento,
+                      l10n.zoneCaricoFartlekSpiegati,
                       const GlossarioScreen(),
                     ),
                     RigaPulse(
                       segno: const IconaQuadrata(Icons.restart_alt_rounded),
-                      titolo: 'Configurazione guidata',
-                      sottotitolo: 'Rifai il piano rispondendo a poche domande',
+                      titolo: l10n.configurazioneGuidata,
+                      sottotitolo: l10n.rifaiPianoRispondendoPoche,
                       linea: false,
                       onTap: () => _rifaiConfigurazione(context),
                     ),
@@ -444,19 +455,16 @@ class ProfileScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Rifare la configurazione?'),
-        content: const Text(
-          'Settimana tipo e piano da oggi in poi verranno sostituiti. Gli '
-          'allenamenti già fatti e le misure restano.',
-        ),
+        title: Text(l10n.rifareConfigurazione),
+        content: Text(l10n.settimanaTipoPianoOggi),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Continua'),
+            child: Text(l10n.continua),
           ),
         ],
       ),
@@ -493,7 +501,7 @@ Future<double?> _chiediNumero(
           }
           final v = double.tryParse(testo);
           if (v == null || v <= 0 || v > massimo) {
-            aggiorna(() => errore = 'Inserisci un numero valido');
+            aggiorna(() => errore = l10n.inserisciNumeroValido);
             return;
           }
           Navigator.pop(ctx, v);
@@ -516,9 +524,9 @@ Future<double?> _chiediNumero(
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Annulla'),
+              child: Text(l10n.annulla),
             ),
-            FilledButton(onPressed: salva, child: const Text('Salva')),
+            FilledButton(onPressed: salva, child: Text(l10n.salva)),
           ],
         );
       },

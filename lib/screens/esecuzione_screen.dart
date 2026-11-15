@@ -46,6 +46,8 @@ import 'percorsi_screen.dart';
 import 'profilo_allenamento.dart';
 import 'vista_bici.dart';
 import 'opzioni_allenamento_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 const _canale = MethodChannel('avidididadi/avvio');
 
@@ -421,7 +423,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final g = _guida;
     final m = g?.metriMancanti;
     if (g == null || m == null || g.fuori || g.arrivato || m < 300) return '';
-    return ' Mancano ${parlaMetri(m)}.';
+    return l10n.mancano(parlaMetri(m));
   }
 
   /// Prima di partire: al chiuso il GPS si spegne, all'aperto si riaccende.
@@ -985,11 +987,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (_pausaAuto) {
       totale.stop();
       blocco.stop();
-      voce.di('In pausa.', valida: const Duration(seconds: 10));
+      voce.di(l10n.pausa3, valida: const Duration(seconds: 10));
     } else {
       totale.start();
       blocco.start();
-      voce.di('Si riparte.', valida: const Duration(seconds: 10));
+      voce.di(l10n.siRiparte, valida: const Duration(seconds: 10));
     }
     avviso();
     _salvaInCorso();
@@ -1055,8 +1057,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           .replaceAll('.', ',');
     }
     voce.di(
-      'Allenamento completato. ${parlaDurata(_tempoTotale)}'
-      '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
+      l10n.allenamentoCompletato(
+        parlaDurata(_tempoTotale),
+        gps == null || gps!.km < 0.05
+            ? ''
+            : l10n.chilometri(gps!.km.toStringAsFixed(1).replaceAll('.', ',')),
+      ),
       urgente: aMano,
     );
     setState(() => finito = true);
@@ -1068,22 +1074,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final r = await showDialog<String>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text("Interrompere l'allenamento?"),
-        content: const Text(
-          'Puoi terminarlo qui e vedere il riepilogo, oppure uscire senza salvare.',
-        ),
+        title: Text(l10n.interrompereAllenamento),
+        content: Text(l10n.puoiTerminarloQuiVedere),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, 'esci'),
-            child: const Text('Esci'),
+            child: Text(l10n.esci),
           ),
           TextButton(
             onPressed: () => Navigator.pop(c, 'termina'),
-            child: const Text('Termina qui'),
+            child: Text(l10n.terminaQui),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('Continua'),
+            child: Text(l10n.continua),
           ),
         ],
       ),
@@ -1236,7 +1240,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         body: SfondoPulse(
           child: SafeArea(
             child: blocchi.isEmpty
-                ? const Center(child: Text('Questo allenamento non ha passi.'))
+                ? Center(child: Text(l10n.questoAllenamentoNonHa))
                 : finito
                 ? _riepilogo(context)
                 : _esecuzione(context),
@@ -1317,7 +1321,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           child: Row(
             children: [
               IconButton(
-                tooltip: 'Chiudi',
+                tooltip: l10n.chiudi,
                 onPressed: () async {
                   final navigator = Navigator.of(context);
                   if (await _confermaUscita()) navigator.pop();
@@ -1333,7 +1337,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
-                    Text('tempo totale', style: t.labelSmall),
+                    Text(l10n.tempoTotale, style: t.labelSmall),
                   ],
                 ),
               ),
@@ -1345,7 +1349,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ListenableBuilder(
                   listenable: sensoreBici,
                   builder: (_, _) => IconButton(
-                    tooltip: 'Sensori della bici',
+                    tooltip: l10n.sensoriBici,
                     onPressed: () => mostraSensoreBici(context),
                     icon: Icon(
                       sensoreBici.stato == StatoSensore.collegato
@@ -1359,7 +1363,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ListenableBuilder(
                   listenable: sensoreBattito,
                   builder: (_, _) => IconButton(
-                    tooltip: 'Battito dal sensore',
+                    tooltip: l10n.battitoDalSensore,
                     onPressed: () => mostraBattito(context),
                     icon: Icon(
                       sensoreBattito.stato == StatoSensore.collegato
@@ -1369,7 +1373,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   ),
                 ),
               IconButton(
-                tooltip: 'Bip e vibrazione',
+                tooltip: l10n.bipVibrazione,
                 onPressed: _apriOpzioni,
                 icon: ValueListenableBuilder(
                   valueListenable: bipAttivo,
@@ -1380,7 +1384,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
               if (!_aspettaIlVia)
                 IconButton(
-                  tooltip: pausa ? 'Riprendi' : 'Pausa',
+                  tooltip: pausa ? l10n.riprendi : l10n.pausa2,
                   onPressed: _pausa,
                   icon: Icon(
                     pausa ? Icons.play_arrow_rounded : Icons.pause_rounded,
@@ -1500,7 +1504,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                         children: [
                                           Expanded(
                                             child: _Dato(
-                                              etichetta: 'Velocità',
+                                              etichetta: l10n.velocita,
                                               valore: fmtVelocita(
                                                 widget.sport,
                                                 sensoreBici.velocita,
@@ -1510,7 +1514,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                           ),
                                           Expanded(
                                             child: _Dato(
-                                              etichetta: 'Distanza',
+                                              etichetta: l10n.distanza,
                                               valore: (_metriSensore / 1000)
                                                   .toStringAsFixed(2)
                                                   .replaceAll('.', ','),
@@ -1538,7 +1542,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                           if (_conCadenza)
                                             Expanded(
                                               child: _Dato(
-                                                etichetta: 'Cadenza',
+                                                etichetta: l10n.cadenza,
                                                 valore:
                                                     sensoreBici.cadenza
                                                         ?.round()
@@ -1652,7 +1656,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
                                       intensitaCon(
-                                        b.intensita,
+                                        mostraTesto(b.intensita),
                                         widget.sport,
                                         _zonePotenza,
                                         _zone,
@@ -1661,7 +1665,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     ),
                                   ),
                                 if (b.obiettivo2.isNotEmpty)
-                                  Text(b.obiettivo2, style: t.bodyMedium),
+                                  Text(
+                                    mostraTesto(b.obiettivo2),
+                                    style: t.bodyMedium,
+                                  ),
                                 if (sensazioneDi(b.intensita) != null)
                                   Text(
                                     sensazioneDi(b.intensita)!,
@@ -1730,7 +1737,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Poi', style: t.bodySmall),
+                                      Text(l10n.poi, style: t.bodySmall),
                                       TestoUnaRiga(
                                         prossimo.titolo,
                                         style: t.titleMedium,
@@ -1789,7 +1796,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             children: [
               if (!_aspettaIlVia) ...[
                 IconButton.filledTonal(
-                  tooltip: 'Esercizio precedente',
+                  tooltip: l10n.esercizioPrecedente,
                   iconSize: 28,
                   onPressed: preparati || i == 0 ? null : _indietro,
                   icon: const Icon(Icons.skip_previous_rounded),
@@ -1808,20 +1815,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       ? Icons.skip_next_rounded
                       : Icons.check_rounded,
                   testo: _aspettaIlVia
-                      ? 'Inizia'
+                      ? l10n.inizia2
                       : preparati
-                      ? 'Inizia subito'
+                      ? l10n.iniziaSubito
                       : recupero
-                      ? 'Salta recupero'
+                      ? l10n.saltaRecupero
                       : b.aTempo
-                      ? 'Avanti'
-                      : 'Fatto',
+                      ? l10n.avanti
+                      : l10n.fatto,
                 ),
               ),
               if (!_aspettaIlVia) ...[
                 const SizedBox(width: 12),
                 IconButton.filledTonal(
-                  tooltip: recupero ? '15 secondi in più' : 'Salta',
+                  tooltip: recupero ? l10n.n15SecondiPiu : l10n.salta,
                   iconSize: 28,
                   onPressed: pausa
                       ? null
@@ -1860,20 +1867,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _aspettaIlVia ? 'Parti quando vuoi' : 'Preparati',
+                _aspettaIlVia ? l10n.partiQuandoVuoi : l10n.preparati,
                 style: t.headlineMedium,
               ),
               const SizedBox(height: 4),
               TestoUnaRiga(
                 widget.libera
                     ? widget.nome
-                    : '${widget.nome} · $nPassi esercizi',
+                    : l10n.esercizi2(widget.nome, nPassi),
                 style: t.bodySmall,
                 textAlign: TextAlign.center,
               ),
               if (prossimo != null)
                 TestoUnaRiga(
-                  'Si parte con: ${prossimo.titolo}',
+                  l10n.siParte(prossimo.titolo),
                   style: t.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -1913,11 +1920,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           ? Icons.pedal_bike_rounded
                           : Icons.directions_run_rounded,
                     ),
-                    title: Text('Indoor (${attrezzoAlChiuso(widget.sport)})'),
+                    title: Text(l10n.indoor2(attrezzoAlChiuso(widget.sport))),
                     subtitle: Text(
                       _bici && sensoreBici.rulloInUso
-                          ? 'Senza GPS: velocità e km arrivano dal rullo.'
-                          : 'Senza GPS: alla fine scrivi i km del display.',
+                          ? l10n.senzaGpsVelocitaKm
+                          : l10n.senzaGpsAllaFine,
                     ),
                     value: _alChiuso,
                     onChanged: (chiuso) {
@@ -1932,17 +1939,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
                     leading: const Icon(Icons.route_rounded),
-                    title: Text(_percorso?.nome ?? 'Segui un percorso'),
+                    title: Text(_percorso?.nome ?? l10n.seguiPercorso),
                     subtitle: Text(
                       _percorso == null
-                          ? 'Facoltativo: un GPX con mappa e indicazioni '
-                                'a voce'
+                          ? l10n.facoltativoGpxMappaIndicazioni
                           : descriviPercorso(_percorso!),
                     ),
                     trailing: _percorso == null
                         ? const Icon(Icons.chevron_right_rounded)
                         : IconButton(
-                            tooltip: 'Togli il percorso',
+                            tooltip: l10n.togliPercorso,
                             onPressed: () => _usaPercorso(null),
                             icon: const Icon(Icons.close_rounded),
                           ),
@@ -1979,13 +1985,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         ? Icons.pedal_bike_rounded
                         : Icons.pedal_bike_outlined,
                   ),
-                  title: Text(_alChiuso ? 'Rullo e sensori' : 'Sensori bici'),
+                  title: Text(
+                    _alChiuso ? l10n.rulloSensori : l10n.sensoriBici2,
+                  ),
                   subtitle: Text(
                     sensoreBici.daCalibrare
-                        ? 'Collegato · è ora di calibrarlo'
+                        ? l10n.collegatoOraCalibrarlo
                         : rullo
-                        ? 'Collegato'
-                        : 'Tocca per collegare',
+                        ? l10n.collegato
+                        : l10n.toccaCollegare,
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => mostraSensoreBici(context),
@@ -1997,8 +2005,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       ? Icons.favorite_rounded
                       : Icons.favorite_border_rounded,
                 ),
-                title: const Text('Battito'),
-                subtitle: Text(battito ? 'Collegato' : 'Tocca per collegare'),
+                title: Text(l10n.battito),
+                subtitle: Text(battito ? l10n.collegato : l10n.toccaCollegare),
                 trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => mostraBattito(context),
               ),
@@ -2237,7 +2245,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Allenamento completato!',
+          l10n.allenamentoCompletato2,
           style: t.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -2272,8 +2280,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           // Tutti e due i tempi, qualunque media si sia scelta.
           if (_soste + _fermo > const Duration(seconds: 30))
             Text(
-              'In movimento ${fmtTimer(_tempoTotale - _fermo)} · '
-              'totale ${fmtTimer(_tempoTotale + _soste)}',
+              l10n.movimentoTotale(
+                fmtTimer(_tempoTotale - _fermo),
+                fmtTimer(_tempoTotale + _soste),
+              ),
               style: t.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -2281,7 +2291,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         if (fc.massimo > 0) ...[
           const SizedBox(height: 8),
           Text(
-            'Battito medio ${fc.media} bpm · massimo ${fc.massimo}',
+            l10n.battitoMedioBpmMassimo(fc.media, fc.massimo),
             style: t.titleMedium,
             textAlign: TextAlign.center,
           ),
@@ -2289,8 +2299,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         if (potenza.n > 0 && _seriePotenza.length < 60)
           Text(
             [
-              'Potenza media ${potenza.media} W',
-              if (cadenza.n > 0) 'cadenza ${cadenza.media} rpm',
+              l10n.potenzaMediaW(potenza.media),
+              if (cadenza.n > 0) l10n.cadenzaRpm(cadenza.media),
             ].join(' · '),
             style: t.bodyMedium,
             textAlign: TextAlign.center,
@@ -2305,7 +2315,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Cadenza media ${cadenza.media} rpm',
+                l10n.cadenzaMediaRpm(cadenza.media),
                 style: t.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -2313,7 +2323,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ],
         if (_calorie case final c? when c.attive >= 1)
           Text(
-            'Circa ${c.attive.round()} kcal',
+            l10n.circaKcal(c.attive.round()),
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -2325,7 +2335,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               children: [
                 for (final (k, g) in giri!.giri.indexed)
                   RigaPulse(
-                    titolo: 'Km ${g.numero * g.metri ~/ 1000}',
+                    titolo: l10n.km(g.numero * g.metri ~/ 1000),
                     sottotitolo: fmtTimer(g.tempo),
                     linea: k < giri!.giri.length - 1,
                     fine: Text(ritmoGiro(widget.sport, g), style: t.titleSmall),
@@ -2360,11 +2370,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: _alChiuso
-                  ? 'Km del ${attrezzoAlChiuso(widget.sport)}'
-                  : 'Km percorsi',
+                  ? l10n.km2(attrezzoAlChiuso(widget.sport))
+                  : l10n.kmPercorsi,
               suffixText: 'km',
               helperText: kmScritti(_kmScritti.text) == null
-                  ? 'Facoltativo: senza, la sessione resta senza distanza.'
+                  ? l10n.facoltativoSenzaSessioneResta
                   : ritmoMedio(
                       widget.sport,
                       kmScritti(_kmScritti.text)!,
@@ -2393,10 +2403,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             contentPadding: EdgeInsets.zero,
             value: registra,
             onChanged: (v) => setState(() => registra = v ?? false),
-            title: const Text('Segna come fatto'),
-            subtitle: const Text(
-              "Se l'orologio registra lo stesso allenamento, vale il suo.",
-            ),
+            title: Text(l10n.segnaComeFatto),
+            subtitle: Text(l10n.seOrologioRegistraStesso),
           ),
         ),
         const SizedBox(height: 8),
@@ -2404,16 +2412,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         OutlinedButton.icon(
           onPressed: () => _salvaEChiudi(aMano: true),
           icon: const Icon(Icons.edit_note_rounded),
-          label: const Text('Inserisci i dati a mano'),
+          label: Text(l10n.inserisciDatiMano),
         ),
         const SizedBox(height: 8),
         PulsantePrincipale(
           onPressed: () => _salvaEChiudi(feedback: true),
           icona: Icons.rate_review_rounded,
-          testo: "Com'è andata?",
+          testo: l10n.comAndata,
         ),
         const SizedBox(height: 8),
-        TextButton(onPressed: _salvaEChiudi, child: const Text('Chiudi')),
+        TextButton(onPressed: _salvaEChiudi, child: Text(l10n.chiudi)),
       ],
     );
   }
@@ -2433,22 +2441,22 @@ class _StatoGps extends StatelessWidget {
       StatoGps.pronto => (
         Icons.gps_fixed_rounded,
         const Color(0xFF22E07A),
-        'Segnale GPS buono · ±${gps.precisione.round()} m',
+        l10n.segnaleGpsBuonoM(gps.precisione.round()),
       ),
       StatoGps.cerca || StatoGps.spento => (
         Icons.gps_not_fixed_rounded,
         const Color(0xFFFFC233),
-        "Cerco il segnale GPS… meglio all'aperto",
+        l10n.cercoSegnaleGpsMeglio,
       ),
       StatoGps.permessoNegato => (
         Icons.gps_off_rounded,
         scheme.error,
-        'GPS non permesso: tocca per attivarlo',
+        l10n.gpsNonPermessoTocca,
       ),
       StatoGps.disattivato => (
         Icons.gps_off_rounded,
         scheme.error,
-        'Posizione spenta: tocca per accenderla',
+        l10n.posizioneSpentaToccaAccenderla,
       ),
     };
     final spento =
@@ -2501,8 +2509,8 @@ class _SceltaPagina extends StatelessWidget {
         spacing: 8,
         children: [
           for (final (k, icona, nome) in [
-            (0, Icons.speed_rounded, 'Dati'),
-            (1, Icons.map_rounded, 'Mappa'),
+            (0, Icons.speed_rounded, l10n.dati),
+            (1, Icons.map_rounded, l10n.mappa),
           ])
             Material(
               color: k == pagina
@@ -2559,14 +2567,14 @@ class _DueDati extends StatelessWidget {
       children: [
         Expanded(
           child: _Dato(
-            etichetta: 'Distanza',
+            etichetta: l10n.distanza,
             valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
             unita: 'km',
           ),
         ),
         Expanded(
           child: _Dato(
-            etichetta: stessoSport(sport, 'Bici') ? 'Velocità' : 'Passo',
+            etichetta: stessoSport(sport, 'Bici') ? l10n.velocita : l10n.passo,
             valore: fmtVelocita(sport, adesso),
             unita: unitaRitmo(sport),
           ),
@@ -2614,7 +2622,7 @@ class _GrigliaLive extends StatelessWidget {
     final quarto = sensoreBattito.ricordato
         ? _DatoBattito(zone: zone, grande: grande)
         : _Dato(
-            etichetta: giro == 1 ? 'Ultimo km' : 'Ultimi $giro km',
+            etichetta: giro == 1 ? l10n.ultimoKm : l10n.ultimiKm(giro),
             valore: ultimo == null
                 ? '–'
                 : fmtVelocita(
@@ -2625,19 +2633,19 @@ class _GrigliaLive extends StatelessWidget {
             grande: grande,
           );
     final distanza = _Dato(
-      etichetta: 'Distanza',
+      etichetta: l10n.distanza,
       valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
       unita: 'km',
       grande: grande,
     );
     final adessoDato = _Dato(
-      etichetta: bici ? 'Velocità' : 'Passo',
+      etichetta: bici ? l10n.velocita : l10n.passo,
       valore: fmtVelocita(sport, adesso),
       unita: unita,
       grande: grande,
     );
     final mediaDato = _Dato(
-      etichetta: bici ? 'Velocità media' : 'Passo medio',
+      etichetta: bici ? l10n.velocitaMedia : l10n.passoMedio,
       valore: fmtVelocita(sport, media),
       unita: unita,
       grande: grande,
@@ -2798,7 +2806,7 @@ class _DatoPotenza extends StatelessWidget {
     final zo = z == null || o == null ? 0 : z.zonaDi((o.$1 + o.$2) ~/ 2);
     return _Dato(
       icona: Icons.bolt_rounded,
-      etichetta: n > 0 ? 'Potenza · Z$n' : 'Potenza',
+      etichetta: n > 0 ? l10n.potenzaZ(n) : l10n.potenza,
       valore: w?.toString() ?? '–',
       unita: 'W',
       nota: o == null
@@ -2827,10 +2835,10 @@ class _DatoBattito extends StatelessWidget {
     return _Dato(
       icona: Icons.favorite_rounded,
       etichetta: switch (sensoreBattito.stato) {
-        StatoSensore.collegato when n > 0 => 'Battito · Z$n',
-        StatoSensore.collegato => 'Battito',
-        StatoSensore.collega => 'Mi collego…',
-        _ => 'Battito',
+        StatoSensore.collegato when n > 0 => l10n.battitoZ(n),
+        StatoSensore.collegato => l10n.battito,
+        StatoSensore.collega => l10n.miCollego,
+        _ => l10n.battito,
       },
       valore: bpm?.toString() ?? '–',
       unita: 'bpm',
@@ -2870,9 +2878,12 @@ class _AvvisoGiro extends StatelessWidget {
                   child: Text(
                     // A piedi il tempo del km è già il passo; in bici no.
                     giro.metri == 1000
-                        ? 'Km $km'
-                        : 'Km $km · ultimi ${giro.metri ~/ 1000} in '
-                              '${fmtTimer(giro.tempo)}',
+                        ? l10n.km(km)
+                        : l10n.kmUltimi(
+                            km,
+                            giro.metri ~/ 1000,
+                            fmtTimer(giro.tempo),
+                          ),
                     style: t.titleMedium?.copyWith(color: colore),
                   ),
                 ),
@@ -2928,7 +2939,7 @@ class _Orologio extends StatelessWidget {
       fontFeatures: const [FontFeature.tabularFigures()],
     );
     return Semantics(
-      label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
+      label: aTempo ? l10n.mancanoSecondi(restano) : l10n.tempoTrascorso,
       child: AnelloPulse(
         valore: aTempo && totale > 0 ? restano / totale : 0,
         dimensione: piccolo ? 190 : 240,
@@ -2953,10 +2964,10 @@ class _Orologio extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               pausa
-                  ? 'in pausa'
+                  ? l10n.pausa4
                   : aTempo
-                  ? (recupero ? 'mancano' : 'poi passa da solo')
-                  : 'tocca Fatto quando hai finito',
+                  ? (recupero ? l10n.parolaMancano : l10n.poiPassaSolo)
+                  : l10n.toccaFattoQuandoHai2,
               style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -2992,12 +3003,12 @@ class _TempoPiatto extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final etichetta = pausa
-        ? 'in pausa'
+        ? l10n.pausa4
         : aTempo
-        ? (recupero ? 'mancano' : 'poi passa da solo')
-        : 'tocca Fatto quando hai finito';
+        ? (recupero ? l10n.parolaMancano : l10n.poiPassaSolo)
+        : l10n.toccaFattoQuandoHai2;
     return Semantics(
-      label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
+      label: aTempo ? l10n.mancanoSecondi(restano) : l10n.tempoTrascorso,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -3054,7 +3065,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
     final e = esercizio;
     return Semantics(
       button: true,
-      label: 'Guarda il movimento di ${e.nome}',
+      label: l10n.guardaMovimento(e.nome),
       child: GestureDetector(
         onTap: () => showDialog<void>(
           context: context,
@@ -3067,7 +3078,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(d),
-                child: const Text('Chiudi'),
+                child: Text(l10n.chiudi),
               ),
             ],
           ),
@@ -3108,13 +3119,13 @@ class RegistroSerie extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Cosa hai fatto', style: t.titleSmall),
+          Text(l10n.cosaHaiFatto, style: t.titleSmall),
           const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: _Contatore(
-                  etichetta: 'Ripetizioni',
+                  etichetta: l10n.ripetizioni,
                   testo: '$rip',
                   meno: rip > 1 ? () => cambia((rip - 1, kg)) : null,
                   piu: () => cambia((rip + 1, kg)),
@@ -3128,7 +3139,7 @@ class RegistroSerie extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _Contatore(
-                    etichetta: 'Kg',
+                    etichetta: l10n.kg3,
                     testo: fmtKg(kg),
                     meno: kg > 0
                         ? () => cambia((rip, (kg - 1).clamp(0, 999).toDouble()))
@@ -3145,10 +3156,10 @@ class RegistroSerie extends StatelessWidget {
           ),
           if (ultima.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text('Ultima volta: ${fmtSerie(ultima)}', style: t.bodySmall),
+            Text(l10n.ultimaVolta(fmtSerie(ultima)), style: t.bodySmall),
             if (conKg && prontoPerAumentare(ultima, massimo))
               Text(
-                'Avevi fatto tutte le ripetizioni: prova un peso in più.',
+                l10n.aveviFattoTutteRipetizioni,
                 style: t.bodySmall?.copyWith(fontWeight: FontWeight.w700),
               ),
           ],
@@ -3188,11 +3199,11 @@ class _Contatore extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(d),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(d, c.text),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -3211,7 +3222,7 @@ class _Contatore extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton.filledTonal(
-              tooltip: '$etichetta: meno',
+              tooltip: l10n.meno2(etichetta),
               onPressed: meno,
               icon: const Icon(Icons.remove_rounded),
             ),
@@ -3232,7 +3243,7 @@ class _Contatore extends StatelessWidget {
               ),
             ),
             IconButton.filledTonal(
-              tooltip: '$etichetta: più',
+              tooltip: l10n.piu2(etichetta),
               onPressed: piu,
               icon: const Icon(Icons.add_rounded),
             ),
@@ -3273,20 +3284,20 @@ class _PesiSchedaState extends State<_PesiScheda> {
     final cambi = pesiCambiati(g, widget.fatte);
     if (cambi.isEmpty) return const SizedBox.shrink();
     String kg(List<double> l) =>
-        l.isEmpty ? 'nessun peso' : '${l.map(fmtKg).join(', ')} kg';
+        l.isEmpty ? l10n.nessunPeso2 : '${l.map(fmtKg).join(', ')} kg';
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: SuperficiePulse(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pesi diversi dalla scheda', style: t.titleSmall),
+            Text(l10n.pesiDiversiDallaScheda, style: t.titleSmall),
             const SizedBox(height: 4),
             for (final (nome, prima, dopo) in cambi)
               Text('• $nome: ${kg(prima)} → ${kg(dopo)}', style: t.bodySmall),
             const SizedBox(height: 8),
             _salvati
-                ? Text('Scritti nella scheda.', style: t.bodyMedium)
+                ? Text(l10n.scrittiNellaScheda, style: t.bodyMedium)
                 : FilledButton.tonalIcon(
                     onPressed: () async {
                       await widget.state.aggiornaPesiScheda(s.id, {
@@ -3295,7 +3306,7 @@ class _PesiSchedaState extends State<_PesiScheda> {
                       if (mounted) setState(() => _salvati = true);
                     },
                     icon: const Icon(Icons.save_rounded),
-                    label: const Text('Aggiorna la scheda'),
+                    label: Text(l10n.aggiornaScheda),
                   ),
           ],
         ),
@@ -3331,7 +3342,7 @@ class _RiepilogoArrampicata extends StatelessWidget {
       return FilledButton.tonalIcon(
         onPressed: apri,
         icon: const Icon(Icons.terrain_rounded),
-        label: const Text('Segna vie, blocchi e gradi'),
+        label: Text(l10n.segnaVieBlocchiGradi),
       );
     }
     return SuperficiePulse(
@@ -3346,7 +3357,7 @@ class _RiepilogoArrampicata extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Modifica',
+            tooltip: l10n.modifica,
             onPressed: apri,
             icon: const Icon(Icons.edit_rounded),
           ),

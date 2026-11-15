@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'assistente.dart';
+import 'l10n/lingua.dart';
 
 /// Chiavi API nell'archivio cifrato del telefono, una per fornitore. Non
 /// finiscono mai nei CSV né nei backup dei dati.
@@ -36,16 +37,10 @@ String baseOllama(ConfigAssistente c) {
   if (u == null ||
       u.host.isEmpty ||
       (u.scheme != 'http' && u.scheme != 'https')) {
-    throw const ErroreLlm(
-      "Indirizzo di Ollama non valido: scrivilo come http://192.168.1.10:11434",
-    );
+    throw ErroreLlm(l10n.indirizzoOllamaNonValido);
   }
   if (u.scheme == 'http' && !retePrivata(u.host)) {
-    throw const ErroreLlm(
-      "Per proteggere i tuoi dati, l'indirizzo http è accettato solo nella "
-      "rete di casa (es. http://192.168.1.10:11434). Per un indirizzo su "
-      "internet serve https.",
-    );
+    throw ErroreLlm(l10n.proteggereTuoiDatiIndirizzo);
   }
   return base;
 }
@@ -184,7 +179,7 @@ String testoRisposta(Fornitore f, Map<String, dynamic> j) {
       testo = j['message']?['content']?.toString();
   }
   if (testo == null || testo.trim().isEmpty || testo == 'null') {
-    throw const ErroreLlm('Risposta vuota dal modello.');
+    throw ErroreLlm(l10n.rispostaVuotaDalModello);
   }
   return testo.trim();
 }
@@ -210,21 +205,18 @@ String spiegaErrore(Fornitore f, int stato, String corpo) {
   final d = dettaglio.toLowerCase();
   // Gemini risponde 400 anche per una chiave sbagliata: lo si capisce dal testo.
   if (d.contains('api key') || d.contains('api_key')) {
-    return 'Chiave API non valida: ricopiala dal sito del servizio, per intero.'
-        '\n($dettaglio)';
+    return l10n.chiaveApiNonValida3(dettaglio);
   }
   final base = switch (stato) {
-    400 => 'Richiesta rifiutata: controlla il nome del modello.',
-    401 || 403 => 'Chiave API non valida o senza permessi.',
+    400 => l10n.richiestaRifiutataControllaNome,
+    401 || 403 => l10n.chiaveApiNonValida4,
     404 =>
       f == Fornitore.ollama
-          ? 'Modello non trovato su Ollama: scaricalo con "ollama pull".'
-          : 'Modello non trovato: controlla il nome.',
-    429 =>
-      'Limite di richieste raggiunto o credito esaurito. Riprova più tardi.',
-    >= 500 =>
-      'Il servizio ha un problema in questo momento. Riprova più tardi.',
-    _ => 'Errore $stato.',
+          ? l10n.modelloNonTrovatoSu
+          : l10n.modelloNonTrovatoControlla,
+    429 => l10n.limiteRichiesteRaggiuntoO,
+    >= 500 => l10n.servizioHaProblemaQuesto,
+    _ => l10n.errore2(stato),
   };
   return dettaglio.isEmpty ? base : '$base\n($dettaglio)';
 }
@@ -332,7 +324,7 @@ Future<List<String>> modelliDisponibili(
   String? chiave,
 ) async {
   if (serveChiave(c.fornitore) && (chiave == null || chiave.isEmpty)) {
-    throw const ErroreLlm('Manca la chiave API: aggiungila qui sopra.');
+    throw ErroreLlm(l10n.mancaChiaveApiAggiungila);
   }
   final r = richiestaModelli(c, chiave);
   final client = HttpClient()..connectionTimeout = const Duration(seconds: 8);
@@ -348,15 +340,15 @@ Future<List<String>> modelliDisponibili(
   } on SocketException catch (e) {
     throw ErroreLlm(
       c.fornitore == Fornitore.ollama
-          ? 'Non riesco a raggiungere Ollama a ${c.urlOllama}. (${e.message})'
-          : 'Nessuna connessione a internet. (${e.message})',
+          ? l10n.nonRiescoRaggiungereOllama(c.urlOllama, e.message)
+          : l10n.nessunaConnessioneInternet2(e.message),
     );
   } on TimeoutException {
-    throw const ErroreLlm('Il servizio non risponde: riprova.');
+    throw ErroreLlm(l10n.servizioNonRispondeRiprova);
   } on FormatException {
-    throw const ErroreLlm('Risposta non leggibile.');
+    throw ErroreLlm(l10n.rispostaNonLeggibile);
   } on ArgumentError {
-    throw const ErroreLlm('Indirizzo non valido.');
+    throw ErroreLlm(l10n.indirizzoNonValido);
   } finally {
     client.close();
   }
@@ -386,16 +378,17 @@ Future<String?> verificaConnessione(ConfigAssistente c, String? chiave) async {
       final consigliato = modelloConsigliato(c.fornitore, disponibili);
       if (scelto || consigliato == null) {
         throw ErroreLlm(
-          'La chiave funziona, ma il modello "${c.modello}" non esiste. '
-          'Toccane uno da "Scegli tra i modelli disponibili"'
-          '${consigliato == null ? '' : ', per esempio $consigliato'}.',
+          l10n.chiaveFunzionaMaModello(
+            c.modello,
+            consigliato == null ? '' : l10n.esempio(consigliato),
+          ),
         );
       }
       nuovo = consigliato;
       c.modelli[c.fornitore] = consigliato;
     }
     await chiediAssistente(c, chiave, 'Rispondi solo con la parola OK.', [
-      MessaggioChat(true, 'Prova di connessione'),
+      MessaggioChat(true, l10n.provaConnessione),
     ]);
     return nuovo;
   }
@@ -411,24 +404,21 @@ Future<String?> verificaConnessione(ConfigAssistente c, String? chiave) async {
     final installati = modelliOllama(jsonDecode(corpo) as Map<String, dynamic>);
     if (!modelloPresente(c.modello, installati)) {
       throw ErroreLlm(
-        'Ollama risponde, ma il modello "${c.modello}" non c\'è. '
-        'Installati: ${installati.isEmpty ? 'nessuno' : installati.join(', ')}.',
+        l10n.ollamaRispondeMaModello(
+          c.modello,
+          installati.isEmpty ? l10n.parolaNessuno : installati.join(', '),
+        ),
       );
     }
     return null;
   } on SocketException catch (e) {
-    throw ErroreLlm(
-      'Non riesco a raggiungere Ollama a ${c.urlOllama}. Il PC è acceso, '
-      'nella stessa rete, con Ollama aperto? (${e.message})',
-    );
+    throw ErroreLlm(l10n.nonRiescoRaggiungereOllama2(c.urlOllama, e.message));
   } on TimeoutException {
-    throw const ErroreLlm('Ollama non risponde: il PC è acceso?');
+    throw ErroreLlm(l10n.ollamaNonRispondePc);
   } on FormatException {
-    throw const ErroreLlm('Indirizzo non valido o risposta non di Ollama.');
+    throw ErroreLlm(l10n.indirizzoNonValidoO);
   } on ArgumentError {
-    throw const ErroreLlm(
-      'Indirizzo non valido: scrivilo come http://IP:11434',
-    );
+    throw ErroreLlm(l10n.indirizzoNonValidoScrivilo);
   } finally {
     client.close();
   }
@@ -442,9 +432,7 @@ Future<String> chiediAssistente(
   List<MessaggioChat> storia,
 ) async {
   if (serveChiave(c.fornitore) && (chiave == null || chiave.isEmpty)) {
-    throw const ErroreLlm(
-      'Manca la chiave API: aggiungila nelle impostazioni.',
-    );
+    throw ErroreLlm(l10n.mancaChiaveApiAggiungila2);
   }
   final r = richiestaPer(c, chiave, sistema, storia);
   final client = HttpClient()..connectionTimeout = const Duration(seconds: 15);
@@ -462,20 +450,19 @@ Future<String> chiediAssistente(
     }
     final j = jsonDecode(corpo);
     if (j is! Map<String, dynamic>) {
-      throw const ErroreLlm('Risposta non leggibile.');
+      throw ErroreLlm(l10n.rispostaNonLeggibile);
     }
     return testoRisposta(c.fornitore, j);
   } on SocketException catch (e) {
     throw ErroreLlm(
       c.fornitore == Fornitore.ollama
-          ? 'Non riesco a raggiungere Ollama a ${c.urlOllama}. Il PC è acceso, '
-                'nella stessa rete, con OLLAMA_HOST=0.0.0.0? (${e.message})'
-          : 'Nessuna connessione a internet. (${e.message})',
+          ? l10n.nonRiescoRaggiungereOllama3(c.urlOllama, e.message)
+          : l10n.nessunaConnessioneInternet2(e.message),
     );
   } on TimeoutException {
-    throw const ErroreLlm('Il modello ci sta mettendo troppo: riprova.');
+    throw ErroreLlm(l10n.modelloCiStaMettendo);
   } on FormatException {
-    throw const ErroreLlm('Risposta non leggibile.');
+    throw ErroreLlm(l10n.rispostaNonLeggibile);
   } finally {
     client.close();
   }

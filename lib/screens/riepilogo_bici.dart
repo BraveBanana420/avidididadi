@@ -5,6 +5,7 @@ import '../intervalli.dart';
 import '../models.dart';
 import '../serie_sessione.dart';
 import 'profilo_allenamento.dart';
+import '../l10n/lingua.dart';
 
 /// La parte del riepilogo che vale solo per la bici: com'è andata la seduta
 /// in watt, in un grafico solo. Dietro le barre del programma (i watt da
@@ -64,7 +65,7 @@ class _RiepilogoBiciState extends State<RiepilogoBici> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 6,
             children: [
-              Text("Com'è andata", style: t.titleSmall),
+              Text(l10n.comAndata2, style: t.titleSmall),
               if (conLinea) ...[
                 GraficoPotenzaSeduta(
                   serie: watt,
@@ -74,29 +75,18 @@ class _RiepilogoBiciState extends State<RiepilogoBici> {
                 ),
                 Text(
                   fasce.isEmpty
-                      ? 'I tuoi watt in tutta la seduta (media ogni 10 '
-                            'secondi).'
+                      ? l10n.tuoiWattTuttaSeduta
                       : previsti
-                      ? 'Le barre colorate sono il programma: i watt da '
-                            'tenere blocco per blocco. La linea sono i watt '
-                            'che hai tenuto (media ogni 10 secondi); quella '
-                            'tratteggiata è la tua FTP.'
-                      : 'Le barre colorate sono i watt medi di ogni blocco. '
-                            'La linea sono i watt che hai tenuto (media ogni '
-                            '10 secondi); quella tratteggiata è la tua FTP.',
+                      ? l10n.barreColorateSonoProgramma
+                      : l10n.barreColorateSonoWatt,
                   style: nota,
                 ),
               ] else if (zp != null) ...[
                 ProfiloAllenamento(barre: barre, zone: zp, altezza: 64),
                 Text(
                   previsti
-                      ? 'Una barra per blocco, larga quanto è durato: alta e '
-                            'colorata secondo i watt da tenere; il trattino '
-                            'sono i watt medi che hai tenuto. La linea è la '
-                            'tua FTP.'
-                      : 'Una barra per blocco: larga quanto è durato, alta e '
-                            'colorata secondo i watt medi. La linea è la tua '
-                            'FTP.',
+                      ? l10n.barraBloccoLargaQuanto
+                      : l10n.barraBloccoLargaQuanto2,
                   style: nota,
                 ),
               ],

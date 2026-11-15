@@ -8,6 +8,7 @@ import 'models.dart';
 import 'percorso.dart';
 import 'registro_forza.dart';
 import 'serie_sessione.dart';
+import 'l10n/lingua.dart';
 
 // I dati delle immagini da condividere (WhatsApp, Instagram…): una sessione
 // o la settimana. Qui solo numeri e testi; il disegno è in
@@ -17,7 +18,7 @@ import 'serie_sessione.dart';
 String fmtDurataBreve(int minuti) {
   if (minuti < 60) return '$minuti min';
   final m = minuti % 60;
-  return m == 0 ? '${minuti ~/ 60} h' : '${minuti ~/ 60} h ${two(m)} min';
+  return m == 0 ? '${minuti ~/ 60} h' : l10n.hMin(minuti ~/ 60, two(m));
 }
 
 /// La distanza come si dice nello sport: metri nel nuoto, km negli altri.
@@ -45,21 +46,26 @@ List<(String, String, String)> numeriSessione(
   final bici = stessoSport(s.sport, 'Bici');
   return [
     if (s.durataMin >= 60)
-      ('Tempo', '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'h')
+      (l10n.tempo, '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'h')
     else if (s.durataMin > 0)
-      ('Tempo', '${s.durataMin}', 'min'),
+      (l10n.tempo, '${s.durataMin}', 'min'),
     if (s.distanzaKm > 0)
       (
-        'Distanza',
+        l10n.distanza,
         fmtDistanza(s.sport, s.distanzaKm).split(' ').first,
         fmtDistanza(s.sport, s.distanzaKm).split(' ').last,
       ),
     if (r != null)
-      (bici ? 'Velocità' : 'Passo', fmtRitmo(s.sport, r), unitaRitmo(s.sport)),
-    if (s.potenzaMedia > 0) ('Potenza', '${s.potenzaMedia}', 'W'),
-    if (s.fcMedia > 0) ('Battito medio', '${s.fcMedia}', 'bpm'),
-    if (kgTotali > 0) ('Sollevati', fmtNum(kgTotali.roundToDouble()), 'kg'),
-    if (s.calorieAttive > 0) ('Calorie', '${s.calorieAttive.round()}', 'kcal'),
+      (
+        bici ? l10n.velocita : l10n.passo,
+        fmtRitmo(s.sport, r),
+        unitaRitmo(s.sport),
+      ),
+    if (s.potenzaMedia > 0) (l10n.potenza, '${s.potenzaMedia}', 'W'),
+    if (s.fcMedia > 0) (l10n.battitoMedio, '${s.fcMedia}', 'bpm'),
+    if (kgTotali > 0) (l10n.sollevati, fmtNum(kgTotali.roundToDouble()), 'kg'),
+    if (s.calorieAttive > 0)
+      (l10n.calorie, '${s.calorieAttive.round()}', 'kcal'),
   ];
 }
 
@@ -78,18 +84,18 @@ enum GraficaCondivisa {
   foto,
 }
 
-const nomiGrafiche = {
-  GraficaCondivisa.classica: 'Classica',
-  GraficaCondivisa.mappa: 'Mappa',
-  GraficaCondivisa.poster: 'Poster',
-  GraficaCondivisa.kmPerKm: 'Km per km',
-  GraficaCondivisa.profilo: 'Salita',
+Map<GraficaCondivisa, String> get nomiGrafiche => {
+  GraficaCondivisa.classica: l10n.classica,
+  GraficaCondivisa.mappa: l10n.mappa,
+  GraficaCondivisa.poster: l10n.poster,
+  GraficaCondivisa.kmPerKm: l10n.kmKm,
+  GraficaCondivisa.profilo: l10n.salita,
   GraficaCondivisa.ripetute: 'Ripetute',
-  GraficaCondivisa.esercizi: 'Esercizi',
-  GraficaCondivisa.muscoli: 'Muscoli',
-  GraficaCondivisa.seduta: 'Seduta',
-  GraficaCondivisa.progressi: 'Progressi',
-  GraficaCondivisa.foto: 'La tua foto',
+  GraficaCondivisa.esercizi: l10n.esercizi,
+  GraficaCondivisa.muscoli: l10n.muscoli,
+  GraficaCondivisa.seduta: l10n.seduta,
+  GraficaCondivisa.progressi: l10n.progressi,
+  GraficaCondivisa.foto: l10n.tuaFoto,
 };
 
 /// Cosa c'è nei dati della sessione: senza, la grafica che ne ha bisogno
@@ -240,9 +246,7 @@ String? recordDelGiorno(List<SerieFatta> tutte, DateTime giorno) {
     final kgPrima = prima.map((s) => s.kg).reduce(math.max);
     if (kgOggi > kgPrima && kgOggi - kgPrima > salto) {
       salto = kgOggi - kgPrima;
-      migliore =
-          '${mie.first.nome} ${fmtKg(kgOggi)} kg '
-          '(prima ${fmtKg(kgPrima)} kg)';
+      migliore = l10n.kgPrimaKg(mie.first.nome, fmtKg(kgOggi), fmtKg(kgPrima));
     }
   }
   return migliore;
@@ -297,8 +301,12 @@ DatiPoster posterDi(
     s.tipo,
   ).replaceAll(': ', ' · ').toUpperCase();
   final tempo = s.durataMin >= 60
-      ? ('Tempo', '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'ore')
-      : ('Tempo', '${s.durataMin}', 'min');
+      ? (
+          l10n.tempo,
+          '${s.durataMin ~/ 60}:${two(s.durataMin % 60)}',
+          l10n.parolaOre,
+        )
+      : (l10n.tempo, '${s.durataMin}', 'min');
   List<(String, String, String)> senza(String nome) => [
     for (final n in numeriSessione(
       s,
@@ -311,37 +319,37 @@ DatiPoster posterDi(
     return (
       etichetta: etichetta,
       grande: fmtNum(kgTotali.roundToDouble()),
-      sotto: 'kg sollevati in tutto',
-      numeri: senza('Sollevati'),
+      sotto: l10n.kgSollevatiTutto,
+      numeri: senza(l10n.sollevati),
     );
   }
   if (arrampicata case final a? when a.gradoMax.isNotEmpty) {
     return (
       etichetta: [
-        'ARRAMPICATA',
-        a.ambiente == Ambiente.indoor ? 'INDOOR' : 'OUTDOOR',
+        l10n.arrampicata,
+        a.ambiente == Ambiente.indoor ? l10n.indoor : l10n.outdoor,
       ].join(' · '),
       grande: a.gradoMax,
       sotto: [
-        'il grado più alto di oggi',
+        l10n.gradoPiuAltoOggi,
         if (a.stile.isNotEmpty) a.stile.toLowerCase(),
       ].join(' · '),
       numeri: [
-        if (a.chiuse > 0) (a.falesia ? 'Vie' : 'Blocchi', '${a.chiuse}', ''),
-        if (a.metri > 0) ('Saliti', '${a.metri}', 'm'),
+        if (a.chiuse > 0) (a.falesia ? 'Vie' : l10n.blocchi, '${a.chiuse}', ''),
+        if (a.metri > 0) (l10n.saliti, '${a.metri}', 'm'),
         if (s.durataMin > 0) tempo,
       ].take(3).toList(),
     );
   }
   if (stessoSport(s.sport, sportAttivitaLibera)) {
     final nome = s.tipo.isEmpty || s.tipo == 'Altra attività'
-        ? 'Attività'
+        ? l10n.attivita
         : s.tipo;
     return (
-      etichetta: 'ALTRA ATTIVITÀ',
+      etichetta: l10n.altraAttivita,
       grande: nome.toUpperCase(),
       sotto: s.durataMin >= 60 ? '${tempo.$2} ore' : '${s.durataMin} minuti',
-      numeri: senza('Tempo'),
+      numeri: senza(l10n.tempo),
     );
   }
   final (grande, sotto) = numeroGrande(s);
@@ -361,15 +369,15 @@ DatiPoster posterDi(
     return (d.first, d.last);
   }
   if (s.durataMin >= 60) {
-    return ('${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', 'ore');
+    return ('${s.durataMin ~/ 60}:${two(s.durataMin % 60)}', l10n.parolaOre);
   }
-  return ('${s.durataMin}', 'minuti');
+  return ('${s.durataMin}', l10n.parolaMinuti);
 }
 
 /// I numeri piccoli sotto il poster: quelli della sessione senza quello già
 /// in grande, al massimo tre.
 List<(String, String, String)> numeriPoster(Sessione s) {
-  final grande = s.distanzaKm > 0 ? 'Distanza' : 'Tempo';
+  final grande = s.distanzaKm > 0 ? l10n.distanza : l10n.tempo;
   return [
     for (final n in numeriSessione(s))
       if (n.$1 != grande) n,
@@ -470,8 +478,8 @@ String periodoSettimana(DateTime lunedi) {
 
 /// Il testo che accompagna l'immagine della settimana.
 String testoSettimana(RiepilogoSettimana r) => [
-  'La mia settimana (${periodoSettimana(r.lunedi)})',
-  r.previste > 0 ? '${r.fatte}/${r.previste} sedute' : '${r.fatte} sedute',
+  l10n.miaSettimana(periodoSettimana(r.lunedi)),
+  r.previste > 0 ? l10n.sedute(r.fatte, r.previste) : '${r.fatte} sedute',
   fmtDurataBreve(r.minuti),
   if (r.km >= 1) '${fmtNum(r.km.roundToDouble())} km',
 ].join(' · ');

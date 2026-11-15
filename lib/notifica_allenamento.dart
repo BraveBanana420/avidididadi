@@ -4,6 +4,7 @@ import 'dati_live.dart';
 import 'esecuzione.dart';
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 // La notifica dell'allenamento in corso, visibile anche dalla schermata di
 // blocco: esercizio, tempo (che scorre da solo), km, passo e battito, con il
@@ -59,9 +60,9 @@ String titoloNotifica(
   final cosa = libera
       ? nome
       : b.tipo == TipoBlocco.recupero
-      ? (prossimo == null ? 'Recupero' : 'Recupero · poi ${prossimo.titolo}')
+      ? (prossimo == null ? 'Recupero' : l10n.recuperoPoi(prossimo.titolo))
       : (b.dettaglio.isEmpty ? b.titolo : '${b.titolo} · ${b.dettaglio}');
-  return inPausa ? 'In pausa · $cosa' : cosa;
+  return inPausa ? l10n.pausa(cosa) : cosa;
 }
 
 /// Riga dei dati: "2,35 km · 10:12 min/km · ♥ 112 Z2". Vuota senza GPS e

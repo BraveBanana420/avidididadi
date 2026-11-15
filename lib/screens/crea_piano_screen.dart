@@ -11,21 +11,17 @@ import '../widgets.dart';
 import 'attrezzatura_screen.dart';
 import 'calendar_screen.dart';
 import 'week_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 const _sportPreparabili = ['Forza', 'Corsa', 'Nuoto', 'Bici', 'Mobilità'];
 
-const _descrizioni = {
-  'Forza':
-      'Esercizi scelti per te e la tua attrezzatura, con serie, ripetizioni e '
-      'pesi. Finisce sempre con un po\' di mobilità.',
-  'Corsa':
-      'Corse facili, una seduta più intensa (fartlek, tempo, ripetute) e il '
-      'lungo che cresce verso la gara.',
-  'Nuoto': 'Tecnica e serie al tuo ritmo, alternate a quelle più intense.',
-  'Bici': 'Uscite facili, intervalli e uscita lunga.',
-  'Mobilità':
-      'Stretching e movimenti lenti, a tempo: ogni volta una zona del corpo '
-      'diversa. Ottima anche per recuperare.',
+Map<String, String> get _descrizioni => {
+  'Forza': l10n.eserciziSceltiTeTua,
+  'Corsa': l10n.corseFaciliSedutaPiu,
+  'Nuoto': l10n.tecnicaSerieAlTuo,
+  'Bici': l10n.usciteFaciliIntervalliUscita,
+  'Mobilità': l10n.stretchingMovimentiLentiTempo,
 };
 
 /// Una sola pagina per far preparare all'app le sedute: si scelgono gli sport
@@ -97,20 +93,18 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
       final ok = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: Text('Togliere ${tolti.join(' e ')}?'),
+          title: Text(l10n.togliere(tolti.join(' e '))),
           content: Text(
-            'Le sedute di ${tolti.join(' e ').toLowerCase()} restano nel '
-            'calendario, ma senza esercizi preparati. Quelle già fatte non '
-            'cambiano.',
+            l10n.seduteRestanoNelCalendario(tolti.join(' e ').toLowerCase()),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Annulla'),
+              child: Text(l10n.annulla),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Togli'),
+              child: Text(l10n.togli),
             ),
           ],
         ),
@@ -133,9 +127,8 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
       avviso(
         content: Text(
           scelti.isEmpty
-              ? 'Sedute preparate tolte.'
-              : 'Pronte $n sedute di ${scelti.join(', ').toLowerCase()}. '
-                    'Le trovi in Oggi.',
+              ? l10n.sedutePreparateTolte
+              : l10n.pronteSeduteTroviOggi(n, scelti.join(', ').toLowerCase()),
         ),
       ),
     );
@@ -180,28 +173,24 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
         shape: const Border(),
         initiallyExpanded: !attivi.contains('Forza'),
         leading: Icon(iconaSport('Forza'), color: coloreSport('Forza')),
-        title: const Text('Forza: come la vuoi'),
+        title: Text(l10n.forzaComeVuoi),
         subtitle: Text(
           '${obiettivi[obiettivo]?.$1} · ${livelli[livello]?.$1.toLowerCase()}',
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _scelta('Obiettivo', obiettivi, obiettivo, (v) => obiettivo = v),
+          _scelta(l10n.obiettivo, obiettivi, obiettivo, (v) => obiettivo = v),
           const SizedBox(height: 8),
-          _scelta('Livello', livelli, livello, (v) => livello = v),
-          Text(
-            'Non preoccuparti di sbagliare: il livello si adatta ai voti che '
-            'dai a fine seduta.',
-            style: t.bodySmall,
-          ),
+          _scelta(l10n.livello, livelli, livello, (v) => livello = v),
+          Text(l10n.nonPreoccupartiSbagliareLivello, style: t.bodySmall),
           const SizedBox(height: 12),
-          Text('Attrezzatura', style: t.titleMedium),
+          Text(l10n.attrezzatura, style: t.titleMedium),
           ListTile(
             contentPadding: EdgeInsets.zero,
             title: Text(
               state.attrezzatura.isEmpty
-                  ? 'Solo corpo libero'
+                  ? l10n.soloCorpoLibero
                   : state.attrezzatura.entries
                         .map(
                           (e) => [
@@ -231,19 +220,16 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
       child: ExpansionTile(
         shape: const Border(),
         leading: const Icon(Icons.trending_up_rounded),
-        title: Text('${sport.join(', ')}: come crescere'),
-        subtitle: const Text('Seduta lunga, e cosa fare se è facile'),
+        title: Text(l10n.comeCrescere(sport.join(', '))),
+        subtitle: Text(l10n.sedutaLungaCosaFare),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (sport.contains('Corsa') || sport.contains('Bici'))
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Seduta lunga'),
-              subtitle: const Text(
-                "L'ultima corsa o uscita in bici della settimana dura di più "
-                'e cresce col tempo. Spenta, durano tutte quanto hai scelto.',
-              ),
+              title: Text(l10n.sedutaLunga),
+              subtitle: Text(l10n.ultimaCorsaOUscita),
               value: !widget.state.profilo.senzaLungo,
               onChanged: (v) async {
                 await widget.state.impostaLungo(v);
@@ -251,7 +237,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
               },
             ),
           for (final sp in sport) ...[
-            Text(sp, style: t.labelLarge),
+            Text(mostra(sp), style: t.labelLarge),
             const SizedBox(height: 4),
             SizedBox(
               width: double.infinity,
@@ -304,19 +290,15 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
 
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Prepara le sedute')),
+      appBar: AppBar(title: Text(l10n.preparaSedute)),
       body: ListenableBuilder(
         listenable: state,
         builder: (context, _) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              'Scegli per quali sport vuoi che l\'app scriva gli allenamenti '
-              'passo passo. Prepara solo quelli che spunti.',
-              style: t.bodyMedium,
-            ),
+            Text(l10n.scegliQualiSportVuoi, style: t.bodyMedium),
             const SizedBox(height: 16),
-            Text('Per quali sport?', style: t.titleLarge),
+            Text(l10n.qualiSport, style: t.titleLarge),
             const SizedBox(height: 4),
             Card(
               child: Column(
@@ -351,7 +333,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                             if (attivi.contains(sp))
                               Flexible(
                                 child: Text(
-                                  'già preparato',
+                                  l10n.giaPreparato,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: t.labelMedium?.copyWith(
@@ -369,10 +351,20 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                           children: [
                             Text(
                               n > 0
-                                  ? '$n ${n == 1 ? 'volta' : 'volte'} a settimana'
+                                  ? l10n.settimana2(
+                                      n,
+                                      n == 1
+                                          ? l10n.parolaVolta
+                                          : l10n.parolaVolte,
+                                    )
                                   : sedute > 0
-                                  ? '$sedute ${sedute == 1 ? 'seduta' : 'sedute'} in calendario'
-                                  : 'nessuna seduta in calendario',
+                                  ? l10n.calendario(
+                                      sedute,
+                                      sedute == 1
+                                          ? l10n.parolaSeduta
+                                          : l10n.parolaSedute,
+                                    )
+                                  : l10n.nessunaSedutaCalendario,
                               style: t.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -392,12 +384,12 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                   MaterialPageRoute(builder: (_) => WeekScreen(state: state)),
                 ),
                 icon: const Icon(Icons.view_week_rounded),
-                label: const Text('Cambia giorni e minuti (settimana tipo)'),
+                label: Text(l10n.cambiaGiorniMinutiSettimana),
               ),
             ),
             if (scelti.isNotEmpty) ...[
               const SizedBox(height: 8),
-              Text('Le tue preferenze', style: t.titleLarge),
+              Text(l10n.tuePreferenze, style: t.titleLarge),
               const SizedBox(height: 4),
               if (scelti.contains('Forza')) _opzioniForza(state),
               if (resistenza.isNotEmpty) _opzioniResistenza(resistenza),
@@ -406,11 +398,8 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                   padding: const EdgeInsets.fromLTRB(4, 4, 4, 0),
                   child: Text(
                     o == null || o.fase(oggi) == Fase.libera
-                        ? 'Senza una gara le sedute crescono a blocchi di 4 '
-                              'settimane, con una più leggera. Puoi fissare una '
-                              'gara dal Profilo, alla voce Il mio obiettivo.'
-                        : '${o.nome}: le sedute cambiano con l\'avvicinarsi '
-                              'della gara.',
+                        ? l10n.senzaGaraSeduteCrescono
+                        : l10n.seduteCambianoAvvicinarsiGara(o.nome),
                     style: t.bodySmall,
                   ),
                 ),
@@ -421,13 +410,9 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                 child: ListTile(
                   leading: const Icon(Icons.info_outline_rounded),
                   title: Text(
-                    '${assenti.join(' e ')}: nessun giorno nel calendario',
+                    l10n.nessunGiornoNelCalendario(assenti.join(' e ')),
                   ),
-                  subtitle: const Text(
-                    'È nella settimana tipo ma non ancora nel calendario. '
-                    'Apri la settimana tipo e tocca "Porta tutta la settimana '
-                    'nel calendario".',
-                  ),
+                  subtitle: Text(l10n.nellaSettimanaTipoMa),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => WeekScreen(state: state)),
@@ -439,10 +424,8 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.event_busy_rounded),
-                  title: const Text('Il calendario è vuoto'),
-                  subtitle: const Text(
-                    'Prima allunga il calendario: poi le sedute si riempiono.',
-                  ),
+                  title: Text(l10n.calendarioVuoto),
+                  subtitle: Text(l10n.primaAllungaCalendarioPoi),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => showModalBottomSheet<void>(
                     context: context,
@@ -453,8 +436,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
               )
             else
               Text(
-                'Le sedute si preparano fino a ${dataLunga(ultimo).toLowerCase()}; quando '
-                'allunghi il calendario si aggiungono da sole.',
+                l10n.seduteSiPreparanoFino(dataLunga(ultimo).toLowerCase()),
                 style: t.bodySmall,
               ),
             const SizedBox(height: 12),
@@ -477,11 +459,11 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                 label: Text(
                   scelti.isEmpty
                       ? (attivi.isEmpty
-                            ? 'Scegli almeno uno sport'
-                            : 'Togli le sedute preparate')
+                            ? l10n.scegliAlmenoUnoSport
+                            : l10n.togliSedutePreparate)
                       : !cambia && attivi.isNotEmpty
-                      ? 'Aggiorna le sedute'
-                      : 'Prepara ${scelti.join(', ').toLowerCase()}',
+                      ? l10n.aggiornaSedute
+                      : l10n.prepara(scelti.join(', ').toLowerCase()),
                   style: const TextStyle(fontSize: 16),
                 ),
               ),

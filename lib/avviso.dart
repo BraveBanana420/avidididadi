@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/lingua.dart';
+
 /// Tempo minimo per poter toccare "Annulla" prima che l'avviso sparisca.
 const minimoConAnnulla = Duration(milliseconds: 3500);
 
@@ -112,7 +114,7 @@ class _TastoAnnullaState extends State<_TastoAnnulla> {
         minimumSize: const Size(0, 36),
         padding: const EdgeInsets.symmetric(horizontal: 16),
       ),
-      child: const Text('Annulla'),
+      child: Text(l10n.annulla),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Registro dell'arrampicata: dove, cosa (vie in falesia o boulder), grado più
 // difficile chiuso e come, quante salite e quanti metri. Una riga per seduta.
@@ -149,18 +150,22 @@ class SedutaArrampicata {
       if (luogo.isNotEmpty) luogo,
     ].join(' · '),
     if (gradoMax.isNotEmpty)
-      'Grado più difficile: $gradoMax${stile.isEmpty ? '' : ' (${stile.toLowerCase()})'}',
+      l10n.gradoPiuDifficile(
+        gradoMax,
+        stile.isEmpty ? '' : ' (${stile.toLowerCase()})',
+      ),
     if (chiuse > 0 || provate > 0)
       [
-        if (chiuse > 0) '$chiuse ${falesia ? 'vie chiuse' : 'blocchi chiusi'}',
+        if (chiuse > 0)
+          '$chiuse ${falesia ? l10n.vieChiuse : l10n.blocchiChiusi}',
         if (provate > 0) '$provate provat${falesia ? 'e' : 'i'}',
       ].join(', '),
     if (metri > 0 || (falesia && corda.isNotEmpty))
       [
-        if (metri > 0) 'circa $metri m saliti',
+        if (metri > 0) l10n.circaMSaliti(metri),
         if (corda.isNotEmpty) corda.toLowerCase(),
       ].join(' · '),
-    if (progetto.isNotEmpty) 'Progetto: $progetto',
+    if (progetto.isNotEmpty) l10n.progetto(progetto),
   ];
 }
 

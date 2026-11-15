@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'obiettivo.dart';
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 /// Le serie nel tempo di un'attività (battito, velocità) per i grafici, come
 /// nel dettaglio di Garmin. Da Health Connect arrivano un campione ogni 15-20
@@ -48,10 +49,9 @@ String? notaDatiMancanti({
     return null;
   }
   final cosa = conPotenza
-      ? 'Altitudine e pendenza'
-      : 'Altitudine, pendenza e potenza';
-  return '$cosa non ci sono: per averle collega intervals.icu '
-      '(Profilo → Dati e collegamenti).';
+      ? l10n.altitudinePendenza
+      : l10n.altitudinePendenzaPotenza;
+  return l10n.nonCiSonoAverle(cosa);
 }
 
 /// Al massimo [punti] valori: media dei campioni in intervalli uguali di

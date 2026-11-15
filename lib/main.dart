@@ -22,6 +22,7 @@ import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
+import 'l10n/lingua.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -162,19 +163,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       barrierDismissible: false,
       builder: (c) => AlertDialog(
         icon: const Icon(Icons.restore_rounded),
-        title: const Text('Allenamento interrotto'),
-        content: Text(
-          "L'app si era chiusa durante l'allenamento: ${r.riassunto}. "
-          'Riprendi da dove eri? Riparte in pausa.',
-        ),
+        title: Text(l10n.allenamentoInterrotto),
+        content: Text(l10n.appSiEraChiusa(r.riassunto)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Scarta'),
+            child: Text(l10n.scarta),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Riprendi'),
+            child: Text(l10n.riprendi),
           ),
         ],
       ),
@@ -230,9 +228,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     setState(() => tab = 2);
     // Se è aperta un'altra pagina (es. un allenamento) non si chiude: avviso.
     if (Navigator.of(context).canPop()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        avviso(content: Text('Risposta ricevuta: la trovi in Coach.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text(l10n.rispostaRicevutaTroviCoach)));
     }
   }
 
@@ -276,11 +273,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         key: ChiaviTour.barra,
         chiavi: ChiaviTour.voci,
         attiva: tab,
-        voci: const [
-          VoceBarra(Icons.today_rounded, 'Oggi'),
-          VoceBarra(Icons.insights_rounded, 'Progressi'),
-          VoceBarra(Icons.forum_rounded, 'Coach'),
-          VoceBarra(Icons.person_outline_rounded, 'Profilo'),
+        voci: [
+          VoceBarra(Icons.today_rounded, l10n.oggi),
+          VoceBarra(Icons.insights_rounded, l10n.progressi),
+          VoceBarra(Icons.forum_rounded, l10n.coach),
+          VoceBarra(Icons.person_outline_rounded, l10n.profilo),
         ],
         onTocca: (i) {
           // Animazione solo verso la sezione accanto, altrimenti salto diretto.

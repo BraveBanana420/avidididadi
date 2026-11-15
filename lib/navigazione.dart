@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'csv.dart';
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 // Seguire un percorso già fatto da qualcuno (un GPX di una gara, un giro
 // famoso): dove sei sulla traccia, quanto manca, la prossima curva e se sei
@@ -227,9 +228,7 @@ Traccia tracciaDaGpx(String testo, {String nomeFile = 'Percorso'}) {
     punti.add(PuntoTraccia(lat, lon, q));
   }
   if (punti.length < 2) {
-    throw const FormatException(
-      'Nel file non c\'è un percorso: serve un GPX con una traccia.',
-    );
+    throw FormatException(l10n.nelFileNonC);
   }
   // Il nome della traccia, o quello generale del file, prima dei punti.
   final prima = testo.substring(0, inizi.first);
@@ -312,19 +311,19 @@ class Curva {
 
   /// "gira a destra", "tornante a sinistra", "torna indietro".
   String get frase {
-    final lato = destra ? 'a destra' : 'a sinistra';
+    final lato = destra ? l10n.destra : l10n.sinistra;
     return switch (tipo) {
-      TipoCurva.leggera => destra ? 'tieni la destra' : 'tieni la sinistra',
+      TipoCurva.leggera => destra ? l10n.tieniDestra : l10n.tieniSinistra,
       TipoCurva.normale => 'gira $lato',
-      TipoCurva.stretta => 'curva stretta $lato',
-      TipoCurva.inversione => 'torna indietro',
+      TipoCurva.stretta => l10n.curvaStretta(lato),
+      TipoCurva.inversione => l10n.tornaIndietro,
     };
   }
 
   /// La stessa curva detta subito dopo un'altra: "poi subito a sinistra",
   /// "poi tieni la destra".
   String get fraseDopo => tipo == TipoCurva.normale
-      ? 'poi subito ${destra ? 'a destra' : 'a sinistra'}'
+      ? l10n.poiSubito(destra ? l10n.destra : l10n.sinistra)
       : 'poi $frase';
 }
 
@@ -398,7 +397,7 @@ String parlaMetri(double m) {
   final testo = km == km.roundToDouble()
       ? '${km.round()}'
       : km.toStringAsFixed(1).replaceAll('.', ',');
-  return '$testo ${km == 1 ? 'chilometro' : 'chilometri'}';
+  return '$testo ${km == 1 ? l10n.parolaChilometro : l10n.parolaChilometri}';
 }
 
 /// "250 m", "1,2 km" per lo schermo.
@@ -548,9 +547,7 @@ class Guida {
       _vicinoDa ??= ora;
       if (fuori && ora.difference(_vicinoDa!) >= _attesaRientro) {
         fuori = false;
-        avvisi.add(
-          const AvvisoGuida(TipoAvvisoGuida.rientro, 'Di nuovo sul percorso.'),
-        );
+        avvisi.add(AvvisoGuida(TipoAvvisoGuida.rientro, l10n.nuovoSulPercorso));
       }
     } else {
       _vicinoDa = null;
@@ -562,7 +559,7 @@ class Guida {
         avvisi.add(
           AvvisoGuida(
             TipoAvvisoGuida.fuori,
-            'Sei fuori percorso, a ${parlaMetri(_arrotonda(d))} dalla traccia.',
+            l10n.seiFuoriPercorsoDalla(parlaMetri(_arrotonda(d))),
           ),
         );
       }
@@ -585,10 +582,7 @@ class Guida {
         if (ora.difference(_contrarioDa!) >= _attesaContrario && ripetibile) {
           _ultimoContrario = ora;
           avvisi.add(
-            const AvvisoGuida(
-              TipoAvvisoGuida.contrario,
-              'Stai andando nel senso contrario al percorso.',
-            ),
+            AvvisoGuida(TipoAvvisoGuida.contrario, l10n.staiAndandoNelSenso),
           );
         }
       } else {
@@ -600,10 +594,7 @@ class Guida {
     if (!arrivato && traccia.metri - p < 30 && p > traccia.metri * 0.8) {
       arrivato = true;
       avvisi.add(
-        const AvvisoGuida(
-          TipoAvvisoGuida.arrivo,
-          'Arrivo! Percorso completato.',
-        ),
+        AvvisoGuida(TipoAvvisoGuida.arrivo, l10n.arrivoPercorsoCompletato),
       );
       return avvisi;
     }
@@ -647,7 +638,7 @@ class Guida {
       final tra = (manca / passo).round() * passo;
       return AvvisoGuida(
         TipoAvvisoGuida.curva,
-        'Tra ${parlaMetri(tra)}, ${c.frase}$dopo.',
+        l10n.tra(parlaMetri(tra), c.frase, dopo),
         preavviso: true,
       );
     }

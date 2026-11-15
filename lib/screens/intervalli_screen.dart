@@ -6,6 +6,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// Gli intervalli di una sessione corretti a mano: il nome di un tratto (una
 /// ripetuta che in realtà era il defaticamento), i metri, il tempo, un tratto
@@ -76,16 +77,12 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
     final modificati = widget.state.intervalliModificati.containsKey(s.id);
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Modifica gli intervalli')),
+      appBar: AppBar(title: Text(l10n.modificaIntervalli)),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-            child: Text(
-              'Tocca un tratto per cambiare nome, metri o tempo, o per '
-              'toglierlo. Tienilo premuto e trascinalo per spostarlo.',
-              style: t.bodySmall,
-            ),
+            child: Text(l10n.toccaTrattoCambiareNome, style: t.bodySmall),
           ),
           Expanded(
             child: Material(
@@ -113,7 +110,7 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
                       i.recupero
                           ? rigaIntervallo(i, s.sport)
                           : i.nome.isEmpty
-                          ? 'Senza nome'
+                          ? l10n.senzaNome
                           : i.nome,
                     ),
                     subtitle: i.recupero
@@ -134,19 +131,19 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
               children: [
                 OutlinedButton.icon(
                   icon: const Icon(Icons.add_rounded),
-                  label: const Text('Aggiungi un tratto'),
+                  label: Text(l10n.aggiungiTratto),
                   onPressed: _aggiungi,
                 ),
                 if (modificati)
                   TextButton.icon(
                     icon: const Icon(Icons.undo_rounded),
-                    label: const Text("Torna a quelli dell'orologio"),
+                    label: Text(l10n.tornaQuelliDellOrologio),
                     onPressed: _originali,
                   ),
                 PulsantePrincipale(
                   onPressed: _salva,
                   icona: Icons.check_rounded,
-                  testo: 'Salva',
+                  testo: l10n.salva,
                 ),
               ],
             ),
@@ -190,7 +187,7 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
   void _conferma() {
     final secondi = parseSecondi(_tempo.text);
     if (secondi == null) {
-      setState(() => _errore = 'Scrivi il tempo, es. 5:30 o 45');
+      setState(() => _errore = l10n.scriviTempoEs5);
       return;
     }
     Navigator.pop(
@@ -223,15 +220,15 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
             spacing: 12,
             children: [
               Text(
-                i == null ? 'Nuovo tratto' : 'Modifica il tratto',
+                i == null ? l10n.nuovoTratto : l10n.modificaTratto,
                 style: t.titleLarge,
               ),
               SegmentedButton<bool>(
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: false,
                     icon: Icon(Icons.play_circle_outline_rounded),
-                    label: Text('Lavoro'),
+                    label: Text(l10n.lavoro),
                   ),
                   ButtonSegment(
                     value: true,
@@ -247,9 +244,9 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
                 TextField(
                   controller: _nome,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome',
-                    hintText: 'Es. Defaticamento',
+                  decoration: InputDecoration(
+                    labelText: l10n.nome,
+                    hintText: l10n.esDefaticamento,
                   ),
                 ),
                 if (widget.nomi.isNotEmpty)
@@ -267,8 +264,8 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
                 TextField(
                   controller: _metri,
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Metri',
+                  decoration: InputDecoration(
+                    labelText: l10n.metri,
                     suffixText: 'm',
                   ),
                 ),
@@ -277,16 +274,16 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
                 controller: _tempo,
                 keyboardType: TextInputType.datetime,
                 decoration: InputDecoration(
-                  labelText: 'Tempo',
+                  labelText: l10n.tempo,
                   hintText: '5:30',
                   errorText: _errore,
                 ),
               ),
-              FilledButton(onPressed: _conferma, child: const Text('Fatto')),
+              FilledButton(onPressed: _conferma, child: Text(l10n.fatto)),
               if (i != null)
                 TextButton.icon(
                   icon: const Icon(Icons.delete_outline_rounded),
-                  label: const Text('Togli questo tratto'),
+                  label: Text(l10n.togliQuestoTratto),
                   onPressed: () => Navigator.pop(context, false),
                 ),
             ],

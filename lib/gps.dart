@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 enum StatoGps { spento, permessoNegato, disattivato, cerca, pronto }
 
@@ -55,10 +56,10 @@ class RegistratoreGps extends ChangeNotifier {
             accuracy: LocationAccuracy.best,
             distanceFilter: 0,
             intervalDuration: const Duration(seconds: 1),
-            foregroundNotificationConfig: const ForegroundNotificationConfig(
+            foregroundNotificationConfig: ForegroundNotificationConfig(
               notificationTitle: 'Avidididadi',
-              notificationText: 'Sto registrando il percorso',
-              notificationChannelName: 'Registrazione percorso',
+              notificationText: l10n.stoRegistrandoPercorso,
+              notificationChannelName: l10n.registrazionePercorso,
               enableWakeLock: true,
               setOngoing: true,
             ),

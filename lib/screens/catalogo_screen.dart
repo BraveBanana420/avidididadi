@@ -8,6 +8,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../registro_forza.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 class CatalogoScreen extends StatefulWidget {
   final AppState state;
@@ -42,7 +43,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
 
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Catalogo esercizi')),
+      appBar: AppBar(title: Text(l10n.catalogoEsercizi)),
       body: Column(
         children: [
           // Una sola figura, fissa in alto: muscoli dell'esercizio selezionato.
@@ -50,7 +51,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
             sesso: state.profilo.sesso,
             evidenziati: selezionato?.muscoli.toSet() ?? const {},
             didascalia: selezionato == null
-                ? 'Tocca un esercizio per vedere i muscoli che allena.'
+                ? l10n.toccaEsercizioVedereMuscoli
                 : '${selezionato!.nome}: ${selezionato!.muscoli.map((m) => nomiMuscoli[m] ?? m).join(', ')}',
           ),
           Expanded(
@@ -60,9 +61,9 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: TextField(
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       prefixIcon: Icon(Icons.search_rounded),
-                      hintText: 'Cerca per nome o muscolo',
+                      hintText: l10n.cercaNomeOMuscolo,
                     ),
                     onChanged: (v) => setState(() => cerca = v),
                   ),
@@ -70,8 +71,8 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                   child: SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'tutti', label: Text('Tutti')),
+                    segments: [
+                      ButtonSegment(value: 'tutti', label: Text(l10n.tutti)),
                       ButtonSegment(value: 'forza', label: Text('Forza')),
                       ButtonSegment(value: 'mobilita', label: Text('Mobilità')),
                     ],
@@ -80,14 +81,14 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                   ),
                 ),
                 SwitchListTile(
-                  title: const Text('Solo con la mia attrezzatura'),
+                  title: Text(l10n.soloMiaAttrezzatura),
                   value: soloMiei,
                   onChanged: (v) => setState(() => soloMiei = v),
                 ),
                 if (lista.isEmpty)
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text('Nessun esercizio con questi filtri.'),
+                    child: Text(l10n.nessunEsercizioQuestiFiltri),
                   ),
                 // Una sezione per schema di movimento, chiusa di default: si apre
                 // con la freccia. Cercando, si aprono quelle con dei risultati.
@@ -127,10 +128,10 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                               subtitle: Text(
                                 e.fattibile(state.attrezzatura)
                                     ? '${e.descrizioneAttrezzi} · ${e.livello}'
-                                    : 'Serve: ${e.descrizioneAttrezzi}',
+                                    : l10n.serve(e.descrizioneAttrezzi),
                               ),
                               trailing: IconButton(
-                                tooltip: 'Immagini e istruzioni',
+                                tooltip: l10n.immaginiIstruzioni,
                                 icon: const Icon(Icons.chevron_right_rounded),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
@@ -197,7 +198,7 @@ class EsercizioScreen extends StatelessWidget {
             _StoricoEsercizio(serie: state.serieFatte, chiave: e.id),
           ],
           const SizedBox(height: 16),
-          Text('Muscoli', style: t.titleLarge),
+          Text(l10n.muscoli, style: t.titleLarge),
           const SizedBox(height: 8),
           SizedBox(
             height: 200,
@@ -217,14 +218,14 @@ class EsercizioScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text('Principali: ${muscoli(e.muscoli)}'),
+          Text(l10n.principali(muscoli(e.muscoli))),
           if (e.muscoliSecondari.isNotEmpty)
             Text(
-              'Secondari: ${muscoli(e.muscoliSecondari)}',
+              l10n.secondari(muscoli(e.muscoliSecondari)),
               style: TextStyle(color: scheme.onSurfaceVariant),
             ),
           const SizedBox(height: 16),
-          Text('Come si esegue', style: t.titleLarge),
+          Text(l10n.comeSiEsegue, style: t.titleLarge),
           const SizedBox(height: 8),
           for (var i = 0; i < e.istruzioni.length; i++)
             Padding(
@@ -247,7 +248,7 @@ class EsercizioScreen extends StatelessWidget {
             ),
           const SizedBox(height: 16),
           Text(
-            'Immagini da free-exercise-db (${e.nomeEn}).',
+            l10n.immaginiFreeExerciseDb(e.nomeEn),
             style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
@@ -273,14 +274,14 @@ class _StoricoEsercizio extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Le tue serie', style: t.titleMedium),
+          Text(l10n.tueSerie, style: t.titleMedium),
           const SizedBox(height: 4),
           Text(
             record.aTempo
-                ? 'Record: ${fmtSecondi(record.secondi)}'
+                ? l10n.record(fmtSecondi(record.secondi))
                 : record.kg > 0
-                ? 'Record: ${fmtKg(record.kg)} kg × ${record.ripetizioni}'
-                : 'Record: ${record.ripetizioni} ripetizioni',
+                ? l10n.recordKg(fmtKg(record.kg), record.ripetizioni)
+                : l10n.recordRipetizioni(record.ripetizioni),
             style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),

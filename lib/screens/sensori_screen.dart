@@ -8,6 +8,7 @@ import '../sensore_ble.dart';
 import '../sensori_bici.dart';
 import '../widgets.dart';
 import 'battito_sheet.dart';
+import '../l10n/lingua.dart';
 
 /// "I miei sensori" nel Profilo: fascia cardio e sensori della bici si
 /// collegano da qui, senza aspettare un allenamento. Si vede anche in modo
@@ -56,9 +57,7 @@ class _SensoriScreenState extends State<SensoriScreen> {
       await state.impostaAvanzata(true);
       messenger.showSnackBar(
         avviso(
-          content: const Text(
-            'Sensore collegato: ho acceso le funzioni avanzate.',
-          ),
+          content: Text(l10n.sensoreCollegatoHoAcceso),
           annulla: () => state.impostaAvanzata(false),
         ),
       );
@@ -74,7 +73,7 @@ class _SensoriScreenState extends State<SensoriScreen> {
   }) => RigaPulse(
     segno: IconaQuadrata(icona, evidenza: sensore.ricordato),
     titolo: titolo,
-    sottotitolo: sensore.ricordato ? 'Ricordato: ${sensore.nome}' : vuoto,
+    sottotitolo: sensore.ricordato ? l10n.ricordato(sensore.nome) : vuoto,
     linea: linea,
     onTap: () => _apri(sensore),
   );
@@ -85,21 +84,17 @@ class _SensoriScreenState extends State<SensoriScreen> {
     final bici = widget.state.attivitaScelta('Bici');
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('I miei sensori')),
+      appBar: AppBar(title: Text(l10n.mieiSensori)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            'Collega qui i sensori Bluetooth: li scegli una volta sola, poi '
-            'si ricollegano da soli a ogni allenamento.',
-            style: t.bodyMedium,
-          ),
+          Text(l10n.collegaQuiSensoriBluetooth, style: t.bodyMedium),
           const SizedBox(height: 12),
           _riga(
             sensoreBattito,
             Icons.favorite_border_rounded,
-            'Battito',
-            'Fascia cardio o orologio che trasmette il battito',
+            l10n.battito,
+            l10n.fasciaCardioOOrologio2,
             linea: bici,
           ),
           if (bici)
@@ -107,15 +102,11 @@ class _SensoriScreenState extends State<SensoriScreen> {
               sensoreBici,
               Icons.pedal_bike_outlined,
               'Bici',
-              'Rullo smart, potenza, velocità e cadenza',
+              l10n.rulloSmartPotenzaVelocita,
               linea: false,
             ),
           const SizedBox(height: 16),
-          Text(
-            "Il Bluetooth si usa solo mentre questa pagina o l'allenamento "
-            'sono aperti.',
-            style: t.bodySmall,
-          ),
+          Text(l10n.bluetoothSiUsaSolo, style: t.bodySmall),
         ],
       ),
     );

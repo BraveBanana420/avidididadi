@@ -10,6 +10,7 @@ import 'models.dart';
 import 'storage.dart';
 import 'tema.dart';
 import 'widgets.dart';
+import 'l10n/lingua.dart';
 
 // Widget per la schermata home di Android: l'app prepara i dati di due
 // settimane (da lunedì) e le icone degli sport; il widget nativo sceglie da
@@ -65,7 +66,7 @@ Map<String, dynamic> datiWidget({
       final s = fatti.first;
       stato = 'fatto';
       sport = normSport(s.sport);
-      titolo = 'Fatto: ${s.tipo.isEmpty ? sport : s.tipo}';
+      titolo = l10n.fatto2(s.tipo.isEmpty ? sport : s.tipo);
       sottotitolo = [
         if (s.tipo.isNotEmpty) sport,
         if (s.durataMin > 0) '${s.durataMin} min',
@@ -73,8 +74,8 @@ Map<String, dynamic> datiWidget({
     } else {
       stato = 'riposo';
       sport = 'Riposo';
-      titolo = 'Giorno di riposo';
-      sottotitolo = 'Anche il riposo è allenamento';
+      titolo = l10n.giornoRiposo;
+      sottotitolo = l10n.ancheRiposoAllenamento;
     }
     giorni[isoData(d)] = {
       'stato': stato,

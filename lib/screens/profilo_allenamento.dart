@@ -5,6 +5,7 @@ import '../intervalli.dart';
 
 import '../potenza.dart';
 import '../serie_sessione.dart';
+import '../l10n/lingua.dart';
 
 /// Una barra del diagramma: quanto dura e che watt chiede.
 class BarraAllenamento {
@@ -77,7 +78,7 @@ class ProfiloAllenamento extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
-      label: 'Diagramma dell\'allenamento',
+      label: l10n.diagrammaDellAllenamento,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: SizedBox(
@@ -270,7 +271,7 @@ class GraficoPotenzaSeduta extends StatelessWidget {
       spacing: 4,
       children: [
         Semantics(
-          label: 'Watt previsti e tenuti in tutta la seduta',
+          label: l10n.wattPrevistiTenutiTutta,
           child: SizedBox(
             height: altezza,
             child: CustomPaint(

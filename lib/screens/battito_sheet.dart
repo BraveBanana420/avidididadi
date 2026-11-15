@@ -9,29 +9,20 @@ import '../models.dart';
 import '../sensore_ble.dart';
 import '../pulse.dart';
 import '../sensori_bici.dart';
+import '../l10n/lingua.dart';
 
 /// Foglio del battito: il sensore ricordato, oppure la ricerca di quelli vicini.
 Future<void> mostraBattito(BuildContext context) => _mostra(
   context,
   _FoglioSensore(
     sensore: sensoreBattito,
-    titolo: 'Battito dal sensore',
-    spiegazione:
-        "Una fascia cardio o un orologio che trasmette il battito via "
-        "Bluetooth. Lo vedi durante l'allenamento; alla fine si salvano media "
-        'e massimo.',
+    titolo: l10n.battitoDalSensore,
+    spiegazione: l10n.fasciaCardioOOrologio,
     icona: Icons.favorite_rounded,
     iconaVuota: Icons.favorite_border_rounded,
     iconaTrovato: Icons.monitor_heart_rounded,
     dati: () => sensoreBattito.bpm == null ? null : '${sensoreBattito.bpm} bpm',
-    aiuto:
-        'Garmin: sull\'orologio cerca "Trasmetti frequenza cardiaca" (di '
-        'solito nei controlli, tenendo premuto il tasto della luce) e '
-        'attivala: poi tocca "Cerca". Alcuni modelli vecchi la trasmettono '
-        'solo in ANT+, che il telefono non legge.\n'
-        "Fascia cardio: indossala bagnando un po' gli elettrodi, si accende "
-        'da sola.\n'
-        'Una volta scelto, il sensore si ricollega da solo a ogni allenamento.',
+    aiuto: l10n.garminSullOrologioCerca,
   ),
 );
 
@@ -40,11 +31,8 @@ Future<void> mostraSensoreBici(BuildContext context) => _mostra(
   context,
   _FoglioSensore(
     sensore: sensoreBici,
-    titolo: 'Sensori della bici',
-    spiegazione:
-        'Rulli smart (Tacx, Wahoo, Elite…), misuratore di potenza o sensore '
-        'di velocità e cadenza, via Bluetooth. Alla fine si salvano potenza e '
-        'cadenza medie.',
+    titolo: l10n.sensoriBici,
+    spiegazione: l10n.rulliSmartTacxWahoo,
     icona: Icons.pedal_bike_rounded,
     iconaVuota: Icons.pedal_bike_outlined,
     iconaTrovato: Icons.pedal_bike_outlined,
@@ -54,13 +42,7 @@ Future<void> mostraSensoreBici(BuildContext context) => _mostra(
       if (sensoreBici.velocita case final v?)
         '${(v * 3.6).toStringAsFixed(1)} km/h',
     ].join(' · ').emptyToNull,
-    aiuto:
-        'Rulli: accendili e smetti di usarli con altre app (Zwift, Tacx), '
-        'perché molti si collegano a una sola app per volta.\n'
-        'Sensore di velocità o di cadenza: si sveglia girando la ruota o i '
-        'pedali.\n'
-        'La circonferenza della ruota serve solo al sensore di velocità: la '
-        'trovi scritta sul copertone (es. 700×25C = 2105 mm).',
+    aiuto: l10n.rulliAccendiliSmettiUsarli,
     extra: const Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
@@ -180,19 +162,19 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                 Text(widget.spiegazione, style: t.bodyMedium),
                 if (s.stato == StatoSensore.permessoNegato) ...[
                   Text(
-                    'Serve il permesso "Dispositivi nelle vicinanze".',
+                    l10n.servePermessoDispositiviNelle,
                     style: t.bodyMedium?.copyWith(color: scheme.error),
                   ),
                   OutlinedButton.icon(
                     onPressed: () =>
                         apriImpostazioniGps(StatoGps.permessoNegato),
                     icon: const Icon(Icons.settings_rounded),
-                    label: const Text('Apri le impostazioni'),
+                    label: Text(l10n.apriImpostazioni),
                   ),
                 ],
                 if (s.stato == StatoSensore.bluetoothSpento)
                   Text(
-                    'Il Bluetooth è spento: accendilo e riprova.',
+                    l10n.bluetoothSpentoAccendiloRiprova,
                     style: t.bodyMedium?.copyWith(color: scheme.error),
                   ),
                 if (s.ricordato)
@@ -209,18 +191,17 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                       title: Text(s.nome),
                       subtitle: Text(switch (s.stato) {
                         StatoSensore.collegato when dati != null =>
-                          'Collegato · $dati',
-                        StatoSensore.collegato => 'Collegato, aspetto i dati…',
-                        StatoSensore.collega =>
-                          "Mi collego… (dev'essere acceso e vicino)",
-                        _ => 'Non collegato',
+                          l10n.collegato3(dati),
+                        StatoSensore.collegato => l10n.collegatoAspettoDati,
+                        StatoSensore.collega => l10n.miCollegoDevEssere,
+                        _ => l10n.nonCollegato2,
                       }),
                       trailing: TextButton(
                         onPressed: () async {
                           await s.dimentica();
                           await _cerca();
                         },
-                        child: const Text('Dimentica'),
+                        child: Text(l10n.dimentica),
                       ),
                     ),
                   ),
@@ -229,7 +210,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                     children: [
                       Expanded(
                         child: Text(
-                          cerco ? 'Cerco i sensori vicini…' : 'Sensori trovati',
+                          cerco ? l10n.cercoSensoriVicini : l10n.sensoriTrovati,
                           style: t.titleSmall,
                         ),
                       ),
@@ -242,7 +223,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                   ),
                   if (!cerco && trovati.isEmpty)
                     Text(
-                      'Nessun sensore trovato.',
+                      l10n.nessunSensoreTrovato,
                       style: t.bodyMedium?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -272,7 +253,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                     onPressed: _cerca,
                     icon: const Icon(Icons.bluetooth_searching_rounded),
                     label: Text(
-                      s.ricordato ? 'Cerca un altro sensore' : 'Cerca di nuovo',
+                      s.ricordato ? l10n.cercaAltroSensore : l10n.cercaNuovo,
                     ),
                   ),
                 ?widget.extra,
@@ -282,7 +263,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                   child: ExpansionTile(
                     tilePadding: EdgeInsets.zero,
                     childrenPadding: const EdgeInsets.only(bottom: 8),
-                    title: Text('Come si collega', style: t.titleSmall),
+                    title: Text(l10n.comeSiCollega, style: t.titleSmall),
                     children: [Text(widget.aiuto, style: t.bodySmall)],
                   ),
                 ),
@@ -295,10 +276,10 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
   }
 
   String _segnale(int rssi) => rssi >= -65
-      ? 'Segnale forte'
+      ? l10n.segnaleForte
       : rssi >= -80
-      ? 'Segnale medio'
-      : 'Segnale debole';
+      ? l10n.segnaleMedio
+      : l10n.segnaleDebole;
 }
 
 /// La calibrazione del rullo, passo per passo: i passi li detta il rullo.
@@ -321,36 +302,36 @@ class _CalibraRullo extends StatelessWidget {
     }
     final kmh = b.velocita == null
         ? ''
-        : ' Adesso: ${(b.velocita! * 3.6).toStringAsFixed(1)} km/h.';
+        : l10n.adessoKmH((b.velocita! * 3.6).toStringAsFixed(1));
     final testo = switch (b.faseCalibrazione) {
-      FaseCalibrazione.nessuna =>
-        '${b.ultimaCalibrazione == null ? 'Mai fatta da qui.' : 'Ultima: ${dataLunga(b.ultimaCalibrazione!)}.'} '
-            'Tiene precisi i watt: falla ogni due settimane circa e quando '
-            'sposti il rullo, meglio dopo 10 minuti di pedalata.',
-      FaseCalibrazione.avvio => 'Chiedo al rullo di iniziare…',
+      FaseCalibrazione.nessuna => l10n.tienePrecisiWattFalla(
+        b.ultimaCalibrazione == null
+            ? l10n.maiFattaQui
+            : l10n.ultima(dataLunga(b.ultimaCalibrazione!)),
+      ),
+      FaseCalibrazione.avvio => l10n.chiedoAlRulloIniziare,
       FaseCalibrazione.accelera =>
         b.calibraKmhA == null
-            ? 'Pedala e accelera finché il rullo non ti dice di smettere.$kmh'
-            : 'Accelera fino a superare '
-                  '${b.calibraKmhA!.toStringAsFixed(0)} km/h.$kmh',
-      FaseCalibrazione.smetti =>
-        'Smetti di pedalare e aspetta che il rullo si fermi.$kmh',
-      FaseCalibrazione.riuscita => 'Calibrazione riuscita.',
-      FaseCalibrazione.errore =>
-        'Non è riuscita. Controlla che nessun\'altra app usi il rullo e '
-            'riprova.',
+            ? l10n.pedalaAcceleraFincheRullo(kmh)
+            : l10n.acceleraFinoSuperareKm(
+                b.calibraKmhA!.toStringAsFixed(0),
+                kmh,
+              ),
+      FaseCalibrazione.smetti => l10n.smettiPedalareAspettaRullo(kmh),
+      FaseCalibrazione.riuscita => l10n.calibrazioneRiuscita,
+      FaseCalibrazione.errore => l10n.nonRiuscitaControllaNessun,
     };
     return SuperficiePulse(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         spacing: 8,
         children: [
-          Text('Calibra il rullo', style: t.titleSmall),
+          Text(l10n.calibraRullo, style: t.titleSmall),
           Text(testo, style: t.bodyMedium),
           if (b.calibrando)
             OutlinedButton(
               onPressed: b.annullaCalibrazione,
-              child: const Text('Annulla'),
+              child: Text(l10n.annulla),
             )
           else if (b.faseCalibrazione != FaseCalibrazione.riuscita)
             OutlinedButton.icon(
@@ -358,8 +339,8 @@ class _CalibraRullo extends StatelessWidget {
               icon: const Icon(Icons.tune_rounded),
               label: Text(
                 b.faseCalibrazione == FaseCalibrazione.errore
-                    ? 'Riprova'
-                    : 'Inizia la calibrazione',
+                    ? l10n.riprova
+                    : l10n.iniziaCalibrazione,
               ),
             ),
         ],
@@ -391,10 +372,10 @@ class _CirconferenzaState extends State<_Circonferenza> {
   Widget build(BuildContext context) => TextField(
     controller: campo,
     keyboardType: TextInputType.number,
-    decoration: const InputDecoration(
-      labelText: 'Circonferenza della ruota',
+    decoration: InputDecoration(
+      labelText: l10n.circonferenzaRuota,
       suffixText: 'mm',
-      helperText: 'Solo per il sensore di velocità. 700×25C: 2105 mm.',
+      helperText: l10n.soloSensoreVelocita700,
     ),
     onChanged: (v) {
       final mm = int.tryParse(v.trim());

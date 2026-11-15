@@ -9,12 +9,13 @@ import 'agente_screen.dart';
 import 'privacy_screen.dart';
 import 'schede_proposte.dart';
 import 'testo_formattato.dart';
+import '../l10n/lingua.dart';
 
-const _suggerimenti = [
-  "Com'è andata questa settimana?",
-  'Giovedì ho poco tempo: cosa sposto?',
-  'Adatta i prossimi giorni al mio recupero',
-  'Sono pronto per la gara?',
+List<String> get _suggerimenti => [
+  l10n.comAndataQuestaSettimana,
+  l10n.giovediHoPocoTempo,
+  l10n.adattaProssimiGiorniAl,
+  l10n.sonoProntoGara,
 ];
 
 /// Pagina dell'assistente: chat con il modello scelto dall'utente. Le modifiche
@@ -116,7 +117,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
                             Text('Assistente', style: t.titleLarge),
                             if (esterno)
                               Text(
-                                'Collegato a ${state.assistente.appEsterna}',
+                                l10n.collegato2(state.assistente.appEsterna),
                                 style: t.bodySmall,
                               )
                             else if (pronto)
@@ -126,14 +127,14 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
                       ),
                       if (pronto && !esterno && state.chat.isNotEmpty)
                         IconButton(
-                          tooltip: 'Nuova conversazione',
+                          tooltip: l10n.nuovaConversazione,
                           onPressed: state.assistenteInAttesa
                               ? null
                               : state.nuovaChat,
                           icon: const Icon(Icons.add_comment_rounded),
                         ),
                       IconButton(
-                        tooltip: 'Impostazioni assistente',
+                        tooltip: l10n.impostazioniAssistente,
                         onPressed: _impostazioni,
                         icon: const Icon(Icons.settings_rounded),
                       ),
@@ -171,12 +172,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            "Chiedimi dei tuoi allenamenti: vedo le ultime 4 settimane, i "
-            "feedback, il recupero e il piano dei prossimi 14 giorni. Se propongo "
-            "di cambiare il piano, decidi tu se applicare.",
-            style: t.bodyMedium,
-          ),
+          Text(l10n.chiedimiDeiTuoiAllenamenti, style: t.bodyMedium),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -195,7 +191,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
       children: [
         for (final m in state.chat) _Fumetto(state: state, messaggio: m),
         if (state.assistenteInAttesa)
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(12),
             child: Row(
               children: [
@@ -205,7 +201,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 ),
                 SizedBox(width: 10),
-                Text('Sto pensando…'),
+                Text(l10n.stoPensando),
               ],
             ),
           ),
@@ -223,8 +219,8 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
             minLines: 1,
             maxLines: 4,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              hintText: 'Scrivi un messaggio',
+            decoration: InputDecoration(
+              hintText: l10n.scriviMessaggio,
               border: OutlineInputBorder(),
               isDense: true,
             ),
@@ -232,7 +228,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
           ),
         ),
         IconButton(
-          tooltip: 'Invia',
+          tooltip: l10n.invia,
           onPressed: state.assistenteInAttesa ? null : _invia,
           icon: const Icon(Icons.send_rounded),
         ),
@@ -251,11 +247,7 @@ class _Presentazione extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          'Un allenatore con cui parlare dei tuoi allenamenti, che può proporre '
-          'modifiche al piano. Usi il modello che preferisci:',
-          style: t.bodyMedium,
-        ),
+        Text(l10n.allenatoreCuiParlareDei, style: t.bodyMedium),
         const SizedBox(height: 12),
         for (final f in Fornitore.values)
           ListTile(
@@ -269,15 +261,12 @@ class _Presentazione extends StatelessWidget {
             subtitle: Text(descrizioniFornitori[f]!),
           ),
         const SizedBox(height: 8),
-        Text(
-          'È facoltativo: senza assistente l\'app funziona come sempre.',
-          style: t.bodySmall,
-        ),
+        Text(l10n.facoltativoSenzaAssistenteApp, style: t.bodySmall),
         const SizedBox(height: 16),
         FilledButton.icon(
           onPressed: onConfigura,
           icon: const Icon(Icons.settings_rounded),
-          label: const Text('Configura assistente'),
+          label: Text(l10n.configuraAssistente),
         ),
       ],
     );
@@ -389,10 +378,10 @@ class SchedaProposta extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Modifiche proposte al piano', style: t.titleSmall),
+            Text(l10n.modificheProposteAlPiano, style: t.titleSmall),
             const SizedBox(height: 6),
             if (messaggio.applicata)
-              const Text('Applicate al piano.')
+              Text(l10n.applicateAlPiano)
             else ...[
               for (final m in esito.accettate) ...[
                 Text('• ${descriviModifica(m, state.piano)}'),
@@ -405,7 +394,7 @@ class SchedaProposta extends StatelessWidget {
               if (esito.scartate.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
-                  'Non applicabili',
+                  l10n.nonApplicabili,
                   style: t.labelLarge?.copyWith(color: scheme.primary),
                 ),
                 for (final (m, motivo) in esito.scartate)
@@ -424,14 +413,14 @@ class SchedaProposta extends StatelessWidget {
                       avviso(
                         content: Text(
                           n == 0
-                              ? 'Niente da applicare: il piano è cambiato nel frattempo.'
-                              : 'Piano aggiornato: $n modifiche. Le vedi nel calendario.',
+                              ? l10n.nienteApplicarePianoCambiato
+                              : l10n.pianoAggiornatoModificheVedi(n),
                         ),
                       ),
                     );
                   },
                   icon: const Icon(Icons.check_rounded),
-                  label: Text('Applica ${esito.accettate.length} modifiche'),
+                  label: Text(l10n.applicaModifiche(esito.accettate.length)),
                 ),
             ],
           ],
@@ -538,7 +527,7 @@ class _ImpostazioniAssistenteScreenState
     if (!mounted) return;
     if (modelli.isEmpty) {
       messenger.showSnackBar(
-        avviso(content: Text('Nessun modello disponibile con questa chiave.')),
+        avviso(content: Text(l10n.nessunModelloDisponibileQuesta)),
       );
       return;
     }
@@ -558,7 +547,7 @@ class _ImpostazioniAssistenteScreenState
             for (final m in ordinati)
               ListTile(
                 title: Text(m),
-                subtitle: m == consigliato ? const Text('Consigliato') : null,
+                subtitle: m == consigliato ? Text(l10n.consigliato) : null,
                 leading: Icon(
                   m == consigliato
                       ? Icons.star_rounded
@@ -593,7 +582,7 @@ class _ImpostazioniAssistenteScreenState
       onPopInvokedWithResult: (_, _) => _salva(),
       child: Scaffold(
         bottomNavigationBar: const MargineBarraSistema(),
-        appBar: AppBar(title: const Text('Impostazioni assistente')),
+        appBar: AppBar(title: Text(l10n.impostazioniAssistente)),
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -602,21 +591,13 @@ class _ImpostazioniAssistenteScreenState
               child: c.esterno
                   ? ListTile(
                       leading: const Icon(Icons.link_rounded),
-                      title: Text('Collegato a ${c.appEsterna}'),
-                      subtitle: const Text(
-                        'Il coach è nella sua app. Scollega dalla pagina '
-                        'Coach per tornare al servizio qui sotto.',
-                      ),
+                      title: Text(l10n.collegato2(c.appEsterna)),
+                      subtitle: Text(l10n.coachNellaSuaApp),
                     )
                   : ListTile(
                       leading: const Icon(Icons.forum_rounded),
-                      title: const Text(
-                        'Usa il tuo abbonamento (Claude, ChatGPT, Gemini…)',
-                      ),
-                      subtitle: const Text(
-                        "Senza chiave API: parli con il coach nell'app del "
-                        'tuo assistente.',
-                      ),
+                      title: Text(l10n.usaTuoAbbonamentoClaude),
+                      subtitle: Text(l10n.senzaChiaveApiParli),
                       trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
@@ -628,7 +609,7 @@ class _ImpostazioniAssistenteScreenState
             ),
             const SizedBox(height: 16),
             Text(
-              c.esterno ? "Coach nell'app (quando scolleghi)" : 'Servizio',
+              c.esterno ? l10n.coachNellAppQuando : l10n.servizio,
               style: t.titleLarge,
             ),
             Card(
@@ -649,17 +630,17 @@ class _ImpostazioniAssistenteScreenState
             ),
             const SizedBox(height: 16),
             if (serveChiave(f)) ...[
-              Text('Chiave API', style: t.titleLarge),
+              Text(l10n.chiaveApi, style: t.titleLarge),
               const SizedBox(height: 4),
               if (chiaveSalvata != null)
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.key_rounded),
-                    title: Text('Chiave salvata ••••$finale'),
-                    subtitle: const Text('Cifrata sul telefono.'),
+                    title: Text(l10n.chiaveSalvata(finale)),
+                    subtitle: Text(l10n.cifrataSulTelefono),
                     trailing: TextButton(
                       onPressed: _eliminaChiave,
-                      child: const Text('Elimina'),
+                      child: Text(l10n.elimina),
                     ),
                   ),
                 )
@@ -669,61 +650,51 @@ class _ImpostazioniAssistenteScreenState
                   obscureText: true,
                   autocorrect: false,
                   enableSuggestions: false,
-                  decoration: const InputDecoration(
-                    labelText: 'Incolla la chiave API',
+                  decoration: InputDecoration(
+                    labelText: l10n.incollaChiaveApi,
                     border: OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 8),
                 FilledButton(
                   onPressed: _salvaChiave,
-                  child: const Text('Salva chiave'),
+                  child: Text(l10n.salvaChiave),
                 ),
               ],
               Padding(
                 padding: const EdgeInsets.only(top: 4, left: 4),
-                child: Text(
-                  'Si paga a consumo sul tuo account: una domanda costa di '
-                  'solito pochi centesimi o meno. Puoi impostare un limite di '
-                  'spesa sul sito del servizio.',
-                  style: t.bodySmall,
-                ),
+                child: Text(l10n.siPagaConsumoSul, style: t.bodySmall),
               ),
               const SizedBox(height: 16),
             ] else ...[
-              Text('Indirizzo di Ollama', style: t.titleLarge),
+              Text(l10n.indirizzoOllama, style: t.titleLarge),
               const SizedBox(height: 4),
               TextField(
                 controller: _url,
                 onChanged: (_) => widget.state.connessioneDaVerificare(),
                 keyboardType: TextInputType.url,
-                decoration: const InputDecoration(
-                  labelText: 'Indirizzo del PC',
+                decoration: InputDecoration(
+                  labelText: l10n.indirizzoPc,
                   hintText: 'http://192.168.1.10:11434',
                   border: OutlineInputBorder(),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 4, left: 4),
-                child: Text(
-                  'Sul PC: installa Ollama, scarica un modello (ollama pull '
-                  'llama3.1) e avvialo con OLLAMA_HOST=0.0.0.0 così il telefono '
-                  'lo raggiunge. L\'indirizzo IP del PC lo trovi con "ipconfig".',
-                  style: t.bodySmall,
-                ),
+                child: Text(l10n.sulPcInstallaOllama, style: t.bodySmall),
               ),
               const SizedBox(height: 16),
             ],
-            Text('Modello', style: t.titleLarge),
+            Text(l10n.modello, style: t.titleLarge),
             const SizedBox(height: 4),
             TextField(
               controller: _modello,
               onChanged: (_) => widget.state.connessioneDaVerificare(),
               autocorrect: false,
               decoration: InputDecoration(
-                labelText: 'Nome del modello',
+                labelText: l10n.nomeModello,
                 hintText: modelliPredefiniti[f],
-                helperText: 'Vuoto = il più adatto tra quelli disponibili',
+                helperText: l10n.vuotoPiuAdattoTra,
                 border: const OutlineInputBorder(),
               ),
             ),
@@ -732,7 +703,7 @@ class _ImpostazioniAssistenteScreenState
               child: TextButton.icon(
                 onPressed: _scegliModello,
                 icon: const Icon(Icons.list_alt_rounded),
-                label: const Text('Scegli tra i modelli disponibili'),
+                label: Text(l10n.scegliTraModelliDisponibili),
               ),
             ),
             const SizedBox(height: 8),
@@ -742,17 +713,17 @@ class _ImpostazioniAssistenteScreenState
                   RiquadroConnessione(state: widget.state, onProva: _prova),
             ),
             const SizedBox(height: 20),
-            Text('Dati inviati', style: t.titleLarge),
+            Text(l10n.datiInviati, style: t.titleLarge),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Includi età, sesso, altezza e peso'),
-              subtitle: const Text('Nome e foto non vengono mai inviati.'),
+              title: Text(l10n.includiEtaSessoAltezza),
+              subtitle: Text(l10n.nomeFotoNonVengono),
               value: c.datiPersonali,
               onChanged: (v) => setState(() => c.datiPersonali = v),
             ),
             Card(
               child: ExpansionTile(
-                title: const Text('Vedi esattamente cosa viene inviato'),
+                title: Text(l10n.vediEsattamenteCosaViene),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 children: [
                   SelectableText(
@@ -770,16 +741,15 @@ class _ImpostazioniAssistenteScreenState
               ),
               title: Text(
                 f == Fornitore.ollama
-                    ? 'Acconsento a inviare questi dati al mio PC con Ollama'
-                    : 'Acconsento a inviare questi dati a ${nomiFornitori[f]} '
-                          'a ogni messaggio',
+                    ? l10n.acconsentoInviareQuestiDati2
+                    : l10n.acconsentoInviareQuestiDati3(nomiFornitori[f]!),
               ),
             ),
             TextButton(
               onPressed: () => Navigator.of(
                 context,
               ).push(MaterialPageRoute(builder: (_) => const PrivacyScreen())),
-              child: const Text('Privacy e uso dei dati'),
+              child: Text(l10n.privacyUsoDeiDati),
             ),
           ],
         ),
@@ -815,12 +785,12 @@ class StatoAssistente extends StatelessWidget {
       ),
       StatoConnessione.errore => (
         Icons.error_outline_rounded,
-        '$nome non raggiungibile',
+        l10n.nonRaggiungibile(nome),
         scheme.primary,
       ),
       StatoConnessione.inVerifica => (
         Icons.sync_rounded,
-        'Verifica di $nome…',
+        l10n.verifica(nome),
         scheme.onSurfaceVariant,
       ),
       StatoConnessione.daVerificare => (
@@ -870,7 +840,7 @@ class RiquadroConnessione extends StatelessWidget {
         return OutlinedButton.icon(
           onPressed: onProva,
           icon: const Icon(Icons.wifi_tethering_rounded),
-          label: const Text('Prova connessione'),
+          label: Text(l10n.provaConnessione2),
         );
       case StatoConnessione.inVerifica:
         return Card(
@@ -880,7 +850,7 @@ class RiquadroConnessione extends StatelessWidget {
               height: 24,
               child: CircularProgressIndicator(strokeWidth: 2.5),
             ),
-            title: Text('Collegamento a $nome…'),
+            title: Text(l10n.collegamento(nome)),
             subtitle: Text(dove),
           ),
         );
@@ -904,10 +874,7 @@ class RiquadroConnessione extends StatelessWidget {
               dove,
               style: TextStyle(color: scheme.onSecondaryContainer),
             ),
-            trailing: TextButton(
-              onPressed: onProva,
-              child: const Text('Riprova'),
-            ),
+            trailing: TextButton(onPressed: onProva, child: Text(l10n.riprova)),
           ),
         );
       case StatoConnessione.errore:
@@ -923,7 +890,7 @@ class RiquadroConnessione extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '$nome non collegato',
+                        l10n.nonCollegato(nome),
                         style: t.titleMedium?.copyWith(color: scheme.primary),
                       ),
                     ),
@@ -935,7 +902,7 @@ class RiquadroConnessione extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: onProva,
-                    child: const Text('Riprova'),
+                    child: Text(l10n.riprova),
                   ),
                 ),
               ],

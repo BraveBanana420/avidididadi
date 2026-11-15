@@ -43,6 +43,8 @@ import 'modifica_sessione_screen.dart';
 import 'mappa_percorso.dart';
 import 'percorsi_screen.dart';
 import 'riepilogo_bici.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 void apriSessione(BuildContext context, AppState state, PianoRiga r) {
   Navigator.push(
@@ -192,8 +194,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Hai fatto un allenamento diverso da quello in programma: '
-                  'il feedback vale per quello che hai fatto davvero.',
+                  l10n.haiFattoAllenamentoDiverso,
                   style: t.bodySmall,
                 ),
               ),
@@ -217,24 +218,24 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   ? Icons.rate_review_rounded
                   : Icons.check_circle_outline_rounded,
             ),
-            title: Text(f == null ? "Com'è andata?" : 'Fatica ${f.fatica}/10'),
+            title: Text(f == null ? l10n.comAndata : l10n.fatica10(f.fatica)),
             subtitle: Text(
               f == null
                   ? (generata
-                        ? 'Il tuo feedback regola le prossime sessioni.'
-                        : 'Serve a calcolare il carico di allenamento.')
+                        ? l10n.tuoFeedbackRegolaProssime
+                        : l10n.serveCalcolareCaricoAllenamento)
                   : [
-                      f.completata ? 'Completata' : 'Non completata',
-                      if (f.dolore) 'dolore segnalato',
+                      f.completata ? l10n.completata : l10n.nonCompletata,
+                      if (f.dolore) l10n.doloreSegnalato,
                     ].join(' · '),
             ),
             // Come per il nome e gli intervalli: la matita vuol dire modifica.
             trailing: f == null
-                ? const Text('Rispondi')
-                : const Icon(
+                ? Text(l10n.rispondi)
+                : Icon(
                     Icons.edit_rounded,
                     size: 20,
-                    semanticLabel: 'Modifica',
+                    semanticLabel: l10n.modifica,
                   ),
             onTap: () =>
                 apriFeedback(context, state, data, sport, svolte.firstOrNull),
@@ -275,7 +276,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               ),
             ),
             icon: const Icon(Icons.edit_note_rounded),
-            label: const Text("L'ho già fatta: scrivi i dati"),
+            label: Text(l10n.hoGiaFattaScrivi),
           ),
         ),
       );
@@ -301,11 +302,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         children.add(
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: Text(
-              'Ti guido esercizio per esercizio: tocchi "Fatto" quando finisci, '
-              'i recuperi e le parti a tempo li conto io.',
-              style: t.bodySmall,
-            ),
+            child: Text(l10n.tiGuidoEsercizioEsercizio, style: t.bodySmall),
           ),
         );
       }
@@ -313,11 +310,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         Text(
           svolte.isEmpty
               ? (nome.isEmpty ? 'Allenamento' : nome)
-              : 'Allenamento previsto: ${nome.isEmpty ? 'allenamento' : nome}',
+              : l10n.allenamentoPrevisto(
+                  nome.isEmpty ? l10n.parolaAllenamento : nome,
+                ),
           style: t.titleLarge,
         ),
       );
-      if (tot > 0) children.add(Text('Durata totale: $tot min'));
+      if (tot > 0) children.add(Text(l10n.durataTotaleMin(tot)));
       String? faseCorrente;
       for (var k = 0; k < steps.length; k++) {
         final s = steps[k];
@@ -337,7 +336,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             if (s.riepilogo.isNotEmpty)
               Text(
                 intensitaCon(
-                  s.riepilogo,
+                  mostraTesto(s.riepilogo),
                   s.sport,
                   state.zonePotenza,
                   state.zone,
@@ -346,7 +345,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             // ...e come la si riconosce, anche senza orologio.
             if (sensazioneDi(s.riepilogo) != null)
               Text(
-                'Come ti devi sentire: ${sensazioneDi(s.riepilogo)}',
+                l10n.comeTiDeviSentire(sensazioneDi(s.riepilogo)!),
                 style: t.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
             if (s.note.isNotEmpty) Text(s.note, style: t.bodySmall),
@@ -399,7 +398,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                           children: [
                             Expanded(child: testo),
                             IconButton(
-                              tooltip: 'Immagini e istruzioni',
+                              tooltip: l10n.immaginiIstruzioni,
                               icon: const Icon(Icons.chevron_right_rounded),
                               onPressed: dettaglio,
                             ),
@@ -436,7 +435,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 16 + MediaQuery.paddingOf(context).bottom,
               ),
               child: PulsantePrincipale(
-                testo: 'Inizia allenamento',
+                testo: l10n.iniziaAllenamento,
                 icona: Icons.play_arrow_rounded,
                 onPressed: () => avviaAllenamento(
                   context,
@@ -458,9 +457,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               sesso: state.profilo.sesso,
               evidenziati: evidenziati,
               didascalia: scelto == null
-                  ? 'Muscoli della sessione: ${_nomi(allenati)}. '
-                        'Tocca un esercizio per vedere i suoi, la freccia per '
-                        'come si fa.'
+                  ? l10n.muscoliSessioneToccaEsercizio(_nomi(allenati))
                   : '${scelto.nome}: ${_nomi(evidenziati)}',
             ),
           Expanded(
@@ -511,7 +508,7 @@ class _SpiegazioneState extends State<_Spiegazione> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Cos'è: ${widget.titolo}", style: t.titleSmall),
+                      Text(l10n.cos(widget.titolo), style: t.titleSmall),
                       if (aperta) ...[
                         const SizedBox(height: 2),
                         Text(widget.testo),
@@ -561,11 +558,8 @@ class _SenzaEsercizi extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 8,
             children: [
-              Text('Seduta di arrampicata', style: t.titleMedium),
-              const Text(
-                'Scegli uno dei tuoi allenamenti o chiedilo all\'assistente. '
-                'Puoi anche partire e segnare vie e gradi alla fine.',
-              ),
+              Text(l10n.sedutaArrampicata, style: t.titleMedium),
+              Text(l10n.scegliUnoDeiTuoi),
               if (giorno == soloData(DateTime.now()))
                 FilledButton.icon(
                   onPressed: () => avviaAllenamento(
@@ -577,7 +571,7 @@ class _SenzaEsercizi extends StatelessWidget {
                     passi: passiLiberi(sport, sportArrampicata),
                   ),
                   icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Inizia la seduta'),
+                  label: Text(l10n.iniziaSeduta),
                 ),
               OutlinedButton.icon(
                 onPressed: () => Navigator.of(context).push(
@@ -586,7 +580,7 @@ class _SenzaEsercizi extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.terrain_rounded),
-                label: const Text('Scegli un allenamento'),
+                label: Text(l10n.scegliAllenamento),
               ),
             ],
           ),
@@ -600,23 +594,18 @@ class _SenzaEsercizi extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              daCreare
-                  ? 'Questa seduta non ha ancora esercizi'
-                  : 'Seduta libera',
+              daCreare ? l10n.questaSedutaNonHa : l10n.sedutaLibera,
               style: t.titleMedium,
             ),
             const SizedBox(height: 6),
             Text(
               daCreare
                   ? (forza
-                        ? 'Fai preparare all\'app la forza: sceglie gli '
-                              'esercizi adatti a te e alla tua attrezzatura. '
-                              'Ci vuole un minuto.'
-                        : 'Fai preparare all\'app le sedute di '
-                              '${sport.toLowerCase()}: ognuna con le sue '
-                              'indicazioni passo passo.')
-                  : 'Muoviti per ${durataMin > 0 ? '$durataMin minuti' : 'il tempo che hai'} '
-                        'a ritmo facile: devi riuscire a parlare.',
+                        ? l10n.faiPreparareAllApp
+                        : l10n.faiPreparareAllApp2(sport.toLowerCase()))
+                  : l10n.muovitiRitmoFacileDevi(
+                      durataMin > 0 ? '$durataMin minuti' : l10n.tempoHai,
+                    ),
             ),
             if (daCreare) ...[
               const SizedBox(height: 12),
@@ -628,7 +617,7 @@ class _SenzaEsercizi extends StatelessWidget {
                   ),
                 ),
                 icon: const Icon(Icons.auto_awesome_rounded),
-                label: Text('Prepara le sedute di ${sport.toLowerCase()}'),
+                label: Text(l10n.preparaSedute2(sport.toLowerCase())),
               ),
             ],
           ],
@@ -649,7 +638,7 @@ class _DatiSessione extends StatelessWidget {
 
   Future<void> _inviaIntervals(BuildContext context) async {
     final messenger = ScaffoldMessenger.of(context);
-    messenger.showSnackBar(avviso(content: Text('Invio a intervals.icu…')));
+    messenger.showSnackBar(avviso(content: Text(l10n.invioIntervalsIcu)));
     final esito = await state.inviaSessioneIntervals(sessione);
     messenger
       ..hideCurrentSnackBar()
@@ -661,11 +650,7 @@ class _DatiSessione extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final gpx = await state.gpxSessione(sessione);
     if (gpx == null) {
-      messenger.showSnackBar(
-        avviso(
-          content: Text("Per questa sessione l'app non ha un percorso GPS."),
-        ),
-      );
+      messenger.showSnackBar(avviso(content: Text(l10n.questaSessioneAppNon)));
       return;
     }
     try {
@@ -673,19 +658,15 @@ class _DatiSessione extends StatelessWidget {
         fileName: nomeFileGpx(sessione),
         bytes: utf8.encode(gpx),
         mimeType: 'application/gpx+xml',
-        dialogTitle: 'Salva il percorso',
+        dialogTitle: l10n.salvaPercorso,
       );
       if (uri != null) {
         messenger.showSnackBar(
-          avviso(
-            content: Text(
-              'GPX salvato: puoi caricarlo su Strava o Garmin Connect.',
-            ),
-          ),
+          avviso(content: Text(l10n.gpxSalvatoPuoiCaricarlo)),
         );
       }
     } catch (e) {
-      messenger.showSnackBar(avviso(content: Text('GPX non salvato: $e')));
+      messenger.showSnackBar(avviso(content: Text(l10n.gpxNonSalvato(e))));
     }
   }
 
@@ -715,17 +696,16 @@ class _DatiSessione extends StatelessWidget {
           Icons.delete_outline_rounded,
           color: Theme.of(c).colorScheme.error,
         ),
-        title: const Text('Eliminare la sessione?'),
+        title: Text(l10n.eliminareSessione),
         content: Text(
-          'Sparisce dal calendario, dai Progressi e dal carico, insieme al '
-          'suo "Com\'è andata?".'
-          '${orologio ? ' Non tornerà con la sincronizzazione; nell\'app '
-                    'dell\'orologio resta com\'è.' : ''}',
+          l10n.sparisceDalCalendarioDai(
+            orologio ? l10n.nonTorneraSincronizzazioneNell : '',
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -733,7 +713,7 @@ class _DatiSessione extends StatelessWidget {
               foregroundColor: Theme.of(c).colorScheme.onError,
             ),
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.elimina),
           ),
         ],
       ),
@@ -742,7 +722,7 @@ class _DatiSessione extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final ripristina = await state.eliminaSessione(s);
     messenger.showSnackBar(
-      avviso(content: const Text('Sessione eliminata'), annulla: ripristina),
+      avviso(content: Text(l10n.sessioneEliminata), annulla: ripristina),
     );
   }
 
@@ -761,52 +741,54 @@ class _DatiSessione extends StatelessWidget {
     final passoTratti = aMano == null ? null : passoNuotatoDaTratti(aMano);
     final dati = <(String, String)>[
       if (s.inizio != null && s.fine != null)
-        ('Orario', '${_ora(s.inizio!)} – ${_ora(s.fine!)}'),
-      if (s.durataMin > 0) ('Durata', '${s.durataMin} min'),
+        (l10n.orario, '${_ora(s.inizio!)} – ${_ora(s.fine!)}'),
+      if (s.durataMin > 0) (l10n.durata, '${s.durataMin} min'),
       if (s.distanzaKm > 0)
         (
-          'Distanza',
+          l10n.distanza,
           nuoto
               ? '${(s.distanzaKm * 1000).round()} m'
               : '${fmtNum(s.distanzaKm)} km',
         ),
       if (vasca != null && vasca.vasche > 0)
-        ('Vasche', '${vasca.vasche} da ${vasca.lunghezzaM} m'),
-      if (vasca != null && vasca.stile.isNotEmpty) ('Stile', vasca.stile),
+        (l10n.vasche, l10n.m(vasca.vasche, vasca.lunghezzaM)),
+      if (vasca != null && vasca.stile.isNotEmpty) (l10n.stile, vasca.stile),
       // Il tempo medio scritto a mano vale più del calcolo: la durata comprende
       // anche le pause a bordo vasca.
       if (vasca != null && vasca.passo100S > 0)
-        ('Tempo medio', '${tempoScritto(vasca.passo100S)} /100 m')
+        (l10n.tempoMedio, '${tempoScritto(vasca.passo100S)} /100 m')
       else if (passoTratti != null)
-        ('Tempo medio', '${fmtMinSec(passoTratti.toDouble())} /100 m')
+        (l10n.tempoMedio, '${fmtMinSec(passoTratti.toDouble())} /100 m')
       else if (r != null)
         (
-          s.sport.toLowerCase() == 'bici' ? 'Velocità media' : 'Ritmo medio',
+          s.sport.toLowerCase() == 'bici'
+              ? l10n.velocitaMedia
+              : l10n.ritmoMedio,
           '${fmtRitmo(s.sport, r)} ${unitaRitmo(s.sport)}',
         ),
-      if (s.fcMedia > 0) ('FC media', '${s.fcMedia} bpm'),
-      if (s.fcMax > 0) ('FC massima', '${s.fcMax} bpm'),
+      if (s.fcMedia > 0) (l10n.fcMedia, '${s.fcMedia} bpm'),
+      if (s.fcMax > 0) (l10n.fcMassima, '${s.fcMax} bpm'),
       // Quelle delle sessioni dell'app sono calcolate, non misurate.
       if (s.calorieAttive > 0)
         (
-          s.fonte == fonteApp ? 'Calorie attive (stima)' : 'Calorie attive',
+          s.fonte == fonteApp ? l10n.calorieAttiveStima : l10n.calorieAttive,
           '${s.calorieAttive.round()} kcal',
         ),
       if (s.calorieTotali > 0)
         (
-          s.fonte == fonteApp ? 'Calorie totali (stima)' : 'Calorie totali',
+          s.fonte == fonteApp ? l10n.calorieTotaliStima : l10n.calorieTotali,
           '${s.calorieTotali.round()} kcal',
         ),
-      if (s.passi > 0) ('Passi', '${s.passi}'),
-      if (s.potenzaMedia > 0) ('Potenza media', '${s.potenzaMedia} W'),
+      if (s.passi > 0) (l10n.passi, '${s.passi}'),
+      if (s.potenzaMedia > 0) (l10n.potenzaMedia, '${s.potenzaMedia} W'),
       // Corsa e camminata hanno i passi al minuto, qui sotto.
       if (s.cadenzaMedia > 0 && !siCammina(s.sport))
         (
-          'Cadenza media',
-          '${s.cadenzaMedia} ${stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto'}',
+          l10n.cadenzaMedia,
+          '${s.cadenzaMedia} ${stessoSport(s.sport, 'Bici') ? 'rpm' : l10n.alMinuto}',
         ),
-      if (cadenza(s) case final c?) ('Passi al minuto', '$c ppm'),
-      if (s.rpe > 0) ('Fatica (RPE)', '${fmtNum(s.rpe)}/10'),
+      if (cadenza(s) case final c?) (l10n.passiAlMinuto, '$c ppm'),
+      if (s.rpe > 0) (l10n.faticaRpe, '${fmtNum(s.rpe)}/10'),
     ];
     final c = coloreSport(s.sport);
     return Card(
@@ -835,7 +817,7 @@ class _DatiSessione extends StatelessWidget {
                     ),
                   ),
                 IconButton(
-                  tooltip: 'Modifica la sessione',
+                  tooltip: l10n.modificaSessione,
                   onPressed: () => _modifica(context),
                   icon: const Icon(Icons.edit_rounded, size: 20),
                 ),
@@ -846,8 +828,8 @@ class _DatiSessione extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
                   state.sessioniModificate.containsKey(s.id)
-                      ? 'Fonte: ${s.fonte} · corretta a mano'
-                      : 'Fonte: ${s.fonte}',
+                      ? l10n.fonteCorrettaMano(s.fonte)
+                      : l10n.fonte(s.fonte),
                   style: t.bodySmall,
                 ),
               ),
@@ -883,7 +865,7 @@ class _DatiSessione extends StatelessWidget {
             if (s.parti.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                daFreeletics(s) ? 'Blocchi' : 'Intervalli',
+                daFreeletics(s) ? l10n.blocchi : 'Intervalli',
                 style: t.titleSmall,
               ),
               const SizedBox(height: 4),
@@ -892,7 +874,7 @@ class _DatiSessione extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Text(
                     // Freeletics: il nome del blocco (es. "25x Leg Wipers").
-                    '• ${[if (daFreeletics(p) && p.note.isNotEmpty) p.note else if (p.inizio != null && p.fine != null) '${_ora(p.inizio!)}–${_ora(p.fine!)}', '${p.durataMin} min', if (!daFreeletics(p) && p.tipo.isNotEmpty) p.tipo, if (p.distanzaKm > 0) nuoto ? '${(p.distanzaKm * 1000).round()} m' : '${fmtNum(p.distanzaKm)} km', if (p.fcMedia > 0) 'FC ${p.fcMedia}'].join(' · ')}',
+                    '• ${[if (daFreeletics(p) && p.note.isNotEmpty) p.note else if (p.inizio != null && p.fine != null) '${_ora(p.inizio!)}–${_ora(p.fine!)}', '${p.durataMin} min', if (!daFreeletics(p) && p.tipo.isNotEmpty) p.tipo, if (p.distanzaKm > 0) nuoto ? '${(p.distanzaKm * 1000).round()} m' : '${fmtNum(p.distanzaKm)} km', if (p.fcMedia > 0) l10n.fc(p.fcMedia)].join(' · ')}',
                   ),
                 ),
             ],
@@ -900,7 +882,7 @@ class _DatiSessione extends StatelessWidget {
             if (stessoSport(s.sport, 'Forza') &&
                 state.serieDel(s.data).isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text('Serie', style: t.titleSmall),
+              Text(l10n.serie2, style: t.titleSmall),
               const SizedBox(height: 4),
               for (final MapEntry(key: nome, value: serie)
                   in state.serieDel(s.data).entries)
@@ -928,8 +910,13 @@ class _DatiSessione extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
                     child: Text(
-                      'Record ${a.falesia ? 'sulle vie' : 'nel boulder'}: '
-                      '$g (${quando.day} ${mesiNomi[quando.month - 1]} ${quando.year})',
+                      l10n.record2(
+                        a.falesia ? l10n.sulleVie : l10n.nelBoulder,
+                        g,
+                        quando.day,
+                        mesiNomi[quando.month - 1],
+                        quando.year,
+                      ),
                       style: t.bodySmall,
                     ),
                   ),
@@ -945,8 +932,8 @@ class _DatiSessione extends StatelessWidget {
                 icon: const Icon(Icons.terrain_rounded),
                 label: Text(
                   arrampicataDi(state.arrampicate, s.id, s.data) == null
-                      ? 'Segna vie, blocchi e gradi'
-                      : 'Modifica',
+                      ? l10n.segnaVieBlocchiGradi
+                      : l10n.modifica,
                 ),
               ),
             ],
@@ -970,11 +957,11 @@ class _DatiSessione extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.show_chart_rounded),
-                    label: const Text('Grafici'),
+                    label: Text(l10n.grafici2),
                   ),
                 // Un'immagine della sessione per WhatsApp, Instagram…
                 IconButton.outlined(
-                  tooltip: 'Condividi',
+                  tooltip: l10n.condividi,
                   onPressed: () => apriCondividiSessione(context, state, s),
                   icon: const Icon(Icons.share_rounded),
                 ),
@@ -985,7 +972,7 @@ class _DatiSessione extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () => _inviaIntervals(context),
                     icon: const Icon(Icons.cloud_upload_rounded),
-                    label: const Text('Invia a intervals.icu'),
+                    label: Text(l10n.inviaIntervalsIcu),
                   ),
                 if (s.fonte == fonteApp &&
                     sportConPercorso(s.sport, s.tipo) &&
@@ -993,18 +980,18 @@ class _DatiSessione extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () => _salvaGpx(context),
                     icon: const Icon(Icons.route_rounded),
-                    label: const Text('Salva GPX'),
+                    label: Text(l10n.salvaGpx),
                   ),
               ],
             ),
             if (switch (state.invioSessione(s)) {
                   InvioSessione.inviata => (
                     Icons.cloud_done_rounded,
-                    'Su intervals.icu',
+                    l10n.suIntervalsIcu,
                   ),
                   InvioSessione.automatico => (
                     Icons.cloud_queue_rounded,
-                    'Parte da sola per intervals.icu appena c\'è rete',
+                    l10n.parteSolaIntervalsIcu,
                   ),
                   _ => null,
                 }
@@ -1087,23 +1074,20 @@ class _IntervalliState extends State<_Intervalli> {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 6,
             children: [
-              Text('Previsto e fatto', style: t.titleSmall),
+              Text(l10n.previstoFatto, style: t.titleSmall),
               GraficoIntensitaSeduta(
                 punti: punti,
                 fasce: fasce,
                 colore: coloreSport(s.sport),
               ),
               Text(
-                'Le fasce colorate sono l\'intensità da tenere blocco per '
-                'blocco, la linea quella che hai tenuto: dentro la fascia '
-                'eri nell\'obiettivo, sopra andavi più forte, sotto più '
-                'piano.'
-                '${aPasso && aZone
-                    ? ' Dove l\'obiettivo era una zona si guarda il '
-                          'battito, dove era un passo si guarda il passo.'
-                    : aPasso
-                    ? ' Si guarda il passo.'
-                    : ' Si guarda il battito.'}',
+                l10n.fasceColorateSonoIntensita(
+                  aPasso && aZone
+                      ? l10n.doveObiettivoEraZona
+                      : aPasso
+                      ? l10n.siGuardaPasso
+                      : l10n.siGuardaBattito,
+                ),
                 style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ],
@@ -1187,7 +1171,7 @@ class _IntervalliState extends State<_Intervalli> {
                   Text(rigaIntervallo(i, s.sport)),
                   if (i.wattPrevisti case final r?)
                     Text(
-                      'Da tenere ${fmtRange(r)}',
+                      l10n.tenere(fmtRange(r)),
                       style: t.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -1202,7 +1186,7 @@ class _IntervalliState extends State<_Intervalli> {
           if (!i.recupero && fasi[k] != sezione) {
             sezione = fasi[k];
             conLinea.add(
-              _TitoloFase(sezione.isEmpty ? 'Fuori programma' : sezione),
+              _TitoloFase(sezione.isEmpty ? l10n.fuoriProgramma : sezione),
             );
           }
           conLinea.add(
@@ -1236,14 +1220,12 @@ class _IntervalliState extends State<_Intervalli> {
               children: [
                 Expanded(
                   child: Text(
-                    aMano == null
-                        ? 'Intervalli'
-                        : 'Intervalli (corretti a mano)',
+                    aMano == null ? 'Intervalli' : l10n.intervalliCorrettiMano,
                     style: t.titleSmall,
                   ),
                 ),
                 IconButton(
-                  tooltip: 'Modifica gli intervalli',
+                  tooltip: l10n.modificaIntervalli,
                   icon: const Icon(Icons.edit_rounded, size: 20),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(

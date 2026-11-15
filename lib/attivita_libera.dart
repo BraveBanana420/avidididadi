@@ -1,5 +1,6 @@
 import 'attivita.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Attività libera: si parte subito, fuori dal piano, e si aggiunge a quello
 // che c'è già nel calendario (per esempio una camminata la sera).
@@ -14,11 +15,11 @@ const tipoForzaLibera = 'Forza libera';
 const tipoAltraAttivita = 'Altra attività';
 
 /// Le attività che si possono avviare al volo: (sport, tipo, nome).
-const attivitaLibere = [
+List<(String, String, String)> get attivitaLibere => [
   ('Corsa', 'Corsa libera', 'Corsa libera'),
   (sportCamminata, 'Camminata', 'Camminata'),
-  ('Bici', 'Uscita libera', 'Uscita in bici'),
-  ('Nuoto', 'Piscina', 'Nuoto libero'),
+  ('Bici', 'Uscita libera', l10n.uscitaBici),
+  ('Nuoto', 'Piscina', l10n.nuotoLibero),
   ('Forza', tipoForzaLibera, 'Forza'),
   ('Mobilità', 'Mobilità libera', 'Mobilità e stretching'),
   ('Arrampicata', 'Arrampicata', 'Arrampicata'),
@@ -42,7 +43,7 @@ List<WorkoutStep> passiLiberi(String sport, String nome) => [
     durataMin: '',
     intensita: '',
     recuperoS: '',
-    note: 'Tocca "Fatto" quando hai finito.',
+    note: l10n.toccaFattoQuandoHai,
   ),
 ];
 

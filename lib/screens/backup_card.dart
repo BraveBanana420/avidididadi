@@ -6,6 +6,7 @@ import '../app_state.dart';
 import '../backup.dart';
 import '../backup_auto.dart';
 import '../models.dart';
+import '../l10n/lingua.dart';
 
 /// Backup e ripristino di tutti i dati dell'app in un unico file.
 class SezioneBackup extends StatefulWidget {
@@ -30,16 +31,13 @@ class _SezioneBackupState extends State<SezioneBackup> {
         fileName: 'avidididadi_backup_${isoData(soloData(DateTime.now()))}.gz',
         bytes: dati,
         mimeType: 'application/gzip',
-        dialogTitle: 'Salva il backup',
+        dialogTitle: l10n.salvaBackup,
       );
       if (uri != null && mounted) {
-        _messaggio(
-          'Backup salvato. Copialo anche fuori dal telefono '
-          '(Drive, PC) per non perderlo.',
-        );
+        _messaggio(l10n.backupSalvatoCopialoAnche);
       }
     } catch (e) {
-      if (mounted) _messaggio('Backup non riuscito: $e');
+      if (mounted) _messaggio(l10n.backupNonRiuscito(e));
     } finally {
       if (mounted) setState(() => inCorso = false);
     }
@@ -51,33 +49,30 @@ class _SezioneBackupState extends State<SezioneBackup> {
       final files = await FilePicker.pickFiles(type: FileType.any);
       if (files.isEmpty) return;
       if ((await files.first.length() ?? 0) > maxByteBackup) {
-        throw const FormatException('File troppo grande per essere un backup.');
+        throw FormatException(l10n.fileTroppoGrandeEssere);
       }
       b = leggiBackup(await files.first.readAsBytes());
     } on FormatException catch (e) {
       if (mounted) _messaggio(e.message);
       return;
     } catch (e) {
-      if (mounted) _messaggio('Impossibile leggere il file: $e');
+      if (mounted) _messaggio(l10n.impossibileLeggereFile(e));
       return;
     }
     if (!mounted) return;
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Ripristinare il backup?'),
-        content: Text(
-          '${b.riassunto}.\n\nTutti i dati attuali dell\'app verranno '
-          'sostituiti. Se non sei sicuro, salva prima un backup di adesso.',
-        ),
+        title: Text(l10n.ripristinareBackup),
+        content: Text(l10n.tuttiDatiAttualiDell(b.riassunto)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Ripristina'),
+            child: Text(l10n.ripristina),
           ),
         ],
       ),
@@ -87,15 +82,12 @@ class _SezioneBackupState extends State<SezioneBackup> {
     try {
       await widget.state.ripristinaBackup(b);
       if (mounted) {
-        _messaggio(
-          'Dati ripristinati. Alla prossima sincronizzazione Health Connect '
-          'rilegge lo storico.',
-        );
+        _messaggio(l10n.datiRipristinatiAllaProssima);
       }
     } on FormatException catch (e) {
       if (mounted) _messaggio(e.message);
     } catch (e) {
-      if (mounted) _messaggio('Ripristino non riuscito: $e');
+      if (mounted) _messaggio(l10n.ripristinoNonRiuscito(e));
     } finally {
       if (mounted) setState(() => inCorso = false);
     }
@@ -123,7 +115,7 @@ class _SezioneBackupState extends State<SezioneBackup> {
     if (!mounted) return;
     setState(() => inCorso = false);
     final b = widget.state.backupAuto;
-    _messaggio(b.errore.isEmpty ? 'Backup salvato nella cartella.' : b.errore);
+    _messaggio(b.errore.isEmpty ? l10n.backupSalvatoNellaCartella : b.errore);
   }
 
   Widget _automatico(BuildContext context) {
@@ -138,13 +130,16 @@ class _SezioneBackupState extends State<SezioneBackup> {
           type: MaterialType.transparency,
           child: SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Backup automatico'),
+            title: Text(l10n.backupAutomatico),
             subtitle: Text(
               b.attivo
-                  ? 'In ${b.nomeCartella.isEmpty ? 'una cartella del telefono' : '"${b.nomeCartella}"'}'
-                        '${u == null ? '' : ' · ultimo ${dataLunga(u)}'}'
-                  : 'In una cartella che scegli tu: resta anche se '
-                        "disinstalli l'app. Tiene gli ultimi $backupDaTenere.",
+                  ? l10n.inTesto(
+                      b.nomeCartella.isEmpty
+                          ? l10n.cartellaTelefono
+                          : '"${b.nomeCartella}"',
+                      u == null ? '' : l10n.ultimo(dataLunga(u)),
+                    )
+                  : l10n.cartellaScegliTuResta(backupDaTenere),
             ),
             value: b.attivo,
             onChanged: inCorso ? null : _accendiAutomatico,
@@ -152,14 +147,14 @@ class _SezioneBackupState extends State<SezioneBackup> {
         ),
         if (b.attivo) ...[
           SegmentedButton<FrequenzaBackup>(
-            segments: const [
+            segments: [
               ButtonSegment(
                 value: FrequenzaBackup.giorno,
-                label: Text('Ogni giorno'),
+                label: Text(l10n.ogniGiorno),
               ),
               ButtonSegment(
                 value: FrequenzaBackup.settimana,
-                label: Text('Ogni settimana'),
+                label: Text(l10n.ogniSettimana),
               ),
             ],
             selected: {b.frequenza},
@@ -167,11 +162,7 @@ class _SezioneBackupState extends State<SezioneBackup> {
                 widget.state.impostaBackupAuto(b.copyWith(frequenza: v.first)),
           ),
           const SizedBox(height: 8),
-          Text(
-            "Si fa da solo quando apri l'app. Per non perderlo col telefono, "
-            'ogni tanto copia la cartella sul PC o su Drive.',
-            style: t.bodySmall,
-          ),
+          Text(l10n.siFaSoloQuando, style: t.bodySmall),
           if (b.errore.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(b.errore, style: t.bodySmall?.copyWith(color: scheme.error)),
@@ -184,11 +175,11 @@ class _SezioneBackupState extends State<SezioneBackup> {
               OutlinedButton.icon(
                 onPressed: inCorso ? null : _automaticoOra,
                 icon: const Icon(Icons.backup_rounded),
-                label: const Text('Fallo ora'),
+                label: Text(l10n.falloOra),
               ),
               TextButton(
                 onPressed: inCorso ? null : () => _accendiAutomatico(true),
-                child: const Text('Cambia cartella'),
+                child: Text(l10n.cambiaCartella),
               ),
             ],
           ),
@@ -206,13 +197,9 @@ class _SezioneBackupState extends State<SezioneBackup> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Backup', style: t.titleMedium),
+            Text(l10n.backup, style: t.titleMedium),
             const SizedBox(height: 4),
-            Text(
-              'Un unico file con sessioni, piano, profilo, misure, feedback, '
-              'recupero e foto. La chiave dell\'assistente non è inclusa.',
-              style: t.bodySmall,
-            ),
+            Text(l10n.unicoFileSessioniPiano, style: t.bodySmall),
             const SizedBox(height: 12),
             Wrap(
               spacing: 8,
@@ -221,12 +208,12 @@ class _SezioneBackupState extends State<SezioneBackup> {
                 FilledButton.icon(
                   onPressed: inCorso ? null : _salva,
                   icon: const Icon(Icons.save_alt_rounded),
-                  label: const Text('Salva backup'),
+                  label: Text(l10n.salvaBackup2),
                 ),
                 OutlinedButton.icon(
                   onPressed: inCorso ? null : _ripristina,
                   icon: const Icon(Icons.restore_rounded),
-                  label: const Text('Ripristina'),
+                  label: Text(l10n.ripristina),
                 ),
               ],
             ),
@@ -264,11 +251,7 @@ class _PromemoriaBackupState extends State<PromemoriaBackup> {
     final b = widget.state.backupAuto;
     messenger.showSnackBar(
       avviso(
-        content: Text(
-          b.errore.isEmpty
-              ? 'Backup attivo: da ora si salva da solo ogni settimana.'
-              : b.errore,
-        ),
+        content: Text(b.errore.isEmpty ? l10n.backupAttivoOraSi : b.errore),
       ),
     );
   }
@@ -305,11 +288,7 @@ class _PromemoriaBackupState extends State<PromemoriaBackup> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    errore
-                        ? state.backupAuto.errore
-                        : "Metti al sicuro i tuoi allenamenti: l'app ne salva "
-                              'da sola una copia in una cartella che scegli '
-                              "tu. Resta anche se disinstalli l'app.",
+                    errore ? state.backupAuto.errore : l10n.mettiAlSicuroTuoi,
                     style: TextStyle(color: colore),
                   ),
                 ),
@@ -321,13 +300,13 @@ class _PromemoriaBackupState extends State<PromemoriaBackup> {
                 TextButton(
                   onPressed: inCorso ? null : _accendi,
                   child: Text(
-                    errore ? 'Scegli di nuovo la cartella' : 'Attiva il backup',
+                    errore ? l10n.scegliNuovoCartella : l10n.attivaBackup,
                   ),
                 ),
                 if (!errore)
                   TextButton(
                     onPressed: inCorso ? null : state.rimandaBackup,
-                    child: const Text('Non ora'),
+                    child: Text(l10n.nonOra),
                   ),
               ],
             ),

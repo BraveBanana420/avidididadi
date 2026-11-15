@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../avvisi.dart';
 import '../dati_live.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// Durante l'allenamento: voce, bip, vibrazione, pausa automatica e come si
 /// calcola il passo medio. Si apre dal Profilo e dal tasto 🔊 dell'allenamento.
@@ -34,7 +35,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
     );
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text("Durante l'allenamento")),
+      appBar: AppBar(title: Text(l10n.duranteAllenamento)),
       body: ListenableBuilder(
         listenable: Listenable.merge([
           bipAttivo,
@@ -48,36 +49,31 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
         builder: (context, _) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text('Avvisi', style: t.titleMedium),
+            Text(l10n.avvisi, style: t.titleMedium),
             const SizedBox(height: 8),
             Card(
               child: Column(
                 children: [
                   SwitchListTile(
                     secondary: const Icon(Icons.record_voice_over_rounded),
-                    title: const Text('Voce'),
-                    subtitle: const Text(
-                      "Dice l'esercizio che inizia, i km e se sei fuori zona "
-                      'o fuori passo. Durante le chiamate sta zitta.',
-                    ),
+                    title: Text(l10n.voce),
+                    subtitle: Text(l10n.diceEsercizioIniziaKm),
                     value: voceAttiva.value,
                     onChanged: (v) => salvaAvvisi(voce: v),
                   ),
                   SwitchListTile(
                     secondary: const Icon(Icons.volume_up_rounded),
-                    title: const Text('Bip'),
-                    subtitle: const Text(
-                      'Negli ultimi $secondiAvviso secondi di recuperi ed '
-                      'esercizi a tempo, e a ogni km (5 km in bici). Usa il '
-                      'volume dei media.',
+                    title: Text(l10n.bip),
+                    subtitle: Text(
+                      l10n.negliUltimiSecondiRecuperi(secondiAvviso),
                     ),
                     value: bipAttivo.value,
                     onChanged: (v) => salvaAvvisi(bip: v),
                   ),
                   SwitchListTile(
                     secondary: const Icon(Icons.vibration_rounded),
-                    title: const Text('Vibrazione'),
-                    subtitle: const Text('Insieme ai bip.'),
+                    title: Text(l10n.vibrazione),
+                    subtitle: Text(l10n.insiemeAiBip),
                     value: vibrazioneAttiva.value,
                     onChanged: (v) => salvaAvvisi(vibrazione: v),
                   ),
@@ -85,11 +81,10 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            Text('Pausa automatica', style: t.titleMedium),
+            Text(l10n.pausaAutomatica, style: t.titleMedium),
             const SizedBox(height: 4),
             Text(
-              'Corsa, bici e camminata: il tempo si ferma quando ti fermi e '
-              'riparte da solo. Mai durante i recuperi.',
+              l10n.corsaBiciCamminataTempo,
               style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
@@ -99,28 +94,22 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                 onChanged: (v) => salvaAvvisi(pausa: v),
                 child: Column(
                   children: [
-                    const RadioListTile(
+                    RadioListTile(
                       value: ModoPausa.spenta,
-                      title: Text('Spenta'),
-                      subtitle: Text('Il tempo non si ferma mai da solo.'),
+                      title: Text(l10n.spenta),
+                      subtitle: Text(l10n.tempoNonSiFerma),
                     ),
-                    const RadioListTile(
+                    RadioListTile(
                       value: ModoPausa.ferma,
-                      title: Text('Solo quando sei fermo'),
-                      subtitle: Text(
-                        'Al semaforo o a una sosta. Se vai piano, anche in '
-                        'salita, il tempo continua.',
-                      ),
+                      title: Text(l10n.soloQuandoSeiFermo),
+                      subtitle: Text(l10n.alSemaforoOSosta),
                     ),
                     RadioListTile(
                       value: ModoPausa.sotto,
                       title: Text(
-                        'Sotto i ${fmtSoglia(sogliaPausaKmh.value)} km/h',
+                        l10n.sottoKmH(fmtSoglia(sogliaPausaKmh.value)),
                       ),
-                      subtitle: const Text(
-                        'Come certe app: attento, se vai più piano di così '
-                        'il tempo si ferma.',
-                      ),
+                      subtitle: Text(l10n.comeCerteAppAttento),
                     ),
                     if (modoPausa.value == ModoPausa.sotto) ...[
                       Slider(
@@ -131,54 +120,42 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                         label: '${fmtSoglia(sogliaPausaKmh.value)} km/h',
                         onChanged: (v) => salvaAvvisi(sogliaKmh: v),
                       ),
-                      nota(
-                        'Camminata tranquilla 4-5 km/h, corsa lenta 8-10, '
-                        'bici in salita anche 6-8.',
-                      ),
+                      nota(l10n.camminataTranquilla45),
                     ],
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            Text('Passo medio', style: t.titleMedium),
+            Text(l10n.passoMedio, style: t.titleMedium),
             const SizedBox(height: 8),
             Card(
               child: RadioGroup<bool>(
                 groupValue: mediaConSoste.value,
                 onChanged: (v) => salvaAvvisi(conSoste: v),
-                child: const Column(
+                child: Column(
                   children: [
                     RadioListTile(
                       value: false,
-                      title: Text('Solo in movimento'),
-                      subtitle: Text(
-                        'Le soste non contano, anche con la pausa automatica '
-                        'spenta: è il passo con cui ti sei mosso.',
-                      ),
+                      title: Text(l10n.soloMovimento),
+                      subtitle: Text(l10n.sosteNonContanoAnche),
                     ),
                     RadioListTile(
                       value: true,
-                      title: Text('Con le soste'),
-                      subtitle: Text(
-                        'Distanza diviso tutto il tempo, soste comprese.',
-                      ),
+                      title: Text(l10n.soste),
+                      subtitle: Text(l10n.distanzaDivisoTuttoTempo),
                     ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            nota(
-              'Alla fine il riepilogo mostra comunque tutti e due i tempi: '
-              'in movimento e totale.',
-            ),
+            nota(l10n.allaFineRiepilogoMostra),
             const SizedBox(height: 16),
-            Text('Mappa', style: t.titleMedium),
+            Text(l10n.mappa, style: t.titleMedium),
             const SizedBox(height: 4),
             Text(
-              "Corsa, camminata e bici all'aperto: dove sta la mappa che "
-              'segue la tua posizione (e il percorso, se ne segui uno).',
+              l10n.corsaCamminataBiciAll,
               style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
@@ -186,32 +163,25 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
               child: RadioGroup<VistaMappa>(
                 groupValue: vistaMappa.value,
                 onChanged: (v) => salvaAvvisi(mappa: v),
-                child: const Column(
+                child: Column(
                   children: [
                     RadioListTile(
                       value: VistaMappa.pagine,
                       secondary: Icon(Icons.view_carousel_rounded),
-                      title: Text('Due pagine'),
-                      subtitle: Text(
-                        'Scorri di lato: in una timer e dati, nell\'altra la '
-                        'mappa grande.',
-                      ),
+                      title: Text(l10n.duePagine),
+                      subtitle: Text(l10n.scorriLatoTimerDati),
                     ),
                     RadioListTile(
                       value: VistaMappa.minimappa,
                       secondary: Icon(Icons.picture_in_picture_rounded),
-                      title: Text('Minimappa'),
-                      subtitle: Text(
-                        'Una mappa piccola sempre in vista, sopra il timer.',
-                      ),
+                      title: Text(l10n.minimappa),
+                      subtitle: Text(l10n.mappaPiccolaSempreVista),
                     ),
                     RadioListTile(
                       value: VistaMappa.schermo,
                       secondary: Icon(Icons.fullscreen_rounded),
-                      title: Text('Tutto schermo'),
-                      subtitle: Text(
-                        'La mappa occupa tutto, con tempo e dati sopra.',
-                      ),
+                      title: Text(l10n.tuttoSchermo),
+                      subtitle: Text(l10n.mappaOccupaTuttoTempo),
                     ),
                   ],
                 ),

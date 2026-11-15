@@ -1,5 +1,6 @@
 import 'generator.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Le attività di chi usa l'app: quelle scelte si vedono nei menu e nel piano.
 // Quello che è stato fatto davvero resta sempre nello storico, anche se è di
@@ -91,42 +92,42 @@ List<PianoRiga> conSeduteNuove(
 String _chiave(String nome) =>
     nome.toLowerCase().replaceAll(RegExp(r'[^a-z]'), '');
 
-const _nomiLiberi = {
+Map<String, String> get _nomiLiberi => {
   'other': 'Allenamento',
   'otherworkout': 'Allenamento',
   'workout': 'Allenamento',
   'unknown': 'Allenamento',
-  'elliptical': 'Ellittica',
-  'rowing': 'Canottaggio',
-  'rowingmachine': 'Vogatore',
-  'stairstepper': 'Stepper',
-  'stairclimbing': 'Scale',
-  'stairclimbingmachine': 'Stepper',
-  'alpineski': 'Sci',
-  'skiing': 'Sci',
-  'backcountryski': 'Scialpinismo',
-  'nordicski': 'Sci di fondo',
+  'elliptical': l10n.ellittica,
+  'rowing': l10n.canottaggio,
+  'rowingmachine': l10n.vogatore,
+  'stairstepper': l10n.stepper,
+  'stairclimbing': l10n.scale,
+  'stairclimbingmachine': l10n.stepper,
+  'alpineski': l10n.sci,
+  'skiing': l10n.sci,
+  'backcountryski': l10n.scialpinismo,
+  'nordicski': l10n.sciFondo,
   'snowboard': 'Snowboard',
   'snowboarding': 'Snowboard',
-  'iceskate': 'Pattinaggio',
-  'iceskating': 'Pattinaggio',
-  'inlineskate': 'Pattinaggio',
-  'skating': 'Pattinaggio',
-  'kayaking': 'Kayak',
-  'canoeing': 'Canoa',
-  'sailing': 'Vela',
-  'surfing': 'Surf',
-  'standuppaddling': 'SUP',
-  'soccer': 'Calcio',
+  'iceskate': l10n.pattinaggio,
+  'iceskating': l10n.pattinaggio,
+  'inlineskate': l10n.pattinaggio,
+  'skating': l10n.pattinaggio,
+  'kayaking': l10n.kayak,
+  'canoeing': l10n.canoa,
+  'sailing': l10n.vela,
+  'surfing': l10n.surf,
+  'standuppaddling': l10n.sup,
+  'soccer': l10n.calcio,
   'footballamerican': 'Football',
-  'football': 'Calcio',
-  'basketball': 'Basket',
-  'volleyball': 'Pallavolo',
-  'tabletennis': 'Ping pong',
-  'dancing': 'Danza',
-  'dance': 'Danza',
-  'martialarts': 'Arti marziali',
-  'boxing': 'Pugilato',
+  'football': l10n.calcio,
+  'basketball': l10n.basket,
+  'volleyball': l10n.pallavolo,
+  'tabletennis': l10n.pingPong,
+  'dancing': l10n.danza,
+  'dance': l10n.danza,
+  'martialarts': l10n.artiMarziali,
+  'boxing': l10n.pugilato,
 };
 
 /// "StandUpPaddling" o "STAND_UP" diventano "Stand up paddling".

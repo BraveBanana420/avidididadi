@@ -1,4 +1,5 @@
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Modalità allenamento: i passi di un workout diventano blocchi da eseguire uno
 // alla volta. Quelli a tempo hanno un conto alla rovescia e passano da soli;
@@ -94,14 +95,14 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
             // Nell'arrampicata le "serie" di un passo sono le ripetizioni.
             if (n > 1)
               s.sport == 'Arrampicata'
-                  ? 'Ripetizione $i di $n'
-                  : 'Serie $i di $n',
+                  ? l10n.ripetizione(i, n)
+                  : l10n.serie(i, n),
             if (quanti.isNotEmpty) quanti,
           ].join(' · '),
           intensita: s.intensita,
           obiettivo2: s.obiettivo2,
           note: [
-            if (perLato && secondiDi(s) != null) 'Cambia lato a metà.',
+            if (perLato && secondiDi(s) != null) l10n.cambiaLatoMeta,
             s.note,
           ].where((x) => x.isNotEmpty).join(' '),
           fase: s.fase,
@@ -123,12 +124,12 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
             titolo: 'Recupero',
             dettaglio: i < n
                 ? s.sport == 'Arrampicata'
-                      ? 'Poi ripetizione ${i + 1} di $n'
-                      : 'Poi serie ${i + 1} di $n'
+                      ? l10n.poiRipetizione(i + 1, n)
+                      : l10n.poiSerie(i + 1, n)
                 : '',
             note: s.sport == 'Corsa' || s.sport == 'Bici'
-                ? 'Continua piano, senza fermarti.'
-                : 'Respira e bevi un sorso d\'acqua.',
+                ? l10n.continuaPianoSenzaFermarti
+                : l10n.respiraBeviSorsoAcqua,
             fase: s.fase,
             secondi: rec,
             passo: p,

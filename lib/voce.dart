@@ -6,6 +6,7 @@ import 'avvisi.dart';
 import 'dati_live.dart';
 import 'esecuzione.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // La voce dell'allenamento: frasi scritte per essere ascoltate ("zona 4",
 // "5 minuti e 42 al chilometro"), non le sigle dello schermo. Le frasi sono
@@ -17,28 +18,30 @@ const _canale = MethodChannel('avidididadi/avvio');
 String parlaDurata(Duration d) {
   final s = d.inSeconds;
   String unita(int n, String uno, String tanti) => '$n ${n == 1 ? uno : tanti}';
-  if (s < 60) return unita(s, 'secondo', 'secondi');
+  if (s < 60) return unita(s, l10n.parolaSecondo, l10n.parolaSecondi);
   if (s < 3600) {
     final m = s ~/ 60;
     final r = s % 60;
     return r == 0
-        ? unita(m, 'minuto', 'minuti')
-        : '${unita(m, 'minuto', 'minuti')} e $r';
+        ? unita(m, l10n.parolaMinuto, l10n.parolaMinuti)
+        : '${unita(m, l10n.parolaMinuto, l10n.parolaMinuti)} e $r';
   }
   final m = s % 3600 ~/ 60;
-  final ore = unita(s ~/ 3600, 'ora', 'ore');
-  return m == 0 ? ore : '$ore e ${unita(m, 'minuto', 'minuti')}';
+  final ore = unita(s ~/ 3600, l10n.parolaOra, l10n.parolaOre);
+  return m == 0
+      ? ore
+      : '$ore e ${unita(m, l10n.parolaMinuto, l10n.parolaMinuti)}';
 }
 
 /// "5 e 42 al chilometro" a piedi, "27 chilometri all'ora" in bici.
 String parlaVelocita(String sport, double mps) {
   final kmh = mps * 3.6;
-  if (stessoSport(sport, 'Bici')) return "${kmh.round()} chilometri all'ora";
+  if (stessoSport(sport, 'Bici')) return l10n.chilometriAllOra(kmh.round());
   final s = (3600 / kmh).round();
   final r = s % 60;
   return r == 0
-      ? '${s ~/ 60} minuti al chilometro'
-      : '${s ~/ 60} e $r al chilometro';
+      ? l10n.minutiAlChilometro(s ~/ 60)
+      : l10n.alChilometro(s ~/ 60, r);
 }
 
 /// Il giro appena chiuso, a voce.
@@ -46,10 +49,14 @@ String fraseGiro(String sport, Giro g) {
   final km = g.numero * g.metri ~/ 1000;
   final mps = g.metri / (g.tempo.inMilliseconds / 1000);
   if (g.metri == 1000) {
-    return 'Chilometro $km. ${parlaVelocita(sport, mps)}.';
+    return l10n.chilometro(km, parlaVelocita(sport, mps));
   }
-  return 'Chilometro $km. Ultimi ${g.metri ~/ 1000} in '
-      '${parlaDurata(g.tempo)}, ${parlaVelocita(sport, mps)}.';
+  return l10n.chilometroUltimi(
+    km,
+    g.metri ~/ 1000,
+    parlaDurata(g.tempo),
+    parlaVelocita(sport, mps),
+  );
 }
 
 /// I gradi dell'arrampicata per la sintesi vocale: "6a+" → "6 A più", altrimenti
@@ -57,10 +64,10 @@ String fraseGiro(String sport, Giro g) {
 String gradiParlati(String testo) {
   const grado = r'(?<![\w:.,/])([4-9])([abcABC])(\+?)(?!\w)';
   String di(String n, String l, String p) =>
-      '$n ${l.toUpperCase()}${p.isEmpty ? '' : ' più'}';
+      '$n ${l.toUpperCase()}${p.isEmpty ? '' : l10n.piu4}';
   final t = testo.replaceAllMapped(
     RegExp('$grado-([4-9])([abcABC])(\\+?)(?!\\w)'),
-    (m) => 'da ${di(m[1]!, m[2]!, m[3]!)} a ${di(m[4]!, m[5]!, m[6]!)}',
+    (m) => l10n.daA(di(m[1]!, m[2]!, m[3]!), di(m[4]!, m[5]!, m[6]!)),
   );
   return t.replaceAllMapped(RegExp(grado), (m) => di(m[1]!, m[2]!, m[3]!));
 }
@@ -73,31 +80,31 @@ String parlato(String testo) {
       '${m[1]} ${m[1] == '1' ? uno : tanti}';
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+)-(\d+)\b'),
-    (m) => 'da ${m[1]} a ${m[2]}',
+    (m) => l10n.daA(m[1]!, m[2]!),
   );
   t = t.replaceAllMapped(RegExp(r'\bZ([1-5])\b'), (m) => 'zona ${m[1]}');
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?min\b'),
-    (m) => plurale(m, 'minuto', 'minuti'),
+    (m) => plurale(m, l10n.parolaMinuto, l10n.parolaMinuti),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?s\b'),
-    (m) => plurale(m, 'secondo', 'secondi'),
+    (m) => plurale(m, l10n.parolaSecondo, l10n.parolaSecondi),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?km\b'),
-    (m) => plurale(m, 'chilometro', 'chilometri'),
+    (m) => plurale(m, l10n.parolaChilometro, l10n.parolaChilometri),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?m\b'),
-    (m) => plurale(m, 'metro', 'metri'),
+    (m) => plurale(m, l10n.parolaMetro, l10n.parolaMetri),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+(?:,\d+)?) ?kg\b'),
     (m) => '${m[1]} chili',
   );
-  t = t.replaceAll('/10', ' su 10');
-  t = t.replaceAll(RegExp(r'\brpm\b', caseSensitive: false), 'giri al minuto');
+  t = t.replaceAll('/10', l10n.su102);
+  t = t.replaceAll(RegExp(r'\brpm\b', caseSensitive: false), l10n.giriAlMinuto);
   t = t.replaceAllMapped(RegExp(r'\b(\d+) ?W\b'), (m) => '${m[1]} watt');
   return t;
 }
@@ -106,11 +113,11 @@ String parlato(String testo) {
 String fraseBlocco(Blocco b) {
   if (b.tipo == TipoBlocco.recupero) {
     return b.secondi == null
-        ? 'Recupero.'
-        : 'Recupero, ${parlaDurata(Duration(seconds: b.secondi!))}.';
+        ? l10n.recupero3
+        : l10n.recupero4(parlaDurata(Duration(seconds: b.secondi!)));
   }
   final pezzi = [
-    'Ora: ${gradiParlati(b.titolo)}',
+    l10n.ora(gradiParlati(b.titolo)),
     if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
     if (b.intensita.isNotEmpty) parlato(b.intensita),
     if (b.obiettivo2.isNotEmpty) parlato(b.obiettivo2),
@@ -187,9 +194,8 @@ int versoZona(int zona, int obiettivo) => zona > obiettivo
     ? -1
     : 0;
 
-String fraseZona(int zona, int verso) => verso > 0
-    ? 'Zona $zona, rallenta.'
-    : 'Zona $zona, puoi spingere un po\' di più.';
+String fraseZona(int zona, int verso) =>
+    verso > 0 ? l10n.zonaRallenta(zona) : l10n.zonaPuoiSpingerePo(zona);
 
 /// Fuori passo: 1 troppo veloce, -1 troppo lento, 0 nel margine.
 int versoVelocita(double mps, double obiettivo) =>
@@ -200,10 +206,10 @@ int versoVelocita(double mps, double obiettivo) =>
     : 0;
 
 String fraseVelocita(String sport, double mps, int verso) {
-  final quanto = stessoSport(sport, 'Bici') ? 'Velocità' : 'Passo';
+  final quanto = stessoSport(sport, 'Bici') ? l10n.velocita : l10n.passo;
   return verso > 0
-      ? '$quanto ${parlaVelocita(sport, mps)}, rallenta un po\'.'
-      : '$quanto ${parlaVelocita(sport, mps)}, accelera un po\'.';
+      ? l10n.rallentaPo(quanto, parlaVelocita(sport, mps))
+      : l10n.acceleraPo(quanto, parlaVelocita(sport, mps));
 }
 
 /// La sintesi vocale. Durante una chiamata tace: tiene da parte solo l'ultima

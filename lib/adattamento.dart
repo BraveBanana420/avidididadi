@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'feedback.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Adattamento delle sedute di corsa, nuoto e bici ai feedback: com'è andata
 /// davvero (fatica rispetto all'attesa, passo rispetto al target) decide il
@@ -82,10 +83,10 @@ int faticaAttesa({
 /// Risposte rapide sul passo della parte principale.
 const esitiPasso = {'tenuto': 0.0, 'lento': 0.07, 'molto_lento': 0.15};
 
-const nomiEsitiPasso = {
-  'tenuto': 'Tenuto',
-  'lento': 'Un po\' più lento',
-  'molto_lento': 'Molto più lento',
+Map<String, String> get nomiEsitiPasso => {
+  'tenuto': l10n.tenuto,
+  'lento': l10n.poPiuLento,
+  'molto_lento': l10n.moltoPiuLento,
 };
 
 /// Di quanto il passo eseguito è stato più lento del target (+0,10 = 10%).
@@ -270,28 +271,28 @@ List<String> cambiSeduta(List<WorkoutStep> prima, List<WorkoutStep> dopo) {
   final a = principale(prima), b = principale(dopo);
   if (a != null && b != null) {
     if (_quantita(a) != _quantita(b)) {
-      out.add('principale ${_quantita(b)} invece di ${_quantita(a)}');
+      out.add(l10n.principaleInvece(_quantita(b), _quantita(a)));
     }
     final pa = _passoTesto.firstMatch(a.intensita)?[0];
     final pb = _passoTesto.firstMatch(b.intensita)?[0];
     if (pa != null && pb != null && pa != pb) {
-      out.add('passo $pb invece di $pa');
+      out.add(l10n.passoInvece(pb, pa));
     } else if (pa == null &&
         a.intensita != b.intensita &&
         b.intensita.isNotEmpty) {
-      out.add('intensità ${b.intensita} invece di ${a.intensita}');
+      out.add(l10n.intensitaInvece(b.intensita, a.intensita));
     }
   }
   if (prima.isNotEmpty && dopo.isNotEmpty) {
     final ma = _metriNome.firstMatch(prima.first.nome)?[1];
     final mb = _metriNome.firstMatch(dopo.first.nome)?[1];
     if (ma != null && mb != null && ma != mb) {
-      out.add('totale $mb m invece di $ma m');
+      out.add(l10n.totaleMInveceM(mb, ma));
     } else if (ma == null &&
         prima.first.durataTot != dopo.first.durataTot &&
         dopo.first.durataTot > 0) {
       out.add(
-        'durata ${dopo.first.durataTot} min invece di ${prima.first.durataTot}',
+        l10n.durataMinInvece(dopo.first.durataTot, prima.first.durataTot),
       );
     }
   }
@@ -312,16 +313,17 @@ String fraseEsito({
     switch (esito) {
       EsitoSeduta.pesante =>
         scarto != null && scarto > 0.05
-            ? 'Passo più lento del target del ${(scarto * 100).round()}% '
-                  '(fatica $fatica, attesa $atteso): alleggerisco il $s.'
-            : 'Fatica $fatica, sopra l\'attesa ($atteso): alleggerisco il $s.',
-      EsitoSeduta.ok =>
-        'Fatica $fatica, in linea con l\'attesa ($atteso): progressione '
-            'normale, una cosa alla volta.',
-      EsitoSeduta.facile =>
-        'Fatica $fatica, sotto l\'attesa ($atteso): piccola progressione.',
+            ? l10n.passoPiuLentoTarget(
+                (scarto * 100).round(),
+                fatica,
+                atteso,
+                s,
+              )
+            : l10n.faticaSopraAttesaAlleggerisco(fatica, atteso, s),
+      EsitoSeduta.ok => l10n.faticaLineaAttesaProgressione(fatica, atteso),
+      EsitoSeduta.facile => l10n.faticaSottoAttesaPiccola(fatica, atteso),
     },
-    if (scarico) 'Due sedute pesanti di fila: settimana di scarico per il $s.',
+    if (scarico) l10n.dueSedutePesantiFila(s),
   ];
   return parti.join(' ');
 }

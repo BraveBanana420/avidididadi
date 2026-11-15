@@ -29,6 +29,7 @@ import '../tema.dart';
 import '../widgets.dart';
 import 'mappa_percorso.dart';
 import 'profilo_allenamento.dart';
+import '../l10n/lingua.dart';
 
 // Immagini da condividere su WhatsApp, Instagram…: una sessione o la
 // settimana, nei colori del tema. Si crea sul telefono e parte solo verso
@@ -58,7 +59,7 @@ Future<bool> _condividi(GlobalKey chiave, String testo) async {
   await Condivisione.condividiImmagine(
     f.path,
     testo: testo,
-    titolo: 'Condividi',
+    titolo: l10n.condividi,
   );
   return true;
 }
@@ -135,7 +136,7 @@ class _Pagina extends StatelessWidget {
               final messenger = ScaffoldMessenger.of(context);
               if (prima != null && !await prima!()) {
                 messenger.showSnackBar(
-                  avviso(content: Text('La mappa non è pronta: riprova.')),
+                  avviso(content: Text(l10n.mappaNonProntaRiprova)),
                 );
                 return;
               }
@@ -147,17 +148,16 @@ class _Pagina extends StatelessWidget {
               }
               if (!ok) {
                 messenger.showSnackBar(
-                  avviso(content: Text('Immagine non riuscita: riprova.')),
+                  avviso(content: Text(l10n.immagineNonRiuscitaRiprova)),
                 );
               }
             },
             icona: Icons.share_rounded,
-            testo: 'Condividi',
+            testo: l10n.condividi,
           ),
           const SizedBox(height: 8),
           Text(
-            "L'immagine si crea sul telefono e va solo all'app che scegli "
-            '(WhatsApp, Instagram…).',
+            l10n.immagineSiCreaSul,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
@@ -317,7 +317,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final record = forza ? recordDelGiorno(state.serieFatte, s.data) : null;
     final t = Theme.of(context).textTheme;
     return _Pagina(
-      titolo: 'Condividi la sessione',
+      titolo: l10n.condividiSessione,
       chiave: _chiave,
       testo: testoSessione(s),
       prima: () => _fotografa(grafica),
@@ -407,7 +407,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         ),
       },
       scelte: [
-        Text('Grafica', style: t.titleSmall),
+        Text(l10n.grafica, style: t.titleSmall),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
@@ -431,7 +431,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         ),
         const SizedBox(height: 12),
         if (grafica == GraficaCondivisa.mappa) ...[
-          Text('Tipo di mappa', style: t.titleSmall),
+          Text(l10n.tipoMappa, style: t.titleSmall),
           const SizedBox(height: 8),
           SegmentedButton<TipoMappa>(
             segments: [
@@ -447,22 +447,15 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
             onSelectionChanged: (v) => setState(() => _tipo = v.first),
           ),
           const SizedBox(height: 8),
-          Text(
-            'La mappa fa vedere dove sei passato: occhio se parti da casa.',
-            style: t.bodySmall,
-          ),
+          Text(l10n.mappaFaVedereDove, style: t.bodySmall),
         ] else if (grafica == GraficaCondivisa.foto) ...[
           OutlinedButton.icon(
             onPressed: _scegliFoto,
             icon: const Icon(Icons.photo_library_rounded),
-            label: const Text('Scegli un\'altra foto'),
+            label: Text(l10n.scegliAltraFoto),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Sposta e ingrandisci la foto con due dita. Resta sul telefono: '
-            'nell\'immagine non va la posizione in cui è stata scattata.',
-            style: t.bodySmall,
-          ),
+          Text(l10n.spostaIngrandisciFotoDue, style: t.bodySmall),
         ] else if (_percorso != null &&
             (grafica == GraficaCondivisa.classica ||
                 grafica == GraficaCondivisa.poster))
@@ -470,10 +463,8 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
             type: MaterialType.transparency,
             child: SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Mostra il percorso'),
-              subtitle: const Text(
-                'Fa vedere la forma del giro: occhio se parti da casa.',
-              ),
+              title: Text(l10n.mostraPercorso),
+              subtitle: Text(l10n.faVedereFormaGiro),
               value: _conPercorso,
               onChanged: (v) => setState(() => _conPercorso = v),
             ),
@@ -910,7 +901,7 @@ class _Record extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Nuovo record: $testo',
+                l10n.nuovoRecord(testo),
                 maxLines: 2,
                 style: t.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
               ),
@@ -1073,12 +1064,12 @@ class ImmagineKmPerKm extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _treNumeri([
-            ('Passo medio', fmtMinSec(medio.toDouble()), '/km'),
-            ('Km più veloce', fmtMinSec(veloce.toDouble()), '/km'),
+            (l10n.passoMedio, fmtMinSec(medio.toDouble()), '/km'),
+            (l10n.kmPiuVeloce, fmtMinSec(veloce.toDouble()), '/km'),
             if (s.fcMedia > 0)
-              ('Battito medio', '${s.fcMedia}', 'bpm')
+              (l10n.battitoMedio, '${s.fcMedia}', 'bpm')
             else
-              ('Tempo', fmtDurataBreve(s.durataMin), ''),
+              (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
           ]),
         ],
       ),
@@ -1112,8 +1103,8 @@ class ImmagineProfilo extends StatelessWidget {
           Row(
             spacing: 24,
             children: [
-              _Numero(('m di salita', '+${salitaTotale(quota)}', '')),
-              _Numero(('quota massima', fmtNum(alta.toDouble()), 'm')),
+              _Numero((l10n.mSalita, '+${salitaTotale(quota)}', '')),
+              _Numero((l10n.quotaMassima, fmtNum(alta.toDouble()), 'm')),
             ],
           ),
           const SizedBox(height: 12),
@@ -1128,7 +1119,9 @@ class ImmagineProfilo extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _treNumeri(numeriSessione(s).where((n) => n.$1 != 'Passo').toList()),
+          _treNumeri(
+            numeriSessione(s).where((n) => n.$1 != l10n.passo).toList(),
+          ),
         ],
       ),
     );
@@ -1220,7 +1213,7 @@ class ImmagineRipetute extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Text(
-            'PASSO OGNI 100 m',
+            l10n.passoOgni100M,
             style: t.labelSmall?.copyWith(
               color: scheme.onSurfaceVariant,
               letterSpacing: 0.8,
@@ -1253,9 +1246,9 @@ class ImmagineRipetute extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           _treNumeri([
-            ('Passo medio', fmtMinSec(medio.toDouble()), '/100 m'),
-            ('100 più veloce', fmtMinSec(veloce.toDouble()), ''),
-            ('Tempo', fmtDurataBreve(s.durataMin), ''),
+            (l10n.passoMedio, fmtMinSec(medio.toDouble()), '/100 m'),
+            (l10n.n100PiuVeloce, fmtMinSec(veloce.toDouble()), ''),
+            (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
           ]),
         ],
       ),
@@ -1310,10 +1303,10 @@ class ImmagineMuscoli extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _treNumeri([
-            ('Tempo', fmtDurataBreve(s.durataMin), ''),
+            (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
             if (kgTotali > 0)
-              ('Sollevati', fmtNum(kgTotali.roundToDouble()), 'kg'),
-            if (esercizi > 0) ('Esercizi', '$esercizi', ''),
+              (l10n.sollevati, fmtNum(kgTotali.roundToDouble()), 'kg'),
+            if (esercizi > 0) (l10n.esercizi, '$esercizi', ''),
           ]),
         ],
       ),
@@ -1363,8 +1356,8 @@ class ImmagineArrampicata extends StatelessWidget {
           ),
           Text(
             a.stile.isEmpty
-                ? 'grado più alto'
-                : 'grado più alto · ${a.stile.toLowerCase()}',
+                ? l10n.gradoPiuAlto
+                : l10n.gradoPiuAlto2(a.stile.toLowerCase()),
             style: t.titleSmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 14),
@@ -1392,9 +1385,13 @@ class ImmagineArrampicata extends StatelessWidget {
           const Spacer(),
           _treNumeri([
             if (a.chiuse > 0)
-              (a.falesia ? 'Vie chiuse' : 'Blocchi chiusi', '${a.chiuse}', ''),
-            if (a.metri > 0) ('Saliti', '${a.metri}', 'm'),
-            ('Tempo', fmtDurataBreve(s.durataMin), ''),
+              (
+                a.falesia ? l10n.vieChiuse2 : l10n.blocchiChiusi2,
+                '${a.chiuse}',
+                '',
+              ),
+            if (a.metri > 0) (l10n.saliti, '${a.metri}', 'm'),
+            (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
           ]),
         ],
       ),
@@ -1431,8 +1428,8 @@ class ImmagineProgressi extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             punti.length < 2
-                ? 'La prima seduta: da qui si sale'
-                : 'Il grado più alto delle ultime ${punti.length} sedute',
+                ? l10n.primaSedutaQuiSi
+                : l10n.gradoPiuAltoDelle(punti.length),
             style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
           const SizedBox(height: 12),
@@ -1482,9 +1479,10 @@ class ImmagineProgressi extends StatelessWidget {
           const SizedBox(height: 14),
           _treNumeri([
             if (seduta.chiuse > 0)
-              (seduta.falesia ? 'Vie' : 'Blocchi', '${seduta.chiuse}', ''),
-            ('Tempo', fmtDurataBreve(s.durataMin), ''),
-            if (seduta.progetto.isNotEmpty) ('Progetto', seduta.progetto, ''),
+              (seduta.falesia ? 'Vie' : l10n.blocchi, '${seduta.chiuse}', ''),
+            (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
+            if (seduta.progetto.isNotEmpty)
+              (l10n.progetto2, seduta.progetto, ''),
           ]),
         ],
       ),
@@ -1889,7 +1887,7 @@ class _CondividiSettimanaState extends State<_CondividiSettimana> {
       oggi,
     );
     return _Pagina(
-      titolo: 'Condividi la settimana',
+      titolo: l10n.condividiSettimana,
       chiave: _chiave,
       testo: testoSettimana(r),
       immagine: ImmagineSettimana(riepilogo: r),
@@ -1897,7 +1895,7 @@ class _CondividiSettimanaState extends State<_CondividiSettimana> {
         Row(
           children: [
             IconButton(
-              tooltip: 'Settimana prima',
+              tooltip: l10n.settimanaPrima,
               onPressed: _indietro < 52
                   ? () => setState(() => _indietro++)
                   : null,
@@ -1905,13 +1903,15 @@ class _CondividiSettimanaState extends State<_CondividiSettimana> {
             ),
             Expanded(
               child: Text(
-                _indietro == 0 ? 'Questa settimana' : periodoSettimana(lunedi),
+                _indietro == 0
+                    ? l10n.questaSettimana
+                    : periodoSettimana(lunedi),
                 textAlign: TextAlign.center,
                 style: t.titleSmall,
               ),
             ),
             IconButton(
-              tooltip: 'Settimana dopo',
+              tooltip: l10n.settimanaDopo,
               onPressed: _indietro > 0
                   ? () => setState(() => _indietro--)
                   : null,
@@ -1938,7 +1938,7 @@ class ImmagineSettimana extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final r = riepilogo;
     return _Cornice(
-      data: 'Settimana ${periodoSettimana(r.lunedi)}',
+      data: l10n.settimana(periodoSettimana(r.lunedi)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1962,7 +1962,7 @@ class ImmagineSettimana extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'sedute',
+                      l10n.parolaSedute,
                       style: t.labelSmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),
@@ -1979,15 +1979,15 @@ class ImmagineSettimana extends StatelessWidget {
                     _Numero(
                       r.minuti >= 60
                           ? (
-                              'Tempo',
+                              l10n.tempo,
                               '${r.minuti ~/ 60}:${two(r.minuti % 60)}',
                               'h',
                             )
-                          : ('Tempo', '${r.minuti}', 'min'),
+                          : (l10n.tempo, '${r.minuti}', 'min'),
                     ),
                     if (r.km >= 0.1)
                       _Numero((
-                        'Distanza',
+                        l10n.distanza,
                         fmtDistanza('Corsa', r.km).split(' ').first,
                         'km',
                       )),
@@ -2046,7 +2046,7 @@ class ImmagineSettimana extends StatelessWidget {
           const SizedBox(height: 16),
           if (r.vuota)
             Text(
-              'Nessuna sessione in questa settimana.',
+              l10n.nessunaSessioneQuestaSettimana,
               style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             )
           else

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'animazioni_esercizi.dart';
 import 'rete.dart';
 import 'storage.dart';
+import 'l10n/lingua.dart';
 
 const _base =
     'https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/';
@@ -133,7 +134,7 @@ class _DueFotogrammiState extends State<_DueFotogrammi> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Immagine non disponibile senza rete',
+                          l10n.immagineNonDisponibileSenza,
                           style: TextStyle(color: scheme.onSurfaceVariant),
                         ),
                       ],

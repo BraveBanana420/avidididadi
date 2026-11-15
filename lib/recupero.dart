@@ -1,5 +1,6 @@
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Dati di recupero giorno per giorno, da Health Connect: FC a riposo, HRV
 /// (RMSSD) e sonno della notte che finisce quel giorno.
@@ -110,17 +111,16 @@ int fcRiposoTipica(List<GiornoRecupero> giorni, DateTime oggi) {
 enum StatoRecupero { buono, normale, basso }
 
 // Come la pillola in alto: "Energia" buona, normale o bassa.
-const nomiRecupero = {
-  StatoRecupero.buono: 'Energia buona',
-  StatoRecupero.normale: 'Energia normale',
-  StatoRecupero.basso: 'Energia bassa',
+Map<StatoRecupero, String> get nomiRecupero => {
+  StatoRecupero.buono: l10n.energiaBuona,
+  StatoRecupero.normale: l10n.energiaNormale,
+  StatoRecupero.basso: l10n.energiaBassa,
 };
 
-const consigliRecupero = {
-  StatoRecupero.buono: 'Giornata adatta anche a una seduta di qualità.',
-  StatoRecupero.normale: 'Allenati come previsto, ascoltando le sensazioni.',
-  StatoRecupero.basso:
-      'Meglio una seduta facile o un giorno di riposo: abbassa l\'intensità.',
+Map<StatoRecupero, String> get consigliRecupero => {
+  StatoRecupero.buono: l10n.giornataAdattaAncheSeduta,
+  StatoRecupero.normale: l10n.allenatiComePrevistoAscoltando,
+  StatoRecupero.basso: l10n.meglioSedutaFacileO,
 };
 
 /// Un dato del recupero di oggi, da disegnare su una barra: [posizione] va
@@ -178,21 +178,19 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
     final media = hrv.reduce((a, b) => a + b) / hrv.length;
     indicatori.add(
       Indicatore(
-        'Variabilità cardiaca (HRV)',
+        l10n.variabilitaCardiacaHrv,
         '${g.hrv.round()} ms',
-        'di solito ${media.round()} ms · più alta è meglio',
+        l10n.solitoMsPiuAlta(media.round()),
         _sulla(g.hrv, media * 0.7, media * 1.3),
         g.hrv < media * 0.9 ? -1 : (g.hrv > media * 1.05 ? 1 : 0),
       ),
     );
     if (g.hrv < media * 0.9) {
       punti -= 1;
-      motivi.add(
-        'HRV ${g.hrv.round()} ms, sotto la tua media (${media.round()} ms)',
-      );
+      motivi.add(l10n.hrvMsSottoTua(g.hrv.round(), media.round()));
     } else if (g.hrv > media * 1.05) {
       punti += 1;
-      motivi.add('HRV ${g.hrv.round()} ms, sopra la tua media');
+      motivi.add(l10n.hrvMsSopraTua(g.hrv.round()));
     }
   }
 
@@ -205,18 +203,16 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
     // Barra rovesciata: più bassa è meglio, quindi va verso destra.
     indicatori.add(
       Indicatore(
-        'FC a riposo',
+        l10n.fcRiposo,
         '${g.fcRiposo} bpm',
-        'di solito ${tipica.round()} bpm · più bassa è meglio',
+        l10n.solitoBpmPiuBassa(tipica.round()),
         _sulla(-g.fcRiposo.toDouble(), -(tipica + 10), -(tipica - 10)),
         g.fcRiposo >= tipica + 5 ? -1 : (g.fcRiposo <= tipica - 3 ? 1 : 0),
       ),
     );
     if (g.fcRiposo >= tipica + 5) {
       punti -= 1;
-      motivi.add(
-        'FC a riposo ${g.fcRiposo} bpm, più alta del solito (${tipica.round()})',
-      );
+      motivi.add(l10n.fcRiposoBpmPiu(g.fcRiposo, tipica.round()));
     }
   }
 
@@ -225,19 +221,19 @@ Prontezza? valutaRecupero(List<GiornoRecupero> giorni, DateTime oggi) {
         '${g.sonnoMin ~/ 60} h ${(g.sonnoMin % 60).toString().padLeft(2, '0')}';
     indicatori.add(
       Indicatore(
-        'Sonno',
+        l10n.sonno,
         ore,
-        'bene da 7 h 30 in su, poco sotto le 6 h',
+        l10n.bene7H30,
         _sulla(g.sonnoMin.toDouble(), 240, 540),
         g.sonnoMin < 360 ? -1 : (g.sonnoMin >= 450 ? 1 : 0),
       ),
     );
     if (g.sonnoMin < 360) {
       punti -= 1;
-      motivi.add('Hai dormito poco ($ore)');
+      motivi.add(l10n.haiDormitoPoco(ore));
     } else if (g.sonnoMin >= 450) {
       punti += 1;
-      motivi.add('Hai dormito bene ($ore)');
+      motivi.add(l10n.haiDormitoBene(ore));
     }
   }
 

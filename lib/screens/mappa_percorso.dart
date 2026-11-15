@@ -16,6 +16,7 @@ import '../percorso.dart';
 import '../pulse.dart';
 import '../rete.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 String esadecimale(Color c) =>
     '#${(c.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
@@ -132,7 +133,7 @@ class PulsanteLivelli extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton.filledTonal(
-    tooltip: 'Tipo di mappa',
+    tooltip: l10n.tipoMappa,
     visualDensity: piccolo ? VisualDensity.compact : null,
     iconSize: piccolo ? 20 : null,
     onPressed: () => showModalBottomSheet<void>(
@@ -306,13 +307,8 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
     final p = await widget.state.chiediPercorso(widget.sessione);
     if (!mounted) return;
     if (p == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        avviso(
-          content: Text(
-            'Percorso non concesso. Puoi sempre permetterlo da Health Connect.',
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text(l10n.percorsoNonConcessoPuoi)));
       return;
     }
     setState(() => _risposta = Future.value(RispostaPercorso.dati(p)));
@@ -327,9 +323,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
       final files = await FilePicker.pickFiles(type: FileType.any);
       if (files.isEmpty) return;
       if ((await files.first.length() ?? 0) > maxByteGpx) {
-        throw const FormatException(
-          'File troppo grande: un GPX di un allenamento pesa al massimo pochi MB.',
-        );
+        throw FormatException(l10n.fileTroppoGrandeGpx);
       }
       p = percorsoDaGpx(
         utf8.decode(await files.first.readAsBytes(), allowMalformed: true),
@@ -339,7 +333,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
       return;
     } catch (e) {
       messenger.showSnackBar(
-        avviso(content: Text('Impossibile leggere il file: $e')),
+        avviso(content: Text(l10n.impossibileLeggereFile(e))),
       );
       return;
     }
@@ -348,19 +342,18 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
       final ok = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('Giorno diverso'),
+          title: Text(l10n.giornoDiverso),
           content: Text(
-            'Il file è di ${dataLunga(giorno)}, la sessione di '
-            '${dataLunga(s.data)}. Usarlo lo stesso?',
+            l10n.fileSessioneUsarloStesso(dataLunga(giorno), dataLunga(s.data)),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Annulla'),
+              child: Text(l10n.annulla),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Usalo'),
+              child: Text(l10n.usalo),
             ),
           ],
         ),
@@ -371,7 +364,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
     if (!mounted) return;
     setState(() => _risposta = Future.value(RispostaPercorso.dati(p)));
     messenger.showSnackBar(
-      avviso(content: Text('Percorso aggiunto: ${fmtKm(p.distanzaKm)}')),
+      avviso(content: Text(l10n.percorsoAggiunto(fmtKm(p.distanzaKm)))),
     );
   }
 
@@ -442,18 +435,14 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Questa sessione ha il percorso GPS',
+                  l10n.questaSessioneHaPercorso,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Health Connect chiede il tuo permesso per mostrarlo. '
-            'Per non doverlo dare ogni volta: Health Connect → Avidididadi → '
-            'Percorsi di allenamento → Consenti sempre.',
-          ),
+          Text(l10n.healthConnectChiedeTuo),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -461,16 +450,16 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
               FilledButton.icon(
                 onPressed: _chiedi,
                 icon: const Icon(Icons.map_rounded),
-                label: const Text('Mostra il percorso'),
+                label: Text(l10n.mostraPercorso),
               ),
               TextButton(
                 onPressed: widget.state.hc.apriPermessi,
-                child: const Text('Consenti sempre'),
+                child: Text(l10n.consentiSempre),
               ),
               TextButton.icon(
                 onPressed: _aggiungiGpx,
                 icon: const Icon(Icons.upload_file_rounded),
-                label: const Text('Aggiungi GPX'),
+                label: Text(l10n.aggiungiGpx),
               ),
             ],
           ),
@@ -483,7 +472,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
   Widget _assente(BuildContext context) {
     final t = Theme.of(context).textTheme;
     final fonte = widget.sessione.fonte.isEmpty
-        ? "L'app che ha registrato la sessione"
+        ? l10n.appHaRegistratoSessione
         : widget.sessione.fonte;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -495,14 +484,9 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Nessun percorso GPS', style: t.titleSmall),
+                  Text(l10n.nessunPercorsoGps, style: t.titleSmall),
                   const SizedBox(height: 2),
-                  Text(
-                    '$fonte non lo ha condiviso. Puoi aggiungerlo tu: su '
-                    "connect.garmin.com apri l'attività, ingranaggio → "
-                    'Esporta in GPX, poi carica qui il file.',
-                    style: t.bodySmall,
-                  ),
+                  Text(l10n.nonHaCondivisoPuoi(fonte), style: t.bodySmall),
                 ],
               ),
             ),
@@ -511,7 +495,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton.filled(
-                  tooltip: 'Aggiungi GPX',
+                  tooltip: l10n.aggiungiGpx,
                   iconSize: 26,
                   onPressed: _aggiungiGpx,
                   icon: const Icon(Icons.add_location_alt_rounded),
@@ -545,10 +529,10 @@ class MappaPercorsoScreen extends StatelessWidget {
         ? Duration(minutes: s.durataMin)
         : percorso.durata;
     final dati = [
-      ('Distanza', fmtKm(km)),
-      ('Tempo', '${tempo.inMinutes} min'),
+      (l10n.distanza, fmtKm(km)),
+      (l10n.tempo, '${tempo.inMinutes} min'),
       (
-        stessoSport(s.sport, 'Bici') ? 'Velocità' : 'Ritmo',
+        stessoSport(s.sport, 'Bici') ? l10n.velocita : l10n.ritmo,
         ritmoMedio(s.sport, km, tempo),
       ),
     ];

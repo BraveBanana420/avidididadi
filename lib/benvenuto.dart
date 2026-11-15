@@ -1,30 +1,24 @@
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Configurazione guidata per chi apre l'app la prima volta: poche domande
 // semplici diventano la settimana tipo e il piano.
 
 /// Sport proposti, con una frase per chi non li conosce.
-const sportBenvenuto = {
-  'Corsa': 'Basta un paio di scarpe. Si parte anche camminando.',
-  'Forza': 'A casa o in palestra, anche senza attrezzi.',
-  'Nuoto': 'In piscina, delicato sulle articolazioni.',
-  'Bici': "All'aperto o sui rulli, a ritmo tranquillo.",
-  'Mobilità':
-      'Stretching e movimenti lenti: perfetta per iniziare o recuperare.',
-  'Arrampicata': 'In palestra o in falesia: segni vie, blocchi e gradi.',
+Map<String, String> get sportBenvenuto => {
+  'Corsa': l10n.bastaPaioScarpeSi,
+  'Forza': l10n.casaOPalestraAnche,
+  'Nuoto': l10n.piscinaDelicatoSulleArticolazioni,
+  'Bici': l10n.allApertoOSui,
+  'Mobilità': l10n.stretchingMovimentiLentiPerfetta,
+  'Arrampicata': l10n.palestraOFalesiaSegni,
 };
 
 /// Quanto si allena oggi: diventa il livello del piano di forza.
-const livelliBenvenuto = {
-  'principiante': (
-    'Mai o quasi mai',
-    'Si parte piano: sedute semplici per imparare i movimenti.',
-  ),
-  'intermedio': (
-    'Ogni tanto',
-    'Qualche allenamento al mese, ma senza costanza.',
-  ),
-  'avanzato': ('Regolarmente', 'Mi alleno quasi ogni settimana da mesi.'),
+Map<String, (String, String)> get livelliBenvenuto => {
+  'principiante': (l10n.maiOQuasiMai, l10n.siPartePianoSedute),
+  'intermedio': (l10n.ogniTanto, l10n.qualcheAllenamentoAlMese),
+  'avanzato': (l10n.regolarmente, l10n.miAllenoQuasiOgni),
 };
 
 /// Giorni della settimana (1 = lunedì) per ogni numero di allenamenti:

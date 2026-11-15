@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'dati_live.dart';
+import 'l10n/lingua.dart';
 
 /// Bip negli ultimi secondi dei blocchi a tempo (recuperi compresi).
 final bipAttivo = ValueNotifier<bool>(true);
@@ -27,10 +28,10 @@ final mediaConSoste = ValueNotifier<bool>(false);
 /// Dove sta la mappa durante corsa, camminata e bici all'aperto.
 enum VistaMappa { pagine, minimappa, schermo }
 
-const nomiVisteMappa = {
-  VistaMappa.pagine: 'Due pagine',
-  VistaMappa.minimappa: 'Minimappa',
-  VistaMappa.schermo: 'Tutto schermo',
+Map<VistaMappa, String> get nomiVisteMappa => {
+  VistaMappa.pagine: l10n.duePagine,
+  VistaMappa.minimappa: l10n.minimappa,
+  VistaMappa.schermo: l10n.tuttoSchermo,
 };
 
 final vistaMappa = ValueNotifier<VistaMappa>(VistaMappa.pagine);
