@@ -1593,66 +1593,90 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       children: [
                         if (_senzaTesto)
                           const SizedBox.shrink()
-                        else if (recupero) ...[
-                          Text('Recupero', style: t.titleMedium),
-                          if (b.note.isNotEmpty)
-                            Text(b.note, style: t.bodySmall),
-                        ] else ...[
-                          // A sinistra l'anteprima del movimento, se c'è.
-                          Row(
-                            children: [
-                              if (_conAnteprima(esercizio) &&
-                                  !figuraGrande) ...[
-                                _AnteprimaEsercizio(
-                                  esercizio: esercizio!,
-                                  larghezza: 112,
-                                ),
-                                const SizedBox(width: 14),
+                        else if (recupero)
+                          EntrataMorbida(
+                            key: ValueKey(i),
+                            da: const Offset(24, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Recupero', style: t.titleMedium),
+                                if (b.note.isNotEmpty)
+                                  Text(b.note, style: t.bodySmall),
                               ],
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          )
+                        else ...[
+                          // Passando da un esercizio all'altro il testo nuovo
+                          // entra da destra, senza scatti.
+                          EntrataMorbida(
+                            key: ValueKey(i),
+                            da: const Offset(24, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // A sinistra l'anteprima del movimento, se c'è.
+                                Row(
                                   children: [
-                                    // Solo il nome, piccolo: titolo e durata
-                                    // della seduta sono già stati scelti.
-                                    TestoUnaRiga(b.titolo, style: t.titleSmall),
-                                    if (dettaglioBreve(b).isNotEmpty)
-                                      Text(
-                                        dettaglioBreve(b),
-                                        style: t.bodySmall,
+                                    if (_conAnteprima(esercizio) &&
+                                        !figuraGrande) ...[
+                                      _AnteprimaEsercizio(
+                                        esercizio: esercizio!,
+                                        larghezza: 112,
                                       ),
+                                      const SizedBox(width: 14),
+                                    ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Solo il nome, piccolo: titolo e durata
+                                          // della seduta sono già stati scelti.
+                                          TestoUnaRiga(
+                                            b.titolo,
+                                            style: t.titleSmall,
+                                          ),
+                                          if (dettaglioBreve(b).isNotEmpty)
+                                            Text(
+                                              dettaglioBreve(b),
+                                              style: t.bodySmall,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ],
+                                if (b.intensita.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      intensitaCon(
+                                        b.intensita,
+                                        widget.sport,
+                                        _zonePotenza,
+                                        _zone,
+                                      ),
+                                      style: t.bodyMedium,
+                                    ),
+                                  ),
+                                if (b.obiettivo2.isNotEmpty)
+                                  Text(b.obiettivo2, style: t.bodyMedium),
+                                if (sensazioneDi(b.intensita) != null)
+                                  Text(
+                                    sensazioneDi(b.intensita)!,
+                                    style: t.bodySmall?.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                if (b.note.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(b.note, style: t.bodySmall),
+                                  ),
+                              ],
+                            ),
                           ),
-                          if (b.intensita.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                intensitaCon(
-                                  b.intensita,
-                                  widget.sport,
-                                  _zonePotenza,
-                                  _zone,
-                                ),
-                                style: t.bodyMedium,
-                              ),
-                            ),
-                          if (b.obiettivo2.isNotEmpty)
-                            Text(b.obiettivo2, style: t.bodyMedium),
-                          if (sensazioneDi(b.intensita) != null)
-                            Text(
-                              sensazioneDi(b.intensita)!,
-                              style: t.bodySmall?.copyWith(
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          if (b.note.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(b.note, style: t.bodySmall),
-                            ),
                           if (_daRegistrare(i)) ...[
                             const SizedBox(height: 16),
                             RegistroSerie(
@@ -1731,7 +1755,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             // L'immagine tiene le sue proporzioni e si allarga
                             // fin dove c'è posto.
                             child: Center(
-                              child: _AnteprimaEsercizio(esercizio: esercizio!),
+                              child: EntrataMorbida(
+                                key: ValueKey(i),
+                                da: const Offset(24, 0),
+                                child: _AnteprimaEsercizio(
+                                  esercizio: esercizio!,
+                                ),
+                              ),
                             ),
                           )
                         : null,

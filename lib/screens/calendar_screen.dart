@@ -684,24 +684,29 @@ class _StripSettimana extends StatelessWidget {
               : 'Settimana dal ${lunedi.day} ${mesiNomi[lunedi.month - 1]}',
           destra: c.previste == 0
               ? null
-              : Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$fatte',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: scheme.onSurface,
+              : EntrataMorbida(
+                  key: ValueKey((fatte, c.previste)),
+                  child: Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: '$fatte',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            color: scheme.onSurface,
+                          ),
                         ),
-                      ),
-                      TextSpan(
-                        text: fatte > c.previste
-                            ? ' fatti'
-                            : ' di ${c.previste} fatti',
-                      ),
-                    ],
+                        TextSpan(
+                          text: fatte > c.previste
+                              ? ' fatti'
+                              : ' di ${c.previste} fatti',
+                        ),
+                      ],
+                    ),
+                    style: t.bodyMedium?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
-                  style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                 ),
         ),
         Row(

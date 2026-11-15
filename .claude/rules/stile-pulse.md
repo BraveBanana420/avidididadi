@@ -15,7 +15,9 @@ paths:
 - Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
 - **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna le quattro sezioni, le pagine interne principali e l'avvio dell'allenamento guidato con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
-- **Movimento**: `durataMovimento(context)` dà la durata delle animazioni, zero se sul telefono sono spente. Anello e barra di avanzamento si riempiono da soli quando compaiono.
+- **Movimento**: `durataMovimento(context)` dà la durata delle animazioni, zero se sul telefono sono spente. Anello e barra di avanzamento si riempiono da soli quando compaiono. `EntrataMorbida` (con `ValueKey(valore)`) fa entrare i numeri che cambiano e l'esercizio nuovo nell'allenamento guidato.
+- **Icone**: sempre la famiglia arrotondata (`Icons.nome_rounded`). A contorno solo dove pieno/vuoto dice uno stato (cuore, cerchio da spuntare, sensore non collegato).
+- **Numeri grandi che cambiano**: `stile?.cifreFisse` (cifre a larghezza fissa).
 - **Grafici**: assi su numeri tondi con `scalaTonda` e `tacche` (`lib/assi.dart`).
 
 **Colori degli sport**:

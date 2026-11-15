@@ -437,9 +437,12 @@ class _RiassuntoState extends State<_Riassunto> {
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
-          child: Text(
-            valore,
-            style: t.headlineSmall?.cifreFisse.copyWith(color: colore),
+          child: EntrataMorbida(
+            key: ValueKey(valore),
+            child: Text(
+              valore,
+              style: t.headlineSmall?.cifreFisse.copyWith(color: colore),
+            ),
           ),
         ),
         Text(
@@ -519,11 +522,14 @@ class _RiassuntoState extends State<_Riassunto> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    previste == 0 || fatte > previste
-                        ? '$fatte'
-                        : '$fatte/$previste',
-                    style: t.headlineSmall?.cifreFisse,
+                  EntrataMorbida(
+                    key: ValueKey((fatte, previste)),
+                    child: Text(
+                      previste == 0 || fatte > previste
+                          ? '$fatte'
+                          : '$fatte/$previste',
+                      style: t.headlineSmall?.cifreFisse,
+                    ),
                   ),
                   Text(
                     'settimana',

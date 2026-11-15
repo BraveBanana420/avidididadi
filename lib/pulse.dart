@@ -12,6 +12,39 @@ import 'tema.dart';
 double spazioBarra(BuildContext context) =>
     MediaQuery.paddingOf(context).bottom + 16;
 
+/// Fa entrare il contenuto con una dissolvenza e un piccolo scorrimento.
+/// Riparte ogni volta che cambia la [key]: si usa con `ValueKey(valore)` sui
+/// numeri che cambiano e sul passaggio da un esercizio all'altro. Entra solo
+/// il contenuto nuovo (quello vecchio sparisce subito), così non si vedono mai
+/// due testi insieme. Fermo se nel telefono le animazioni sono spente.
+class EntrataMorbida extends StatelessWidget {
+  final Widget child;
+
+  /// Da dove arriva, in punti: dal basso i numeri, da destra gli esercizi.
+  final Offset da;
+  final int ms;
+  const EntrataMorbida({
+    super.key,
+    required this.child,
+    this.da = const Offset(0, 10),
+    this.ms = 280,
+  });
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: durataMovimento(context, ms),
+    curve: Curves.easeOutCubic,
+    builder: (_, v, figlio) => Opacity(
+      opacity: v,
+      // Anche a metà entrata resta leggibile dai lettori di schermo.
+      alwaysIncludeSemantics: true,
+      child: Transform.translate(offset: da * (1 - v), child: figlio),
+    ),
+    child: child,
+  );
+}
+
 /// Cifre tutte larghe uguali, per i numeri che cambiano: così un "1" al posto
 /// di un "8" non sposta il resto della riga.
 extension CifreFisse on TextStyle {
