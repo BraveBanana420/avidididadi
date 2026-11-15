@@ -11624,12 +11624,6 @@ abstract class AppLocalizations {
   /// **'Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell\'app, alla voce Permessi.'**
   String get permessoPassiNegato;
 
-  /// tipo di immagine: solo il percorso, senza mappa sotto
-  ///
-  /// In it, this message translates to:
-  /// **'Traccia'**
-  String get traccia;
-
   /// workout_screen.dart: titolo degli intervalli registrati di una sessione
   ///
   /// In it, this message translates to:

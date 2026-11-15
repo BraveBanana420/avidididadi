@@ -175,20 +175,6 @@ void main() {
         expect(find.text('Allenato con Avidididadi'), findsNothing);
         expect(t.takeException(), isNull);
 
-        // La grafica Mappa con la sola traccia: niente mappa, niente crediti.
-        await disegna(
-          t,
-          ImmagineMappa(
-            sessione: corsa,
-            mappa: SoloTraccia(percorso: giro, sport: corsa.sport),
-            crediti: null,
-          ),
-          tema,
-        );
-        expect(find.byType(SoloTraccia), findsOneWidget);
-        expect(find.textContaining('OpenStreetMap'), findsNothing);
-        expect(t.takeException(), isNull);
-
         await disegna(
           t,
           ImmagineSessione(

@@ -7019,8 +7019,5 @@ class AppLocalizationsEl extends AppLocalizations {
       'Η άδεια «Σωματική δραστηριότητα» δεν έχει δοθεί: μπορείς να τη δώσεις από τις ρυθμίσεις της εφαρμογής, στις Άδειες.';
 
   @override
-  String get traccia => 'Ίχνος';
-
-  @override
   String get intervalliFatti => 'Διαστήματα';
 }

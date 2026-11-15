@@ -186,9 +186,8 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   // Spento di base: il percorso dice da dove si parte (spesso casa).
   bool _conPercorso = false;
   GraficaCondivisa? _grafica; // null: la prima dello sport
-  /// null: solo la traccia, disegnata dall'app e nitida (di base); le
-  /// mappe vere si fotografano e vengono un po' sfocate.
-  TipoMappa? _tipo;
+  /// La traccia senza mappa sta già nella Classica: qui solo mappe vere.
+  TipoMappa _tipo = TipoMappa.pulse;
   List<IntervalloFatto> _tratti = const [];
   SerieSessione _serie = const SerieSessione();
   List<Campione> get _quota => _serie.altitudine;
@@ -250,7 +249,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   }
 
   Future<bool> _fotografa(GraficaCondivisa grafica) async {
-    if (grafica != GraficaCondivisa.mappa || _tipo == null) return true;
+    if (grafica != GraficaCondivisa.mappa) return true;
     final foto = await _mappa.currentState?.istantanea();
     if (foto == null || !mounted) return false;
     await precacheImage(MemoryImage(foto), context);
@@ -330,23 +329,19 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
       immagine: switch (grafica) {
         GraficaCondivisa.mappa => ImmagineMappa(
           sessione: s,
-          mappa: switch (_tipo) {
-            null => SoloTraccia(percorso: _percorso!, sport: s.sport),
-            final TipoMappa tipo => Stack(
-              fit: StackFit.expand,
-              children: [
-                _MappaCondivisa(
-                  key: _mappa,
-                  percorso: _percorso!,
-                  sport: s.sport,
-                  tipo: tipo,
-                ),
-                if (_istantanea case final f?)
-                  Image.memory(f, fit: BoxFit.cover),
-              ],
-            ),
-          },
-          crediti: _tipo == null ? null : creditiMappe[_tipo],
+          mappa: Stack(
+            fit: StackFit.expand,
+            children: [
+              _MappaCondivisa(
+                key: _mappa,
+                percorso: _percorso!,
+                sport: s.sport,
+                tipo: _tipo,
+              ),
+              if (_istantanea case final f?) Image.memory(f, fit: BoxFit.cover),
+            ],
+          ),
+          crediti: creditiMappe[_tipo],
         ),
         GraficaCondivisa.poster => ImmaginePoster(
           sessione: s,
@@ -448,23 +443,18 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         if (grafica == GraficaCondivisa.mappa) ...[
           Text(l10n.tipoMappa, style: t.titleSmall),
           const SizedBox(height: 8),
-          // Un menu a tendina: i quattro nomi non stanno su una riga.
-          DropdownButtonFormField<TipoMappa?>(
+          // Un menu a tendina: i nomi affiancati andavano a capo.
+          DropdownButtonFormField<TipoMappa>(
             initialValue: _tipo,
             isExpanded: true,
-            decoration: InputDecoration(
-              prefixIcon: Icon(
-                _tipo == null ? Icons.route_rounded : iconeMappe[_tipo],
-              ),
-            ),
+            decoration: InputDecoration(prefixIcon: Icon(iconeMappe[_tipo])),
             items: [
-              for (final m in <TipoMappa?>[null, ...TipoMappa.values])
-                DropdownMenuItem(
-                  value: m,
-                  child: Text(m == null ? l10n.traccia : nomiMappe[m]!),
-                ),
+              for (final m in TipoMappa.values)
+                DropdownMenuItem(value: m, child: Text(nomiMappe[m]!)),
             ],
-            onChanged: (v) => setState(() => _tipo = v),
+            onChanged: (v) {
+              if (v != null) setState(() => _tipo = v);
+            },
           ),
           const SizedBox(height: 8),
           Text(l10n.mappaFaVedereDove, style: t.bodySmall),
@@ -827,33 +817,6 @@ class ImmagineMappa extends StatelessWidget {
                 ],
               ),
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Solo la traccia sul fondo del tema, senza mappa: la disegna l'app, quindi
-/// resta nitida nell'immagine. Sta nella parte alta, sopra la fascia dei
-/// numeri, con il pallino della partenza e l'anello dell'arrivo.
-class SoloTraccia extends StatelessWidget {
-  final Percorso percorso;
-  final String sport;
-  const SoloTraccia({super.key, required this.percorso, required this.sport});
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        for (final g in Pulse.di(context).sfondo)
-          DecoratedBox(decoration: BoxDecoration(gradient: g)),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(32, 64, 32, 168),
-          child: CustomPaint(
-            painter: _Giro(percorso, coloreSport(sport), fondo: scheme.surface),
           ),
         ),
       ],
@@ -1833,7 +1796,7 @@ class ImmagineSessione extends StatelessWidget {
             Expanded(
               child: CustomPaint(
                 size: Size.infinite,
-                painter: _Giro(p, colore),
+                painter: _Giro(p, colore, fondo: scheme.surface),
               ),
             )
           else if (esercizi.isNotEmpty)
