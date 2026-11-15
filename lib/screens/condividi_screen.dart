@@ -609,13 +609,25 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
   Future<Uint8List?> istantanea() async {
     final c = _controllo;
     if (c == null || !_pronta) return null;
+    // Senza misure la foto prende i pixel veri dello schermo e li usa come
+    // punti: con lo stesso zoom ne esce un'immagine 3 volte più larga e il
+    // percorso piccolo in mezzo. Le misure in punti, quelle della mappa che
+    // si vede (rimpicciolita nell'anteprima), tengono l'inquadratura.
+    final box = context.findRenderObject();
+    if (box is! RenderBox || !box.hasSize) return null;
+    final lato =
+        box.localToGlobal(box.size.bottomRight(Offset.zero)) -
+        box.localToGlobal(Offset.zero);
     try {
       await c.waitUntilMapTilesAreLoaded().timeout(const Duration(seconds: 8));
     } catch (_) {
       // si fotografa quello che c'è
     }
     try {
-      return await c.takeSnapshot();
+      return await c.takeSnapshot(
+        width: lato.dx.round(),
+        height: lato.dy.round(),
+      );
     } catch (_) {
       return null;
     }
