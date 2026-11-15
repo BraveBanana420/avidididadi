@@ -21,7 +21,7 @@ are both fine (le issue e le PR in italiano vanno benissimo).
 
 ## Development setup
 
-You need Flutter 3.47 (stable, Dart 3.13), Java 17 and the Android SDK.
+You need Flutter 3.47 (stable, Dart 3.13), Java 21 and the Android SDK.
 
 ```sh
 flutter pub get

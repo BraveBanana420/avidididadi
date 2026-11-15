@@ -67,7 +67,7 @@ read data from other apps.
 ## Build from source
 
 You need [Flutter](https://docs.flutter.dev/get-started/install) 3.47 (stable,
-Dart 3.13), Java 17 and the Android SDK.
+Dart 3.13), Java 21 and the Android SDK.
 
 ```sh
 git clone https://github.com/BraveBanana420/avidididadi.git

@@ -68,7 +68,7 @@ i dati di altre app.
 ## Compilare dal codice
 
 Servono [Flutter](https://docs.flutter.dev/get-started/install) 3.47 (stable,
-Dart 3.13), Java 17 e l'SDK Android.
+Dart 3.13), Java 21 e l'SDK Android.
 
 ```sh
 git clone https://github.com/BraveBanana420/avidididadi.git
