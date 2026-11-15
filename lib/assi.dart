@@ -61,3 +61,9 @@ double percentile(List<double> valori, double q) {
   final v = [...valori]..sort();
   return v[((v.length - 1) * q.clamp(0, 1)).round()];
 }
+
+/// Il numero di una tacca: intero se è tondo ("6", non "6.0"), altrimenti con
+/// un decimale ("0.5").
+String numeroAsse(double v) => (v - v.roundToDouble()).abs() < 0.05
+    ? '${v.round()}'
+    : v.toStringAsFixed(1);

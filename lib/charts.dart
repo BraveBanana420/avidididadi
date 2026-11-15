@@ -24,7 +24,7 @@ void _testo(Canvas canvas, String s, Offset o, Color c, {bool destra = false}) {
   tp.paint(canvas, Offset(x, o.dy - tp.height / 2));
 }
 
-String _asseOre(double v) => '${v.toStringAsFixed(1)} h';
+String _asseOre(double v) => '${numeroAsse(v)} h';
 
 /// Ore come "2 h 05 min" (o "45 min" sotto l'ora).
 String fmtOre(double ore) {
@@ -615,8 +615,9 @@ class _BarrePainter extends CustomPainter {
         final v = valori[i][s] ?? 0;
         if (v <= 0) continue;
         final sh = h * v / massimo;
-        // Una fessura sopra ogni blocco tranne il primo: separa sport con grigi simili.
-        final fessura = primo ? 0.0 : math.min(1.5, sh / 3);
+        // Un filo di fondo (2 px) tra i pezzi della colonna: separa gli sport
+        // con colori simili. Nei pezzi sottili si stringe, per non mangiarli.
+        final fessura = primo ? 0.0 : math.min(2.0, sh / 3);
         primo = false;
         final r = Rect.fromLTWH(x, y - sh, bw, sh - fessura);
         final raggio = s == cima
