@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:allenamenti_app/assistente.dart';
 import 'package:allenamenti_app/esercizi.dart';
 import 'package:allenamenti_app/glossario.dart';
 import 'package:allenamenti_app/l10n/lingua.dart';
@@ -73,6 +74,14 @@ void main() {
     expect(dataLunga(DateTime(2026, 11, 16)), 'Monday 16 November');
     expect(inizialiGiorni.first, 'M');
     expect(l10n.battitiAlMinuto(142), '142 bpm');
+  });
+
+  test('il coach risponde nella lingua scelta', () {
+    expect(istruzioniAssistente(''), contains('Rispondi in italiano'));
+    usaLingua('en');
+    expect(istruzioniAssistente(''), contains('in English'));
+    // I valori dei blocchi restano quelli che l'app sa leggere.
+    expect(istruzioniAssistente(''), contains('"sport": "Corsa"'));
   });
 
   test('una lingua sconosciuta torna all\'italiano', () {
