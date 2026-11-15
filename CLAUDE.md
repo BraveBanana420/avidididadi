@@ -13,7 +13,7 @@ Le funzioni sono elencate in `README.md`.
 - **Flutter 3.47** (stable), **Dart 3.13**, solo **Android** (non c'è la cartella `ios/`).
 - `applicationId`: `it.avidididadi.app`. `minSdk` 26 (per Health Connect).
 - **Codice nativo Kotlin** ([android/app/src/main/kotlin/it/avidididadi/app/](android/app/src/main/kotlin/it/avidididadi/app/)):
-  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
+  - `MainActivity.kt`: canale `avidididadi/avvio` per titoli e dettagli delle sessioni Health Connect, percorsi, condivisione, schermo acceso, bip, vibrazione e voce, contapassi, notifica dell'allenamento, cartella del backup automatico, permessi Bluetooth e notifiche, widget;
   - `WidgetOggi.kt`: widget per la schermata home.
 - **Nessuna libreria di state management**: un solo `AppState` (`ChangeNotifier`). I dati sono CSV nella cartella privata dell'app.
 
@@ -69,7 +69,7 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 
 ### Sicurezza e privacy (non rompere)
 
-- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth (battito e sensori della bici) solo con la modalità allenamento o la pagina "I miei sensori" aperta.
+- Health Connect **solo lettura**. GPS solo durante l'allenamento di corsa, camminata e bici, o di un'altra attività se l'utente lo sceglie all'inizio. Bluetooth (battito e sensori della bici) solo con la modalità allenamento o la pagina "I miei sensori" aperta. Contapassi del telefono (permesso "Attività fisica") solo durante l'allenamento di corsa e camminata.
 - Chiavi API (assistente e intervals.icu) solo in `flutter_secure_storage`: mai in CSV, backup o log.
 - Ollama in `http` solo verso la rete locale o Tailscale (`baseOllama` / `retePrivata`).
 - Il pulsante ▶ del widget passa dall'alias non esportato `.AvviaDaWidget`. La ricezione dall'assistente esterno (`.RiceviDaAgente`) è attiva solo se l'assistente è collegato, e le risposte valgono solo con il codice giusto.

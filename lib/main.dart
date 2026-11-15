@@ -253,51 +253,81 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  /// Passa a una sezione: animazione solo verso quella accanto, altrimenti
+  /// salto diretto.
+  void _vaiA(int i) {
+    if ((i - tab).abs() == 1) {
+      pagine.animateToPage(
+        i,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    } else {
+      pagine.jumpToPage(i);
+    }
+    setState(() => tab = i);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // La barra fluttua sopra le schede; dietro, il fondo con i bagliori.
-      extendBody: true,
-      backgroundColor: Colors.transparent,
-      // Si cambia sezione scorrendo di lato o dalla barra in basso.
-      body: SfondoPulse(
-        child: PageView(
-          controller: pagine,
-          onPageChanged: (i) => setState(() => tab = i),
-          children: [
-            _TieniViva(child: CalendarScreen(state: state)),
-            _TieniViva(child: ProgressScreen(state: state)),
-            _TieniViva(child: AssistenteScreen(state: state)),
-            _TieniViva(child: ProfileScreen(state: state)),
-          ],
+    return IndietroAOggi(
+      sezione: tab,
+      tornaAOggi: () => _vaiA(0),
+      child: Scaffold(
+        // La barra fluttua sopra le schede; dietro, il fondo con i bagliori.
+        extendBody: true,
+        backgroundColor: Colors.transparent,
+        // Si cambia sezione scorrendo di lato o dalla barra in basso.
+        body: SfondoPulse(
+          child: PageView(
+            controller: pagine,
+            onPageChanged: (i) => setState(() => tab = i),
+            children: [
+              _TieniViva(child: CalendarScreen(state: state)),
+              _TieniViva(child: ProgressScreen(state: state)),
+              _TieniViva(child: AssistenteScreen(state: state)),
+              _TieniViva(child: ProfileScreen(state: state)),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BarraPulse(
-        key: ChiaviTour.barra,
-        chiavi: ChiaviTour.voci,
-        attiva: tab,
-        voci: const [
-          VoceBarra(Icons.today_rounded, 'Oggi'),
-          VoceBarra(Icons.insights_rounded, 'Progressi'),
-          VoceBarra(Icons.forum_rounded, 'Coach'),
-          VoceBarra(Icons.person_outline_rounded, 'Profilo'),
-        ],
-        onTocca: (i) {
-          // Animazione solo verso la sezione accanto, altrimenti salto diretto.
-          if ((i - tab).abs() == 1) {
-            pagine.animateToPage(
-              i,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          } else {
-            pagine.jumpToPage(i);
-          }
-          setState(() => tab = i);
-        },
+        bottomNavigationBar: BarraPulse(
+          key: ChiaviTour.barra,
+          chiavi: ChiaviTour.voci,
+          attiva: tab,
+          voci: const [
+            VoceBarra(Icons.today_rounded, 'Oggi'),
+            VoceBarra(Icons.insights_rounded, 'Progressi'),
+            VoceBarra(Icons.forum_rounded, 'Coach'),
+            VoceBarra(Icons.person_outline_rounded, 'Profilo'),
+          ],
+          onTocca: _vaiA,
+        ),
       ),
     );
   }
+}
+
+/// Il tasto indietro nelle sezioni principali: dalle altre si torna a Oggi,
+/// da Oggi si esce dall'app (come nelle altre app Android).
+class IndietroAOggi extends StatelessWidget {
+  final int sezione;
+  final VoidCallback tornaAOggi;
+  final Widget child;
+  const IndietroAOggi({
+    super.key,
+    required this.sezione,
+    required this.tornaAOggi,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: sezione == 0,
+    onPopInvokedWithResult: (uscita, _) {
+      if (!uscita) tornaAOggi();
+    },
+    child: child,
+  );
 }
 
 /// Mantiene lo stato di una sezione (periodo, mese, scroll) quando esce dallo schermo.

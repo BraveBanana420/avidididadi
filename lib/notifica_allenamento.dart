@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+import 'contapassi.dart';
 import 'dati_live.dart';
 import 'esecuzione.dart';
 import 'models.dart';
@@ -73,10 +74,13 @@ String testoNotifica({
   int? bpm,
   int zona = 0,
   int? watt,
+  int passi = 0,
 }) => [
   if (km != null) fmtKm(km),
   if (km != null && fmtVelocita(sport, mps) != '–')
     '${fmtVelocita(sport, mps)} ${unitaRitmo(sport)}',
   if (watt != null) '$watt W',
+  // Nella camminata i passi contano quanto i km; nella corsa la riga è già piena.
+  if (passi > 0 && stessoSport(sport, 'Camminata')) '${fmtPassi(passi)} passi',
   if (bpm != null) '♥ $bpm${zona > 0 ? ' Z$zona' : ''}',
 ].join(' · ');

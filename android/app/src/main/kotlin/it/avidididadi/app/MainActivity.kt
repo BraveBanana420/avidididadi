@@ -10,6 +10,10 @@ import android.content.Context
 import android.content.IntentFilter
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
@@ -196,6 +200,39 @@ class MainActivity : FlutterFragmentActivity() {
             attesaNotifiche = null
         }
 
+    // Passi dal sensore del telefono, solo con un allenamento di corsa o
+    // camminata aperto: totale dall'accensione e momento dell'ultimo passo (ms).
+    private var passiLetti: DoubleArray? = null
+    private val sensorePassi = object : SensorEventListener {
+        override fun onSensorChanged(e: SensorEvent) {
+            passiLetti = doubleArrayOf(e.values[0].toDouble(), e.timestamp / 1e6)
+        }
+
+        override fun onAccuracyChanged(s: Sensor?, precisione: Int) {}
+    }
+
+    // Permesso "Attività fisica" (Android 10+), chiesto al primo allenamento.
+    private var attesaPassi: MethodChannel.Result? = null
+    private val richiestaPassi =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
+            attesaPassi?.success(ok && ascoltaPassi())
+            attesaPassi = null
+        }
+
+    /** Accende il contapassi; falso se il telefono non ha il sensore. */
+    private fun ascoltaPassi(): Boolean {
+        val gestore = getSystemService(SENSOR_SERVICE) as SensorManager
+        val sensore = gestore.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) ?: return false
+        gestore.unregisterListener(sensorePassi)
+        passiLetti = null
+        return gestore.registerListener(sensorePassi, sensore, SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    private fun fermaPassi() {
+        (getSystemService(SENSOR_SERVICE) as SensorManager).unregisterListener(sensorePassi)
+        passiLetti = null
+    }
+
     // Il tasto Pausa/Riprendi della notifica: arriva qui e passa all'app.
     // Il ricevitore non è esportato: solo la notifica dell'app lo raggiunge.
     private val ricevitorePausa = object : BroadcastReceiver() {
@@ -257,6 +294,7 @@ class MainActivity : FlutterFragmentActivity() {
         } catch (_: IllegalArgumentException) {
         }
         NotificationManagerCompat.from(this).cancel(ID_NOTIFICA)
+        fermaPassi()
         tono?.release()
         tono = null
         tts?.shutdown()
@@ -414,6 +452,27 @@ class MainActivity : FlutterFragmentActivity() {
                     }
                     "togliNotifica" -> {
                         NotificationManagerCompat.from(this@MainActivity).cancel(ID_NOTIFICA)
+                        result.success(null)
+                    }
+                    // Contapassi del telefono: corsa e camminata, senza orologio.
+                    "passiAvvia" -> {
+                        val gestore = getSystemService(SENSOR_SERVICE) as SensorManager
+                        if (gestore.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) == null) {
+                            result.success(false)
+                        } else if (Build.VERSION.SDK_INT < 29 ||
+                            checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) ==
+                            PackageManager.PERMISSION_GRANTED
+                        ) {
+                            result.success(ascoltaPassi())
+                        } else {
+                            attesaPassi?.success(false)
+                            attesaPassi = result
+                            richiestaPassi.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                        }
+                    }
+                    "passiLetti" -> result.success(passiLetti)
+                    "passiFerma" -> {
+                        fermaPassi()
                         result.success(null)
                     }
                     "permessoBluetooth" -> {

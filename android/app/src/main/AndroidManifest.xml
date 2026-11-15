@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <!-- Passi contati dal sensore del telefono, solo durante l'allenamento di
+         corsa e camminata. -->
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <!-- Notifica dell'allenamento in corso (da Android 13 va permessa). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
