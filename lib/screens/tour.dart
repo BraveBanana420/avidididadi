@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -153,6 +154,42 @@ void avviaTour(BuildContext context, {int da = 3}) {
   Overlay.of(context, rootOverlay: true).insert(voce);
 }
 
+/// Altezza che serve di solito alla scheda del giro guidato.
+const altezzaSchedaTour = 260.0;
+
+/// Dove mettere la scheda del giro: [alto] e [basso] sono le distanze dai
+/// bordi dello schermo del riquadro in cui sta (dentro i [margini] di sistema),
+/// [sotto] se si appoggia in alto (sotto il buco) o in basso (sopra il buco).
+/// Se da nessuna delle due parti c'è abbastanza spazio, si appoggia in basso
+/// sopra il buco: lo copre in parte, ma i tasti restano raggiungibili.
+({bool sotto, double alto, double basso}) posizioneSchedaTour({
+  required Size schermo,
+  required Rect? buco,
+  required EdgeInsets margini,
+}) {
+  final minAlto = margini.top + 16;
+  final minBasso = margini.bottom + 16;
+  if (buco == null) {
+    return (
+      sotto: true,
+      alto: math.max(minAlto, schermo.height * 0.3),
+      basso: minBasso,
+    );
+  }
+  final spazioSotto = schermo.height - minBasso - (buco.bottom + 20);
+  final spazioSopra = buco.top - 20 - minAlto;
+  final sottoBasta = spazioSotto >= altezzaSchedaTour;
+  final sopraBasta = spazioSopra >= altezzaSchedaTour;
+  if (sottoBasta && (!sopraBasta || spazioSotto >= spazioSopra)) {
+    return (sotto: true, alto: buco.bottom + 20, basso: minBasso);
+  }
+  if (sopraBasta) {
+    return (sotto: false, alto: minAlto, basso: schermo.height - buco.top + 20);
+  }
+  // Buco troppo grande: la scheda sta in basso, sopra il buco.
+  return (sotto: false, alto: minAlto, basso: minBasso);
+}
+
 class _Maschera extends StatefulWidget {
   final List<PassoTour> passi;
   final int da;
@@ -291,8 +328,14 @@ class _MascheraState extends State<_Maschera>
     final testo = b == null && p.senzaTasto.isNotEmpty
         ? '${p.testo}\n\n${p.senzaTasto}'
         : p.testo;
-    // La scheda va dove c'è più spazio: sotto il buco o sopra.
-    final sotto = b == null || b.center.dy < schermo.height * 0.5;
+    // La scheda va dove c'è più spazio, sotto il buco o sopra, e sempre
+    // dentro l'area sicura: mai sotto la barra di Android o quella di stato,
+    // altrimenti Avanti ed Esci non si possono toccare.
+    final (:sotto, :alto, :basso) = posizioneSchedaTour(
+      schermo: schermo,
+      buco: b,
+      margini: MediaQuery.viewPaddingOf(context),
+    );
     final scheda = Material(
       color: scheme.surfaceContainerHigh,
       elevation: 8,
@@ -372,11 +415,13 @@ class _MascheraState extends State<_Maschera>
             Positioned(
               left: 16,
               right: 16,
-              top: sotto
-                  ? (b == null ? schermo.height * 0.3 : b.bottom + 20)
-                  : null,
-              bottom: sotto ? null : schermo.height - b.top + 20,
-              child: SafeArea(top: false, bottom: false, child: scheda),
+              top: alto,
+              bottom: basso,
+              // Se lo spazio non basta, la scheda scorre invece di uscire.
+              child: Align(
+                alignment: sotto ? Alignment.topCenter : Alignment.bottomCenter,
+                child: SingleChildScrollView(child: scheda),
+              ),
             ),
         ],
       ),
