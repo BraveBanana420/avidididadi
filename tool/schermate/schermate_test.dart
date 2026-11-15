@@ -12,6 +12,7 @@ import 'dart:ui' as ui;
 import 'package:allenamenti_app/app_state.dart';
 import 'package:allenamenti_app/attivita_libera.dart';
 import 'package:allenamenti_app/avvisi.dart';
+import 'package:allenamenti_app/battito.dart';
 import 'package:allenamenti_app/feedback.dart';
 import 'package:allenamenti_app/main.dart';
 import 'package:allenamenti_app/models.dart';
@@ -20,7 +21,6 @@ import 'package:allenamenti_app/recupero.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/screens/privacy_screen.dart';
 import 'package:allenamenti_app/screens/tour.dart';
-import 'package:allenamenti_app/sensore_ble.dart';
 import 'package:allenamenti_app/sensori_bici.dart';
 import 'package:allenamenti_app/storage.dart';
 import 'package:allenamenti_app/tema.dart';
@@ -420,6 +420,8 @@ void main() {
         sensoreBici.comandabile = false;
         sensoreBici.stato = StatoSensore.spento;
         sensoreBici.azzera();
+        sensoreBattito.stato = StatoSensore.spento;
+        sensoreBattito.azzera();
       });
       temaScuroAttivo = scuro;
       neonAttivo = conNeon;
@@ -500,6 +502,11 @@ void main() {
         }
         await _assesta(t, 4);
         await _foto(t, nome, '31_bici_rullo');
+        // La stessa pagina con la fascia cardio collegata: 142 battiti.
+        sensoreBattito.stato = StatoSensore.collegato;
+        sensoreBattito.leggi(0, [0x00, 142]);
+        await _assesta(t, 4);
+        await _foto(t, nome, '32_bici_rullo_battito');
         await t.pumpWidget(const SizedBox());
         await t.pump(const Duration(seconds: 3));
       } finally {
