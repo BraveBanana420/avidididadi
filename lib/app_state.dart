@@ -43,6 +43,7 @@ import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
 import 'workout_base.dart';
+import 'l10n/lingua.dart';
 
 /// Sport ignorati dall'app (non mostrati né importati).
 const sportEsclusi = {'Altro'};
@@ -1214,9 +1215,7 @@ class AppState extends ChangeNotifier {
       debugPrint('Ripristino: dati non caricabili ($e), torno a prima');
       await Storage.rimetti(prima);
       await load();
-      throw const FormatException(
-        'Il backup è rovinato: i tuoi dati sono rimasti quelli di prima.',
-      );
+      throw FormatException(l10n.backupRovinatoTuoiDati);
     }
     if (fotoPrima != null &&
         b.nomeFoto != profilo.foto &&
@@ -1283,7 +1282,7 @@ class AppState extends ChangeNotifier {
     } on ErroreLlm catch (e) {
       _connesso(e.messaggio);
     } catch (e) {
-      _connesso('Errore: $e');
+      _connesso(l10n.errore(e));
     }
   }
 
@@ -1347,7 +1346,7 @@ class AppState extends ChangeNotifier {
       return e.messaggio;
     } catch (e) {
       chat = chat.sublist(0, chat.length - 1);
-      return 'Errore: $e';
+      return l10n.errore(e);
     } finally {
       assistenteInAttesa = false;
       notifyListeners();
@@ -1988,9 +1987,9 @@ class AppState extends ChangeNotifier {
   Future<String> inviaSessioneIntervals(Sessione s) async {
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      return 'Collega prima intervals.icu da Profilo → Dati e collegamenti.';
+      return l10n.collegaPrimaIntervalsIcu;
     }
-    if (inviate.containsKey(s.id)) return 'Già inviata a intervals.icu.';
+    if (inviate.containsKey(s.id)) return l10n.giaInviataIntervalsIcu;
     final nome = nomeAttivita(s, ritocchi[s.id]?.nome ?? '');
     try {
       final client = ClientIntervals(chiave);
@@ -2008,7 +2007,7 @@ class AppState extends ChangeNotifier {
       inviate = {...inviate, s.id: id ?? ''};
       await _salvaInviate();
       notifyListeners();
-      return 'Inviata a intervals.icu.';
+      return l10n.inviataIntervalsIcu;
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2151,14 +2150,14 @@ class AppState extends ChangeNotifier {
   /// Prova la chiave, la salva cifrata e scarica gli ultimi 90 giorni.
   Future<String> collegaIntervals(String chiave) async {
     final k = chiave.trim();
-    if (k.isEmpty) return 'Incolla prima la chiave API.';
+    if (k.isEmpty) return l10n.incollaPrimaChiaveApi;
     try {
       final nome = await ClientIntervals(k).verifica();
       await ChiaveIntervals.salva(k);
       intervalsCollegato = true;
       ultimaIntervals = null;
       final esito = await sincronizzaIntervals();
-      return '${nome.isEmpty ? 'Collegato' : 'Collegato come $nome'}. $esito';
+      return '${nome.isEmpty ? l10n.collegato : l10n.collegatoCome(nome)}. $esito';
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2170,7 +2169,7 @@ class AppState extends ChangeNotifier {
     if (!intervalsCollegato || sincronizzandoIntervals) return '';
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      erroreIntervals = 'Chiave non trovata: collega di nuovo intervals.icu.';
+      erroreIntervals = l10n.chiaveNonTrovataCollega;
       notifyListeners();
       return erroreIntervals!;
     }
@@ -2211,7 +2210,7 @@ class AppState extends ChangeNotifier {
       await _salvaIntervals();
       _ricombina();
       await _aggiornaEndurance();
-      final letto = '${nuove.length} attività lette da intervals.icu.';
+      final letto = l10n.attivitaLetteIntervalsIcu(nuove.length);
       if (!invioIntervals) return letto;
       sincronizzandoIntervals = false;
       await inviaSeduteFatte();
@@ -2266,7 +2265,7 @@ class AppState extends ChangeNotifier {
     if (!intervalsCollegato || inviando) return '';
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      return 'Chiave non trovata: collega di nuovo intervals.icu.';
+      return l10n.chiaveNonTrovataCollega;
     }
     inviando = true;
     notifyListeners();
@@ -2303,15 +2302,16 @@ class AppState extends ChangeNotifier {
       await _salvaInviati();
       await _salvaIntervals();
       if (nuovi.isEmpty && daCancellare.isEmpty) {
-        return 'Il calendario di intervals.icu è già aggiornato.';
+        return l10n.calendarioIntervalsIcuGia;
       }
       final tolte = daCancellare.length - nuovi.length;
       final fatto = [
         if (nuovi.isNotEmpty)
-          '${nuovi.length} ${nuovi.length == 1 ? 'seduta mandata' : 'sedute mandate'}',
-        if (tolte > 0) '$tolte ${tolte == 1 ? 'tolta' : 'tolte'}',
+          '${nuovi.length} ${nuovi.length == 1 ? l10n.sedutaMandata : l10n.seduteMandate}',
+        if (tolte > 0)
+          '$tolte ${tolte == 1 ? l10n.parolaTolta : l10n.parolaTolte}',
       ].join(', ');
-      return '${maiuscola(fatto)} a intervals.icu.';
+      return l10n.intervalsIcu(maiuscola(fatto));
     } on ErroreIntervals catch (e) {
       erroreInvio = e.messaggio;
       return e.messaggio;
@@ -2338,7 +2338,7 @@ class AppState extends ChangeNotifier {
       inviatiIcu = [];
       await _salvaInviati();
       notifyListeners();
-      return '$n sedute tolte dal calendario di intervals.icu.';
+      return l10n.seduteTolteDalCalendario(n);
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2515,26 +2515,23 @@ class AppState extends ChangeNotifier {
   /// permessi che mancano; altrimenti, senza permessi, non fa nulla.
   /// Restituisce il messaggio da mostrare.
   Future<String> sincronizzaHc({bool interattiva = false}) async {
-    if (sincronizzando) return 'Sincronizzazione già in corso.';
+    if (sincronizzando) return l10n.sincronizzazioneGiaCorso;
     sincronizzando = true;
     notifyListeners();
     try {
       final disp = await hc.disponibilita();
       if (disp != DisponibilitaHc.disponibile) {
         return switch (disp) {
-          DisponibilitaHc.daAggiornare =>
-            'Health Connect va aggiornato: aprilo dal Play Store.',
-          DisponibilitaHc.nonInstallata =>
-            'Health Connect non è installato sul telefono.',
-          _ => 'Health Connect è disponibile solo su Android.',
+          DisponibilitaHc.daAggiornare => l10n.healthConnectVaAggiornato,
+          DisponibilitaHc.nonInstallata => l10n.healthConnectNonInstallato,
+          _ => l10n.healthConnectDisponibileSolo,
         };
       }
       if ((await hc.permessi())[HealthDataType.WORKOUT] != true) {
-        if (!interattiva) return 'Health Connect non è ancora collegato.';
+        if (!interattiva) return l10n.healthConnectNonAncora;
         await hc.chiediPermessi();
         if ((await hc.permessi())[HealthDataType.WORKOUT] != true) {
-          return 'Senza il permesso per le sessioni di allenamento non posso '
-              'leggere nulla. Puoi darlo da "Rivedi permessi".';
+          return l10n.senzaPermessoSessioniAllenamento;
         }
       }
 
@@ -2617,16 +2614,16 @@ class AppState extends ChangeNotifier {
       final cambiate = nuove.length - aggiunte;
       final tolte = cancellati.where((u) => prima.contains('hc-$u')).length;
       if (aggiunte + cambiate + tolte == 0) {
-        return 'Nessuna novità da Health Connect.';
+        return l10n.nessunaNovitaHealthConnect;
       }
       return [
-        if (aggiunte > 0) '$aggiunte sessioni nuove',
-        if (cambiate > 0) '$cambiate aggiornate',
-        if (tolte > 0) '$tolte rimosse',
+        if (aggiunte > 0) l10n.sessioniNuove(aggiunte),
+        if (cambiate > 0) l10n.quanteAggiornate(cambiate),
+        if (tolte > 0) l10n.quanteRimosse(tolte),
       ].join(', ');
     } catch (e) {
       debugPrint('Health Connect: errore $e');
-      return 'Errore durante la sincronizzazione: $e';
+      return l10n.erroreDuranteSincronizzazione(e);
     } finally {
       sincronizzando = false;
       notifyListeners();
@@ -2869,7 +2866,7 @@ class AppState extends ChangeNotifier {
     if (!stessoSport(sport, 'Forza')) {
       if (!profilo.sportGenerati.contains(sport) || sport == sportMobilita) {
         notifyListeners();
-        return 'Feedback salvato: conta nel carico di allenamento.';
+        return l10n.feedbackSalvatoContaNel;
       }
       // La prossima seduta di questo sport, prima e dopo il ricalcolo.
       final oggi = soloData(DateTime.now());
@@ -2911,12 +2908,15 @@ class AppState extends ChangeNotifier {
       final giorno =
           '${giorniSettimana[quando.weekday - 1].toLowerCase()} '
           '${quando.day}/${quando.month}';
-      return '$frase\n\nProssima seduta ($giorno): '
-          '${cambi.isEmpty ? 'resta uguale' : cambi.join(', ')}.';
+      return l10n.prossimaSeduta(
+        frase,
+        giorno,
+        cambi.isEmpty ? l10n.restaUguale : cambi.join(', '),
+      );
     }
     if (profilo.obiettivo.isEmpty) {
       notifyListeners();
-      return 'Feedback salvato.';
+      return l10n.feedbackSalvato;
     }
     final r = regola(
       storico: feedback
@@ -2942,10 +2942,9 @@ class AppState extends ChangeNotifier {
   /// Health Connect (vedi [modelloCsvSessioni]).
   Future<String> importaSessioniCsv(String testo) async {
     final t = Tabella.da(testo);
-    if (t == null || t.righe.isEmpty) return 'file vuoto o non valido.';
+    if (t == null || t.righe.isEmpty) return l10n.fileVuotoONon;
     if (t.ha(['data', 'sport'])) return _importaSessioni(t);
-    return 'formato non riconosciuto: servono almeno le colonne data e sport '
-        '(trovate: ${t.idx.keys.join(', ')}).';
+    return l10n.formatoNonRiconosciutoServono(t.idx.keys.join(', '));
   }
 
   Future<String> _importaSessioni(Tabella t) async {
@@ -2978,10 +2977,10 @@ class AppState extends ChangeNotifier {
     _ricombina();
     notifyListeners();
     final extra = [
-      if (scartate > 0) '$scartate righe scartate (data o sport mancanti)',
-      if (ignorate > 0) '$ignorate ignorate (${sportEsclusi.join(', ')})',
+      if (scartate > 0) l10n.righeScartateDataO(scartate),
+      if (ignorate > 0) l10n.ignorate(ignorate, sportEsclusi.join(', ')),
     ].map((e) => ', $e').join();
-    return '$nuove sessioni nuove, $aggiornate aggiornate$extra.';
+    return l10n.sessioniNuoveAggiornate(nuove, aggiornate, extra);
   }
 
   // ---------------------------------------------------------------------

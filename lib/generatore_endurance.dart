@@ -5,6 +5,7 @@ import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
 import 'obiettivo.dart';
+import 'l10n/lingua.dart';
 
 /// Piani di corsa, nuoto e bici sulle sessioni della settimana tipo, verso la
 /// gara obiettivo (se c'è), con blocchi di 4 settimane e zone personali.
@@ -69,17 +70,10 @@ const _tipiQualita = {
 /// l'intensità e poi la durata.
 const progressioneAuto = 'auto';
 
-const modiProgressione = {
-  'durata': ('Durata', 'Sedute più lunghe del 5% per ogni passo.'),
-  'intensita': (
-    'Intensità',
-    'Stessa durata, più sforzo: recuperi più brevi, più minuti veloci, '
-        'passo un po\' più svelto.',
-  ),
-  progressioneAuto: (
-    'Auto',
-    'Prima l\'intensità (fino a 2 passi), poi la durata.',
-  ),
+Map<String, (String, String)> get modiProgressione => {
+  'durata': (l10n.durata, l10n.sedutePiuLunghe5),
+  'intensita': (l10n.intensita, l10n.stessaDurataPiuSforzo),
+  progressioneAuto: (l10n.auto, l10n.primaIntensitaFino2),
 };
 
 /// Divide i passi di regolazione [r] in (passi di durata, passi di intensità).
@@ -475,17 +469,15 @@ WorkoutStep _passo(
       [
         _passo(
           s,
-          '$tipo · $d min',
+          l10n.min2(tipo, d),
           1,
           'principale',
-          'Corsa leggera alternata a camminata',
+          l10n.corsaLeggeraAlternataCamminata,
           serie: '${math.max(3, d ~/ 3)}',
           minuti: '2',
           intensita: 'zona 2',
           recupero: '60',
-          note:
-              'Dopo 2 minuti di corsa cammina 1 minuto. Se ti manca il fiato, '
-              'cammina di più: va benissimo, è così che si comincia.',
+          note: l10n.dopo2MinutiCorsa,
         ),
       ],
     );
@@ -499,7 +491,7 @@ WorkoutStep _passo(
       final finale =
           (fase == Fase.sviluppo || fase == Fase.rifinitura) &&
           {'mezza', 'maratona', '703', 'ironman'}.contains(o?.gara);
-      final nome = 'Lungo · $d min';
+      final nome = l10n.lungoMin(d);
       final minFinale = finale ? 20 + progressivo : progressivo;
       return (
         'Lungo',
@@ -509,12 +501,10 @@ WorkoutStep _passo(
             nome,
             1,
             'principale',
-            'Corsa lunga continua',
+            l10n.corsaLungaContinua,
             minuti: '${d - minFinale}',
             intensita: 'zona 2',
-            note: k < 0
-                ? piuFacile
-                : 'Ritmo facile e costante: devi riuscire a parlare.',
+            note: k < 0 ? piuFacile : l10n.ritmoFacileCostanteDevi,
           ),
           if (minFinale > 0)
             _passo(
@@ -522,7 +512,7 @@ WorkoutStep _passo(
               nome,
               2,
               'principale',
-              finale ? 'Finale a ritmo gara' : 'Finale in progressione',
+              finale ? l10n.finaleRitmoGara : l10n.finaleProgressione,
               minuti: '$minFinale',
               intensita: finale ? ritmoGara : 'zona 3',
             ),
@@ -544,13 +534,13 @@ WorkoutStep _passo(
       // Una seduta breve (scelta dall'assistente) resta breve.
       final margine = d < 30 ? 5 : 10;
       final nucleo = math.max(10, d - 2 * margine);
-      final nome = '$tipo · $d min';
+      final nome = l10n.min2(tipo, d);
       final riscaldamento = _passo(
         s,
         nome,
         1,
         'riscaldamento',
-        'Corsa facile',
+        l10n.corsaFacile,
         minuti: '$margine',
         intensita: 'zona 2',
       );
@@ -559,7 +549,7 @@ WorkoutStep _passo(
         nome,
         9,
         'defaticamento',
-        'Corsa facile',
+        l10n.corsaFacile,
         minuti: '$margine',
         intensita: 'zona 1',
       );
@@ -574,12 +564,12 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Corsa veloce',
+            l10n.corsaVeloce,
             serie: '${(nucleo * 60 / (120 + recFartlek)).floor().clamp(3, 16)}',
             minuti: '2',
             intensita: 'zona 4',
             recupero: '$recFartlek',
-            note: 'Recupero corricchiando in zona 2.',
+            note: l10n.recuperoCorricchiandoZona2,
           ),
         ],
         'Tempo run' => [
@@ -588,7 +578,7 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Corsa a ritmo sostenuto',
+            l10n.corsaRitmoSostenuto,
             minuti:
                 '${(math.min(nucleo, 30) + 5 * k).clamp(10, math.max(10, nucleo))}',
             intensita: 'zona 3',
@@ -600,13 +590,13 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Ripetute veloci',
+            l10n.ripetuteVeloci,
             serie:
                 '${(nucleo * 60 / (180 + recRipetute)).floor().clamp(4, 10)}',
             minuti: '3',
             intensita: 'zona 5',
             recupero: '$recRipetute',
-            note: 'Recupero corricchiando piano.',
+            note: l10n.recuperoCorricchiandoPiano,
           ),
         ],
         'Ritmo gara' => [
@@ -615,7 +605,7 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Blocchi a ritmo gara',
+            l10n.blocchiRitmoGara,
             serie: '2',
             minuti: '${math.max(8, (nucleo * 60 - recGara) ~/ 120)}',
             intensita: ritmoGara,
@@ -628,7 +618,7 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Corsa facile',
+            l10n.corsaFacile,
             // Gli allunghi durano circa 8 minuti, recuperi compresi.
             minuti: '${math.max(5, d - 8)}',
             intensita: 'zona 2',
@@ -638,11 +628,11 @@ WorkoutStep _passo(
             nome,
             3,
             'principale',
-            'Allunghi in progressione',
+            l10n.allunghiProgressione,
             serie: '${(6 + k).clamp(4, 10)}',
             rip: '20 s',
             recupero: '60',
-            note: 'Veloci ma rilassati, non a tutta.',
+            note: l10n.velociMaRilassatiNon,
           ),
         ],
       };
@@ -660,10 +650,10 @@ WorkoutStep _passo(
         [
           _passo(
             s,
-            'Lento · $d min',
+            l10n.lentoMin(d),
             1,
             'principale',
-            'Corsa lenta',
+            l10n.corsaLenta,
             minuti: '${d - progressivo}',
             intensita: 'zona 2',
             note: k < 0 ? piuFacile : '',
@@ -671,10 +661,10 @@ WorkoutStep _passo(
           if (progressivo > 0)
             _passo(
               s,
-              'Lento · $d min',
+              l10n.lentoMin(d),
               2,
               'principale',
-              'Finale in progressione',
+              l10n.finaleProgressione,
               minuti: '$progressivo',
               intensita: 'zona 3',
             ),
@@ -716,7 +706,7 @@ WorkoutStep _passo(
         nome,
         1,
         'riscaldamento',
-        'Stile libero facile',
+        l10n.stileLiberoFacile,
         metri: '200',
         recupero: '30',
       ),
@@ -725,11 +715,11 @@ WorkoutStep _passo(
         nome,
         2,
         'tecnica',
-        'Gambe con tavoletta e braccio singolo',
+        l10n.gambeTavolettaBraccioSingolo,
         serie: '4',
         metri: '50',
         recupero: '20',
-        note: '2 gambe con tavoletta, 1 solo braccio destro, 1 solo sinistro.',
+        note: l10n.n2GambeTavoletta1,
       ),
       if (soglia)
         _passo(
@@ -737,10 +727,10 @@ WorkoutStep _passo(
           nome,
           3,
           'principale',
-          'Stile libero sostenuto',
+          l10n.stileLiberoSostenuto,
           serie: '${principale ~/ 100}',
           metri: '100',
-          intensita: pc == null ? 'sostenuto, costante' : passo(soglia: true),
+          intensita: pc == null ? l10n.sostenutoCostante : passo(soglia: true),
           recupero: '${(15 - 3 * k).clamp(5, 30)}',
         )
       else
@@ -749,15 +739,15 @@ WorkoutStep _passo(
           nome,
           3,
           'principale',
-          'Stile libero aerobico',
+          l10n.stileLiberoAerobico,
           serie: '${principale ~/ 200}',
           metri: '200',
           intensita: pc == null
-              ? 'medio, respirazione regolare'
+              ? l10n.medioRespirazioneRegolare
               : passo(soglia: false),
           recupero: '${(30 - 5 * k).clamp(10, 45)}',
         ),
-      _passo(s, nome, 4, 'defaticamento', 'Dorso facile', metri: '200'),
+      _passo(s, nome, 4, 'defaticamento', l10n.dorsoFacile, metri: '200'),
     ],
   );
 }
@@ -768,7 +758,7 @@ WorkoutStep _passo(
   final progressivo = k > 0 ? math.min(5 * k, d ~/ 3) : 0;
   switch (s.ruolo) {
     case 'intervalli':
-      final nome = 'Intervalli · $d min';
+      final nome = l10n.intervalliMin(d);
       final rec = (180 - 30 * k).clamp(90, 270).toInt();
       final serie = ((d - 25) * 60 / (360 + rec)).floor().clamp(2, 8);
       return (
@@ -779,7 +769,7 @@ WorkoutStep _passo(
             nome,
             1,
             'riscaldamento',
-            'Pedalata agile',
+            l10n.pedalataAgile,
             minuti: '15',
             intensita: 'zona 2',
           ),
@@ -788,7 +778,7 @@ WorkoutStep _passo(
             nome,
             2,
             'principale',
-            'Ripetute in salita o in pianura',
+            l10n.ripetuteSalitaOPianura,
             serie: '$serie',
             minuti: '6',
             intensita: 'zona 4',
@@ -799,7 +789,7 @@ WorkoutStep _passo(
             nome,
             3,
             'defaticamento',
-            'Pedalata sciolta',
+            l10n.pedalataSciolta,
             minuti: '10',
             intensita: 'zona 1',
           ),
@@ -807,20 +797,19 @@ WorkoutStep _passo(
       );
     case 'lungo':
       return (
-        'Uscita lunga',
+        l10n.uscitaLunga,
         [
           _passo(
             s,
-            'Uscita lunga · $d min',
+            l10n.uscitaLungaMin(d),
             1,
             'principale',
-            'Uscita continua',
+            l10n.uscitaContinua,
             minuti: '$d',
             intensita: 'zona 2',
             note: k > 0
-                ? 'Inserisci ${k + 1} tratti da 10 minuti in zona 3. '
-                      'Mangia e bevi ogni 30-45 minuti.'
-                : 'Mangia e bevi ogni 30-45 minuti.',
+                ? l10n.inserisciTratti10Minuti(k + 1)
+                : l10n.mangiaBeviOgni30,
           ),
         ],
       );
@@ -830,20 +819,20 @@ WorkoutStep _passo(
         [
           _passo(
             s,
-            'Uscita · $d min',
+            l10n.uscitaMin(d),
             1,
             'principale',
-            'Pedalata costante',
+            l10n.pedalataCostante,
             minuti: '${d - progressivo}',
             intensita: 'zona 2',
           ),
           if (progressivo > 0)
             _passo(
               s,
-              'Uscita · $d min',
+              l10n.uscitaMin(d),
               2,
               'principale',
-              'Finale più spinto',
+              l10n.finalePiuSpinto,
               minuti: '$progressivo',
               intensita: 'zona 3',
             ),

@@ -2,6 +2,7 @@ import 'carico.dart';
 import 'models.dart';
 import 'registro_forza.dart';
 import 'riepilogo_condiviso.dart';
+import 'l10n/lingua.dart';
 
 // Motivazione leggera in Oggi: settimane di fila, traguardi e record.
 // Solo numeri veri dello storico: niente punti, livelli o medaglie.
@@ -58,11 +59,11 @@ int? traguardoRecente(List<Sessione> sessioni, DateTime oggi) {
   return _recente(ultima, oggi) ? sessioni.length : null;
 }
 
-const _piuLunga = {
-  'Corsa': 'La tua corsa più lunga',
-  'Bici': 'La tua uscita in bici più lunga',
-  'Nuoto': 'La tua nuotata più lunga',
-  'Camminata': 'La tua camminata più lunga',
+Map<String, String> get _piuLunga => {
+  'Corsa': l10n.tuaCorsaPiuLunga,
+  'Bici': l10n.tuaUscitaBiciPiu,
+  'Nuoto': l10n.tuaNuotataPiuLunga,
+  'Camminata': l10n.tuaCamminataPiuLunga,
 };
 
 String _distanza(double km) => km >= 1
@@ -110,12 +111,12 @@ List<Spinta> spinte({
     out.add(
       Spinta(
         TipoSpinta.traguardo,
-        n == 1 ? 'Primo allenamento fatto!' : 'Hai fatto $n allenamenti!',
+        n == 1 ? l10n.primoAllenamentoFatto : l10n.haiFattoAllenamenti(n),
       ),
     );
   }
   final forza = forzaRecord(serie, oggi);
-  if (forza != null) out.add(Spinta(TipoSpinta.record, 'Record: $forza'));
+  if (forza != null) out.add(Spinta(TipoSpinta.record, l10n.record(forza)));
   final km = distanzaRecord(sessioni, oggi);
   if (km != null) out.add(Spinta(TipoSpinta.record, km));
   final fila = settimaneDiFila(sessioni, oggi);
@@ -125,8 +126,8 @@ List<Spinta> spinte({
         TipoSpinta.fila,
         // Un invito, non un ordine: niente scadenze né "devi".
         settimanaFatta(sessioni, oggi)
-            ? '$fila settimane di fila: grande!'
-            : '$fila settimane di fila. Vai per la ${fila + 1}?',
+            ? l10n.settimaneFilaGrande(fila)
+            : l10n.settimaneFilaVai(fila, fila + 1),
       ),
     );
   }

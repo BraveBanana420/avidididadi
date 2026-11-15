@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'models.dart';
 import 'tema.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 /// Riserva in fondo alla pagina lo spazio della barra di navigazione del telefono,
 /// così l'ultimo contenuto non resta coperto. Si usa come bottomNavigationBar.
@@ -172,8 +174,8 @@ class SessioneCard extends StatelessWidget {
         title: Text(titoloSessione(riga.sport, riga.tipo)),
         subtitle: Text(
           riga.durataMin > 0
-              ? '${riga.fascia}, ${riga.durataMin} min'
-              : riga.fascia,
+              ? l10n.min3(mostra(riga.fascia), riga.durataMin)
+              : mostra(riga.fascia),
         ),
         trailing: onTap == null
             ? null
@@ -194,7 +196,7 @@ class SessioneSvoltaTile extends StatelessWidget {
     final s = sessione;
     final c = coloreSport(s.sport);
     final parti = <String>[
-      // Nome dato dall'app (es. "Pistoia - Fartlek FC") per le sessioni di Health Connect.
+      // Nome dato dall'app (es. "Milano - Fartlek FC") per le sessioni di Health Connect.
       if (s.id.startsWith('hc-') && s.note.isNotEmpty) s.note,
       if (s.durataMin > 0) '${s.durataMin} min',
       if (s.distanzaKm > 0) '${fmtNum(s.distanzaKm)} km',

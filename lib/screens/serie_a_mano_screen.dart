@@ -7,6 +7,7 @@ import '../registro_forza.dart';
 import '../scheda.dart';
 import '../widgets.dart';
 import 'schede_screen.dart';
+import '../l10n/lingua.dart';
 
 /// Forza fatta senza la modalità allenamento guidata (o dall'orologio): si
 /// scrivono gli esercizi, con ripetizioni e kg di ogni serie. Contano nello
@@ -166,7 +167,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
             children: [
               Expanded(child: Text(e.nome, style: t.titleMedium)),
               IconButton(
-                tooltip: 'Togli l\'esercizio',
+                tooltip: l10n.togliEsercizio,
                 icon: const Icon(Icons.delete_outline_rounded),
                 onPressed: () => setState(() {
                   for (final s in _esercizi.removeAt(i).serie) {
@@ -178,16 +179,16 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
           ),
           // Con il peso (o a corpo libero) oppure a tempo.
           SegmentedButton<bool>(
-            segments: const [
+            segments: [
               ButtonSegment(
                 value: false,
                 icon: Icon(Icons.fitness_center_rounded),
-                label: Text('Ripetizioni e kg'),
+                label: Text(l10n.ripetizioniKg),
               ),
               ButtonSegment(
                 value: true,
                 icon: Icon(Icons.timer_rounded),
-                label: Text('Tempo'),
+                label: Text(l10n.tempo),
               ),
             ],
             selected: {e.aTempo},
@@ -205,16 +206,16 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
                 if (e.aTempo)
                   _numero(
                     e.serie[j].tempo,
-                    'Secondi',
+                    l10n.secondi,
                     tempo: true,
                     aiuto: '45 o 1:30',
                   )
                 else ...[
-                  _numero(e.serie[j].rip, 'Ripetizioni'),
+                  _numero(e.serie[j].rip, l10n.ripetizioni),
                   _numero(e.serie[j].kg, 'kg', dec: true),
                 ],
                 IconButton(
-                  tooltip: 'Togli la serie',
+                  tooltip: l10n.togliSerie,
                   icon: const Icon(Icons.remove_circle_outline_rounded),
                   onPressed: () =>
                       setState(() => e.serie.removeAt(j).dispose()),
@@ -225,7 +226,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Serie'),
+              label: Text(l10n.serie2),
               // La nuova serie copia l'ultima: di solito si ripete uguale.
               onPressed: () => setState(
                 () => e.serie.add(e.serie.lastOrNull?.copia() ?? _Serie()),
@@ -242,7 +243,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Esercizi e serie')),
+      appBar: AppBar(title: Text(l10n.eserciziSerie)),
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
@@ -255,23 +256,18 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 12,
             children: [
-              Text('Forza · ${dataLunga(widget.giorno)}', style: t.titleMedium),
-              Text(
-                'Scrivi cosa hai fatto: ripetizioni e kg di ogni serie '
-                '(kg vuoto = corpo libero), oppure il tempo per plank e '
-                "tenute. Restano nello storico dell'esercizio.",
-                style: t.bodySmall,
-              ),
+              Text(l10n.forza2(dataLunga(widget.giorno)), style: t.titleMedium),
+              Text(l10n.scriviCosaHaiFatto, style: t.bodySmall),
               for (var i = 0; i < _esercizi.length; i++) _esercizio(context, i),
               OutlinedButton.icon(
                 icon: const Icon(Icons.add_rounded),
-                label: const Text('Aggiungi esercizio'),
+                label: Text(l10n.aggiungiEsercizio2),
                 onPressed: _aggiungi,
               ),
               PulsantePrincipale(
                 onPressed: _salva,
                 icona: Icons.check_rounded,
-                testo: 'Salva',
+                testo: l10n.salva,
               ),
             ],
           ),

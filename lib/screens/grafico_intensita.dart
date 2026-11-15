@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../intensita.dart';
 import '../esecuzione.dart';
 import '../pulse.dart';
+import '../l10n/lingua.dart';
 
 /// Previsto e fatto in tutta la seduta di corsa: dietro le fasce
 /// dell'intensità da tenere blocco per blocco, sopra la linea di quella
@@ -34,7 +35,7 @@ class GraficoIntensitaSeduta extends StatelessWidget {
       spacing: 4,
       children: [
         Semantics(
-          label: 'Intensità prevista e tenuta in tutta la seduta',
+          label: l10n.intensitaPrevistaTenutaTutta,
           child: SizedBox(
             height: altezza,
             child: CustomPaint(

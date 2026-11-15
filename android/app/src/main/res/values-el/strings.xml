@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_piccolo_nome">Σήμερα</string>
+    <string name="widget_piccolo_desc">Η σημερινή προπόνηση, με το κουμπί έναρξης</string>
+    <string name="widget_largo_nome">Σήμερα και εβδομάδα</string>
+    <string name="widget_largo_desc">Η σημερινή προπόνηση και η εβδομάδα σου</string>
+</resources>

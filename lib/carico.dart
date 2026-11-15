@@ -1,5 +1,6 @@
 import 'models.dart';
 import 'obiettivo.dart';
+import 'l10n/lingua.dart';
 
 /// Carico di allenamento unico per tutti gli sport (metodo sRPE):
 /// carico = durata in minuti × fatica da 1 a 10.
@@ -83,11 +84,11 @@ StatoCarico statoCarico(double rapporto) => rapporto < 0.8
     ? StatoCarico.attenzione
     : StatoCarico.rischio;
 
-const descrizioniCarico = {
-  StatoCarico.inCalo: 'In calo: stai facendo meno del solito.',
-  StatoCarico.equilibrato: 'Equilibrato: aumento sostenibile.',
-  StatoCarico.attenzione: 'Attenzione: stai aumentando in fretta.',
-  StatoCarico.rischio: 'Rischio: troppo carico rispetto alle ultime settimane.',
+Map<StatoCarico, String> get descrizioniCarico => {
+  StatoCarico.inCalo: l10n.caloStaiFacendoMeno,
+  StatoCarico.equilibrato: l10n.equilibratoAumentoSostenibile,
+  StatoCarico.attenzione: l10n.attenzioneStaiAumentandoFretta,
+  StatoCarico.rischio: l10n.rischioTroppoCaricoRispetto,
 };
 
 /// Confronto tra quello che era in programma e quello che è stato fatto.

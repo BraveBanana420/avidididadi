@@ -6,6 +6,7 @@ import '../app_state.dart';
 import '../invio_intervals.dart';
 import '../models.dart';
 import '../pulse.dart';
+import '../l10n/lingua.dart';
 
 /// Collegamento a intervals.icu: attività complete da Garmin, Polar, Suunto…
 class SezioneIntervals extends StatefulWidget {
@@ -46,19 +47,16 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Scollegare intervals.icu?'),
-        content: const Text(
-          'Le attività tornano quelle di Health Connect, con meno dettagli. '
-          'La chiave viene cancellata dal telefono.',
-        ),
+        title: Text(l10n.scollegareIntervalsIcu),
+        content: Text(l10n.attivitaTornanoQuelleHealth),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Scollega'),
+            child: Text(l10n.scollega),
           ),
         ],
       ),
@@ -89,11 +87,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              'Attività complete da Garmin, Polar, Suunto, Coros, Wahoo, '
-              'Zwift: nome vero, rulli, percorso, altitudine, potenza.',
-              style: t.bodyMedium,
-            ),
+            Text(l10n.attivitaCompleteGarminPolar, style: t.bodyMedium),
             const SizedBox(height: 12),
             if (state.intervalsCollegato)
               ..._collegato(context)
@@ -112,12 +106,15 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
     return [
       Text(
         state.sincronizzandoIntervals
-            ? 'Sincronizzazione in corso…'
+            ? l10n.sincronizzazioneCorso
             : u == null
-            ? 'Collegato.'
-            : 'Collegato · ultima sincronizzazione ${dataLunga(u)}, '
-                  '${two(u.hour)}:${two(u.minute)} · '
-                  '${state.sessioniIcu.length} attività',
+            ? l10n.collegato4
+            : l10n.collegatoUltimaSincronizzazioneAttivita(
+                dataLunga(u),
+                two(u.hour),
+                two(u.minute),
+                state.sessioniIcu.length,
+              ),
         style: t.bodySmall,
       ),
       if (state.erroreIntervals != null)
@@ -139,9 +136,9 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
                 ? null
                 : () => _esegui(state.sincronizzaIntervals),
             icon: const Icon(Icons.sync_rounded),
-            label: const Text('Sincronizza ora'),
+            label: Text(l10n.sincronizzaOra),
           ),
-          TextButton(onPressed: _scollega, child: const Text('Scollega')),
+          TextButton(onPressed: _scollega, child: Text(l10n.scollega)),
         ],
       ),
       const Divider(height: 24),
@@ -149,12 +146,9 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
         type: MaterialType.transparency,
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
-          title: const Text('Manda piano e sedute a intervals.icu'),
+          title: Text(l10n.mandaPianoSeduteIntervals),
           subtitle: Text(
-            'Corsa, bici e nuoto dei prossimi $giorniInvio giorni, passo per '
-            'passo: si aggiornano da soli quando il piano cambia. Le sedute '
-            "registrate con l'app partono da sole appena finite, con il "
-            'percorso se c\'è.',
+            l10n.corsaBiciNuotoDei(giorniInvio),
             style: t.bodySmall,
           ),
           value: state.invioIntervals,
@@ -166,13 +160,15 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
       if (state.invioIntervals) ...[
         Text(
           state.inviando
-              ? 'Invio in corso…'
+              ? l10n.invioCorso
               : state.ultimoInvio == null
-              ? 'Non ancora mandato.'
-              : 'Ultimo invio ${dataLunga(state.ultimoInvio!)}, '
-                    '${two(state.ultimoInvio!.hour)}:'
-                    '${two(state.ultimoInvio!.minute)} · '
-                    '${state.inviatiIcu.length} sedute in calendario',
+              ? l10n.nonAncoraMandato
+              : l10n.ultimoInvioSeduteCalendario(
+                  dataLunga(state.ultimoInvio!),
+                  two(state.ultimoInvio!.hour),
+                  two(state.ultimoInvio!.minute),
+                  state.inviatiIcu.length,
+                ),
           style: t.bodySmall,
         ),
         if (state.erroreInvio != null)
@@ -188,21 +184,13 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
               ? null
               : () => _esegui(state.inviaPianoIntervals),
           icon: const Icon(Icons.send_rounded),
-          label: const Text('Invia ora'),
+          label: Text(l10n.inviaOra),
         ),
         const SizedBox(height: 8),
         ExpansionTile(
           tilePadding: EdgeInsets.zero,
-          title: Text("Per averle sull'orologio Garmin", style: t.titleSmall),
-          children: [
-            Text(
-              'Su intervals.icu: Impostazioni → Garmin Connect → attiva '
-              '"Upload planned workouts". Le sedute passano nel calendario '
-              'di Garmin Connect e da lì all\'orologio. Battito: zone di '
-              'intervals.icu; nuoto: passo per 100 m.',
-              style: t.bodySmall,
-            ),
-          ],
+          title: Text(l10n.averleSullOrologioGarmin, style: t.titleSmall),
+          children: [Text(l10n.suIntervalsIcuImpostazioni, style: t.bodySmall)],
         ),
       ],
     ];
@@ -222,18 +210,10 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
       ),
     );
     return [
-      passo('1', 'Crea un account gratuito su intervals.icu (dal browser).'),
-      passo(
-        '2',
-        'Lì, in Impostazioni, collega Garmin Connect (o il tuo orologio): le '
-            'attività arrivano da sole.',
-      ),
-      passo(
-        '3',
-        'Sempre in Impostazioni, in fondo, "Developer settings": crea la '
-            'chiave API e copiala.',
-      ),
-      passo('4', 'Incollala qui sotto e tocca Collega.'),
+      passo('1', l10n.creaAccountGratuitoSu),
+      passo('2', l10n.liImpostazioniCollegaGarmin),
+      passo('3', l10n.sempreImpostazioniFondoDeveloper),
+      passo('4', l10n.incollalaQuiSottoTocca),
       const SizedBox(height: 6),
       TextField(
         controller: _chiave,
@@ -241,20 +221,16 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
         autocorrect: false,
         enableSuggestions: false,
         decoration: InputDecoration(
-          labelText: 'Chiave API di intervals.icu',
+          labelText: l10n.chiaveApiIntervalsIcu,
           suffixIcon: IconButton(
-            tooltip: 'Incolla dagli appunti',
+            tooltip: l10n.incollaDagliAppunti,
             onPressed: _incolla,
             icon: const Icon(Icons.content_paste_rounded),
           ),
         ),
       ),
       const SizedBox(height: 4),
-      Text(
-        'La chiave resta cifrata sul telefono. Serve a leggere le tue '
-        'attività e, solo se lo accendi, a mandare il piano al tuo calendario.',
-        style: t.bodySmall,
-      ),
+      Text(l10n.chiaveRestaCifrataSul, style: t.bodySmall),
       const SizedBox(height: 10),
       FilledButton.icon(
         onPressed: _inCorso
@@ -267,7 +243,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             : const Icon(Icons.link_rounded),
-        label: const Text('Collega'),
+        label: Text(l10n.collega2),
       ),
     ];
   }

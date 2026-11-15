@@ -5,6 +5,8 @@ import '../arrampicata.dart';
 import '../charts.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Dashboard di un singolo sport nel periodo scelto in Progressi.
 class SportScreen extends StatelessWidget {
@@ -33,112 +35,115 @@ class SportScreen extends StatelessWidget {
     switch (sp) {
       case 'corsa':
         tiles.addAll([
-          _Tile('${d.km.toStringAsFixed(1)} km', 'distanza totale'),
-          _Tile('${sessioni.length}', 'uscite'),
-          _Tile(d.passoMedio(), 'passo medio (min/km)'),
-          _Tile('${d.maxKm.toStringAsFixed(1)} km', 'corsa più lunga'),
-          _Tile(d.migliorRitmo(minKm: 3), 'passo migliore (≥ 3 km)'),
-          _Tile(d.fcMedia(), 'FC media'),
+          _Tile('${d.km.toStringAsFixed(1)} km', l10n.distanzaTotale),
+          _Tile('${sessioni.length}', l10n.parolaUscite),
+          _Tile(d.passoMedio(), l10n.passoMedioMinKm),
+          _Tile('${d.maxKm.toStringAsFixed(1)} km', l10n.corsaPiuLunga),
+          _Tile(d.migliorRitmo(minKm: 3), l10n.passoMigliore3Km),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll([
-          d.settimanale('Km a settimana', (s) => s.distanzaKm, 1),
+          d.settimanale(l10n.kmSettimana, (s) => s.distanzaKm, 1),
           d.perSessione(
-            'Passo per uscita (min/km)',
+            l10n.passoUscitaMinKm,
             ritmo,
             (v) => fmtRitmo(sport, v),
           ),
           d.perSessione(
-            'Distanza per uscita (km)',
+            l10n.distanzaUscitaKm,
             (s) => s.distanzaKm > 0 ? s.distanzaKm : null,
             (v) => v.toStringAsFixed(1),
           ),
           d.perSessione(
-            'Efficienza aerobica (metri per battito)',
+            l10n.efficienzaAerobicaMetriBattito,
             _efficienza,
             (v) => v.toStringAsFixed(2),
           ),
           d.perSessione(
-            'FC media per uscita (bpm)',
+            l10n.fcMediaUscitaBpm,
             _fc,
             (v) => v.toStringAsFixed(0),
           ),
         ]);
       case 'nuoto':
         tiles.addAll([
-          _Tile('${(d.km * 1000).round()} m', 'distanza totale'),
-          _Tile('${sessioni.length}', 'sessioni'),
-          _Tile(d.passoMedio(), 'passo medio (min/100 m)'),
-          _Tile('${(d.maxKm * 1000).round()} m', 'sessione più lunga'),
-          _Tile(d.migliorRitmo(minKm: 0.3), 'passo migliore (≥ 300 m)'),
-          _Tile(d.fcMedia(), 'FC media'),
+          _Tile('${(d.km * 1000).round()} m', l10n.distanzaTotale),
+          _Tile('${sessioni.length}', l10n.parolaSessioni),
+          _Tile(d.passoMedio(), l10n.passoMedioMin100),
+          _Tile('${(d.maxKm * 1000).round()} m', l10n.sessionePiuLunga),
+          _Tile(d.migliorRitmo(minKm: 0.3), l10n.passoMigliore300M),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll([
-          d.settimanale('Metri a settimana', (s) => s.distanzaKm * 1000, 0),
+          d.settimanale(l10n.metriSettimana, (s) => s.distanzaKm * 1000, 0),
           d.perSessione(
-            'Passo per sessione (min/100 m)',
+            l10n.passoSessioneMin100,
             ritmo,
             (v) => fmtRitmo(sport, v),
           ),
           d.perSessione(
-            'Metri per sessione',
+            l10n.metriSessione,
             (s) => s.distanzaKm > 0 ? s.distanzaKm * 1000 : null,
             (v) => v.toStringAsFixed(0),
           ),
           d.perSessione(
-            'FC media per sessione (bpm)',
+            l10n.fcMediaSessioneBpm,
             _fc,
             (v) => v.toStringAsFixed(0),
           ),
         ]);
       case 'bici':
         tiles.addAll([
-          _Tile('${d.km.toStringAsFixed(0)} km', 'distanza totale'),
-          _Tile('${sessioni.length}', 'uscite'),
-          _Tile(d.velocitaMedia(), 'velocità media (km/h)'),
-          _Tile('${d.maxKm.toStringAsFixed(1)} km', 'uscita più lunga'),
-          _Tile(d.migliorRitmo(minKm: 5), 'velocità massima media'),
-          _Tile(d.fcMedia(), 'FC media'),
+          _Tile('${d.km.toStringAsFixed(0)} km', l10n.distanzaTotale),
+          _Tile('${sessioni.length}', l10n.parolaUscite),
+          _Tile(d.velocitaMedia(), l10n.velocitaMediaKmH),
+          _Tile('${d.maxKm.toStringAsFixed(1)} km', l10n.uscitaPiuLunga),
+          _Tile(d.migliorRitmo(minKm: 5), l10n.velocitaMassimaMedia),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll([
-          d.settimanale('Km a settimana', (s) => s.distanzaKm, 0),
+          d.settimanale(l10n.kmSettimana, (s) => s.distanzaKm, 0),
           d.perSessione(
-            'Velocità media per uscita (km/h)',
+            l10n.velocitaMediaUscitaKm,
             ritmo,
             (v) => v.toStringAsFixed(1),
           ),
           d.perSessione(
-            'Distanza per uscita (km)',
+            l10n.distanzaUscitaKm,
             (s) => s.distanzaKm > 0 ? s.distanzaKm : null,
             (v) => v.toStringAsFixed(0),
           ),
           d.perSessione(
-            'FC media per uscita (bpm)',
+            l10n.fcMediaUscitaBpm,
             _fc,
             (v) => v.toStringAsFixed(0),
           ),
         ]);
       case 'forza':
         tiles.addAll([
-          _Tile('${sessioni.length}', 'sessioni'),
-          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', 'tempo totale'),
-          _Tile('${(d.minuti / sessioni.length).round()} min', 'durata media'),
+          _Tile('${sessioni.length}', l10n.parolaSessioni),
+          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', l10n.tempoTotale),
+          _Tile(
+            '${(d.minuti / sessioni.length).round()} min',
+            l10n.durataMedia,
+          ),
           _Tile(
             (sessioni.length / inizi.length).toStringAsFixed(1),
-            'sessioni a settimana',
+            l10n.sessioniSettimana,
           ),
-          _Tile('${d.maxMin} min', 'sessione più lunga'),
-          _Tile(d.fcMedia(), 'FC media'),
+          _Tile('${d.maxMin} min', l10n.sessionePiuLunga),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll([
-          d.settimanale('Sessioni a settimana', (s) => 1, 0),
-          d.settimanale('Minuti a settimana', (s) => s.durataMin.toDouble(), 0),
+          d.settimanale(l10n.sessioniSettimana2, (s) => 1, 0),
+          d.settimanale(l10n.minutiSettimana, (s) => s.durataMin.toDouble(), 0),
           d.perSessione(
-            'Durata per sessione (min)',
+            l10n.durataSessioneMin,
             (s) => s.durataMin > 0 ? s.durataMin.toDouble() : null,
             (v) => v.toStringAsFixed(0),
           ),
           d.perSessione(
-            'FC media per sessione (bpm)',
+            l10n.fcMediaSessioneBpm,
             _fc,
             (v) => v.toStringAsFixed(0),
           ),
@@ -159,30 +164,30 @@ class SportScreen extends StatelessWidget {
               return l < 0 ? null : l.toDouble();
             }, (v) => gradiDi(x)[v.round().clamp(0, gradiDi(x).length - 1)]);
         tiles.addAll([
-          _Tile('${sessioni.length}', 'sessioni'),
-          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', 'tempo totale'),
-          if (chiuse > 0) _Tile('$chiuse', 'vie e blocchi chiusi'),
-          if (metri > 0) _Tile('$metri m', 'metri saliti'),
-          if (viaMax != null) _Tile(viaMax.$1, 'via più difficile'),
-          if (bloccoMax != null) _Tile(bloccoMax.$1, 'blocco più difficile'),
-          _Tile(d.fcMedia(), 'FC media'),
+          _Tile('${sessioni.length}', l10n.parolaSessioni),
+          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', l10n.tempoTotale),
+          if (chiuse > 0) _Tile('$chiuse', l10n.vieBlocchiChiusi),
+          if (metri > 0) _Tile('$metri m', l10n.metriSaliti),
+          if (viaMax != null) _Tile(viaMax.$1, l10n.viaPiuDifficile),
+          if (bloccoMax != null) _Tile(bloccoMax.$1, l10n.bloccoPiuDifficile),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll(
           [
             d.settimanale(
-              'Minuti a settimana',
+              l10n.minutiSettimana,
               (s) => s.durataMin.toDouble(),
               0,
             ),
             d.settimanale(
-              'Vie e blocchi chiusi a settimana',
+              l10n.vieBlocchiChiusiSettimana,
               (s) => (scheda(s)?.chiuse ?? 0).toDouble(),
               0,
             ),
-            gradi('Grado più difficile: vie', Disciplina.falesia),
-            gradi('Grado più difficile: blocchi', Disciplina.boulder),
+            gradi(l10n.gradoPiuDifficileVie, Disciplina.falesia),
+            gradi(l10n.gradoPiuDifficileBlocchi, Disciplina.boulder),
             d.perSessione(
-              'FC media per sessione (bpm)',
+              l10n.fcMediaSessioneBpm,
               _fc,
               (v) => v.toStringAsFixed(0),
             ),
@@ -190,22 +195,22 @@ class SportScreen extends StatelessWidget {
         );
       default:
         tiles.addAll([
-          _Tile('${sessioni.length}', 'sessioni'),
-          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', 'tempo totale'),
+          _Tile('${sessioni.length}', l10n.parolaSessioni),
+          _Tile('${(d.minuti / 60).toStringAsFixed(1)} h', l10n.tempoTotale),
           if (d.km > 0)
-            _Tile('${d.km.toStringAsFixed(1)} km', 'distanza totale'),
-          _Tile(d.fcMedia(), 'FC media'),
+            _Tile('${d.km.toStringAsFixed(1)} km', l10n.distanzaTotale),
+          _Tile(d.fcMedia(), l10n.fcMedia),
         ]);
         grafici.addAll(
           [
             d.settimanale(
-              'Minuti a settimana',
+              l10n.minutiSettimana,
               (s) => s.durataMin.toDouble(),
               0,
             ),
-            d.settimanale('Km a settimana', (s) => s.distanzaKm, 1),
+            d.settimanale(l10n.kmSettimana, (s) => s.distanzaKm, 1),
             d.perSessione(
-              'FC media per sessione (bpm)',
+              l10n.fcMediaSessioneBpm,
               _fc,
               (v) => v.toStringAsFixed(0),
             ),
@@ -232,7 +237,7 @@ class SportScreen extends StatelessWidget {
           children: [
             Icon(iconaSport(sport), color: colore),
             const SizedBox(width: 8),
-            Text(sport),
+            Text(mostra(sport)),
           ],
         ),
       ),
@@ -275,7 +280,7 @@ class SportScreen extends StatelessWidget {
             ),
             if (tipiOrdinati.length > 1) ...[
               const SizedBox(height: 20),
-              Text('Tipi di sessione', style: t.titleMedium),
+              Text(l10n.tipiSessione, style: t.titleMedium),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -330,13 +335,14 @@ class _Grafico {
 
 /// Unità di misura ricavata dal titolo del grafico.
 String _unitaDa(String titolo) {
-  const fisse = {
-    'Km a settimana': 'km',
-    'Metri a settimana': 'm',
-    'Metri per sessione': 'm',
-    'Sessioni a settimana': 'sessioni',
-    'Minuti a settimana': 'min',
-    'Efficienza aerobica (metri per battito)': 'm/battito',
+  // I titoli sono nella lingua in uso: le chiavi si leggono da l10n.
+  final fisse = {
+    l10n.kmSettimana: 'km',
+    l10n.metriSettimana: 'm',
+    l10n.metriSessione: 'm',
+    l10n.sessioniSettimana2: l10n.parolaSessioni,
+    l10n.minutiSettimana: 'min',
+    l10n.efficienzaAerobicaMetriBattito: l10n.mPerBattito,
   };
   final f = fisse[titolo];
   if (f != null) return f;
@@ -353,7 +359,7 @@ String _dettaglioSessione(Sessione s, String valore) {
       s.sport.toLowerCase() == 'nuoto'
           ? '${(s.distanzaKm * 1000).round()} m'
           : '${fmtNum(s.distanzaKm)} km',
-    if (s.fcMedia > 0) 'FC ${s.fcMedia} bpm',
+    if (s.fcMedia > 0) l10n.fcBpm(s.fcMedia),
   ];
   return [
     valore,
@@ -431,12 +437,16 @@ class _Dati {
       conta[i]++;
     }
     final et = [for (final d in w.inizi) '${d.day}/${d.month}'];
-    String sessioni(int c) => '$c ${c == 1 ? 'sessione' : 'sessioni'}';
+    String sessioni(int c) =>
+        '$c ${c == 1 ? l10n.parolaSessione : l10n.parolaSessioni}';
     return _Grafico(titolo, somma, et, (v) => v.toStringAsFixed(dec), [
       for (var i = 0; i < n; i++)
-        '${somma[i].toStringAsFixed(dec)} $unita\n'
-            'Settimana dal ${et[i]}'
-            '${unita == 'sessioni' ? '' : ' · ${sessioni(conta[i])}'}',
+        l10n.settimanaDal3(
+          somma[i].toStringAsFixed(dec),
+          unita,
+          et[i],
+          unita == l10n.parolaSessioni ? '' : ' · ${sessioni(conta[i])}',
+        ),
     ]);
   }
 

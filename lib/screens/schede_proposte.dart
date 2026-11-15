@@ -12,6 +12,7 @@ import '../models.dart';
 import '../potenza.dart';
 import 'allenamenti_arrampicata_screen.dart';
 import 'profilo_allenamento.dart';
+import '../l10n/lingua.dart';
 
 // Anteprime delle proposte del coach (chat con la chiave API) e
 // dell'assistente esterno: allenamenti passo per passo e piano nuovo.
@@ -48,15 +49,15 @@ class SchedaAllenamenti extends StatelessWidget {
           children: [
             Text(
               allenamenti.length == 1
-                  ? 'Allenamento nuovo'
-                  : '${allenamenti.length} allenamenti nuovi',
+                  ? l10n.allenamentoNuovo
+                  : l10n.allenamentiNuovi(allenamenti.length),
               style: t.titleSmall,
             ),
             if (motivo.isNotEmpty) Text(motivo, style: t.bodySmall),
             for (final a in allenamenti) ...[
               Text(
                 '${titoloSessione(a.sport, a.tipo)} · ${dataLunga(a.data)}'
-                '${a.durataMin > 0 ? ' · ${a.durataMin} min' : ''}',
+                '${a.durataMin > 0 ? l10n.min4(a.durataMin) : ''}',
                 style: t.titleSmall,
               ),
               Text(a.nome, style: t.bodySmall),
@@ -78,20 +79,19 @@ class SchedaAllenamenti extends StatelessWidget {
                     !a.data.isBefore(oggi),
               ))
                 Text(
-                  'Prende il posto della seduta di ${a.sport.toLowerCase()} '
-                  'di quel giorno.',
+                  l10n.prendePostoSedutaQuel(a.sport.toLowerCase()),
                   style: t.bodySmall,
                 ),
             ],
             if (passati > 0)
               Text(
                 passati == 1
-                    ? 'Uno è in un giorno passato: non si mette.'
-                    : '$passati sono in giorni passati: non si mettono.',
+                    ? l10n.unoGiornoPassatoNon
+                    : l10n.sonoGiorniPassatiNon(passati),
                 style: t.bodySmall,
               ),
             if (messaggio?.applicata ?? state.rispostaApplicata)
-              const Text('Messo nel calendario.')
+              Text(l10n.messoNelCalendario)
             else
               FilledButton.icon(
                 onPressed: passati == allenamenti.length
@@ -106,16 +106,16 @@ class SchedaAllenamenti extends StatelessWidget {
                           avviso(
                             content: Text(
                               n == 0
-                                  ? 'Niente da mettere: le date sono passate.'
+                                  ? l10n.nienteMettereDateSono
                                   : n == 1
-                                  ? 'Allenamento messo nel calendario.'
-                                  : '$n allenamenti messi nel calendario.',
+                                  ? l10n.allenamentoMessoNelCalendario
+                                  : l10n.allenamentiMessiNelCalendario(n),
                             ),
                           ),
                         );
                       },
                 icon: const Icon(Icons.event_available_rounded),
-                label: const Text('Metti nel calendario'),
+                label: Text(l10n.mettiNelCalendario),
               ),
           ],
         ),
@@ -155,37 +155,47 @@ class SchedaPiano extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Piano nuovo da ${dataLunga(piano.da)}', style: t.titleSmall),
+            Text(l10n.pianoNuovo(dataLunga(piano.da)), style: t.titleSmall),
             if (piano.motivo.isNotEmpty) Text(piano.motivo, style: t.bodySmall),
             const SizedBox(height: 8),
             if (messaggio?.applicata ?? state.rispostaApplicata)
-              const Text('Applicato: lo trovi nel calendario.')
+              Text(l10n.applicatoTroviNelCalendario)
             else ...[
               Text(
-                '${esito.sedute.length} sedute in ${settimane.length} '
-                'settimane. Sostituisce il calendario da quel giorno in poi.',
+                l10n.seduteSettimaneSostituisceCalendario(
+                  esito.sedute.length,
+                  settimane.length,
+                ),
               ),
               for (final e in settimane.entries.take(3))
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    'Settimana del ${e.key.day}/${e.key.month}: '
-                    '${e.value.map((r) => '${giorniSettimana[r.data.weekday - 1].substring(0, 3)} ${titoloSessione(r.sport, r.tipo)} ${r.durataMin}′').join(' · ')}',
+                    l10n.settimana5(
+                      e.key.day,
+                      e.key.month,
+                      e.value
+                          .map(
+                            (r) =>
+                                '${giorniSettimana[r.data.weekday - 1].substring(0, 3)} ${titoloSessione(r.sport, r.tipo)} ${r.durataMin}′',
+                          )
+                          .join(' · '),
+                    ),
                     style: t.bodySmall,
                   ),
                 ),
               if (settimane.length > 3)
-                Text('…e le altre settimane.', style: t.bodySmall),
+                Text(l10n.altreSettimane, style: t.bodySmall),
               if (esito.problemi.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Non applicabile',
+                  l10n.nonApplicabile,
                   style: t.labelLarge?.copyWith(color: scheme.primary),
                 ),
                 for (final p in esito.problemi.take(6))
                   Text('• $p', style: t.bodySmall),
                 if (messaggio != null)
-                  Text('Scrivi al coach di correggerlo.', style: t.bodySmall)
+                  Text(l10n.scriviAlCoachCorreggerlo, style: t.bodySmall)
                 else
                   TextButton.icon(
                     onPressed: () async {
@@ -200,14 +210,12 @@ class SchedaPiano extends StatelessWidget {
                       );
                       messenger.showSnackBar(
                         avviso(
-                          content: Text(
-                            'Copiato: incollalo in $app per correggere.',
-                          ),
+                          content: Text(l10n.copiatoIncollaloCorreggere(app)),
                         ),
                       );
                     },
                     icon: const Icon(Icons.copy_rounded),
-                    label: Text('Copia i problemi per $app'),
+                    label: Text(l10n.copiaProblemi(app)),
                   ),
               ] else
                 Padding(
@@ -223,14 +231,14 @@ class SchedaPiano extends StatelessWidget {
                         avviso(
                           content: Text(
                             n == 0
-                                ? 'Il piano non è più applicabile: riprova.'
-                                : 'Piano applicato: $n sedute nel calendario.',
+                                ? l10n.pianoNonPiuApplicabile
+                                : l10n.pianoApplicatoSeduteNel(n),
                           ),
                         ),
                       );
                     },
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Applica il piano'),
+                    label: Text(l10n.applicaPiano),
                   ),
                 ),
             ],
@@ -273,8 +281,8 @@ class SchedaArrampicata extends StatelessWidget {
           children: [
             Text(
               proposte.length == 1
-                  ? 'Allenamento di arrampicata'
-                  : '${proposte.length} allenamenti di arrampicata',
+                  ? l10n.allenamentoArrampicata
+                  : l10n.allenamentiArrampicata2(proposte.length),
               style: t.titleSmall,
             ),
             for (final p in proposte) ...[
@@ -288,7 +296,7 @@ class SchedaArrampicata extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      '${p.allenamento.nome} · ${p.allenamento.minuti} min',
+                      l10n.min2(p.allenamento.nome, p.allenamento.minuti),
                       style: t.titleSmall,
                     ),
                   ),
@@ -299,22 +307,17 @@ class SchedaArrampicata extends StatelessWidget {
                   if (p.allenamento.categoria.isNotEmpty)
                     p.allenamento.categoria,
                   p.data == null
-                      ? 'nella raccolta'
-                      : 'nel calendario ${dataLunga(p.data!)}',
+                      ? l10n.nellaRaccolta
+                      : l10n.nelCalendario2(dataLunga(p.data!)),
                 ].join(' · '),
                 style: t.bodySmall,
               ),
               for (final e in p.allenamento.esercizi)
                 Text('• ${e.nome}: ${e.riassunto}', style: t.bodySmall),
             ],
-            if (passate > 0)
-              Text(
-                'Le date passate non vanno nel calendario, ma l\'allenamento '
-                'si salva lo stesso.',
-                style: t.bodySmall,
-              ),
+            if (passate > 0) Text(l10n.datePassateNonVanno, style: t.bodySmall),
             if (messaggio?.applicata ?? state.rispostaApplicata)
-              const Text('Salvato.')
+              Text(l10n.salvato)
             else
               FilledButton.icon(
                 onPressed: () async {
@@ -326,12 +329,14 @@ class SchedaArrampicata extends StatelessWidget {
                       content: Text(
                         [
                           salvati == 1
-                              ? 'Salvato negli allenamenti di arrampicata.'
-                              : '$salvati salvati negli allenamenti di arrampicata.',
+                              ? l10n.salvatoNegliAllenamentiArrampicata
+                              : l10n.salvatiNegliAllenamentiArrampicata(
+                                  salvati,
+                                ),
                           if (messi > 0)
                             messi == 1
-                                ? 'Uno è nel calendario.'
-                                : '$messi sono nel calendario.',
+                                ? l10n.unoNelCalendario
+                                : l10n.sonoNelCalendario(messi),
                         ].join(' '),
                       ),
                     ),
@@ -339,7 +344,7 @@ class SchedaArrampicata extends StatelessWidget {
                 },
                 icon: const Icon(Icons.save_alt_rounded),
                 label: Text(
-                  conData > passate ? 'Salva e metti nel calendario' : 'Salva',
+                  conData > passate ? l10n.salvaMettiNelCalendario : l10n.salva,
                 ),
               ),
           ],

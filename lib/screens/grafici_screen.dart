@@ -11,6 +11,7 @@ import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
 class GraficiScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: Text('Grafici · ${titoloSessione(s.sport, s.tipo)}'),
+        title: Text(l10n.grafici(titoloSessione(s.sport, s.tipo))),
       ),
       body: FutureBuilder<SerieSessione>(
         future: _serie,
@@ -52,12 +53,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
               ? serie.velocita
               : velocitaDaTratti(aMano, inizio);
           if (serie.vuota && velocita.isEmpty) {
-            return const Padding(
+            return Padding(
               padding: EdgeInsets.all(24),
-              child: Text(
-                'Per questa attività non ci sono dati nel tempo: servono il '
-                'battito o la velocità registrati dall\'orologio.',
-              ),
+              child: Text(l10n.questaAttivitaNonCi),
             );
           }
           return ListView(
@@ -75,28 +73,31 @@ class _GraficiScreenState extends State<GraficiScreen> {
               ],
               if (serie.altitudine.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Altitudine',
+                  titolo: l10n.altitudine,
                   serie: serie.altitudine,
                   inizio: _inizio(serie),
                   unita: 'm',
                   colore: const Color(0xFF8E8E96),
                   numeri: [
-                    ('Minima', '${_min(serie.altitudine).round()} m'),
-                    ('Massima', '${massimo(serie.altitudine).round()} m'),
+                    (l10n.minima, '${_min(serie.altitudine).round()} m'),
+                    (l10n.massima, '${massimo(serie.altitudine).round()} m'),
                   ],
                 ),
                 const SizedBox(height: 12),
               ],
               if (serie.pendenza.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Pendenza',
+                  titolo: l10n.pendenza,
                   serie: serie.pendenza,
                   inizio: _inizio(serie),
                   unita: '%',
                   colore: const Color(0xFFFFC233),
                   numeri: [
-                    ('Salita massima', '${massimo(serie.pendenza).round()} %'),
-                    ('Discesa massima', '${_min(serie.pendenza).round()} %'),
+                    (
+                      l10n.salitaMassima,
+                      '${massimo(serie.pendenza).round()} %',
+                    ),
+                    (l10n.discesaMassima, '${_min(serie.pendenza).round()} %'),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -118,12 +119,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
                       serie: serie.potenza,
                       zone: widget.state.zonePotenzaCorsa,
                       nota: widget.state.ftpCorsaStimata
-                          ? 'FTP di corsa stimata da età e peso: per averla '
-                                'precisa fai il test in Profilo → Le mie zone.'
+                          ? l10n.ftpCorsaStimataEta
                           : null,
-                      aiuto:
-                          'Per le zone serve il tuo peso (Profilo), oppure '
-                          'l\'FTP di corsa in Profilo → Le mie zone.',
+                      aiuto: l10n.zoneServeTuoPeso,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -139,14 +137,14 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 if (passiAlMinuto(serie.cadenza, s.sport) case final p
                     when p.isNotEmpty) ...[
                   _Semplice(
-                    titolo: 'Passi al minuto',
+                    titolo: l10n.passiAlMinuto,
                     serie: p,
                     inizio: _inizio(serie),
                     unita: 'ppm',
                     colore: const Color(0xFF2EA8FF),
                     numeri: [
-                      ('Media', '${media(p).round()} ppm'),
-                      ('Massima', '${massimo(p).round()} ppm'),
+                      (l10n.media, '${media(p).round()} ppm'),
+                      (l10n.massima, '${massimo(p).round()} ppm'),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -155,18 +153,18 @@ class _GraficiScreenState extends State<GraficiScreen> {
               else if (serie.cadenza.isNotEmpty) ...[
                 _Semplice(
                   titolo: stessoSport(s.sport, 'Nuoto')
-                      ? 'Bracciate al minuto'
-                      : 'Cadenza',
+                      ? l10n.bracciateAlMinuto
+                      : l10n.cadenza,
                   serie: serie.cadenza,
                   inizio: _inizio(serie),
-                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto',
+                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : l10n.alMinuto,
                   colore: const Color(0xFF2EA8FF),
                   numeri: [
                     (
-                      'Media',
+                      l10n.media,
                       '${media(serie.cadenza.where((c) => c.v > 0).toList()).round()}',
                     ),
-                    ('Massima', '${massimo(serie.cadenza).round()}'),
+                    (l10n.massima, '${massimo(serie.cadenza).round()}'),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -253,10 +251,10 @@ class _Battito extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = ricampiona(serie);
     return _Riquadro(
-      titolo: 'Frequenza cardiaca',
+      titolo: l10n.frequenzaCardiaca,
       numeri: [
-        ('Media', '${media(serie).round()} bpm'),
-        ('Massima', '${massimo(serie).round()} bpm'),
+        (l10n.media, '${media(serie).round()} bpm'),
+        (l10n.massima, '${massimo(serie).round()} bpm'),
       ],
       grafico: GraficoLinea(
         ys: [for (final c in r) c.v],
@@ -287,7 +285,7 @@ class _Zone extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tempo nelle zone', style: t.titleMedium),
+          Text(l10n.tempoNelleZone, style: t.titleMedium),
           const SizedBox(height: 10),
           for (var n = 5; n >= 1; n--)
             Padding(
@@ -322,10 +320,7 @@ class _Zone extends StatelessWidget {
                 ],
               ),
             ),
-          Text(
-            'Zone calcolate sulla tua FC massima (${zone.fcMax} bpm).',
-            style: t.bodySmall,
-          ),
+          Text(l10n.zoneCalcolateSullaTua(zone.fcMax), style: t.bodySmall),
         ],
       ),
     );
@@ -352,10 +347,10 @@ class _Velocita extends StatelessWidget {
     final colore = coloreSport(sport);
     if (bici) {
       return _Riquadro(
-        titolo: 'Velocità',
+        titolo: l10n.velocita,
         numeri: [
-          ('Media', '${(media(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
-          ('Massima', '${(massimo(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+          (l10n.media, '${(media(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+          (l10n.massima, '${(massimo(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
         ],
         grafico: GraficoLinea(
           ys: [for (final c in r) c.v * 3.6],
@@ -373,10 +368,10 @@ class _Velocita extends StatelessWidget {
       // Passo ogni 100 m: più in alto = più veloce.
       double passo(double v) => v < 0.2 ? 0 : 100 / v;
       return _Riquadro(
-        titolo: 'Passo',
+        titolo: l10n.passo,
         numeri: [
-          ('Medio', '${fmtMinSec(passo(media(inMoto)))} /100 m'),
-          ('Migliore', '${fmtMinSec(passo(massimo(inMoto)))} /100 m'),
+          (l10n.medio, '${fmtMinSec(passo(media(inMoto)))} /100 m'),
+          (l10n.migliore, '${fmtMinSec(passo(massimo(inMoto)))} /100 m'),
         ],
         grafico: GraficoLinea(
           ys: [for (final c in r) -passo(c.v).clamp(0, 600).toDouble()],
@@ -393,10 +388,10 @@ class _Velocita extends StatelessWidget {
     // Passo: più in alto = più veloce, come su Garmin.
     final passi = [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()];
     return _Riquadro(
-      titolo: 'Passo',
+      titolo: l10n.passo,
       numeri: [
-        ('Medio', '${fmtMinSec(passoDa(media(inMoto)))} /km'),
-        ('Migliore', '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
+        (l10n.medio, '${fmtMinSec(passoDa(media(inMoto)))} /km'),
+        (l10n.migliore, '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
       ],
       grafico: GraficoLinea(
         ys: passi,
@@ -463,18 +458,14 @@ class _SogliaDaCorsa extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('La tua FTP di corsa: $soglia W', style: t.titleMedium),
+                Text(l10n.tuaFtpCorsaW(soglia), style: t.titleMedium),
                 const SizedBox(height: 4),
-                Text(
-                  'È il 95% dei tuoi migliori 20 minuti. Vale se in quei 20 '
-                  'minuti hai corso al massimo.',
-                  style: t.bodySmall,
-                ),
+                Text(l10n.n95DeiTuoiMigliori, style: t.bodySmall),
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: () => state.impostaFtpCorsa(soglia),
                   icon: const Icon(Icons.check_rounded),
-                  label: const Text('Usala come FTP di corsa'),
+                  label: Text(l10n.usalaComeFtpCorsa),
                 ),
               ],
             ),
@@ -496,11 +487,11 @@ class GraficoPotenza extends StatelessWidget {
     final r = ricampiona(serie);
     final np = potenzaNormalizzata(serie);
     return _Riquadro(
-      titolo: 'Potenza',
+      titolo: l10n.potenza,
       numeri: [
-        ('Media', '${media(serie).round()} W'),
-        if (np != null) ('Normalizzata', '$np W'),
-        ('Massima', '${massimo(serie).round()} W'),
+        (l10n.media, '${media(serie).round()} W'),
+        if (np != null) (l10n.normalizzata, '$np W'),
+        (l10n.massima, '${massimo(serie).round()} W'),
       ],
       grafico: GraficoLinea(
         ys: [for (final c in r) c.v],
@@ -519,15 +510,13 @@ class ZonePotenzaCard extends StatelessWidget {
   final List<Campione> serie;
   final ZonePotenza? zone;
   final String? nota; // da dove viene la soglia, se è solo una stima
-  final String aiuto; // cosa fare se non c'è la soglia
+  final String? aiuto; // cosa fare se non c'è la soglia
   const ZonePotenzaCard({
     super.key,
     required this.serie,
     required this.zone,
     this.nota,
-    this.aiuto =
-        'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → '
-        'Zone, oppure impostalo su intervals.icu.',
+    this.aiuto,
   });
 
   @override
@@ -535,7 +524,9 @@ class ZonePotenzaCard extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final z = zone;
     if (z == null) {
-      return SuperficiePulse(child: Text(aiuto, style: t.bodySmall));
+      return SuperficiePulse(
+        child: Text(aiuto ?? l10n.zonePotenzaServeFtp, style: t.bodySmall),
+      );
     }
     final tempi = tempoNelleZonePotenza(serie, z);
     final totale = tempi.values.fold(Duration.zero, (a, b) => a + b);
@@ -544,7 +535,7 @@ class ZonePotenzaCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tempo nelle zone di potenza', style: t.titleMedium),
+          Text(l10n.tempoNelleZonePotenza, style: t.titleMedium),
           const SizedBox(height: 10),
           for (var n = z.numero; n >= 1; n--)
             Padding(
@@ -579,10 +570,7 @@ class ZonePotenzaCard extends StatelessWidget {
                 ],
               ),
             ),
-          Text(
-            nota ?? 'Zone calcolate sul tuo FTP (${z.ftp} W).',
-            style: t.bodySmall,
-          ),
+          Text(nota ?? l10n.zoneCalcolateSulTuo(z.ftp), style: t.bodySmall),
         ],
       ),
     );

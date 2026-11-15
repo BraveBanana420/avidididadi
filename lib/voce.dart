@@ -6,6 +6,9 @@ import 'avvisi.dart';
 import 'dati_live.dart';
 import 'esecuzione.dart';
 import 'models.dart';
+import 'navigazione.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 // La voce dell'allenamento: frasi scritte per essere ascoltate ("zona 4",
 // "5 minuti e 42 al chilometro"), non le sigle dello schermo. Le frasi sono
@@ -17,28 +20,36 @@ const _canale = MethodChannel('avidididadi/avvio');
 String parlaDurata(Duration d) {
   final s = d.inSeconds;
   String unita(int n, String uno, String tanti) => '$n ${n == 1 ? uno : tanti}';
-  if (s < 60) return unita(s, 'secondo', 'secondi');
+  if (s < 60) return unita(s, l10nVoce.parolaSecondo, l10nVoce.parolaSecondi);
   if (s < 3600) {
     final m = s ~/ 60;
     final r = s % 60;
     return r == 0
-        ? unita(m, 'minuto', 'minuti')
-        : '${unita(m, 'minuto', 'minuti')} e $r';
+        ? unita(m, l10nVoce.parolaMinuto, l10nVoce.parolaMinuti)
+        : l10nVoce.unoEAltro(
+            unita(m, l10nVoce.parolaMinuto, l10nVoce.parolaMinuti),
+            r,
+          );
   }
   final m = s % 3600 ~/ 60;
-  final ore = unita(s ~/ 3600, 'ora', 'ore');
-  return m == 0 ? ore : '$ore e ${unita(m, 'minuto', 'minuti')}';
+  final ore = unita(s ~/ 3600, l10nVoce.parolaOra, l10nVoce.parolaOre);
+  return m == 0
+      ? ore
+      : l10nVoce.unoEAltro(
+          ore,
+          unita(m, l10nVoce.parolaMinuto, l10nVoce.parolaMinuti),
+        );
 }
 
 /// "5 e 42 al chilometro" a piedi, "27 chilometri all'ora" in bici.
 String parlaVelocita(String sport, double mps) {
   final kmh = mps * 3.6;
-  if (stessoSport(sport, 'Bici')) return "${kmh.round()} chilometri all'ora";
+  if (stessoSport(sport, 'Bici')) return l10nVoce.chilometriAllOra(kmh.round());
   final s = (3600 / kmh).round();
   final r = s % 60;
   return r == 0
-      ? '${s ~/ 60} minuti al chilometro'
-      : '${s ~/ 60} e $r al chilometro';
+      ? l10nVoce.minutiAlChilometro(s ~/ 60)
+      : l10nVoce.alChilometro(s ~/ 60, r);
 }
 
 /// Il giro appena chiuso, a voce.
@@ -46,10 +57,14 @@ String fraseGiro(String sport, Giro g) {
   final km = g.numero * g.metri ~/ 1000;
   final mps = g.metri / (g.tempo.inMilliseconds / 1000);
   if (g.metri == 1000) {
-    return 'Chilometro $km. ${parlaVelocita(sport, mps)}.';
+    return l10nVoce.chilometro(km, parlaVelocita(sport, mps));
   }
-  return 'Chilometro $km. Ultimi ${g.metri ~/ 1000} in '
-      '${parlaDurata(g.tempo)}, ${parlaVelocita(sport, mps)}.';
+  return l10nVoce.chilometroUltimi(
+    km,
+    g.metri ~/ 1000,
+    parlaDurata(g.tempo),
+    parlaVelocita(sport, mps),
+  );
 }
 
 /// I gradi dell'arrampicata per la sintesi vocale: "6a+" → "6 A più", altrimenti
@@ -57,10 +72,10 @@ String fraseGiro(String sport, Giro g) {
 String gradiParlati(String testo) {
   const grado = r'(?<![\w:.,/])([4-9])([abcABC])(\+?)(?!\w)';
   String di(String n, String l, String p) =>
-      '$n ${l.toUpperCase()}${p.isEmpty ? '' : ' più'}';
+      '$n ${l.toUpperCase()}${p.isEmpty ? '' : l10nVoce.piu4}';
   final t = testo.replaceAllMapped(
     RegExp('$grado-([4-9])([abcABC])(\\+?)(?!\\w)'),
-    (m) => 'da ${di(m[1]!, m[2]!, m[3]!)} a ${di(m[4]!, m[5]!, m[6]!)}',
+    (m) => l10nVoce.daA(di(m[1]!, m[2]!, m[3]!), di(m[4]!, m[5]!, m[6]!)),
   );
   return t.replaceAllMapped(RegExp(grado), (m) => di(m[1]!, m[2]!, m[3]!));
 }
@@ -73,32 +88,41 @@ String parlato(String testo) {
       '${m[1]} ${m[1] == '1' ? uno : tanti}';
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+)-(\d+)\b'),
-    (m) => 'da ${m[1]} a ${m[2]}',
+    (m) => l10nVoce.daA(m[1]!, m[2]!),
   );
-  t = t.replaceAllMapped(RegExp(r'\bZ([1-5])\b'), (m) => 'zona ${m[1]}');
+  t = t.replaceAllMapped(
+    RegExp(r'\bZ([1-5])\b'),
+    (m) => '${l10nVoce.parolaZona} ${m[1]}',
+  );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?min\b'),
-    (m) => plurale(m, 'minuto', 'minuti'),
+    (m) => plurale(m, l10nVoce.parolaMinuto, l10nVoce.parolaMinuti),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?s\b'),
-    (m) => plurale(m, 'secondo', 'secondi'),
+    (m) => plurale(m, l10nVoce.parolaSecondo, l10nVoce.parolaSecondi),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?km\b'),
-    (m) => plurale(m, 'chilometro', 'chilometri'),
+    (m) => plurale(m, l10nVoce.parolaChilometro, l10nVoce.parolaChilometri),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+) ?m\b'),
-    (m) => plurale(m, 'metro', 'metri'),
+    (m) => plurale(m, l10nVoce.parolaMetro, l10nVoce.parolaMetri),
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+(?:,\d+)?) ?kg\b'),
-    (m) => '${m[1]} chili',
+    (m) => l10nVoce.quantiChili(m[1]!),
   );
-  t = t.replaceAll('/10', ' su 10');
-  t = t.replaceAll(RegExp(r'\brpm\b', caseSensitive: false), 'giri al minuto');
-  t = t.replaceAllMapped(RegExp(r'\b(\d+) ?W\b'), (m) => '${m[1]} watt');
+  t = t.replaceAll('/10', l10nVoce.su102);
+  t = t.replaceAll(
+    RegExp(r'\brpm\b', caseSensitive: false),
+    l10nVoce.giriAlMinuto,
+  );
+  t = t.replaceAllMapped(
+    RegExp(r'\b(\d+) ?W\b'),
+    (m) => l10nVoce.quantiWatt(m[1]!),
+  );
   return t;
 }
 
@@ -106,14 +130,17 @@ String parlato(String testo) {
 String fraseBlocco(Blocco b) {
   if (b.tipo == TipoBlocco.recupero) {
     return b.secondi == null
-        ? 'Recupero.'
-        : 'Recupero, ${parlaDurata(Duration(seconds: b.secondi!))}.';
+        ? l10nVoce.recupero3
+        : l10nVoce.recupero4(parlaDurata(Duration(seconds: b.secondi!)));
   }
   final pezzi = [
-    'Ora: ${gradiParlati(b.titolo)}',
+    // Il nome del blocco è salvato in italiano: si dice nella lingua
+    // della voce, se è tra quelli noti.
+    l10nVoce.ora(gradiParlati(nomePerVoce(b.titolo))),
     if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
-    if (b.intensita.isNotEmpty) parlato(b.intensita),
-    if (b.obiettivo2.isNotEmpty) parlato(b.obiettivo2),
+    // Intensità e obiettivo sono scritti in italiano nei dati.
+    if (b.intensita.isNotEmpty) parlato(testoPerVoce(b.intensita)),
+    if (b.obiettivo2.isNotEmpty) parlato(testoPerVoce(b.obiettivo2)),
   ];
   return '${pezzi.map((p) => p.trim().replaceAll(RegExp(r'[.\s]+$'), '')).join('. ')}.';
 }
@@ -187,9 +214,8 @@ int versoZona(int zona, int obiettivo) => zona > obiettivo
     ? -1
     : 0;
 
-String fraseZona(int zona, int verso) => verso > 0
-    ? 'Zona $zona, rallenta.'
-    : 'Zona $zona, puoi spingere un po\' di più.';
+String fraseZona(int zona, int verso) =>
+    verso > 0 ? l10nVoce.zonaRallenta(zona) : l10nVoce.zonaPuoiSpingerePo(zona);
 
 /// Fuori passo: 1 troppo veloce, -1 troppo lento, 0 nel margine.
 int versoVelocita(double mps, double obiettivo) =>
@@ -200,10 +226,35 @@ int versoVelocita(double mps, double obiettivo) =>
     : 0;
 
 String fraseVelocita(String sport, double mps, int verso) {
-  final quanto = stessoSport(sport, 'Bici') ? 'Velocità' : 'Passo';
+  final quanto = stessoSport(sport, 'Bici')
+      ? l10nVoce.velocita
+      : l10nVoce.passo;
   return verso > 0
-      ? '$quanto ${parlaVelocita(sport, mps)}, rallenta un po\'.'
-      : '$quanto ${parlaVelocita(sport, mps)}, accelera un po\'.';
+      ? l10nVoce.rallentaPo(quanto, parlaVelocita(sport, mps))
+      : l10nVoce.acceleraPo(quanto, parlaVelocita(sport, mps));
+}
+
+/// Se sul telefono c'è la voce per [codice] (es. 'el'). Senza risposta (nei
+/// test, o se la sintesi vocale manca) si considera di sì.
+Future<bool> voceDisponibile(String codice) async {
+  try {
+    return await _canale.invokeMethod<bool>('voceDisponibile', codice) ?? true;
+  } catch (_) {
+    return true;
+  }
+}
+
+/// Apre le impostazioni della sintesi vocale del telefono.
+Future<void> apriImpostazioniVoce() async {
+  try {
+    await _canale.invokeMethod('impostazioniVoce');
+  } catch (_) {}
+}
+
+/// Una frase di prova nella lingua della voce: un'indicazione stradale.
+String fraseProvaVoce() {
+  final t = l10nVoce;
+  return t.tra(parlaMetri(200), const Curva(0, 90).fraseIn(t), '');
 }
 
 /// La sintesi vocale. Durante una chiamata tace: tiene da parte solo l'ultima
@@ -218,6 +269,7 @@ class Voce {
       return await _canale.invokeMethod<String>('parla', {
             'testo': testo,
             'urgente': urgente,
+            'lingua': codiceVoce,
           }) ??
           'errore';
     } catch (_) {
@@ -257,6 +309,9 @@ class Voce {
   /// solo, col timer, non taglia un avviso in corso (una svolta, un chilometro).
   Future<void> diBlocco(Blocco b, {required bool aMano}) =>
       di(fraseBlocco(b), valida: const Duration(seconds: 30), urgente: aMano);
+
+  /// Dice una frase di prova, anche con la voce spenta negli avvisi.
+  Future<void> prova() => _parla(fraseProvaVoce(), urgente: true);
 
   /// Fine allenamento: niente frasi in sospeso.
   void ferma() {

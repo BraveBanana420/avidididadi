@@ -7,6 +7,8 @@ import '../models.dart';
 import '../pulse.dart';
 import '../tema.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Configurazione guidata: scelti gli sport si parte subito ("Inizia oggi"),
 /// oppure si risponde a qualche domanda in più e il piano è su misura.
@@ -84,10 +86,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
     messenger.showSnackBar(
       avviso(
         content: Text(
-          subito
-              ? 'Il tuo piano è pronto! La prima seduta è qui, in "Oggi". '
-                    'Giorni e durata li cambi quando vuoi dal Profilo.'
-              : 'Il tuo piano è pronto! In "Oggi" trovi cosa fare ogni giorno.',
+          subito ? l10n.tuoPianoProntoPrima : l10n.tuoPianoProntoOggi,
         ),
       ),
     );
@@ -108,7 +107,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      tooltip: 'Indietro',
+                      tooltip: l10n.indietro,
                       onPressed: inCorso ? null : () => _vai(passo - 1),
                       icon: const Icon(Icons.arrow_back_rounded),
                     ),
@@ -134,14 +133,14 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   _inizio(t),
                   _domanda(
                     t,
-                    'Come ti chiami?',
-                    'Così l\'app ti saluta per nome.',
+                    l10n.comeTiChiami,
+                    l10n.cosiAppTiSaluta,
                     TextField(
                       controller: _nome,
                       textCapitalization: TextCapitalization.words,
                       style: t.headlineSmall,
-                      decoration: const InputDecoration(
-                        hintText: 'Il tuo nome',
+                      decoration: InputDecoration(
+                        hintText: l10n.tuoNome,
                         border: OutlineInputBorder(),
                       ),
                       onSubmitted: (_) => _vai(2),
@@ -149,11 +148,8 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   ),
                   _domanda(
                     t,
-                    'Cosa ti piacerebbe fare?',
-                    'Puoi sceglierne più di uno. Con "Inizia oggi" parti con '
-                        '3 sedute da 30 minuti a settimana (lunedì, mercoledì '
-                        'e venerdì), adatte a chi comincia, e la prima è già '
-                        'oggi. Potrai cambiare tutto quando vuoi.',
+                    l10n.cosaTiPiacerebbeFare,
+                    l10n.puoiScegliernePiuUno,
                     // Riquadri grandi da toccare, due per riga; la mobilità
                     // (l'opzione più dolce) da sola, in fondo.
                     LayoutBuilder(
@@ -182,13 +178,12 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   ),
                   _domanda(
                     t,
-                    'Quanto tempo hai?',
-                    'Meglio poco ma con costanza: per iniziare 3 giorni da 30 '
-                        'minuti sono perfetti.',
+                    l10n.quantoTempoHai,
+                    l10n.meglioPocoMaCostanza,
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Giorni a settimana', style: t.titleMedium),
+                        Text(l10n.giorniSettimana, style: t.titleMedium),
                         const SizedBox(height: 8),
                         _Pulsanti(
                           valori: const [2, 3, 4, 5, 6],
@@ -197,7 +192,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                           onScelta: (v) => setState(() => giorni = v),
                         ),
                         const SizedBox(height: 24),
-                        Text('Minuti ogni volta', style: t.titleMedium),
+                        Text(l10n.minutiOgniVolta, style: t.titleMedium),
                         const SizedBox(height: 8),
                         _Pulsanti(
                           valori: const [20, 30, 45, 60],
@@ -209,8 +204,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
                             child: Text(
-                              'Con $giorni giorni non c\'è spazio per tutti '
-                              'gli sport scelti: ne userò $giorni.',
+                              l10n.giorniNonCSpazio(giorni, giorni),
                               style: t.bodySmall,
                             ),
                           ),
@@ -219,9 +213,8 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   ),
                   _domanda(
                     t,
-                    'Quanto ti alleni di solito?',
-                    'Rispondi sinceramente: il piano parte dal tuo livello e '
-                        'cresce insieme a te.',
+                    l10n.quantoTiAlleniSolito,
+                    l10n.rispondiSinceramentePianoParte,
                     Column(
                       children: [
                         for (final e in livelliBenvenuto.entries)
@@ -257,14 +250,12 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                           PulsantePrincipale(
                             onPressed: () => _crea(subito: true),
                             icona: Icons.play_arrow_rounded,
-                            testo: 'Inizia oggi',
+                            testo: l10n.iniziaOggi,
                           ),
                           const SizedBox(height: 4),
                           TextButton(
                             onPressed: () => _vai(3),
-                            child: const Text(
-                              'Prima scelgo giorni, durata e livello',
-                            ),
+                            child: Text(l10n.primaScelgoGiorniDurata),
                           ),
                         ],
                       )
@@ -278,10 +269,10 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                             ? Icons.auto_awesome_rounded
                             : Icons.arrow_forward_rounded,
                         testo: ultimo
-                            ? 'Crea il mio piano'
+                            ? l10n.creaMioPiano
                             : passo == 2 && sport.isEmpty
-                            ? 'Scegli almeno uno sport'
-                            : 'Avanti',
+                            ? l10n.scegliAlmenoUnoSport
+                            : l10n.avanti,
                       ),
               ),
           ],
@@ -312,30 +303,28 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
           ),
           const SizedBox(height: 24),
           Text(
-            'Benvenuto!',
+            l10n.benvenuto,
             style: t.headlineLarge,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
           Text(
-            'Ti preparo un piano di allenamento su misura, anche se non ti sei '
-            'mai allenato. Ogni giorno ti dico cosa fare, passo passo, e il '
-            'piano si adatta a come ti senti.',
+            l10n.tiPreparoPianoAllenamento,
             style: t.bodyLarge,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Scegli i tuoi sport e parti subito.',
+            l10n.scegliTuoiSportParti,
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          PulsantePrincipale(onPressed: () => _vai(1), testo: 'Iniziamo'),
+          PulsantePrincipale(onPressed: () => _vai(1), testo: l10n.iniziamo),
           const SizedBox(height: 8),
           TextButton(
             onPressed: _salta,
-            child: const Text('Salta, preferisco fare da solo'),
+            child: Text(l10n.saltaPreferiscoFareSolo),
           ),
         ],
       ),
@@ -359,60 +348,33 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
     );
     return _domanda(
       t,
-      'Hai un orologio sportivo?',
-      'Va bene anche senza: l\'app funziona con il solo telefono.',
+      l10n.haiOrologioSportivo,
+      l10n.vaBeneAncheSenza,
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _Scelta(
-            titolo: 'No, solo il telefono',
-            testo: 'Niente orologio, fascia cardio o altre app.',
+            titolo: l10n.noSoloTelefono,
+            testo: l10n.nienteOrologioFasciaCardio,
             scelta: orologio == false,
             onTap: () => setState(() => orologio = false),
           ),
           _Scelta(
-            titolo: 'Sì, un orologio o una fascia',
-            testo: 'Garmin, Polar, Suunto, Coros, Wahoo…',
+            titolo: l10n.siOrologioOFascia,
+            testo: l10n.garminPolarSuuntoCoros,
             scelta: orologio == true,
             onTap: () => setState(() => orologio = true),
           ),
           const SizedBox(height: 8),
           if (orologio == false) ...[
-            punto(
-              Icons.gps_fixed_rounded,
-              'Corsa, camminata e bici le registra il telefono con il GPS, e '
-              'ti guida a voce passo passo.',
-            ),
-            punto(
-              Icons.sentiment_satisfied_alt_rounded,
-              'Le zone (per esempio "zona 2") seguile a sensazione: in zona 2 '
-              'riesci ancora a parlare.',
-            ),
-            punto(
-              Icons.rate_review_rounded,
-              'Dopo ogni seduta rispondi a "Com\'è andata?": è così che il '
-              'piano capisce la fatica e si adatta.',
-            ),
-            punto(
-              Icons.pool_rounded,
-              'Il nuoto, senza orologio, lo segni a mano dopo la vasca.',
-            ),
-            punto(
-              Icons.bedtime_rounded,
-              'Energia e sonno restano vuoti: servono i dati di un orologio.',
-            ),
+            punto(Icons.gps_fixed_rounded, l10n.corsaCamminataBiciRegistra),
+            punto(Icons.sentiment_satisfied_alt_rounded, l10n.zoneEsempioZona2),
+            punto(Icons.rate_review_rounded, l10n.dopoOgniSedutaRispondi),
+            punto(Icons.pool_rounded, l10n.nuotoSenzaOrologioSegni),
+            punto(Icons.bedtime_rounded, l10n.energiaSonnoRestanoVuoti),
           ] else if (orologio == true) ...[
-            punto(
-              Icons.link_rounded,
-              'Dopo collegalo da Profilo → Dati e collegamenti: con Health '
-              'Connect, o con intervals.icu per Garmin e gli altri. Le '
-              'attività arrivano da sole, con battito e sonno.',
-            ),
-            punto(
-              Icons.bolt_rounded,
-              'Hai un rullo smart? Collegalo durante l\'allenamento: l\'app '
-              'gli manda i watt di ogni passo.',
-            ),
+            punto(Icons.link_rounded, l10n.dopoCollegaloProfiloDati),
+            punto(Icons.bolt_rounded, l10n.haiRulloSmartCollegalo),
           ],
         ],
       ),
@@ -444,9 +406,8 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
     final nome = _nome.text.trim();
     return _domanda(
       t,
-      nome.isEmpty ? 'Ecco la tua settimana' : 'Ecco la tua settimana, $nome',
-      'Ogni giorno, nella pagina "Oggi", trovi cosa fare. Potrai cambiare '
-      'giorni e orari quando vuoi.',
+      nome.isEmpty ? l10n.eccoTuaSettimana : l10n.eccoTuaSettimana2(nome),
+      l10n.ogniGiornoNellaPagina,
       Card(
         child: Column(
           children: [
@@ -465,7 +426,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                   ),
                   title: Text(giorniSettimana[g - 1]),
                   subtitle: Text(
-                    s == null ? 'Riposo' : '${s.sport} · ${s.durataMin} minuti',
+                    s == null ? 'Riposo' : l10n.minuti(s.sport, s.durataMin),
                   ),
                 );
               }(),
@@ -625,7 +586,7 @@ class _TesseraSport extends StatelessWidget {
     final testi = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(sport, style: t.titleMedium),
+        Text(mostra(sport), style: t.titleMedium),
         Text(
           testo,
           style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),

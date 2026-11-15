@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'avviso.dart';
 import 'app_state.dart';
@@ -22,10 +21,14 @@ import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
+import 'l10n/lingua.dart';
+import 'l10n/app_localizations.dart';
+import 'screens/lingua_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await caricaTema();
+  await caricaLingua();
   await caricaTour();
   runApp(const AllenamentiApp());
 }
@@ -36,17 +39,18 @@ class AllenamentiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([tema, neon]),
+      listenable: Listenable.merge([tema, neon, lingua]),
       builder: (context, _) => MaterialApp(
         title: 'Avidididadi',
         debugShowCheckedModeBanner: false,
         theme: creaTema(Brightness.light, neon: neon.value),
         darkTheme: creaTema(Brightness.dark, neon: neon.value),
         themeMode: tema.value,
-        // Tutta l'app in italiano: calendari in GG/MM/AAAA e settimana da lunedì.
-        locale: const Locale('it'),
-        supportedLocales: const [Locale('it')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        // Italiano o inglese, scelta nell'app (non quella del telefono):
+        // anche i calendari e i pulsanti di sistema la seguono.
+        locale: Locale(codiceLingua),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         // I colori degli sport seguono il tema in uso.
         builder: (context, child) {
           temaScuroAttivo = Theme.of(context).brightness == Brightness.dark;
@@ -115,6 +119,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       WidgetsBinding.instance.addPostFrameCallback((_) => _apriPrivacy());
     }
     await state.load();
+    // Primo avvio: prima di tutto la lingua.
+    if (lingua.value == null && mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          fullscreenDialog: true,
+          builder: (_) => const LinguaScreen(primoAvvio: true),
+        ),
+      );
+    }
     // Prima di usare l'app si accettano termini e informativa (di nuovo se
     // sono cambiati).
     if (state.profilo.terminiAccettati != versioneTermini && mounted) {
@@ -125,10 +138,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
       );
     }
-    // Il widget della schermata home segue piano, sedute fatte e tema.
+    // Il widget della schermata home segue piano, sedute fatte, tema e
+    // lingua.
     state.addListener(_aggiornaWidget);
     tema.addListener(_aggiornaWidget);
     neon.addListener(_aggiornaWidget);
+    lingua.addListener(_aggiornaWidget);
     _aggiornaWidget();
     if (azione == azioneAvviaWidget) _avviaOggi();
     // Avidididadi nel menu Condividi solo con l'assistente esterno collegato
@@ -162,19 +177,16 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       barrierDismissible: false,
       builder: (c) => AlertDialog(
         icon: const Icon(Icons.restore_rounded),
-        title: const Text('Allenamento interrotto'),
-        content: Text(
-          "L'app si era chiusa durante l'allenamento: ${r.riassunto}. "
-          'Riprendi da dove eri? Riparte in pausa.',
-        ),
+        title: Text(l10n.allenamentoInterrotto),
+        content: Text(l10n.appSiEraChiusa(r.riassunto)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Scarta'),
+            child: Text(l10n.scarta),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Riprendi'),
+            child: Text(l10n.riprendi),
           ),
         ],
       ),
@@ -230,9 +242,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     setState(() => tab = 2);
     // Se è aperta un'altra pagina (es. un allenamento) non si chiude: avviso.
     if (Navigator.of(context).canPop()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        avviso(content: Text('Risposta ricevuta: la trovi in Coach.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text(l10n.rispostaRicevutaTroviCoach)));
     }
   }
 
@@ -249,6 +260,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     state.removeListener(_aggiornaWidget);
     tema.removeListener(_aggiornaWidget);
     neon.removeListener(_aggiornaWidget);
+    lingua.removeListener(_aggiornaWidget);
     pagine.dispose();
     super.dispose();
   }
@@ -294,11 +306,11 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           key: ChiaviTour.barra,
           chiavi: ChiaviTour.voci,
           attiva: tab,
-          voci: const [
-            VoceBarra(Icons.today_rounded, 'Oggi'),
-            VoceBarra(Icons.insights_rounded, 'Progressi'),
-            VoceBarra(Icons.forum_rounded, 'Coach'),
-            VoceBarra(Icons.person_outline_rounded, 'Profilo'),
+          voci: [
+            VoceBarra(Icons.today_rounded, l10n.oggi),
+            VoceBarra(Icons.insights_rounded, l10n.progressi),
+            VoceBarra(Icons.forum_rounded, l10n.coach),
+            VoceBarra(Icons.person_outline_rounded, l10n.profilo),
           ],
           onTocca: _vaiA,
         ),

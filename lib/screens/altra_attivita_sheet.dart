@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../app_state.dart';
 import '../attivita_libera.dart';
+import '../l10n/lingua.dart';
 
 /// Un'attività che non è tra quelle dell'app (kayak, sci, padel…): si
 /// scrive il nome, che resta come etichetta della sessione, e si sceglie se
@@ -58,20 +59,16 @@ class _FoglioAltraAttivitaState extends State<_FoglioAltraAttivita> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 12,
             children: [
-              Text('Che attività è?', style: t.titleLarge),
-              Text(
-                'Il nome resta sulla sessione, nel calendario e nello '
-                'storico.',
-                style: t.bodySmall,
-              ),
+              Text(l10n.attivita2, style: t.titleLarge),
+              Text(l10n.nomeRestaSullaSessione, style: t.bodySmall),
               TextField(
                 controller: _nome,
                 autofocus: widget.nomi.isEmpty,
                 textCapitalization: TextCapitalization.sentences,
                 textInputAction: TextInputAction.done,
-                decoration: const InputDecoration(
-                  labelText: 'Nome',
-                  hintText: 'Es. Kayak, Padel, Sci',
+                decoration: InputDecoration(
+                  labelText: l10n.nome,
+                  hintText: l10n.esKayakPadelSci,
                 ),
                 onSubmitted: (_) => _conferma(),
               ),
@@ -93,18 +90,15 @@ class _FoglioAltraAttivitaState extends State<_FoglioAltraAttivita> {
                   child: SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     secondary: const Icon(Icons.route_rounded),
-                    title: const Text('Registra il percorso GPS'),
-                    subtitle: const Text(
-                      'Mappa, distanza e velocità, anche a schermo spento. '
-                      'Spento: solo tempo e battito.',
-                    ),
+                    title: Text(l10n.registraPercorsoGps),
+                    subtitle: Text(l10n.mappaDistanzaVelocitaAnche),
                     value: _gps,
                     onChanged: (v) => setState(() => _gps = v),
                   ),
                 ),
               FilledButton(
                 onPressed: _conferma,
-                child: Text(widget.conGps ? 'Inizia' : 'Avanti'),
+                child: Text(widget.conGps ? l10n.inizia2 : l10n.avanti),
               ),
             ],
           ),

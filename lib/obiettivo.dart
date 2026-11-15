@@ -1,21 +1,22 @@
 import 'dart:math' as math;
 
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Gare che si possono scegliere come obiettivo, per sport: chiave -> nome.
-const gare = <String, Map<String, String>>{
+Map<String, Map<String, String>> get gare => <String, Map<String, String>>{
   'Corsa': {
-    '5k': '5 km',
-    '10k': '10 km',
-    'mezza': 'Mezza maratona',
-    'maratona': 'Maratona',
+    '5k': l10n.n5Km,
+    '10k': l10n.n10Km,
+    'mezza': l10n.mezzaMaratona,
+    'maratona': l10n.maratona,
   },
   'Nuoto': {'750m': '750 m', '1500m': '1500 m', '3800m': '3,8 km'},
-  'Bici': {'mediofondo': 'Mediofondo', 'granfondo': 'Granfondo'},
+  'Bici': {'mediofondo': l10n.mediofondo, 'granfondo': l10n.granfondo},
   'Triathlon': {
-    'sprint': 'Triathlon sprint',
-    'olimpico': 'Triathlon olimpico',
-    '703': 'Triathlon 70.3',
+    'sprint': l10n.triathlonSprint,
+    'olimpico': l10n.triathlonOlimpico,
+    '703': l10n.triathlon703,
     'ironman': 'Ironman',
   },
 };
@@ -23,22 +24,22 @@ const gare = <String, Map<String, String>>{
 /// Fase della preparazione, in base alle settimane che mancano alla gara.
 enum Fase { base, sviluppo, rifinitura, scarico, gara, libera }
 
-const nomiFasi = {
-  Fase.base: 'Base',
-  Fase.sviluppo: 'Sviluppo',
-  Fase.rifinitura: 'Rifinitura',
-  Fase.scarico: 'Scarico pre-gara',
-  Fase.gara: 'Settimana della gara',
-  Fase.libera: 'Senza obiettivo',
+Map<Fase, String> get nomiFasi => {
+  Fase.base: l10n.base,
+  Fase.sviluppo: l10n.sviluppo,
+  Fase.rifinitura: l10n.rifinitura,
+  Fase.scarico: l10n.scaricoPreGara,
+  Fase.gara: l10n.settimanaGara,
+  Fase.libera: l10n.senzaObiettivo,
 };
 
-const spiegazioniFasi = {
-  Fase.base: 'Volume che cresce piano, quasi tutto a bassa intensità.',
-  Fase.sviluppo: 'Si aggiungono le sedute di qualità, il lungo si allunga.',
-  Fase.rifinitura: 'Lavori al ritmo gara, volume stabile.',
-  Fase.scarico: 'Meno volume, un po\' di intensità per restare reattivo.',
-  Fase.gara: 'Poche sedute corte: si arriva freschi al via.',
-  Fase.libera: 'Piano di mantenimento: imposta una gara per una preparazione.',
+Map<Fase, String> get spiegazioniFasi => {
+  Fase.base: l10n.volumeCrescePianoQuasi,
+  Fase.sviluppo: l10n.siAggiungonoSeduteQualita,
+  Fase.rifinitura: l10n.lavoriAlRitmoGara,
+  Fase.scarico: l10n.menoVolumePoIntensita,
+  Fase.gara: l10n.pocheSeduteCorteSi,
+  Fase.libera: l10n.pianoMantenimentoImpostaGara,
 };
 
 /// Una gara con una data: guida la progressione di tutti i piani.
@@ -93,7 +94,13 @@ class Zone {
   });
 
   static const _quote = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
-  static const nomi = ['Recupero', 'Aerobica', 'Medio', 'Soglia', 'Massimale'];
+  static List<String> get nomi => [
+    'Recupero',
+    l10n.aerobica,
+    l10n.medio,
+    'Soglia',
+    l10n.massimale,
+  ];
 
   /// Karvonen (riserva cardiaca) se si conosce la FC a riposo, altrimenti
   /// percentuale della FC massima.
@@ -106,7 +113,7 @@ class Zone {
 
   String testo(int n) {
     final (da, a) = zona(n);
-    return 'Z$n $da-$a bpm';
+    return l10n.zBpm(n, da, a);
   }
 
   /// In quale zona cade una frequenza cardiaca (0 se sotto la Z1).
@@ -154,6 +161,6 @@ String conBpm(String testo, Zone z) => testo.replaceAllMapped(
   RegExp(r'zona ([1-5])(?! \()', caseSensitive: false),
   (m) {
     final (da, a) = z.zona(int.parse(m[1]!));
-    return '${m[0]} ($da-$a bpm)';
+    return l10n.bpm(m[0]!, da, a);
   },
 );

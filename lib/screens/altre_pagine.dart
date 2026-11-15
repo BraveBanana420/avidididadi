@@ -3,6 +3,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../app_state.dart';
 import '../glossario.dart';
+import '../l10n/vocabolario.dart';
 import '../models.dart';
 import '../widgets.dart';
 import 'backup_card.dart';
@@ -10,6 +11,7 @@ import 'health_connect_card.dart';
 import 'intervals_card.dart';
 import 'import_csv.dart';
 import 'privacy_screen.dart';
+import '../l10n/lingua.dart';
 
 /// Collegamenti e dati: Health Connect, backup e import. La parte tecnica,
 /// tenuta fuori dal Profilo.
@@ -22,15 +24,11 @@ class DatiCollegamentiScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Dati e collegamenti')),
+      appBar: AppBar(title: Text(l10n.datiCollegamenti)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Collega l\'orologio o le app che usi (Garmin, Freeletics…) tramite '
-            'Health Connect: gli allenamenti fatti arrivano da soli.',
-            style: t.bodyMedium,
-          ),
+          Text(l10n.collegaOrologioOApp, style: t.bodyMedium),
           const SizedBox(height: 12),
           SezioneHealthConnect(state: state),
           const SizedBox(height: 12),
@@ -49,13 +47,13 @@ class DatiCollegamentiScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const PrivacyScreen())),
             icon: const Icon(Icons.privacy_tip_rounded),
-            label: const Text('Privacy e uso dei dati'),
+            label: Text(l10n.privacyUsoDeiDati),
           ),
           TextButton.icon(
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const TerminiScreen())),
             icon: const Icon(Icons.gavel_rounded),
-            label: const Text('Termini e condizioni'),
+            label: Text(l10n.terminiCondizioni),
           ),
           const _Versione(),
         ],
@@ -84,30 +82,30 @@ class GlossarioScreen extends StatelessWidget {
     );
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text("Le parole dell'allenamento")),
+      appBar: AppBar(title: Text(l10n.paroleDellAllenamento)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Concetti', style: t.titleLarge),
+          Text(l10n.concetti, style: t.titleLarge),
           for (final e in glossario.entries) voce(e.key, e.value),
           const SizedBox(height: 16),
-          Text('Zone: come ti devi sentire', style: t.titleLarge),
+          Text(l10n.zoneComeTiDevi, style: t.titleLarge),
           Card(
             child: Column(
               children: [
                 for (final e in sensazioniZone.entries)
                   ListTile(
                     leading: CircleAvatar(child: Text('${e.key}')),
-                    title: Text('Zona ${e.key}'),
+                    title: Text(l10n.zona(e.key)),
                     subtitle: Text(maiuscola(e.value)),
                   ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          Text('Tipi di seduta', style: t.titleLarge),
+          Text(l10n.tipiSeduta, style: t.titleLarge),
           for (final e in spiegazioniSedute.entries)
-            voce(maiuscola(e.key), e.value),
+            voce(maiuscola(mostra(e.key)), e.value),
         ],
       ),
     );
@@ -131,8 +129,11 @@ class _Versione extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Text(
-          'Avidididadi · versione ${v.version} (${v.buildNumber})'
-          '${_commit.isEmpty ? '' : ' · prova $_commit'}',
+          l10n.avidididadiVersione(
+            v.version,
+            v.buildNumber,
+            _commit.isEmpty ? '' : l10n.prova(_commit),
+          ),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall
               ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),

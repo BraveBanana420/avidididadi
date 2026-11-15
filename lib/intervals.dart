@@ -15,6 +15,7 @@ import 'models.dart';
 import 'percorso.dart';
 import 'potenza.dart';
 import 'serie_sessione.dart';
+import 'l10n/lingua.dart';
 
 /// Collegamento a intervals.icu, che riceve le attività da Garmin, Polar,
 /// Suunto, Coros, Wahoo, Zwift…: nome vero, rulli, percorso, altitudine,
@@ -255,28 +256,20 @@ class ClientIntervals {
         case >= 200 && < 300:
           return corpo.isEmpty ? null : jsonDecode(corpo);
         case 401 || 403:
-          throw const ErroreIntervals(
-            'Chiave API non valida: ricopiala da intervals.icu → Impostazioni '
-            '→ Developer settings.',
-          );
+          throw ErroreIntervals(l10n.chiaveApiNonValida);
         case 404:
           return null;
         case 429:
-          throw const ErroreIntervals(
-            'intervals.icu ha ricevuto troppe richieste: riprova tra qualche '
-            'minuto.',
-          );
+          throw ErroreIntervals(l10n.intervalsIcuHaRicevuto);
         default:
-          throw ErroreIntervals(
-            'intervals.icu ha risposto con un errore (${res.statusCode}).',
-          );
+          throw ErroreIntervals(l10n.intervalsIcuHaRisposto(res.statusCode));
       }
     } on SocketException {
-      throw const ErroreIntervals('Nessuna connessione a internet.');
+      throw ErroreIntervals(l10n.nessunaConnessioneInternet);
     } on TimeoutException {
-      throw const ErroreIntervals('intervals.icu non risponde: riprova.');
+      throw ErroreIntervals(l10n.intervalsIcuNonRisponde);
     } on FormatException {
-      throw const ErroreIntervals('Risposta di intervals.icu non leggibile.');
+      throw ErroreIntervals(l10n.rispostaIntervalsIcuNon);
     } finally {
       client.close();
     }
@@ -300,7 +293,7 @@ class ClientIntervals {
         ..set(HttpHeaders.userAgentHeader, 'Avidididadi');
       final res = await req.close().timeout(const Duration(seconds: 40));
       if (res.statusCode == 401 || res.statusCode == 403) {
-        throw const ErroreIntervals('Chiave API non valida.');
+        throw ErroreIntervals(l10n.chiaveApiNonValida2);
       }
       if (res.statusCode != 200) {
         debugPrint(
@@ -316,9 +309,9 @@ class ClientIntervals {
       }
       return dati.takeBytes();
     } on SocketException {
-      throw const ErroreIntervals('Nessuna connessione a internet.');
+      throw ErroreIntervals(l10n.nessunaConnessioneInternet);
     } on TimeoutException {
-      throw const ErroreIntervals('intervals.icu non risponde: riprova.');
+      throw ErroreIntervals(l10n.intervalsIcuNonRisponde);
     } finally {
       client.close();
     }
@@ -371,7 +364,7 @@ class ClientIntervals {
   /// Prova la chiave: restituisce il nome dell'atleta (o una stringa vuota).
   Future<String> verifica() async {
     final j = await _get('/api/v1/athlete/0');
-    if (j is! Map) throw const ErroreIntervals('Chiave API non valida.');
+    if (j is! Map) throw ErroreIntervals(l10n.chiaveApiNonValida2);
     return '${j['name'] ?? ''}'.trim();
   }
 

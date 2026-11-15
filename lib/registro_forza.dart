@@ -1,5 +1,6 @@
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Registro della forza: ripetizioni e kg di ogni serie fatta con la modalità
 // allenamento. Serve a vedere lo storico di un esercizio e a proporre il peso
@@ -159,12 +160,12 @@ String fmtSerie(List<SerieFatta> serie) {
       ? '${rip.length} × ${rip.first}'
       : rip.join(', ');
   if (kg.length == 1) {
-    return kg.first > 0 ? '$quante a ${fmtKg(kg.first)} kg' : quante;
+    return kg.first > 0 ? l10n.kg(quante, fmtKg(kg.first)) : quante;
   }
   return serie
       .map(
         (s) => s.kg > 0
-            ? '${s.ripetizioni} × ${fmtKg(s.kg)} kg'
+            ? l10n.kg2(s.ripetizioni, fmtKg(s.kg))
             : '${s.ripetizioni}',
       )
       .join(', ');

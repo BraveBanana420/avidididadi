@@ -4,6 +4,8 @@ import '../app_state.dart';
 import '../arrampicata.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Apre la scheda dell'arrampicata di una seduta: si compila dopo aver
 /// arrampicato e si può correggere quando si vuole.
@@ -120,19 +122,19 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 14,
           children: [
-            Text('La tua arrampicata', style: t.titleLarge),
-            _Titolo('Dove'),
+            Text(l10n.tuaArrampicata, style: t.titleLarge),
+            _Titolo(l10n.dove),
             SegmentedButton<Ambiente>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: Ambiente.indoor,
-                  label: Text('Indoor'),
-                  icon: Icon(Icons.roofing_rounded),
+                  label: Text(mostra('Indoor')),
+                  icon: const Icon(Icons.roofing_rounded),
                 ),
                 ButtonSegment(
                   value: Ambiente.outdoor,
-                  label: Text('Outdoor'),
-                  icon: Icon(Icons.landscape_rounded),
+                  label: Text(mostra('Outdoor')),
+                  icon: const Icon(Icons.landscape_rounded),
                 ),
               ],
               selected: {ambiente!},
@@ -143,19 +145,22 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 labelText: ambiente == Ambiente.indoor
-                    ? 'Palestra'
-                    : 'Falesia o zona',
-                hintText: 'Facoltativo',
+                    ? l10n.palestra
+                    : l10n.falesiaOZona,
+                hintText: l10n.facoltativo,
               ),
             ),
-            _Titolo('Cosa hai fatto'),
+            _Titolo(l10n.cosaHaiFatto),
             SegmentedButton<Disciplina>(
               emptySelectionAllowed: true,
-              segments: const [
-                ButtonSegment(value: Disciplina.falesia, label: Text('Vie')),
+              segments: [
+                ButtonSegment(
+                  value: Disciplina.falesia,
+                  label: Text(mostra('Vie')),
+                ),
                 ButtonSegment(
                   value: Disciplina.boulder,
-                  label: Text('Boulder'),
+                  label: Text(mostra('Boulder')),
                 ),
               ],
               selected: {?d},
@@ -164,13 +169,10 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
               },
             ),
             if (d == null)
-              Text(
-                'Scegli vie o boulder: i gradi hanno due scale diverse.',
-                style: t.bodySmall,
-              )
+              Text(l10n.scegliVieOBoulder, style: t.bodySmall)
             else ...[
               _SceltaGrado(
-                etichetta: 'Grado più difficile chiuso',
+                etichetta: l10n.gradoPiuDifficileChiuso,
                 gradi: gradiDi(d),
                 valore: gradoMax,
                 onChanged: (g) => setState(() => gradoMax = g),
@@ -179,9 +181,13 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 Text(
                   gradoMax.isNotEmpty &&
                           livello(d, gradoMax) > livello(d, record.$1)
-                      ? 'Nuovo record! Prima era ${record.$1}.'
-                      : 'Il tuo record: ${record.$1} (${record.$2.day} '
-                            '${mesiNomi[record.$2.month - 1]} ${record.$2.year}).',
+                      ? l10n.nuovoRecordPrimaEra(record.$1)
+                      : l10n.tuoRecord(
+                          record.$1,
+                          record.$2.day,
+                          mesiNomi[record.$2.month - 1],
+                          record.$2.year,
+                        ),
                   style: t.bodySmall,
                 ),
               if (gradoMax.isNotEmpty)
@@ -190,7 +196,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                   children: [
                     for (final s in stili)
                       ChoiceChip(
-                        label: Text(s),
+                        label: Text(mostra(s)),
                         selected: stile == s,
                         onSelected: (v) => setState(() => stile = v ? s : ''),
                       ),
@@ -198,19 +204,21 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 ),
               if (gradoMax.isNotEmpty)
                 Text(switch (stile) {
-                  'A vista' => 'Al primo tentativo, senza sapere niente prima.',
-                  'Flash' => 'Al primo tentativo, sapendo già i movimenti.',
-                  'Lavorata' => 'Chiusa dopo averla provata più volte.',
-                  _ => 'Come l\'hai chiusa? (facoltativo)',
+                  'A vista' => l10n.alPrimoTentativoSenza,
+                  'Flash' => l10n.alPrimoTentativoSapendo,
+                  'Lavorata' => l10n.chiusaDopoAverlaProvata,
+                  _ => l10n.comeHaiChiusaFacoltativo,
                 }, style: t.bodySmall),
               _Contatore(
-                etichetta: falesia ? 'Vie chiuse' : 'Blocchi chiusi',
+                etichetta: falesia ? l10n.vieChiuse2 : l10n.blocchiChiusi2,
                 valore: chiuse,
                 onChanged: (v) => setState(() => chiuse = v),
               ),
               _Contatore(
-                etichetta:
-                    'Provat${falesia ? 'e' : 'i'} senza chiuderl${falesia ? 'e' : 'i'}',
+                etichetta: l10n.provatSenzaChiuderl(
+                  falesia ? 'e' : 'i',
+                  falesia ? 'e' : 'i',
+                ),
                 valore: provate,
                 onChanged: (v) => setState(() => provate = v),
               ),
@@ -220,23 +228,23 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                   children: [
                     for (final c in corde)
                       ChoiceChip(
-                        label: Text(c),
+                        label: Text(mostra(c)),
                         selected: corda == c,
                         onSelected: (v) => setState(() => corda = v ? c : ''),
                       ),
                   ],
                 ),
                 _Contatore(
-                  etichetta: 'Altezza media delle vie (m)',
+                  etichetta: l10n.altezzaMediaDelleVie,
                   valore: h,
                   minimo: 5,
                   onChanged: (v) => setState(() => altezza = v),
                 ),
                 if (chiuse > 0)
-                  Text('Circa ${chiuse * h} metri saliti.', style: t.bodySmall),
+                  Text(l10n.circaMetriSaliti(chiuse * h), style: t.bodySmall),
               ],
               _SceltaGrado(
-                etichetta: 'Progetto (il grado che stai provando)',
+                etichetta: l10n.progettoGradoStaiProvando,
                 gradi: gradiDi(d),
                 valore: progetto,
                 onChanged: (g) => setState(() => progetto = g),
@@ -249,7 +257,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
               ),
               onPressed: d == null ? null : _salva,
               icon: const Icon(Icons.check_rounded),
-              label: const Text('Salva'),
+              label: Text(l10n.salva),
             ),
           ],
         ),
@@ -287,7 +295,7 @@ class _SceltaGrado extends StatelessWidget {
     decoration: InputDecoration(labelText: etichetta),
     menuMaxHeight: 360,
     items: [
-      const DropdownMenuItem(value: '', child: Text('Nessuno')),
+      DropdownMenuItem(value: '', child: Text(l10n.nessuno)),
       for (final g in gradi) DropdownMenuItem(value: g, child: Text(g)),
     ],
     onChanged: (g) => onChanged(g ?? ''),
@@ -314,7 +322,7 @@ class _Contatore extends StatelessWidget {
       children: [
         Expanded(child: Text(etichetta, style: t.bodyLarge)),
         IconButton.filledTonal(
-          tooltip: 'Meno',
+          tooltip: l10n.meno,
           onPressed: valore > minimo ? () => onChanged(valore - 1) : null,
           icon: const Icon(Icons.remove_rounded),
         ),
@@ -327,7 +335,7 @@ class _Contatore extends StatelessWidget {
           ),
         ),
         IconButton.filledTonal(
-          tooltip: 'Più',
+          tooltip: l10n.piu,
           onPressed: () => onChanged(valore + 1),
           icon: const Icon(Icons.add_rounded),
         ),

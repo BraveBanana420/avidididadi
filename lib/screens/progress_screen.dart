@@ -12,9 +12,16 @@ import 'condividi_screen.dart';
 import 'energia.dart';
 import 'health_connect_card.dart';
 import 'sport_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Periodi del grafico: settimane mostrate; oltre i 3 mesi si raggruppa per mese.
-const _periodi = {4: '1 mese', 13: '3 mesi', 26: '6 mesi', 52: '1 anno'};
+Map<int, String> get _periodi => {
+  4: l10n.n1Mese,
+  13: l10n.n3Mesi,
+  26: l10n.n6Mesi,
+  52: l10n.n1Anno,
+};
 
 class ProgressScreen extends StatefulWidget {
   final AppState state;
@@ -56,16 +63,12 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final children = <Widget>[];
     if (tutte.isEmpty) {
       children.addAll([
-        Text('Progressi', style: t.headlineMedium),
+        Text(l10n.progressi, style: t.headlineMedium),
         const SizedBox(height: 16),
-        const SuperficiePulse(
+        SuperficiePulse(
           child: Padding(
             padding: EdgeInsets.all(4),
-            child: Text(
-              'Qui vedrai come vanno i tuoi allenamenti. Collega l\'orologio o '
-              'le app di allenamento dal Profilo (Dati e collegamenti), oppure '
-              'segna le sedute fatte.',
-            ),
+            child: Text(l10n.quiVedraiComeVanno),
           ),
         ),
       ]);
@@ -131,11 +134,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
       ..sort((a, b) => perSport[b]!.length.compareTo(perSport[a]!.length));
     final etichette = [
       for (final d in chiavi)
-        perMese ? mesiNomi[d.month - 1].substring(0, 3) : '${d.day}/${d.month}',
+        perMese ? meseBreve(d.month) : '${d.day}/${d.month}',
     ];
 
     children.addAll([
-      const TitoloSezione('Quanto ti alleni'),
+      TitoloSezione(l10n.quantoTiAlleni),
       SizedBox(
         width: double.infinity,
         child: SegmentedButton<int>(
@@ -159,8 +162,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 Expanded(
                   child: Text(
                     fatica
-                        ? 'Fatica ${perMese ? 'al mese' : 'a settimana'}'
-                        : 'Ore ${perMese ? 'al mese' : 'a settimana'}',
+                        ? l10n.fatica2(perMese ? l10n.alMese : l10n.settimana3)
+                        : l10n.ore(perMese ? l10n.alMese : l10n.settimana3),
                     style: t.titleMedium,
                   ),
                 ),
@@ -169,9 +172,9 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   style: const ButtonStyle(
                     visualDensity: VisualDensity.compact,
                   ),
-                  segments: const [
-                    ButtonSegment(value: false, label: Text('Tempo')),
-                    ButtonSegment(value: true, label: Text('Fatica')),
+                  segments: [
+                    ButtonSegment(value: false, label: Text(l10n.tempo)),
+                    ButtonSegment(value: true, label: Text(l10n.fatica)),
                   ],
                   selected: {fatica},
                   onSelectionChanged: (v) => setState(() => fatica = v.first),
@@ -181,25 +184,22 @@ class _ProgressScreenState extends State<ProgressScreen> {
             if (fatica)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Durata per fatica: conta anche quanto è stata dura.',
-                  style: t.bodySmall,
-                ),
+                child: Text(l10n.durataFaticaContaAnche, style: t.bodySmall),
               ),
             const SizedBox(height: 12),
             if (periodo.isEmpty)
-              const Text('Nessun allenamento in questo periodo.')
+              Text(l10n.nessunAllenamentoQuestoPeriodo)
             else ...[
               GraficoBarre(
                 valori: valori,
                 sport: sportOrdinati,
                 etichette: etichette,
                 conteggi: conteggi,
-                formato: fatica ? (v) => '${v.round()} punti' : fmtOre,
+                formato: fatica ? (v) => l10n.quantiPunti(v.round()) : fmtOre,
                 formatoAsse: fatica ? (v) => '${v.round()}' : null,
                 titoloColonna: perMese
                     ? (i) =>
-                          '${maiuscola(mesiNomi[chiavi[i].month - 1])} '
+                          '${nomeMese(chiavi[i].month)} '
                           '${chiavi[i].year}'
                     : null,
               ),
@@ -218,17 +218,14 @@ class _ProgressScreenState extends State<ProgressScreen> {
                           color: coloreSport(s),
                         ),
                         const SizedBox(width: 4),
-                        Text(s),
+                        Text(mostra(s)),
                       ],
                     ),
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  'Tocca una colonna per i dettagli.',
-                  style: t.bodySmall,
-                ),
+                child: Text(l10n.toccaColonnaDettagli, style: t.bodySmall),
               ),
             ],
           ],
@@ -238,11 +235,8 @@ class _ProgressScreenState extends State<ProgressScreen> {
 
     if (sportOrdinati.isNotEmpty) {
       children.addAll([
-        const TitoloSezione('I tuoi sport'),
-        Text(
-          'Tocca uno sport per vedere tutto il dettaglio.',
-          style: t.bodySmall,
-        ),
+        TitoloSezione(l10n.tuoiSport),
+        Text(l10n.toccaUnoSportVedere, style: t.bodySmall),
         const SizedBox(height: 8),
         LayoutBuilder(
           builder: (context, v) => Wrap(
@@ -310,10 +304,9 @@ class _TesseraSport extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text(sport, style: t.titleMedium),
+          Text(mostra(sport), style: t.titleMedium),
           Text(
-            '${sessioni.length} '
-            '${sessioni.length == 1 ? 'allenamento' : 'allenamenti'}',
+            '${sessioni.length} ${sessioni.length == 1 ? l10n.parolaAllenamento : l10n.parolaAllenamenti}',
           ),
           Text(
             [
@@ -331,25 +324,18 @@ class _TesseraSport extends StatelessWidget {
   }
 }
 
-const _titoliCarico = {
-  StatoCarico.inCalo: 'Stai rallentando',
-  StatoCarico.equilibrato: 'Stai andando bene',
-  StatoCarico.attenzione: 'Stai accelerando',
-  StatoCarico.rischio: 'Troppo, troppo in fretta',
+Map<StatoCarico, String> get _titoliCarico => {
+  StatoCarico.inCalo: l10n.staiRallentando,
+  StatoCarico.equilibrato: l10n.staiAndandoBene,
+  StatoCarico.attenzione: l10n.staiAccelerando,
+  StatoCarico.rischio: l10n.troppoTroppoFretta,
 };
 
-const _frasiCarico = {
-  StatoCarico.inCalo:
-      'Ti alleni meno delle settimane scorse. Va bene se è voluto (riposo, '
-      'impegni); altrimenti riprendi con calma.',
-  StatoCarico.equilibrato:
-      'Aumenti poco alla volta, come si deve: così migliori senza farti male.',
-  StatoCarico.attenzione:
-      'Stai facendo parecchio più del solito. Ascolta le sensazioni e non '
-      'aggiungere altro questa settimana.',
-  StatoCarico.rischio:
-      'Hai aumentato molto in poco tempo: è così che arrivano gli infortuni. '
-      'Fai qualche giorno più leggero.',
+Map<StatoCarico, String> get _frasiCarico => {
+  StatoCarico.inCalo: l10n.tiAlleniMenoDelle,
+  StatoCarico.equilibrato: l10n.aumentiPocoAllaVolta,
+  StatoCarico.attenzione: l10n.staiFacendoParecchioPiu,
+  StatoCarico.rischio: l10n.haiAumentatoMoltoPoco,
 };
 
 /// "2 h 38" (o "45 min"): compatto, per stare accanto ai km.
@@ -397,16 +383,20 @@ class _RiassuntoState extends State<_Riassunto> {
     return InkWell(
       onTap: pronto == null
           ? null
-          : () => mostraEnergia(context, pronto, nota: glossario['Recupero']),
+          : () => mostraEnergia(
+              context,
+              pronto,
+              nota: glossario[l10n.glossarioRecupero],
+            ),
       child: numero(
         pronto == null
             ? '–'
             : switch (pronto.stato) {
-                StatoRecupero.buono => 'Buono',
-                StatoRecupero.normale => 'Normale',
-                StatoRecupero.basso => 'Basso',
+                StatoRecupero.buono => l10n.buono,
+                StatoRecupero.normale => l10n.normale,
+                StatoRecupero.basso => l10n.basso,
               },
-        'recupero',
+        l10n.etichettaRecupero,
         colore: pronto?.stato == StatoRecupero.basso
             ? scheme.primary
             : pronto?.stato == StatoRecupero.buono
@@ -458,27 +448,24 @@ class _RiassuntoState extends State<_Riassunto> {
           children: [
             Expanded(
               child: Text(
-                'Progressi',
+                l10n.progressi,
                 style: t.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ),
             IconButton(
-              tooltip: 'Condividi la settimana',
+              tooltip: l10n.condividiSettimana,
               onPressed: w.condividi,
               icon: const Icon(Icons.share_rounded),
             ),
           ],
         ),
         Text(
-          stato == null ? 'Ti sto conoscendo' : _titoliCarico[stato]!,
+          stato == null ? l10n.tiStoConoscendo : _titoliCarico[stato]!,
           style: t.headlineMedium,
         ),
         const SizedBox(height: 4),
         Text(
-          stato == null
-              ? 'Dopo 3 settimane di allenamenti ti dirò se stai aumentando '
-                    'nel modo giusto.'
-              : _frasiCarico[stato]!,
+          stato == null ? l10n.dopo3SettimaneAllenamenti : _frasiCarico[stato]!,
           style: t.bodyMedium?.copyWith(height: 1.4),
         ),
         TextButton.icon(
@@ -487,7 +474,7 @@ class _RiassuntoState extends State<_Riassunto> {
           icon: Icon(
             dettagli ? Icons.expand_less_rounded : Icons.expand_more_rounded,
           ),
-          label: const Text('Come lo calcolo'),
+          label: Text(l10n.comeCalcolo),
         ),
         AnimatedSize(
           duration: const Duration(milliseconds: 200),
@@ -499,13 +486,17 @@ class _RiassuntoState extends State<_Riassunto> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(glossario['Carico']!, style: t.bodySmall),
+                      Text(glossario[l10n.carico]!, style: t.bodySmall),
                       const SizedBox(height: 8),
                       Text(
-                        'Ultimi 7 giorni: ${ultimi7.round()} punti (minuti × '
-                        'fatica). ${rapporto == null ? '' : 'Rispetto alla media '
-                                  'delle ultime 4 settimane: '
-                                  '${rapporto.toStringAsFixed(2)} (bene tra 0,8 e 1,3).'}',
+                        l10n.ultimi7GiorniPunti(
+                          ultimi7.round(),
+                          rapporto == null
+                              ? ''
+                              : l10n.rispettoAllaMediaDelle(
+                                  rapporto.toStringAsFixed(2),
+                                ),
+                        ),
                         style: t.bodySmall,
                       ),
                     ],
@@ -532,7 +523,7 @@ class _RiassuntoState extends State<_Riassunto> {
                     ),
                   ),
                   Text(
-                    'settimana',
+                    l10n.parolaSettimana,
                     style: t.labelSmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
@@ -551,7 +542,7 @@ class _RiassuntoState extends State<_Riassunto> {
                       Expanded(
                         child: numero(
                           _oreBrevi(w.questa.minutiFatti),
-                          'allenamento',
+                          l10n.parolaAllenamento,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -560,7 +551,7 @@ class _RiassuntoState extends State<_Riassunto> {
                           w.kmSettimana >= 1
                               ? '${w.kmSettimana.round()} km'
                               : '${(w.kmSettimana * 1000).round()} m',
-                          'percorsi',
+                          l10n.parolaPercorsi,
                         ),
                       ),
                     ],
@@ -572,7 +563,7 @@ class _RiassuntoState extends State<_Riassunto> {
                       Expanded(
                         child: numero(
                           '${w.scorsa.fatte.length + w.scorsa.extra.length}',
-                          'sett. scorsa',
+                          l10n.settScorsa,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -588,7 +579,9 @@ class _RiassuntoState extends State<_Riassunto> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: Text(
-              'Saltati: ${_giorni(w.questa.saltate.map((r) => (r.data, r.sport)))}',
+              l10n.saltati(
+                _giorni(w.questa.saltate.map((r) => (r.data, r.sport))),
+              ),
               style: TextStyle(color: scheme.primary),
             ),
           ),

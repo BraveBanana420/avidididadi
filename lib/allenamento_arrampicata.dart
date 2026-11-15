@@ -4,6 +4,7 @@ import 'allenamento_agente.dart';
 import 'arrampicata.dart';
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Allenamenti di arrampicata costruiti a mano o dall'assistente, nello stile
 // come nelle app dedicate: nome, categoria, tipo (vie, boulder, trave…), durata ed
@@ -24,12 +25,12 @@ const allenamentiArrampicataHeader = [
 ];
 
 /// Dove si arrampica: chiave → nome da mostrare.
-const tipiArrampicata = {
+Map<String, String> get tipiArrampicata => {
   'vie': 'Vie',
   'boulder': 'Boulder',
-  'trave': 'Trave',
-  'circuito': 'Circuito',
-  'campus': 'Campus',
+  'trave': l10n.trave,
+  'circuito': l10n.circuito,
+  'campus': l10n.campus,
   'altro': 'Altro',
 };
 
@@ -72,16 +73,16 @@ class EsercizioArrampicata {
   /// "3 × 4 · recupero 10 min", "6 × 7 s / 3 s · 40%".
   String get riassunto => [
     [
-      if (serie > 1) '$serie serie',
+      if (serie > 1) l10n.quanteSerie(serie),
       if (ripetizioni > 1)
         lavoroS > 0
             ? '$ripetizioni × ${_tempo(lavoroS)}'
                   '${pausaS > 0 ? ' / ${_tempo(pausaS)}' : ''}'
-            : '$ripetizioni ripetizioni'
+            : l10n.quanteRipetizioni(ripetizioni)
       else if (lavoroS > 0)
         _tempo(lavoroS),
     ].join(' · '),
-    if (recuperoS > 0 && serie > 1) 'recupero ${_tempo(recuperoS)}',
+    if (recuperoS > 0 && serie > 1) l10n.recuperoDi(_tempo(recuperoS)),
     if (intensita.isNotEmpty) intensita,
   ].where((x) => x.isNotEmpty).join(' · ');
 
@@ -111,13 +112,13 @@ class EsercizioArrampicata {
       final x = v is num ? v.round() : int.tryParse('$v'.trim());
       if (v == null || '$v'.trim().isEmpty) return base;
       if (x == null || x < 0 || x > max) {
-        throw FormatException('$dove: "$k" deve essere un numero da 0 a $max.');
+        throw FormatException(l10n.deveEssereNumero0(dove, k, max));
       }
       return x;
     }
 
     final nome = _testo(m['nome'], 60);
-    if (nome.isEmpty) throw FormatException('$dove: manca il nome.');
+    if (nome.isEmpty) throw FormatException(l10n.mancaNome(dove));
     return EsercizioArrampicata(
       nome: nome,
       serie: n('serie', 1, 20).clamp(1, 20),
@@ -203,7 +204,7 @@ class AllenamentoArrampicata {
         daSegnare: _testo(t.v(r, 'da_segnare'), 200),
         esercizi: [
           for (final (k, e) in lista.indexed)
-            if (e is Map) EsercizioArrampicata.da(e, 'Esercizio ${k + 1}'),
+            if (e is Map) EsercizioArrampicata.da(e, l10n.esercizio(k + 1)),
         ],
       );
     } on FormatException {
@@ -219,13 +220,11 @@ class AllenamentoArrampicata {
   }) {
     final nome = _testo(m['nome'], 60);
     if (nome.isEmpty) {
-      throw const FormatException(
-        'Un allenamento di arrampicata non ha il nome.',
-      );
+      throw FormatException(l10n.allenamentoArrampicataNonHa);
     }
     final lista = m['esercizi'] ?? m['passi'];
     if (lista is! List || lista.isEmpty || lista.length > 30) {
-      throw FormatException('"$nome": servono da 1 a 30 esercizi.');
+      throw FormatException(l10n.servono130Esercizi(nome));
     }
     final durata = m['durata_min'];
     final d = durata is num ? durata.round() : int.tryParse('${durata ?? ''}');
@@ -243,7 +242,7 @@ class AllenamentoArrampicata {
       esercizi: [
         for (final (k, e) in lista.indexed)
           if (e is Map)
-            EsercizioArrampicata.da(e, '"$nome", esercizio ${k + 1}'),
+            EsercizioArrampicata.da(e, l10n.esercizio2(nome, k + 1)),
       ],
     );
   }
@@ -294,9 +293,9 @@ class AllenamentoArrampicata {
         );
         if (s < e.serie && e.recuperoS > 0) {
           passo(
-            'Recupero tra le serie',
+            l10n.recuperoTraSerie,
             durataMin: _minuti(e.recuperoS),
-            note: 'Riposa: la serie dopo è "${e.nome}".',
+            note: l10n.riposaSerieDopo(e.nome),
           );
         }
       }
@@ -332,7 +331,7 @@ Set<String> _tipi(Iterable<String> v) => {
 String _tempo(int s) => s >= 60 && s % 60 == 0
     ? '${s ~/ 60} min'
     : s >= 60
-    ? '${s ~/ 60}:${two(s % 60)} min'
+    ? l10n.min(s ~/ 60, two(s % 60))
     : '$s s';
 
 /// Secondi in minuti per la colonna "durata_min": "3", "1,5".
@@ -365,7 +364,7 @@ List<PropostaArrampicata> proposteArrampicata(
     final testoData = '${x['data'] ?? ''}'.trim();
     final data = testoData.isEmpty ? null : parseData(testoData);
     if (testoData.isNotEmpty && data == null) {
-      throw FormatException('Data non valida: $testoData (serve AAAA-MM-GG).');
+      throw FormatException(l10n.dataNonValidaServe(testoData));
     }
     out.add(
       PropostaArrampicata(
@@ -376,9 +375,7 @@ List<PropostaArrampicata> proposteArrampicata(
     );
   }
   if (out.isEmpty) {
-    throw const FormatException(
-      'Nel blocco non ci sono allenamenti di arrampicata.',
-    );
+    throw FormatException(l10n.nelBloccoNonCi);
   }
   return out;
 }

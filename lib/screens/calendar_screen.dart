@@ -27,6 +27,8 @@ import 'serie_a_mano_screen.dart';
 import 'tour.dart';
 import 'week_screen.dart';
 import 'workout_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 class CalendarScreen extends StatefulWidget {
   final AppState state;
@@ -57,8 +59,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final state = widget.state;
     final scelta = await scegliAttivitaLibera(
       context,
-      titolo: "Cos'hai fatto?",
-      sottotitolo: 'Poi scrivi durata e tutto quello che ti ricordi.',
+      titolo: l10n.cosHaiFatto,
+      sottotitolo: l10n.poiScriviDurataTutto,
     );
     if (scelta == null || !mounted) return;
     var tipo = scelta.$2;
@@ -228,7 +230,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     fit: BoxFit.scaleDown,
                                     alignment: Alignment.centerLeft,
                                     child: Text(
-                                      nome.isEmpty ? 'Ciao!' : 'Ciao $nome',
+                                      nome.isEmpty
+                                          ? l10n.ciao
+                                          : l10n.ciao2(nome),
                                       maxLines: 1,
                                       style: t.headlineMedium,
                                     ),
@@ -292,9 +296,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                 : Icons.calendar_month_rounded,
                           ),
                           label: Text(
-                            meseAperto
-                                ? 'Chiudi il mese'
-                                : 'Vedi tutto il mese',
+                            meseAperto ? l10n.chiudiMese : l10n.vediTuttoMese,
                           ),
                         ),
                       ),
@@ -311,7 +313,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (prossimi.isNotEmpty) ...[
-                              const TitoloSezione('Prossimi'),
+                              TitoloSezione(l10n.prossimi),
                               for (var i = 0; i < prossimi.length; i++)
                                 RigaPulse(
                                   segno: PallinoPulse(
@@ -336,16 +338,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ),
                                 ),
                             ],
-                            const TitoloSezione('Il tuo piano'),
+                            TitoloSezione(l10n.tuoPiano),
                             RigaPulse(
                               segno: const IconaQuadrata(
                                 Icons.edit_calendar_rounded,
                               ),
                               titolo: selezionato == oggi
-                                  ? 'Cambia gli allenamenti di oggi'
-                                  : 'Cambia gli allenamenti di '
-                                        '${quandoGiorno(selezionato, oggi)}',
-                              sottotitolo: 'Sposta, aggiungi o togli: solo per quel giorno',
+                                  ? l10n.cambiaAllenamentiOggi
+                                  : l10n.cambiaAllenamenti(
+                                      quandoGiorno(selezionato, oggi),
+                                    ),
+                              sottotitolo: l10n.spostaAggiungiOTogli,
                               onTap: () => _apriModifica(selezionato),
                             ),
                             if (!selezionato.isAfter(oggi))
@@ -354,12 +357,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   Icons.edit_note_rounded,
                                 ),
                                 titolo: selezionato == oggi
-                                    ? 'Scrivi un\'attività fatta oggi'
-                                    : 'Scrivi un\'attività fatta '
-                                          '${quandoGiorno(selezionato, oggi)}',
-                                sottotitolo:
-                                    'Per quello che non hai registrato: durata, '
-                                    'distanza, battito…',
+                                    ? l10n.scriviAttivitaFattaOggi
+                                    : l10n.scriviAttivitaFatta(
+                                        quandoGiorno(selezionato, oggi),
+                                      ),
+                                sottotitolo: l10n.quelloNonHaiRegistrato,
                                 onTap: () => _scriviFatta(selezionato),
                               ),
                             RigaPulse(
@@ -367,9 +369,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               segno: const IconaQuadrata(
                                 Icons.view_week_rounded,
                               ),
-                              titolo: 'La mia settimana tipo',
-                              sottotitolo:
-                                  'Quali giorni ti alleni e per quanto tempo',
+                              titolo: l10n.miaSettimanaTipo,
+                              sottotitolo: l10n.qualiGiorniTiAlleni,
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => WeekScreen(state: state),
@@ -380,10 +381,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               segno: const IconaQuadrata(
                                 Icons.auto_awesome_rounded,
                               ),
-                              titolo: 'Allunga il calendario',
-                              sottotitolo:
-                                  'Ripete la settimana tipo nei prossimi mesi: '
-                                  'decide i giorni, non gli esercizi',
+                              titolo: l10n.allungaCalendario,
+                              sottotitolo: l10n.ripeteSettimanaTipoNei,
                               linea: false,
                               onTap: _apriGenera,
                             ),
@@ -433,7 +432,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final offset = primo.weekday - 1;
     final giorni = DateTime(mese.year, mese.month + 1, 0).day;
     final righe = ((offset + giorni) / 7).ceil();
-    final nomeMese = '${maiuscola(mesiNomi[mese.month - 1])} ${mese.year}';
+    final titoloMese = '${nomeMese(mese.month)} ${mese.year}';
 
     Widget cella(int n) {
       if (n < 1 || n > giorni) return const SizedBox(height: 58);
@@ -501,15 +500,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
           Row(
             children: [
               IconButton(
-                tooltip: 'Mese prima',
+                tooltip: l10n.mesePrima,
                 onPressed: () => _vai(-1),
                 icon: const Icon(Icons.chevron_left_rounded),
               ),
               Expanded(
-                child: Center(child: Text(nomeMese, style: t.titleMedium)),
+                child: Center(child: Text(titoloMese, style: t.titleMedium)),
               ),
               IconButton(
-                tooltip: 'Mese dopo',
+                tooltip: l10n.meseDopo,
                 onPressed: () => _vai(1),
                 icon: const Icon(Icons.chevron_right_rounded),
               ),
@@ -517,7 +516,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           Row(
             children: [
-              for (final l in const ['L', 'M', 'M', 'G', 'V', 'S', 'D'])
+              for (final l in inizialiGiorni)
                 Expanded(
                   child: Center(child: Text(l, style: t.labelMedium)),
                 ),
@@ -537,19 +536,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
             children: [
               _icona('Corsa', true),
               const SizedBox(width: 6),
-              const Text('fatto'),
+              Text(l10n.parolaFatto),
               const SizedBox(width: 16),
               _icona('Corsa', false),
               const SizedBox(width: 6),
-              const Text('da fare'),
+              Text(l10n.fare),
             ],
           ),
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text(
-              'Tocca un giorno per vederlo, tienilo premuto per cambiarlo.',
-              style: t.bodySmall,
-            ),
+            child: Text(l10n.toccaGiornoVederloTienilo, style: t.bodySmall),
           ),
         ],
       ),
@@ -560,9 +556,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
 /// "oggi", "domani", "ieri" o "giovedì 29".
 String quandoGiorno(DateTime d, DateTime oggi) =>
     switch (soloData(d).difference(oggi).inDays) {
-      0 => 'oggi',
-      1 => 'domani',
-      -1 => 'ieri',
+      0 => l10n.parolaOggi,
+      1 => l10n.parolaDomani,
+      -1 => l10n.parolaIeri,
       _ => '${giorniSettimana[d.weekday - 1].toLowerCase()} ${d.day}',
     };
 
@@ -574,13 +570,13 @@ class _PillolaEnergia extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final parola = switch (p.stato) {
-      StatoRecupero.buono => 'Buona',
-      StatoRecupero.normale => 'Normale',
-      StatoRecupero.basso => 'Bassa',
+      StatoRecupero.buono => l10n.buona,
+      StatoRecupero.normale => l10n.normale,
+      StatoRecupero.basso => l10n.bassa,
     };
     final colore = coloreEnergia(p.stato);
     return Semantics(
-      label: 'Energia ${parola.toLowerCase()}',
+      label: l10n.energia(parola.toLowerCase()),
       button: true,
       excludeSemantics: true,
       child: SuperficiePulse(
@@ -680,8 +676,8 @@ class _StripSettimana extends StatelessWidget {
       children: [
         TitoloSezione(
           lunedi == lunediDi(oggi)
-              ? 'La tua settimana'
-              : 'Settimana dal ${lunedi.day} ${mesiNomi[lunedi.month - 1]}',
+              ? l10n.tuaSettimana
+              : l10n.settimanaDal2(lunedi.day, mesiNomi[lunedi.month - 1]),
           destra: c.previste == 0
               ? null
               : EntrataMorbida(
@@ -699,7 +695,7 @@ class _StripSettimana extends StatelessWidget {
                         TextSpan(
                           text: fatte > c.previste
                               ? ' fatti'
-                              : ' di ${c.previste} fatti',
+                              : l10n.fatti(c.previste),
                         ),
                       ],
                     ),
@@ -732,7 +728,7 @@ class _StripSettimana extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            const ['L', 'M', 'M', 'G', 'V', 'S', 'D'][i],
+                            inizialiGiorni[i],
                             style: t.labelMedium?.copyWith(
                               color: d == oggi
                                   ? scheme.onSurface
@@ -824,7 +820,7 @@ class _StripSettimana extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Settimana completata: $fatte allenamenti!',
+                l10n.settimanaCompletataAllenamenti(fatte),
                 style: t.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w700,
                   color: p.anello[1],
@@ -862,7 +858,7 @@ class SchedaGiorno extends StatelessWidget {
     final oggi = soloData(DateTime.now());
     final passato = giorno.isBefore(oggi);
     final quando = giorno == oggi
-        ? 'Oggi'
+        ? l10n.oggi
         : maiuscola(quandoGiorno(giorno, oggi));
     final pronto = giorno == oggi ? state.prontezza : null;
     final hero = !passato && previsti.isNotEmpty ? previsti.first : null;
@@ -892,10 +888,7 @@ class SchedaGiorno extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(child: Text(quando, style: t.titleLarge)),
-                TextButton(
-                  onPressed: onOggi,
-                  child: const Text('Torna a oggi'),
-                ),
+                TextButton(onPressed: onOggi, child: Text(l10n.tornaOggi)),
               ],
             ),
           ),
@@ -903,7 +896,7 @@ class SchedaGiorno extends StatelessWidget {
           _HeroSeduta(
             state: state,
             riga: hero,
-            etichetta: '$quando · ${hero.fascia.toLowerCase()}',
+            etichetta: '$quando · ${mostra(hero.fascia).toLowerCase()}',
           ),
         if (elenco.isNotEmpty)
           SuperficiePulse(
@@ -928,12 +921,7 @@ class SchedaGiorno extends StatelessWidget {
                   colore: coloreSport(sportMobilita),
                 ),
                 const SizedBox(width: 14),
-                const Expanded(
-                  child: Text(
-                    'Oggi sei poco recuperato: al posto della seduta prevista '
-                    'puoi fare 20 minuti di mobilità.',
-                  ),
-                ),
+                Expanded(child: Text(l10n.oggiSeiPocoRecuperato)),
                 const Icon(Icons.play_arrow_rounded),
               ],
             ),
@@ -1028,8 +1016,8 @@ class _HeroSeduta extends StatelessWidget {
                       Expanded(
                         child: PulsantePrincipale(
                           testo: passi.isEmpty
-                              ? "Vedi l'allenamento"
-                              : 'Inizia',
+                              ? l10n.vediAllenamento
+                              : l10n.inizia2,
                           icona: passi.isEmpty
                               ? Icons.chevron_right_rounded
                               : Icons.play_arrow_rounded,
@@ -1052,7 +1040,7 @@ class _HeroSeduta extends StatelessWidget {
                       if (passi.isNotEmpty) ...[
                         const SizedBox(width: 10),
                         Tooltip(
-                          message: 'Prima guarda gli esercizi',
+                          message: l10n.primaGuardaEsercizi,
                           child: Material(
                             type: MaterialType.transparency,
                             shape: CircleBorder(
@@ -1124,29 +1112,28 @@ class _Riposo extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  passato ? 'Nessun allenamento' : 'Giorno di riposo',
+                  passato ? l10n.nessunAllenamento : l10n.giornoRiposo,
                   style: t.titleMedium,
                 ),
                 const SizedBox(height: 2),
                 Text(
                   passato
-                      ? 'Quel giorno non risultano allenamenti.'
-                      : 'Il riposo fa parte dell\'allenamento: i muscoli si '
-                            'rinforzano mentre recuperi.',
+                      ? l10n.quelGiornoNonRisultano
+                      : l10n.riposoFaParteDell,
                 ),
                 if (onMobilita != null)
                   TextButton.icon(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: onMobilita,
                     icon: Icon(iconaSport(sportMobilita)),
-                    label: const Text('Se ti va: 15 minuti di mobilità'),
+                    label: Text(l10n.seTiVa15),
                   ),
                 if (!passato)
                   TextButton.icon(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: onAggiungi,
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Voglio allenarmi lo stesso'),
+                    label: Text(l10n.voglioAllenarmiStesso),
                   ),
               ],
             ),
@@ -1178,13 +1165,13 @@ class _DaFare extends StatelessWidget {
       sottotitolo: [
         if (r.durataMin > 0) '${r.durataMin} minuti',
         r.fascia.toLowerCase(),
-        if (passato) 'non fatto',
+        if (passato) l10n.nonFatto,
       ].join(' · '),
       linea: false,
       onTap: () => apriSessione(context, state, r),
       fine: !passato && passi.isNotEmpty
           ? IconButton.filledTonal(
-              tooltip: 'Inizia',
+              tooltip: l10n.inizia2,
               onPressed: () => avviaAllenamento(
                 context,
                 state,
@@ -1219,7 +1206,7 @@ class _Fatto extends StatelessWidget {
         stessoSport(s.sport, 'Nuoto')
             ? '${(s.distanzaKm * 1000).round()} m'
             : '${fmtNum(s.distanzaKm)} km',
-      if (s.fcMedia > 0) '${s.fcMedia} battiti/min',
+      if (s.fcMedia > 0) l10n.battitiAlMinuto(s.fcMedia),
     ];
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -1260,7 +1247,7 @@ class _Fatto extends StatelessWidget {
                       ),
                       if (dati.isNotEmpty) Text(dati.join(' · ')),
                       if (f != null)
-                        Text('Fatica ${f.fatica}/10', style: t.bodySmall),
+                        Text(l10n.fatica10(f.fatica), style: t.bodySmall),
                     ],
                   ),
                 ),
@@ -1275,7 +1262,7 @@ class _Fatto extends StatelessWidget {
                   onPressed: () =>
                       apriFeedback(context, state, s.data, s.sport, s),
                   icon: const Icon(Icons.rate_review_rounded),
-                  label: const Text("Com'è andata?"),
+                  label: Text(l10n.comAndata),
                 ),
               ),
             ],
@@ -1316,18 +1303,16 @@ class _GeneraSheetState extends State<GeneraSheet> {
       final ok = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
-          title: const Text('Rigenerare il piano?'),
-          content: Text(
-            'Le sessioni dal ${dataLunga(inizio)} in poi verranno sostituite. Quelle precedenti restano invariate.',
-          ),
+          title: Text(l10n.rigenerarePiano),
+          content: Text(l10n.sessioniDalPoiVerranno(dataLunga(inizio))),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Annulla'),
+              child: Text(l10n.annulla),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(c, true),
-              child: const Text('Rigenera'),
+              child: Text(l10n.rigenera),
             ),
           ],
         ),
@@ -1337,7 +1322,7 @@ class _GeneraSheetState extends State<GeneraSheet> {
     await widget.state.genera(inizio, mesi.round());
     if (!mounted) return;
     Navigator.pop(context);
-    messenger.showSnackBar(avviso(content: Text('Piano generato')));
+    messenger.showSnackBar(avviso(content: Text(l10n.pianoGenerato)));
   }
 
   @override
@@ -1349,18 +1334,17 @@ class _GeneraSheetState extends State<GeneraSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Allunga il calendario',
+            l10n.allungaCalendario,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 4),
-          const Text(
-            'Ripete la tua settimana tipo (quali sport, che giorni, quanti '
-            'minuti) sui mesi che scegli. Gli esercizi di ogni seduta si '
-            'preparano dal Profilo, con "Prepara le sedute".',
-          ),
+          Text(l10n.ripeteTuaSettimanaTipo),
           const SizedBox(height: 12),
           Text(
-            'Durata: ${mesi.round()} ${mesi.round() == 1 ? 'mese' : 'mesi'}',
+            l10n.durata2(
+              mesi.round(),
+              mesi.round() == 1 ? l10n.parolaMese : l10n.parolaMesi,
+            ),
           ),
           Slider(
             value: mesi,
@@ -1373,13 +1357,13 @@ class _GeneraSheetState extends State<GeneraSheet> {
           OutlinedButton.icon(
             onPressed: _scegliData,
             icon: const Icon(Icons.event_rounded),
-            label: Text('Parti da ${dataLunga(inizio)}'),
+            label: Text(l10n.parti(dataLunga(inizio))),
           ),
           const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _genera,
             icon: const Icon(Icons.auto_awesome_rounded),
-            label: const Text('Allunga il calendario'),
+            label: Text(l10n.allungaCalendario),
           ),
         ],
       ),
@@ -1464,7 +1448,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     messenger.showSnackBar(
-      avviso(content: Text('${dataLunga(widget.data)} aggiornato')),
+      avviso(content: Text(l10n.aggiornato(dataLunga(widget.data)))),
     );
   }
 
@@ -1478,18 +1462,14 @@ class _GiornoSheetState extends State<GiornoSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Modifica ${dataLunga(widget.data)}', style: t.titleLarge),
+            Text(l10n.modifica2(dataLunga(widget.data)), style: t.titleLarge),
             const SizedBox(height: 4),
-            const Text(
-              'Cambia solo questo giorno: le altre settimane restano come sono.',
-            ),
+            Text(l10n.cambiaSoloQuestoGiorno),
             const SizedBox(height: 12),
             if (righe.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
-                child: Text(
-                  'Nessuna attività in programma (giorno di riposo).',
-                ),
+                child: Text(l10n.nessunaAttivitaProgrammaGiorno),
               ),
             for (var i = 0; i < righe.length; i++)
               Card(
@@ -1502,12 +1482,12 @@ class _GiornoSheetState extends State<GiornoSheet> {
                   title: Text(titoloSessione(righe[i].sport, righe[i].tipo)),
                   subtitle: Text(
                     righe[i].durataMin > 0
-                        ? '${righe[i].fascia}, ${righe[i].durataMin} min'
+                        ? l10n.min3(righe[i].fascia, righe[i].durataMin)
                         : righe[i].fascia,
                   ),
                   onTap: () => _modifica(i),
                   trailing: IconButton(
-                    tooltip: 'Rimuovi',
+                    tooltip: l10n.rimuovi,
                     icon: const Icon(Icons.delete_outline_rounded),
                     onPressed: () => setState(() => righe.removeAt(i)),
                   ),
@@ -1517,7 +1497,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
             OutlinedButton.icon(
               onPressed: _aggiungi,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('Aggiungi attività'),
+              label: Text(l10n.aggiungiAttivita),
             ),
             const SizedBox(height: 8),
             Row(
@@ -1525,13 +1505,13 @@ class _GiornoSheetState extends State<GiornoSheet> {
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Annulla'),
+                    child: Text(l10n.annulla),
                   ),
                 ),
                 Expanded(
                   child: FilledButton(
                     onPressed: _salva,
-                    child: const Text('Salva'),
+                    child: Text(l10n.salva),
                   ),
                 ),
               ],
@@ -1554,8 +1534,8 @@ class PromemoriaFeedback extends StatelessWidget {
     if (manca.isEmpty) return const SizedBox.shrink();
     final oggi = soloData(DateTime.now());
     String quando(DateTime d) => switch (oggi.difference(d).inDays) {
-      0 => 'oggi',
-      1 => 'ieri',
+      0 => l10n.parolaOggi,
+      1 => l10n.parolaIeri,
       _ => giorniSettimana[d.weekday - 1].toLowerCase(),
     };
     return Card(
@@ -1565,9 +1545,7 @@ class PromemoriaFeedback extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Com'è andata? Un voto alla fatica rende il piano più preciso.",
-            ),
+            Text(l10n.comAndataVotoAlla),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
@@ -1576,7 +1554,7 @@ class PromemoriaFeedback extends StatelessWidget {
                 for (final s in manca)
                   ActionChip(
                     avatar: Icon(iconaSport(s.sport), size: 18),
-                    label: Text('${s.sport} ${quando(s.data)}'),
+                    label: Text('${mostra(s.sport)} ${quando(s.data)}'),
                     onPressed: () =>
                         apriFeedback(context, state, s.data, s.sport, s),
                   ),
@@ -1604,22 +1582,17 @@ class PromemoriaPiano extends StatelessWidget {
     final oggi = soloData(DateTime.now());
     final String testo;
     if (ultimo == null) {
-      testo =
-          'Il calendario è vuoto: allungalo per sapere cosa fare ogni giorno.';
+      testo = l10n.calendarioVuotoAllungaloSapere;
     } else if (ultimo.isBefore(oggi)) {
-      testo =
-          'Il calendario è finito il ${dataLunga(ultimo)}. Allungalo per i '
-          'prossimi mesi.';
+      testo = l10n.calendarioFinitoAllungaloProssimi(dataLunga(ultimo));
     } else {
       final giorni = ultimo.difference(oggi).inDays;
       final quando = giorni == 0
-          ? 'oggi'
+          ? l10n.parolaOggi
           : giorni == 1
-          ? 'domani'
-          : 'tra $giorni giorni';
-      testo =
-          'Il calendario finisce $quando (${dataLunga(ultimo)}). Vuoi '
-          'allungarlo?';
+          ? l10n.parolaDomani
+          : l10n.traGiorni(giorni);
+      testo = l10n.calendarioFinisceVuoiAllungarlo(quando, dataLunga(ultimo));
     }
     // Si riparte dal giorno dopo l'ultimo programmato, senza toccare quelli esistenti.
     final daQuando = ultimo == null || ultimo.isBefore(oggi)
@@ -1649,10 +1622,10 @@ class PromemoriaPiano extends StatelessWidget {
                 isScrollControlled: true,
                 builder: (_) => GeneraSheet(state: state, inizio: daQuando),
               ),
-              child: const Text('Allunga'),
+              child: Text(l10n.allunga),
             ),
             IconButton(
-              tooltip: 'Più tardi',
+              tooltip: l10n.piuTardi,
               onPressed: state.chiudiPromemoria,
               icon: Icon(Icons.close_rounded, color: scheme.onPrimaryContainer),
             ),
@@ -1676,8 +1649,8 @@ class PromemoriaScheda extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final durata = s.durataGiorni ?? 15;
     final nome = s.nome.isEmpty
-        ? 'La scheda di ${s.sport.toLowerCase()}'
-        : 'La scheda "${s.nome}"';
+        ? l10n.scheda(s.sport.toLowerCase())
+        : l10n.scheda2(s.nome);
     return Card(
       color: scheme.primaryContainer,
       margin: const EdgeInsets.only(bottom: 12),
@@ -1687,8 +1660,7 @@ class PromemoriaScheda extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$nome è finita il ${dataLunga(s.fine!)}. Intanto le sedute '
-              "sono quelle preparate dall'app.",
+              l10n.finitaIntantoSeduteSono(nome, dataLunga(s.fine!)),
               style: TextStyle(color: scheme.onPrimaryContainer),
             ),
             Wrap(
@@ -1696,7 +1668,7 @@ class PromemoriaScheda extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () => state.salvaScheda(s.rinnovata(durata)),
-                  child: Text('Rinnova per $durata giorni'),
+                  child: Text(l10n.rinnovaGiorni(durata)),
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).push(
@@ -1708,12 +1680,12 @@ class PromemoriaScheda extends StatelessWidget {
                       ),
                     ),
                   ),
-                  child: const Text('Cambiala'),
+                  child: Text(l10n.cambiala),
                 ),
                 TextButton(
                   onPressed: () =>
                       state.salvaScheda(s.copyWith(archiviata: true)),
-                  child: const Text("Usa quella dell'app"),
+                  child: Text(l10n.usaQuellaDellApp),
                 ),
               ],
             ),
@@ -1758,7 +1730,7 @@ Future<(String, String, String)?> scegliAttivitaLibera(
                 for (final a in attivitaLibere)
                   _Scelta(
                     sport: a.$1,
-                    nome: a.$3,
+                    nome: mostra(a.$3),
                     onTap: () => Navigator.pop(c, a),
                   ),
               ],
@@ -1779,8 +1751,8 @@ class PulsanteLibera extends StatelessWidget {
   Future<void> _scegli(BuildContext context) async {
     final scelta = await scegliAttivitaLibera(
       context,
-      titolo: 'Cosa vuoi fare adesso?',
-      sottotitolo: "Si aggiunge a quello che c'è in programma oggi.",
+      titolo: l10n.cosaVuoiFareAdesso,
+      sottotitolo: l10n.siAggiungeQuelloC,
     );
     if (scelta == null || !context.mounted) return;
     var (sport, tipo, nome) = scelta;
@@ -1811,7 +1783,7 @@ class PulsanteLibera extends StatelessWidget {
       message: 'Attività libera',
       child: Semantics(
         button: true,
-        label: 'Inizia un\'attività libera',
+        label: l10n.iniziaAttivitaLibera,
         child: DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,

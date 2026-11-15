@@ -94,18 +94,18 @@ void main() {
   test('GPX di Garmin Connect', () {
     const gpx = """<?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Garmin Connect" version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
-  <trk><name>Pistoia Corsa</name><trkseg>
-    <trkpt lat="43.9300" lon="10.9100"><ele>70.2</ele><time>2026-10-20T07:12:03.000Z</time>
+  <trk><name>Milano Corsa</name><trkseg>
+    <trkpt lat="45.4600" lon="9.1900"><ele>70.2</ele><time>2026-10-20T07:12:03.000Z</time>
       <extensions><ns3:TrackPointExtension><ns3:hr>120</ns3:hr></ns3:TrackPointExtension></extensions>
     </trkpt>
-    <trkpt lon="10.9105" lat="43.9310"><time>2026-10-20T07:12:13.000Z</time></trkpt>
-    <trkpt lat='43.9320' lon='10.9110'/>
+    <trkpt lon="9.1905" lat="45.4610"><time>2026-10-20T07:12:13.000Z</time></trkpt>
+    <trkpt lat='45.4620' lon='9.1910'/>
   </trkseg></trk>
 </gpx>""";
     final r = percorsoDaGpx(gpx);
     expect(r.punti.length, 3);
-    expect(r.punti[1].lat, 43.931);
-    expect(r.punti[1].lon, 10.9105);
+    expect(r.punti[1].lat, 45.461);
+    expect(r.punti[1].lon, 9.1905);
     expect(r.punti[1].t.difference(r.punti[0].t).inSeconds, 10);
     expect(giornoDi(r), DateTime(2026, 10, 20));
     expect(r.distanzaKm, greaterThan(0.2));

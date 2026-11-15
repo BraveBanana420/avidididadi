@@ -8,6 +8,7 @@ import '../navigazione.dart';
 import '../percorso.dart';
 import '../widgets.dart';
 import 'mappa_percorso.dart';
+import '../l10n/lingua.dart';
 
 /// L'icona della curva, come nei navigatori.
 IconData iconaCurva(Curva c) => switch (c.tipo) {
@@ -251,22 +252,22 @@ class BannerGuida extends StatelessWidget {
     ) = switch (g) {
       _ when g.arrivato => (
         Icons.sports_score_rounded,
-        'Arrivo',
-        'Percorso completato',
+        l10n.arrivo,
+        l10n.percorsoCompletato,
         false,
       ),
       _ when g.progresso == null => (
         Icons.near_me_rounded,
         g.distanza == null ? '…' : fmtMetri(g.distanza!),
         g.distanza == null
-            ? 'Cerco la posizione'
-            : 'Il percorso è da questa parte: raggiungilo',
+            ? l10n.cercoPosizione
+            : l10n.percorsoQuestaParteRaggiungilo,
         false,
       ),
       _ when g.fuori => (
         Icons.wrong_location_rounded,
         fmtMetri(g.distanza ?? 0),
-        'Fuori percorso: torna sulla traccia',
+        l10n.fuoriPercorsoTornaSulla,
         true,
       ),
       _ => switch (g.prossimaCurva) {
@@ -279,7 +280,7 @@ class BannerGuida extends StatelessWidget {
         null => (
           Icons.straight_rounded,
           fmtMetri(g.metriMancanti ?? 0),
-          "Dritto fino all'arrivo",
+          l10n.drittoFinoAllArrivo,
           false,
         ),
       },
@@ -343,7 +344,7 @@ class BannerGuida extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'mancano ${fmtMetri(mancano)}',
+                    l10n.mancanoAncora(fmtMetri(mancano)),
                     style: t.labelMedium?.copyWith(color: testo),
                   ),
                 ],
@@ -359,12 +360,12 @@ class BannerGuida extends StatelessWidget {
 /// La riga della notifica con la guida: "↱ 150 m · gira a destra".
 String? testoGuida(Guida? g) {
   if (g == null) return null;
-  if (g.arrivato) return 'Percorso completato';
+  if (g.arrivato) return l10n.percorsoCompletato;
   if (g.progresso == null) {
-    return g.distanza == null ? null : 'Percorso a ${fmtMetri(g.distanza!)}';
+    return g.distanza == null ? null : l10n.percorso(fmtMetri(g.distanza!));
   }
-  if (g.fuori) return 'Fuori percorso (${fmtMetri(g.distanza ?? 0)})';
+  if (g.fuori) return l10n.fuoriPercorso(fmtMetri(g.distanza ?? 0));
   final p = g.prossimaCurva;
-  if (p == null) return 'Arrivo tra ${fmtMetri(g.metriMancanti ?? 0)}';
+  if (p == null) return l10n.arrivoTra(fmtMetri(g.metriMancanti ?? 0));
   return '${fmtMetri(p.$2)}: ${p.$1.frase}';
 }

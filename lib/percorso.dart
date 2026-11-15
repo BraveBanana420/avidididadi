@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Un punto GPS: posizione, istante e margine di errore in metri (0 = ignoto).
 class PuntoGps {
@@ -416,9 +417,7 @@ Percorso percorsoDaGpx(String testo) {
     punti.add(PuntoGps(lat, lon, t));
   }
   if (punti.length < 2) {
-    throw const FormatException(
-      'Nel file non c\'è un percorso: serve un GPX con la traccia dell\'attività.',
-    );
+    throw FormatException(l10n.nelFileNonC2);
   }
   return Percorso(punti);
 }
@@ -483,10 +482,10 @@ List<Map<String, dynamic>> livelliPercorso({
 /// satellite (Esri World Imagery).
 enum TipoMappa { pulse, strade, satellite }
 
-const nomiMappe = {
-  TipoMappa.pulse: 'Pulse',
-  TipoMappa.strade: 'Strade',
-  TipoMappa.satellite: 'Satellite',
+Map<TipoMappa, String> get nomiMappe => {
+  TipoMappa.pulse: l10n.pulse,
+  TipoMappa.strade: l10n.strade,
+  TipoMappa.satellite: l10n.satellite,
 };
 
 /// Stile "Strade" di OpenFreeMap: si scarica e gli si aggiunge il percorso.

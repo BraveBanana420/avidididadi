@@ -1,0 +1,61 @@
+name: Bug report
+description: Something doesn't work as expected / Qualcosa non funziona
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! English or Italian are both fine.
+        **Don't attach backups, CSV files, GPX tracks or API keys**: they contain health and location data.
+  - type: textarea
+    id: cosa
+    attributes:
+      label: What happened? / Cosa è successo?
+      description: What you did, what you expected and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: passi
+    attributes:
+      label: Steps to reproduce / Come riprodurlo
+      placeholder: |
+        1. Open Today
+        2. Tap ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: versione
+    attributes:
+      label: App version / Versione dell'app
+      description: Profile → Data and connections, at the bottom (e.g. "version 0.1.0 (32)").
+    validations:
+      required: true
+  - type: input
+    id: telefono
+    attributes:
+      label: Phone and Android version / Telefono e versione di Android
+      placeholder: e.g. Samsung Galaxy S23, Android 15
+    validations:
+      required: true
+  - type: dropdown
+    id: lingua
+    attributes:
+      label: App language / Lingua dell'app
+      options:
+        - Italiano
+        - English
+  - type: checkboxes
+    id: fonti
+    attributes:
+      label: Connected services / Servizi collegati
+      options:
+        - label: Health Connect
+        - label: intervals.icu
+        - label: Bluetooth sensors (heart rate, smart trainer)
+        - label: Coach / assistant
+  - type: textarea
+    id: altro
+    attributes:
+      label: Screenshots or other details / Screenshot o altri dettagli
+      description: Hide personal data (names, places, maps of your routes).

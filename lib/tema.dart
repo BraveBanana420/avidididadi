@@ -65,6 +65,9 @@ Future<void> cambiaTema() async {
 const famigliaTitoli = 'SpaceGrotesk';
 const famigliaTesto = 'Manrope';
 
+/// Space Grotesk non ha le lettere greche: i titoli in greco usano Manrope.
+const ripiegoTitoli = [famigliaTesto];
+
 /// Rosso del tema scuro e neon del tema chiaro.
 const rossoPulse = Color(0xFFFF3B47);
 const rosaNeon = Color(0xFFFF2E93);
@@ -512,6 +515,7 @@ ThemeData creaTema(Brightness b, {bool neon = false}) {
       );
   TextStyle? titolo(TextStyle? s, {double spazio = -0.5}) => s?.copyWith(
     fontFamily: famigliaTitoli,
+    fontFamilyFallback: ripiegoTitoli,
     fontWeight: FontWeight.w700,
     letterSpacing: spazio,
   );

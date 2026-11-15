@@ -8,6 +8,7 @@ import 'allenamento_arrampicata.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'recupero.dart';
+import 'l10n/lingua.dart';
 
 /// Assistente facoltativo: un modello linguistico scelto dall'utente (Claude,
 /// GPT, Gemini o Ollama sul proprio PC) legge un riassunto degli allenamenti
@@ -15,11 +16,11 @@ import 'recupero.dart';
 
 enum Fornitore { claude, openai, gemini, ollama }
 
-const nomiFornitori = {
+Map<Fornitore, String> get nomiFornitori => {
   Fornitore.claude: 'Claude (Anthropic)',
   Fornitore.openai: 'GPT (OpenAI)',
   Fornitore.gemini: 'Gemini (Google)',
-  Fornitore.ollama: 'Ollama sul tuo PC',
+  Fornitore.ollama: l10n.ollamaSulTuoPc,
 };
 
 const modelliPredefiniti = {
@@ -29,19 +30,11 @@ const modelliPredefiniti = {
   Fornitore.ollama: 'llama3.1',
 };
 
-const descrizioniFornitori = {
-  Fornitore.claude:
-      'Serve una chiave API da console.anthropic.com (a consumo). '
-      "L'abbonamento Claude Pro non vale per le app esterne.",
-  Fornitore.openai:
-      'Serve una chiave API da platform.openai.com (a consumo). '
-      "L'abbonamento ChatGPT Plus non vale per le app esterne.",
-  Fornitore.gemini:
-      'Serve una chiave API da aistudio.google.com: c\'è un piano gratuito '
-      'con limiti giornalieri.',
-  Fornitore.ollama:
-      'Gratis e privato: il modello gira sul tuo PC, nella stessa rete Wi-Fi. '
-      'Nessuna chiave. Sul PC avvia Ollama con OLLAMA_HOST=0.0.0.0.',
+Map<Fornitore, String> get descrizioniFornitori => {
+  Fornitore.claude: l10n.serveChiaveApiConsole,
+  Fornitore.openai: l10n.serveChiaveApiPlatform,
+  Fornitore.gemini: l10n.serveChiaveApiAistudio,
+  Fornitore.ollama: l10n.gratisPrivatoModelloGira,
 };
 
 bool serveChiave(Fornitore f) => f != Fornitore.ollama;
@@ -262,10 +255,21 @@ String contestoAllenamento({
   return b.toString().trim();
 }
 
+/// In che lingua deve rispondere il coach: quella dell'app. I valori dei
+/// blocchi JSON restano in italiano, perché l'app li rilegge così.
+String get linguaRisposta => switch (codiceLingua) {
+  'en' =>
+    'inglese (in English), lasciando in italiano i valori dei blocchi JSON',
+  'el' =>
+    'greco (in Greek, στα ελληνικά), lasciando in italiano i valori dei '
+        'blocchi JSON',
+  _ => 'italiano',
+};
+
 /// Istruzioni di sistema: ruolo, sicurezza e formato delle proposte.
 String istruzioniAssistente(String contesto) =>
     '''Sei l'allenatore personale dell'utente nell'app Avidididadi (corsa, nuoto, bici, forza).
-Rispondi in italiano, in modo breve e concreto, basandoti sui dati qui sotto.
+Rispondi in $linguaRisposta, in modo breve e concreto, basandoti sui dati qui sotto.
 Non fare diagnosi mediche: in caso di dolore che continua, consiglia di fermarsi e sentire un medico.
 
 Se proponi di cambiare il piano, un piano nuovo o un allenamento preciso, aggiungi IN FONDO alla risposta un blocco così (solo JSON valido dentro):
@@ -362,7 +366,7 @@ RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
         if (a is Map) allenamentoDa(Map<String, dynamic>.from(a)),
     ];
     if (lista.isEmpty) {
-      throw const FormatException('Nel blocco non ci sono allenamenti.');
+      throw FormatException(l10n.nelBloccoNonCi2);
     }
     final motivi = {
       for (final a in allenamenti)
@@ -376,9 +380,7 @@ RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
     final da = parseData('${piano['da'] ?? ''}');
     final sedute = piano['sedute'];
     if (da == null || sedute is! List) {
-      throw const FormatException(
-        'Nel piano mancano la data di inizio o le sedute.',
-      );
+      throw FormatException(l10n.nelPianoMancanoData);
     }
     return RispostaAgente(
       piano: PianoAgente(da, '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(), [
@@ -394,7 +396,7 @@ RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
         if (x is Map) ?Modifica.da(Map<String, dynamic>.from(x)),
   ];
   if (modifiche.isEmpty) {
-    throw const FormatException('Nel blocco non ci sono modifiche valide.');
+    throw FormatException(l10n.nelBloccoNonCi3);
   }
   return RispostaAgente(modifiche: modifiche);
 }
@@ -462,14 +464,14 @@ final _json = RegExp(
     return (
       testo: testo,
       proposta: null,
-      errore: 'La proposta non è leggibile: chiedi al coach di riscriverla.',
+      errore: l10n.propostaNonLeggibileChiedi,
     );
   }
   if (j is! Map) {
     return (
       testo: testo,
       proposta: null,
-      errore: 'La proposta non è leggibile: chiedi al coach di riscriverla.',
+      errore: l10n.propostaNonLeggibileChiedi,
     );
   }
   try {
@@ -525,17 +527,17 @@ String _nota(Modifica m) =>
 
 /// Applica una modifica; restituisce il motivo se non si può applicare.
 String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
-  if (!_sportPiano.contains(m.sport)) return 'sport non previsto (${m.sport})';
-  if (m.data.isBefore(oggi)) return 'la data è già passata';
+  if (!_sportPiano.contains(m.sport)) return l10n.sportNonPrevisto2(m.sport);
+  if (m.data.isBefore(oggi)) return l10n.dataGiaPassata;
   final d = m.durataMin;
-  if (d != null && (d < 10 || d > 300)) return 'durata non sensata ($d min)';
+  if (d != null && (d < 10 || d > 300)) return l10n.durataNonSensataMin(d);
   final i = p.indexWhere(
     (r) => r.data == m.data && stessoSport(r.sport, m.sport),
   );
   switch (m.azione) {
     case Azione.aggiungi:
-      if (i >= 0) return 'c\'è già una seduta di ${m.sport} quel giorno';
-      if (d == null) return 'manca la durata';
+      if (i >= 0) return l10n.cGiaSedutaQuel(m.sport);
+      if (d == null) return l10n.mancaDurata;
       p.add(
         PianoRiga(
           data: m.data,
@@ -547,7 +549,7 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
         ),
       );
     case Azione.cambia:
-      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      if (i < 0) return l10n.quelGiornoNonC(m.sport);
       p[i] = _copia(
         p[i],
         durata: d,
@@ -556,15 +558,15 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
         note: _nota(m),
       );
     case Azione.sposta:
-      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      if (i < 0) return l10n.quelGiornoNonC(m.sport);
       final n = m.nuovaData;
-      if (n == null || n.isBefore(oggi)) return 'nuova data mancante o passata';
+      if (n == null || n.isBefore(oggi)) return l10n.nuovaDataMancanteO;
       if (p.any((r) => r.data == n && stessoSport(r.sport, m.sport))) {
-        return 'c\'è già una seduta di ${m.sport} il giorno scelto';
+        return l10n.cGiaSedutaGiorno(m.sport);
       }
       p[i] = _copia(p[i], data: n, note: _nota(m));
     case Azione.rimuovi:
-      if (i < 0) return 'quel giorno non c\'è una seduta di ${m.sport}';
+      if (i < 0) return l10n.quelGiornoNonC(m.sport);
       p.removeAt(i);
   }
   return null;
@@ -612,10 +614,9 @@ EsitoProposta valutaProposta(
       final prima = _minuti(piano, w);
       final dopo = _minuti(prova, w);
       if (dopo > prima && dopo > (prima * 1.1).round()) {
-        limite =
-            'la settimana passerebbe da $prima a $dopo minuti (oltre +10%)';
+        limite = l10n.settimanaPasserebbeMinutiOltre(prima, dopo);
       } else if (_haRiposo(piano, w) && !_haRiposo(prova, w)) {
-        limite = 'la settimana resterebbe senza un giorno di riposo';
+        limite = l10n.settimanaResterebbeSenzaGiorno;
       }
     }
     if (limite != null) {
@@ -647,9 +648,11 @@ String descriviModifica(Modifica m, List<PianoRiga> piano) {
       .firstOrNull;
   final dove = '${_giorno(m.data)} ${m.sport}';
   return switch (m.azione) {
-    Azione.aggiungi =>
-      '$dove: nuova seduta, ${[if (m.tipo.isNotEmpty) m.tipo, '${m.durataMin} min'].join(' ')}',
-    Azione.rimuovi => '$dove: tolta${r == null ? '' : ' (${_seduta(r)})'}',
+    Azione.aggiungi => l10n.nuovaSeduta(
+      dove,
+      [if (m.tipo.isNotEmpty) m.tipo, '${m.durataMin} min'].join(' '),
+    ),
+    Azione.rimuovi => l10n.tolta(dove, r == null ? '' : ' (${_seduta(r)})'),
     Azione.sposta =>
       '$dove → ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)}',
     Azione.cambia =>

@@ -5,6 +5,8 @@ import 'dati_live.dart';
 import 'esecuzione.dart';
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 // La notifica dell'allenamento in corso, visibile anche dalla schermata di
 // blocco: esercizio, tempo (che scorre da solo), km, passo e battito, con il
@@ -38,6 +40,11 @@ Future<void> mostraNotifica({
       'base': base.millisecondsSinceEpoch,
       'indietro': contoAllaRovescia,
       'pausa': inPausa,
+      // Testi fissi della notifica nella lingua dell'app.
+      'canale': l10n.notificaCanale,
+      'allenamento': l10n.notificaAllenamento,
+      'riprendi': l10n.riprendi,
+      'pausa_testo': l10n.pausa2,
     });
   } catch (_) {}
 }
@@ -57,12 +64,15 @@ String titoloNotifica(
   required bool inPausa,
   Blocco? prossimo,
 }) {
+  final titolo = mostra(b.titolo);
   final cosa = libera
-      ? nome
+      ? mostra(nome)
       : b.tipo == TipoBlocco.recupero
-      ? (prossimo == null ? 'Recupero' : 'Recupero · poi ${prossimo.titolo}')
-      : (b.dettaglio.isEmpty ? b.titolo : '${b.titolo} · ${b.dettaglio}');
-  return inPausa ? 'In pausa · $cosa' : cosa;
+      ? (prossimo == null
+            ? l10n.parolaRecupero
+            : l10n.recuperoPoi(mostra(prossimo.titolo)))
+      : (b.dettaglio.isEmpty ? titolo : '$titolo · ${b.dettaglio}');
+  return inPausa ? l10n.pausa(cosa) : cosa;
 }
 
 /// Riga dei dati: "2,35 km · 10:12 min/km · ♥ 112 Z2". Vuota senza GPS e
@@ -81,6 +91,7 @@ String testoNotifica({
     '${fmtVelocita(sport, mps)} ${unitaRitmo(sport)}',
   if (watt != null) '$watt W',
   // Nella camminata i passi contano quanto i km; nella corsa la riga è già piena.
-  if (passi > 0 && stessoSport(sport, 'Camminata')) '${fmtPassi(passi)} passi',
+  if (passi > 0 && stessoSport(sport, 'Camminata'))
+    l10n.quantiPassi(fmtPassi(passi)),
   if (bpm != null) '♥ $bpm${zona > 0 ? ' Z$zona' : ''}',
 ].join(' · ');

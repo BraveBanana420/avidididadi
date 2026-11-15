@@ -4,6 +4,7 @@ import 'fit.dart';
 import 'models.dart';
 import 'potenza.dart';
 import 'serie_sessione.dart';
+import 'l10n/lingua.dart';
 
 // Gli intervalli di un'attività: ogni tratto di lavoro o di recupero con
 // metri, tempo, battito e watt. Dall'orologio (intervals.icu) sono i giri
@@ -200,13 +201,13 @@ String passoIntervallo(IntervalloFatto i, String sport) {
 /// "2:00 (previsti 8:00)".
 String _tempoConPrevisto(IntervalloFatto i) =>
     i.previstoS > 0 && (i.secondi - i.previstoS).abs() > 10
-    ? '${_minSec(i.secondi)} (previsti ${_minSec(i.previstoS)})'
+    ? l10n.previsti(_minSec(i.secondi), _minSec(i.previstoS))
     : _minSec(i.secondi);
 
 /// "200 m · 5:32 · 2:46/100 m · FC 109"; i recuperi "Recupero 0:52". In bici
 /// anche i watt medi: "· 210 W".
 String rigaIntervallo(IntervalloFatto i, String sport) {
-  if (i.recupero) return 'Recupero ${_tempoConPrevisto(i)}';
+  if (i.recupero) return l10n.recupero(_tempoConPrevisto(i));
   final metri = i.metri >= 1000 && !stessoSport(sport, 'Nuoto')
       ? '${(i.metri / 1000).toStringAsFixed(2).replaceAll('.', ',')} km'
       : '${i.metri.round()} m';
@@ -215,7 +216,7 @@ String rigaIntervallo(IntervalloFatto i, String sport) {
     _tempoConPrevisto(i),
     passoIntervallo(i, sport),
     if (i.wattMedi > 0) '${i.wattMedi} W',
-    if (i.fcMedia > 0) 'FC ${i.fcMedia}',
+    if (i.fcMedia > 0) l10n.fc(i.fcMedia),
   ].where((x) => x.isNotEmpty).join(' · ');
 }
 

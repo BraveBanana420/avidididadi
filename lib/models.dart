@@ -1,28 +1,69 @@
 import 'csv.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
-const giorniSettimana = [
-  'Lunedì',
-  'Martedì',
-  'Mercoledì',
-  'Giovedì',
-  'Venerdì',
-  'Sabato',
-  'Domenica',
+List<String> get giorniSettimana => [
+  l10n.lunedi,
+  l10n.martedi,
+  l10n.mercoledi,
+  l10n.giovedi,
+  l10n.venerdi,
+  l10n.sabato,
+  l10n.domenica,
 ];
-const mesiNomi = [
-  'gennaio',
-  'febbraio',
-  'marzo',
-  'aprile',
-  'maggio',
-  'giugno',
-  'luglio',
-  'agosto',
-  'settembre',
-  'ottobre',
-  'novembre',
-  'dicembre',
+List<String> get mesiNomi => [
+  l10n.parolaGennaio,
+  l10n.parolaFebbraio,
+  l10n.parolaMarzo,
+  l10n.parolaAprile,
+  l10n.parolaMaggio,
+  l10n.parolaGiugno,
+  l10n.parolaLuglio,
+  l10n.parolaAgosto,
+  l10n.parolaSettembre,
+  l10n.parolaOttobre,
+  l10n.parolaNovembre,
+  l10n.parolaDicembre,
 ];
+
+/// Il mese da solo, come titolo ("Novembre 2026"). In greco il nome dentro
+/// una data è al genitivo ("16 Νοεμβρίου"), da solo al nominativo.
+String nomeMese(int mese) => codiceLingua == 'el'
+    ? const [
+        'Ιανουάριος',
+        'Φεβρουάριος',
+        'Μάρτιος',
+        'Απρίλιος',
+        'Μάιος',
+        'Ιούνιος',
+        'Ιούλιος',
+        'Αύγουστος',
+        'Σεπτέμβριος',
+        'Οκτώβριος',
+        'Νοέμβριος',
+        'Δεκέμβριος',
+      ][mese - 1]
+    : maiuscola(mesiNomi[mese - 1]);
+
+/// Il mese abbreviato per gli assi dei grafici ("nov"). In greco le prime
+/// tre lettere non bastano: giugno e luglio sarebbero tutti e due "Ιου".
+String meseBreve(int mese) => codiceLingua == 'el'
+    ? const [
+        'Ιαν',
+        'Φεβ',
+        'Μαρ',
+        'Απρ',
+        'Μαΐ',
+        'Ιουν',
+        'Ιουλ',
+        'Αυγ',
+        'Σεπ',
+        'Οκτ',
+        'Νοε',
+        'Δεκ',
+      ][mese - 1]
+    : mesiNomi[mese - 1].substring(0, 3);
+
 const fasce = ['Mattina', 'Pranzo', 'Pomeriggio', 'Sera'];
 const sportList = [
   'Forza',
@@ -144,11 +185,12 @@ String dataLunga(DateTime d) =>
     '${giorniSettimana[d.weekday - 1]} ${d.day} ${mesiNomi[d.month - 1]}';
 DateTime soloData(DateTime d) => DateTime(d.year, d.month, d.day);
 String titoloSessione(String sport, String tipo) =>
-    tipo.isEmpty ? sport : '$sport: $tipo';
+    tipo.isEmpty ? mostra(sport) : '${mostra(sport)}: ${mostra(tipo)}';
 
 /// Il titolo accanto all'icona dello sport: basta il nome della seduta,
 /// lo sport lo dice già l'icona.
-String nomeSessione(String sport, String tipo) => tipo.isEmpty ? sport : tipo;
+String nomeSessione(String sport, String tipo) =>
+    mostra(tipo.isEmpty ? sport : tipo);
 bool stessoSport(String a, String b) =>
     a.trim().toLowerCase() == b.trim().toLowerCase();
 String maiuscola(String s) =>
@@ -544,9 +586,9 @@ class WorkoutStep {
       p.add(qta);
     }
     if (durataMin.isNotEmpty) p.add('$durataMin min');
-    if (intensita.isNotEmpty) p.add('intensità $intensita');
+    if (intensita.isNotEmpty) p.add(l10n.intensita2(intensita));
     if (obiettivo2.isNotEmpty) p.add('poi $obiettivo2');
-    if (recuperoS.isNotEmpty) p.add('recupero $recuperoS s');
+    if (recuperoS.isNotEmpty) p.add(l10n.recuperoS(recuperoS));
     return p.join(', ');
   }
 }

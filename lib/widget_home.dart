@@ -10,6 +10,8 @@ import 'models.dart';
 import 'storage.dart';
 import 'tema.dart';
 import 'widgets.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 // Widget per la schermata home di Android: l'app prepara i dati di due
 // settimane (da lunedì) e le icone degli sport; il widget nativo sceglie da
@@ -54,27 +56,27 @@ Map<String, dynamic> datiWidget({
       final r = previsti.first;
       stato = 'previsto';
       sport = normSport(r.sport);
-      titolo = r.tipo.isEmpty ? sport : r.tipo;
+      titolo = mostra(r.tipo.isEmpty ? sport : r.tipo);
       sottotitolo = [
-        if (r.tipo.isNotEmpty) sport,
+        if (r.tipo.isNotEmpty) mostra(sport),
         if (r.durataMin > 0) '${r.durataMin} min',
-        r.fascia.toLowerCase(),
+        mostra(r.fascia).toLowerCase(),
       ].join(' · ');
       passi = haPassi(r);
     } else if (fatti.isNotEmpty) {
       final s = fatti.first;
       stato = 'fatto';
       sport = normSport(s.sport);
-      titolo = 'Fatto: ${s.tipo.isEmpty ? sport : s.tipo}';
+      titolo = l10n.fatto2(mostra(s.tipo.isEmpty ? sport : s.tipo));
       sottotitolo = [
-        if (s.tipo.isNotEmpty) sport,
+        if (s.tipo.isNotEmpty) mostra(sport),
         if (s.durataMin > 0) '${s.durataMin} min',
       ].join(' · ');
     } else {
       stato = 'riposo';
       sport = 'Riposo';
-      titolo = 'Giorno di riposo';
-      sottotitolo = 'Anche il riposo è allenamento';
+      titolo = l10n.giornoRiposo;
+      sottotitolo = l10n.ancheRiposoAllenamento;
     }
     giorni[isoData(d)] = {
       'stato': stato,
@@ -99,6 +101,14 @@ Map<String, dynamic> datiWidget({
     'scuro': scuro,
     'neon': neon,
     'giorni': giorni,
+    // Testi fissi del widget nella lingua dell'app.
+    'testi': {
+      'oggi': l10n.widgetOggi,
+      'apri': l10n.widgetApri,
+      'nessuno': l10n.widgetNessuno,
+      'fatti': l10n.widgetFatti('{fatti}', '{totale}'),
+      'lettere': l10n.widgetLettere.split(','),
+    },
     // Fondo dal tema chiaro o scuro, accento dal rosso o dal neon.
     'colori': {
       'testo': scuro ? 0xFFF4F4F5 : 0xFF14141A,

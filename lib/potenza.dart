@@ -5,6 +5,7 @@ import 'csv.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'serie_sessione.dart';
+import 'l10n/lingua.dart';
 
 // Potenza in bici: zone dall'FTP (come Garmin e intervals.icu), obiettivi in
 // watt per le sedute del piano e le serie registrate dall'app con i sensori.
@@ -14,38 +15,41 @@ import 'serie_sessione.dart';
 class ZonePotenza {
   final int ftp; // watt
   final List<int> limiti;
-  final List<String> nomiZone;
   final List<Color> colori;
+  final bool _corsa;
   const ZonePotenza(this.ftp)
     : limiti = quote,
-      nomiZone = nomi,
+      _corsa = false,
       colori = coloriZonePotenza;
+
+  /// Nomi delle zone nella lingua in uso.
+  List<String> get nomiZone => _corsa ? nomiCorsa : nomi;
 
   /// La corsa ha le sue cinque zone e la sua soglia: gli stessi watt di una
   /// pedalata, correndo, sono tutt'altro sforzo.
   const ZonePotenza.corsa(this.ftp)
     : limiti = quoteCorsa,
-      nomiZone = nomiCorsa,
+      _corsa = true,
       colori = coloriZoneBattito;
 
   /// Limiti superiori in % dell'FTP: Z1 fino a 55, Z2 fino a 75…; Z7 oltre 150.
   static const quote = [55, 75, 90, 105, 120, 150];
   static const quoteCorsa = [80, 90, 100, 115];
-  static const nomiCorsa = [
-    'Facile',
-    'Medio',
+  static List<String> get nomiCorsa => [
+    l10n.facile,
+    l10n.medio,
     'Soglia',
     'Intervalli',
     'Ripetute',
   ];
-  static const nomi = [
+  static List<String> get nomi => [
     'Recupero',
-    'Fondo',
-    'Medio',
+    l10n.fondo,
+    l10n.medio,
     'Soglia',
-    'VO2max',
-    'Anaerobica',
-    'Sprint',
+    l10n.vo2max,
+    l10n.anaerobica,
+    l10n.sprint,
   ];
 
   /// Quante zone ci sono.
@@ -61,8 +65,8 @@ class ZonePotenza {
   /// Il range in parole: "150-200 W", "fino a 150 W", "oltre 375 W".
   String testo(int n) {
     final (da, a) = zona(n);
-    if (n == 1) return 'fino a $a W';
-    if (a == null) return 'oltre ${da - 1} W';
+    if (n == 1) return l10n.finoW(a!);
+    if (a == null) return l10n.oltreW(da - 1);
     return '$da-$a W';
   }
 
@@ -177,8 +181,8 @@ int versoCadenza(int rpm, (int, int) r) => rpm <= 0
     : 0;
 
 String fraseCadenza(int rpm, (int, int) r, int verso) => verso > 0
-    ? 'Cadenza $rpm, scendi sotto ${r.$2}.'
-    : 'Cadenza $rpm, sali sopra ${r.$1}.';
+    ? l10nVoce.cadenzaScendiSotto(rpm, r.$2)
+    : l10nVoce.cadenzaSaliSopra(rpm, r.$1);
 
 /// La cadenza per intervals.icu e Garmin: "85-90rpm". Vuoto se non c'è.
 String obiettivo2Icu(String obiettivo2) {
@@ -273,7 +277,7 @@ String fmtRange((int, int) r) =>
 String conWatt(String testo, ZonePotenza? p, Zone z) {
   String bpm(double quota) {
     final (da, a) = z.zona(zonaBattitoDaQuota(quota));
-    return '$da-$a bpm';
+    return l10n.bpm2(da, a);
   }
 
   var t = testo;
@@ -297,7 +301,7 @@ String conWatt(String testo, ZonePotenza? p, Zone z) {
           (m) {
             final n = int.parse(m[1]!);
             final (da, a) = z.zona(n);
-            return '${m[0]} (${p.testo(n)} · $da-$a bpm)';
+            return l10n.bpm3(m[0]!, p.testo(n), da, a);
           },
         );
   // "88-94%" dell'FTP: in watt (se c'è l'FTP) e in battito.
@@ -342,16 +346,16 @@ int versoRange(int watt, (int, int) r, ZonePotenza p) {
 
 /// La frase a voce per un range: "260 watt, scendi sotto 230."
 String fraseRange(int watt, (int, int) r, int verso) => verso > 0
-    ? '$watt watt, scendi sotto ${r.$2}.'
-    : '$watt watt, sali sopra ${r.$1}.';
+    ? l10nVoce.wattScendiSotto(watt, r.$2)
+    : l10nVoce.wattSaliSopra(watt, r.$1);
 
 /// La frase a voce: "260 watt, scendi sotto 230." Sopra si dice il tetto,
 /// sotto il minimo della zona.
 String frasePotenza(int watt, int obiettivo, int verso, ZonePotenza p) {
   final (da, a) = p.zona(obiettivo);
   return verso > 0
-      ? '$watt watt, scendi sotto ${a ?? da}.'
-      : '$watt watt, sali sopra $da.';
+      ? l10nVoce.wattScendiSotto(watt, a ?? da)
+      : l10nVoce.wattSaliSopra(watt, da);
 }
 
 /// Media degli ultimi [secondi] campioni, come il "3 s" dei ciclocomputer:
@@ -516,10 +520,10 @@ List<WorkoutStep> passiTestFtpCorsa(String id) {
     passo(
       1,
       'riscaldamento',
-      'Corsa facile',
+      l10n.corsaFacile,
       minuti: '15',
       intensita: 'zona 2',
-      note: 'Registra questa corsa anche con l\'orologio: è lui a misurare i watt.',
+      note: l10n.registraQuestaCorsaAnche,
     ),
     passo(
       2,
@@ -528,21 +532,19 @@ List<WorkoutStep> passiTestFtpCorsa(String id) {
       serie: '3',
       ripetizioni: '20 s',
       recupero: '60',
-      note: 'Veloci ma sciolti, poi cammina o corri piano.',
+      note: l10n.velociMaScioltiPoi,
     ),
     passo(
       3,
       'principale',
-      'Test: 20 minuti al massimo',
+      l10n.test20MinutiAl,
       minuti: '20',
-      note:
-          'Il ritmo più forte che riesci a tenere fino alla fine, costante. '
-          'Meglio partire un po\' piano e chiudere in crescendo.',
+      note: l10n.ritmoPiuForteRiesci,
     ),
     passo(
       4,
       'defaticamento',
-      'Corsa lentissima',
+      l10n.corsaLentissima,
       minuti: '10',
       intensita: 'zona 1',
     ),

@@ -44,12 +44,12 @@ void main() {
       'durata_min': '99',
       'distanza_km': '14,54',
       'fc_media': '131',
-      'note': 'Pistoia Corsa',
+      'note': 'Milano Corsa',
     })!;
     expect(s.durataMin, 99);
     expect(s.distanzaKm, 14.54);
     expect(s.fcMedia, 131);
-    expect(s.note, 'Pistoia Corsa');
+    expect(s.note, 'Milano Corsa');
   });
 
   test('testi lunghissimi si accorciano', () {

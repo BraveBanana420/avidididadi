@@ -6,6 +6,7 @@ import 'assi.dart';
 import 'models.dart';
 import 'tema.dart';
 import 'widgets.dart';
+import 'l10n/lingua.dart';
 
 void _testo(Canvas canvas, String s, Offset o, Color c, {bool destra = false}) {
   final tp = TextPainter(
@@ -30,7 +31,7 @@ String _asseOre(double v) => '${numeroAsse(v)} h';
 String fmtOre(double ore) {
   final m = (ore * 60).round();
   if (m < 60) return '$m min';
-  return '${m ~/ 60} h ${two(m % 60)} min';
+  return l10n.hMin(m ~/ 60, two(m % 60));
 }
 
 /// Riquadro con il dettaglio del punto toccato: la prima riga è in evidenza.
@@ -75,7 +76,7 @@ class _Dettaglio extends StatelessWidget {
                 Align(
                   alignment: Alignment.topCenter,
                   child: IconButton(
-                    tooltip: 'Chiudi',
+                    tooltip: l10n.chiudi,
                     onPressed: onChiudi,
                     visualDensity: VisualDensity.compact,
                     icon: const Icon(Icons.close_rounded, size: 18),
@@ -218,9 +219,9 @@ class _GraficoLineaState extends State<GraficoLinea> {
   Widget build(BuildContext context) {
     final ys = widget.ys;
     if (ys.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 80,
-        child: Center(child: Text('Nessun dato per questo grafico.')),
+        child: Center(child: Text(l10n.nessunDatoQuestoGrafico)),
       );
     }
     final scheme = Theme.of(context).colorScheme;
@@ -499,19 +500,20 @@ class _GraficoBarreState extends State<GraficoBarre> {
     final v = widget.valori[i];
     final tot = v.values.fold<double>(0, (a, b) => a + b);
     final titSett =
-        widget.titoloColonna?.call(i) ?? 'Settimana dal ${widget.etichette[i]}';
-    String sessioni(int n) => '$n ${n == 1 ? 'sessione' : 'sessioni'}';
+        widget.titoloColonna?.call(i) ?? l10n.settimanaDal(widget.etichette[i]);
+    String sessioni(int n) =>
+        '$n ${n == 1 ? l10n.parolaSessione : l10n.parolaSessioni}';
     if (s != null) {
       final nSess = widget.conteggi?[i][s];
       final totSport = widget.valori.fold<double>(0, (a, m) => a + (m[s] ?? 0));
       return [
         '$s: ${widget.formato(v[s] ?? 0)}',
         nSess == null ? titSett : '$titSett · ${sessioni(nSess)}',
-        'Totale: ${widget.formato(tot)}',
-        '$s in tutto il periodo: ${widget.formato(totSport)}',
+        l10n.totale(widget.formato(tot)),
+        l10n.tuttoPeriodo(s, widget.formato(totSport)),
       ];
     }
-    if (tot <= 0) return [titSett, 'Nessun allenamento'];
+    if (tot <= 0) return [titSett, l10n.nessunAllenamento];
     return [
       '$titSett: ${widget.formato(tot)}',
       for (final sp in widget.sport)

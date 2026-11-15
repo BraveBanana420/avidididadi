@@ -3,7 +3,9 @@
 //
 //   flutter test tool/schermate/schermate_test.dart
 //
-// Le immagini finiscono in build/schermate/<tema>/. Non è un test vero: sta
+// Le immagini finiscono in build/schermate/<tema>/. In inglese:
+//   flutter test tool/schermate/schermate_test.dart --dart-define=LINGUA=en
+// (immagini in build/schermate_en/<tema>/). Non è un test vero: sta
 // fuori da test/ per non rallentare `flutter test`.
 import 'dart:convert';
 import 'dart:io';
@@ -14,6 +16,7 @@ import 'package:allenamenti_app/attivita_libera.dart';
 import 'package:allenamenti_app/avvisi.dart';
 import 'package:allenamenti_app/battito.dart';
 import 'package:allenamenti_app/feedback.dart';
+import 'package:allenamenti_app/l10n/lingua.dart';
 import 'package:allenamenti_app/main.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/profilo.dart';
@@ -30,7 +33,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 final _cornice = GlobalKey();
-final _uscita = Directory('build/schermate');
+const _lingua = String.fromEnvironment('LINGUA', defaultValue: 'it');
+final _uscita = Directory(
+  _lingua == 'it' ? 'build/schermate' : 'build/schermate_$_lingua',
+);
 
 /// I caratteri veri (nei test, senza questo, il testo è fatto di rettangoli).
 Future<void> _caricaCaratteri() async {
@@ -240,6 +246,8 @@ void main() {
       );
     }
     await _caricaCaratteri();
+    // Lingua già scelta: niente pagina della lingua all'avvio.
+    usaLingua(_lingua);
     await _preparaDati();
   });
 

@@ -8,6 +8,7 @@ import '../benvenuto.dart';
 import '../models.dart';
 import '../pulse.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// Le attività che si vogliono vedere nel piano e nei menu. Quelle tolte escono
 /// dal calendario; quelle aggiunte ci entrano nei giorni scelti.
@@ -29,19 +30,16 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Togliere $nomi?'),
-        content: Text(
-          'Le sedute future di ${nomi.toLowerCase()} escono dal calendario. '
-          'Quelle già fatte restano nello storico.',
-        ),
+        title: Text(l10n.togliere(nomi)),
+        content: Text(l10n.seduteFutureEsconoDal(nomi.toLowerCase())),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Togli'),
+            child: Text(l10n.togli),
           ),
         ],
       ),
@@ -73,7 +71,7 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
     if (!mounted) return;
     navigator.pop();
     messenger.showSnackBar(
-      avviso(content: Text('Le tue attività sono aggiornate.')),
+      avviso(content: Text(l10n.tueAttivitaSonoAggiornate)),
     );
   }
 
@@ -89,12 +87,12 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
           16 + MediaQuery.paddingOf(context).bottom,
         ),
         child: PulsantePrincipale(
-          testo: 'Salva',
+          testo: l10n.salva,
           icona: Icons.check_rounded,
           onPressed: scelte.isEmpty || inCorso ? null : _salva,
         ),
       ),
-      appBar: AppBar(title: const Text('Le mie attività')),
+      appBar: AppBar(title: Text(l10n.mieAttivita)),
       body: Material(
         type: MaterialType.transparency,
         child: ListView(
@@ -102,11 +100,7 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                'Nel piano e nei menu vedi solo queste. Dal "+" puoi sempre '
-                'fare anche altro, e tutto quello che fai resta nello storico.',
-                style: t.bodyMedium,
-              ),
+              child: Text(l10n.nelPianoNeiMenu, style: t.bodyMedium),
             ),
             for (final a in attivitaDaScegliere)
               CheckboxListTile(
@@ -150,7 +144,7 @@ class _QuandoDialogState extends State<QuandoDialog> {
     final t = Theme.of(context).textTheme;
     final m = int.tryParse(minuti.text.trim()) ?? 0;
     return AlertDialog(
-      title: Text('${widget.sport}: quando?'),
+      title: Text(l10n.quando(widget.sport)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -159,9 +153,8 @@ class _QuandoDialogState extends State<QuandoDialog> {
           children: [
             Text(
               stessoSport(widget.sport, sportArrampicata)
-                  ? 'Scegli i giorni. L\'allenamento lo decidi tu, o lo chiedi '
-                        'all\'assistente: l\'app non ne scrive da sola.'
-                  : 'Scegli i giorni: mettiamo le sedute nel calendario.',
+                  ? l10n.scegliGiorniAllenamentoDecidi
+                  : l10n.scegliGiorniMettiamoSedute,
               style: t.bodyMedium,
             ),
             Wrap(
@@ -180,8 +173,8 @@ class _QuandoDialogState extends State<QuandoDialog> {
             TextField(
               controller: minuti,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Quanto dura',
+              decoration: InputDecoration(
+                labelText: l10n.quantoDura,
                 suffixText: 'min',
               ),
               onChanged: (_) => setState(() {}),
@@ -192,13 +185,13 @@ class _QuandoDialogState extends State<QuandoDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Non ora'),
+          child: Text(l10n.nonOra),
         ),
         FilledButton(
           onPressed: giorni.isEmpty || m <= 0
               ? null
               : () => Navigator.pop(context, (giorni, m.clamp(1, 600))),
-          child: const Text('Metti nel calendario'),
+          child: Text(l10n.mettiNelCalendario),
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'esecuzione.dart';
 import 'models.dart';
 import 'potenza.dart';
+import 'l10n/lingua.dart';
 
 // Allenamenti preparati dall'assistente (per esempio Claude) passo per passo:
 // riscaldamento, ripetute con watt o % dell'FTP, recuperi, defaticamento.
@@ -67,23 +68,18 @@ const _fasi = {'riscaldamento', 'principale', 'defaticamento'};
 AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
   final data = parseData('${m['data'] ?? ''}');
   if (data == null) {
-    throw const FormatException('Un allenamento non ha la data.');
+    throw FormatException(l10n.allenamentoNonHaData);
   }
   final sport = normSport('${m['sport'] ?? ''}');
   if (!sportAllenamentiAgente.contains(sport)) {
-    throw FormatException(
-      'Allenamento del ${isoData(data)}: lo sport deve essere corsa, bici '
-      'o nuoto.',
-    );
+    throw FormatException(l10n.allenamentoSportDeveEssere(isoData(data)));
   }
   final lista = m['passi'];
   if (lista is! List || lista.isEmpty || lista.length > 40) {
-    throw FormatException(
-      'Allenamento del ${isoData(data)}: servono da 1 a 40 passi.',
-    );
+    throw FormatException(l10n.allenamentoServono140(isoData(data)));
   }
   final nome = _testo(m['nome'], 60).isEmpty
-      ? 'Allenamento di ${sport.toLowerCase()}'
+      ? l10n.allenamento(sport.toLowerCase())
       : _testo(m['nome'], 60);
   final id = idAllenamentoAgente(data, sport);
   final passi = <WorkoutStep>[];
@@ -95,16 +91,14 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
     final okMetri = metri != null && metri > 0 && metri <= 100000;
     if (!okMinuti && !okMetri) {
       throw FormatException(
-        'Allenamento del ${isoData(data)}, passo ${k + 1}: servono i minuti '
-        '(fino a 300) o i metri.',
+        l10n.allenamentoPassoServonoMinuti(isoData(data), k + 1),
       );
     }
     final ripeti = (_numero(x['ripeti']) ?? 1).round();
     final recupero = (_numero(x['recupero_s']) ?? 0).round();
     if (ripeti < 1 || ripeti > 30 || recupero < 0 || recupero > 1800) {
       throw FormatException(
-        'Allenamento del ${isoData(data)}, passo ${k + 1}: ripetizioni da 1 '
-        'a 30 e recupero fino a 1800 secondi.',
+        l10n.allenamentoPassoRipetizioni1(isoData(data), k + 1),
       );
     }
     final fase = _testo(x['fase'], 20).toLowerCase();
@@ -138,9 +132,7 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
       : null;
   final durata = durataIndicata ?? durataPassi(passi);
   if (durataPassi(passi) > 300) {
-    throw FormatException(
-      'Allenamento del ${isoData(data)}: dura più di 5 ore.',
-    );
+    throw FormatException(l10n.allenamentoDuraPiu5(isoData(data)));
   }
   final conTotale = [
     for (final s in passi)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../recupero.dart';
+import '../l10n/lingua.dart';
 
 /// Colore dell'energia di oggi: verde, giallo o rosso al neon (entrambi i temi).
 Color coloreEnergia(StatoRecupero s) => switch (s) {
@@ -75,7 +76,7 @@ class _DettaglioEnergia extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Ok'),
+                child: Text(l10n.ok2),
               ),
             ),
           ],

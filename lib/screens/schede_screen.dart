@@ -9,6 +9,8 @@ import '../pulse.dart';
 import '../registro_forza.dart';
 import '../scheda.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Le schede scritte a mano: forza (per esempio dal personal trainer) e
 /// corsa, bici e nuoto (per esempio dall'allenatore o dal gruppo).
@@ -34,11 +36,11 @@ class SchedeScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (final (sp, testo) in const [
-                ('Forza', 'Esercizi, serie, ripetizioni e kg'),
-                ('Corsa', 'Passi a tempo o distanza, con zona o passo'),
-                ('Bici', 'Passi a tempo o distanza, con zona'),
-                ('Nuoto', 'Vasche, passo per 100 m e pause'),
+              for (final (sp, testo) in [
+                ('Forza', l10n.eserciziSerieRipetizioniKg),
+                ('Corsa', l10n.passiTempoODistanza),
+                ('Bici', l10n.passiTempoODistanza2),
+                ('Nuoto', l10n.vaschePasso100M),
               ])
                 if (state.attivitaScelta(sp))
                   ListTile(
@@ -60,7 +62,7 @@ class SchedeScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Le mie schede')),
+      appBar: AppBar(title: Text(l10n.mieSchede)),
       body: ListenableBuilder(
         listenable: state,
         builder: (context, _) {
@@ -77,7 +79,7 @@ class SchedeScreen extends StatelessWidget {
           Widget riga(Scheda s, bool linea) => RigaPulse(
             segno: IconaQuadrata(iconaSport(s.sport), evidenza: s.valida(oggi)),
             titolo: s.nome.isEmpty
-                ? 'Scheda di ${s.sport.toLowerCase()}'
+                ? l10n.scheda3(s.sport.toLowerCase())
                 : s.nome,
             sottotitolo: [
               descriviValidita(s),
@@ -89,21 +91,15 @@ class SchedeScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             children: [
-              Text(
-                'Scrivi la scheda del tuo personal trainer o del tuo '
-                'allenatore: forza, corsa, bici o nuoto. Nei giorni che scegli '
-                'prende il posto delle sedute preparate dall\'app, che non la '
-                'cambia da sola.',
-                style: t.bodyMedium,
-              ),
+              Text(l10n.scriviSchedaTuoPersonal, style: t.bodyMedium),
               const SizedBox(height: 16),
               PulsantePrincipale(
                 onPressed: () => _nuova(context),
                 icona: Icons.add_rounded,
-                testo: 'Nuova scheda',
+                testo: l10n.nuovaScheda,
               ),
               if (inCorso.isNotEmpty) ...[
-                const TitoloSezione('In corso'),
+                TitoloSezione(l10n.corso2),
                 SuperficiePulse(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -115,7 +111,7 @@ class SchedeScreen extends StatelessWidget {
                 ),
               ],
               if (archivio.isNotEmpty) ...[
-                const TitoloSezione('Finite'),
+                TitoloSezione(l10n.finite),
                 SuperficiePulse(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
@@ -137,13 +133,13 @@ class SchedeScreen extends StatelessWidget {
 /// "Dal 2 novembre al 16 novembre", "Dal 2 novembre, senza scadenza".
 String descriviValidita(Scheda s) {
   String d(DateTime x) => '${x.day} ${mesiNomi[x.month - 1]}';
-  if (s.archiviata) return 'Archiviata';
+  if (s.archiviata) return l10n.archiviata;
   return s.fine == null
-      ? 'Dal ${d(s.inizio)}, senza scadenza'
-      : 'Dal ${d(s.inizio)} al ${d(s.fine!)}';
+      ? l10n.dalSenzaScadenza(d(s.inizio))
+      : l10n.dalAl(d(s.inizio), d(s.fine!));
 }
 
-const _iniziali = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+List<String> get _iniziali => inizialiGiorni;
 const _durate = [15, 30, 60];
 
 /// Scrittura e modifica di una scheda.
@@ -185,7 +181,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
   bool get _forza => stessoSport(_sport, 'Forza');
 
   String _nomeGiorno(int i) =>
-      '${_forza ? 'Giorno' : 'Seduta'} ${String.fromCharCode(65 + i)}';
+      '${_forza ? l10n.giorno2 : l10n.seduta} ${String.fromCharCode(65 + i)}';
 
   /// I giorni della settimana con questo sport nella settimana tipo.
   Set<int> _giorniSport() => {
@@ -214,9 +210,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         avviso(
           content: Text(
-            _forza
-                ? 'Aggiungi almeno un esercizio.'
-                : 'Aggiungi almeno un passo.',
+            _forza ? l10n.aggiungiAlmenoEsercizio : l10n.aggiungiAlmenoPasso,
           ),
         ),
       );
@@ -257,7 +251,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
     await state.salvaSettimana(prima: prima);
     if (!mounted) return;
     setState(() {});
-    messenger.showSnackBar(avviso(content: Text('Settimana tipo aggiornata.')));
+    messenger.showSnackBar(avviso(content: Text(l10n.settimanaTipoAggiornata)));
   }
 
   /// true: sostituisci; false: aggiungi accanto; null: lascia com'è.
@@ -271,36 +265,36 @@ class _SchedaScreenState extends State<SchedaScreen> {
     return showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('$nome nella settimana tipo'),
+        title: Text(l10n.nellaSettimanaTipo(nome)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Aggiungo: ${descrivi(aggiunto)}.'),
+            Text(l10n.aggiungo(descrivi(aggiunto))),
             const SizedBox(height: 12),
             if (tolti.isEmpty)
-              Text('$nome è un giorno di riposo: non tolgo niente.')
+              Text(l10n.giornoRiposoNonTolgo(nome))
             else ...[
-              const Text('Per fargli posto tolgo da questo giorno:'),
+              Text(l10n.fargliPostoTolgoQuesto),
               for (final x in tolti) Text('• ${descrivi(x)}'),
               const SizedBox(height: 8),
-              const Text('Oppure puoi tenerle e fare tutte e due le cose.'),
+              Text(l10n.oppurePuoiTenerleFare),
             ],
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           if (tolti.isNotEmpty)
             TextButton(
               onPressed: () => Navigator.pop(c, false),
-              child: const Text('Tieni entrambe'),
+              child: Text(l10n.tieniEntrambe),
             ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: Text(tolti.isEmpty ? 'Aggiungi' : 'Sostituisci'),
+            child: Text(tolti.isEmpty ? l10n.aggiungi : l10n.sostituisci),
           ),
         ],
       ),
@@ -312,19 +306,16 @@ class _SchedaScreenState extends State<SchedaScreen> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Eliminare la scheda?'),
-        content: const Text(
-          'Le sedute già fatte restano. Da oggi tornano quelle preparate '
-          'dall\'app.',
-        ),
+        title: Text(l10n.eliminareScheda),
+        content: Text(l10n.seduteGiaFatteRestano),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.elimina),
           ),
         ],
       ),
@@ -356,15 +347,15 @@ class _SchedaScreenState extends State<SchedaScreen> {
     final r = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Uscire senza salvare?'),
+        title: Text(l10n.uscireSenzaSalvare),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Esci'),
+            child: Text(l10n.esci),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Resta'),
+            child: Text(l10n.resta),
           ),
         ],
       ),
@@ -393,12 +384,12 @@ class _SchedaScreenState extends State<SchedaScreen> {
         bottomNavigationBar: const MargineBarraSistema(),
         appBar: AppBar(
           title: Text(
-            '${widget.scheda == null ? 'Nuova scheda' : 'Scheda'} · $_sport',
+            '${widget.scheda == null ? l10n.nuovaScheda : l10n.scheda4} · $_sport',
           ),
           actions: [
             if (widget.scheda != null)
               IconButton(
-                tooltip: 'Elimina',
+                tooltip: l10n.elimina,
                 onPressed: _elimina,
                 icon: const Icon(Icons.delete_outline_rounded),
               ),
@@ -411,19 +402,19 @@ class _SchedaScreenState extends State<SchedaScreen> {
               controller: _nome,
               textCapitalization: TextCapitalization.sentences,
               onChanged: (_) => _modificata = true,
-              decoration: const InputDecoration(
-                labelText: 'Nome della scheda',
-                hintText: 'Es. Scheda di novembre',
+              decoration: InputDecoration(
+                labelText: l10n.nomeScheda,
+                hintText: l10n.esSchedaNovembre,
               ),
             ),
-            const TitoloSezione('Quanto dura'),
+            TitoloSezione(l10n.quantoDura),
             Wrap(
               spacing: 8,
               runSpacing: 4,
               children: [
                 for (final g in _durate)
                   ChoiceChip(
-                    label: Text('$g giorni'),
+                    label: Text(l10n.quantiGiorni(g)),
                     selected: durata == g,
                     onSelected: (_) => _cambia(
                       s.copyWith(
@@ -432,7 +423,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                     ),
                   ),
                 ChoiceChip(
-                  label: const Text('Finché non la cambio'),
+                  label: Text(l10n.fincheNonCambio),
                   selected: durata == null,
                   onSelected: (_) => _cambia(s.copyWith(fine: () => null)),
                 ),
@@ -445,27 +436,25 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 TextButton.icon(
                   onPressed: _scegliInizio,
                   icon: const Icon(Icons.event_rounded),
-                  label: const Text('Inizio'),
+                  label: Text(l10n.inizio2),
                 ),
               ],
             ),
-            const TitoloSezione('Giorni'),
+            TitoloSezione(l10n.giorni),
             Text(
               _forza
-                  ? 'Ogni giorno della scheda (Busto, Gambe…) va nei giorni '
-                        'della settimana che scegli. Valgono quelli con la '
-                        'forza nella settimana tipo.'
-                  : 'Ogni seduta della scheda (Ripetute, Lungo…) va nei '
-                        'giorni della settimana che scegli. Valgono quelli con '
-                        '${_sport.toLowerCase()} nella settimana tipo.',
+                  ? l10n.ogniGiornoSchedaBusto
+                  : l10n.ogniSedutaSchedaRipetute(_sport.toLowerCase()),
               style: t.bodySmall,
             ),
             if (senzaForza.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
                 child: Text(
-                  '${senzaForza.map((d) => giorniSettimana[d - 1]).join(', ')}: '
-                  'nella settimana tipo non c\'è ${_sport.toLowerCase()}.',
+                  l10n.nellaSettimanaTipoNon(
+                    senzaForza.map((d) => giorniSettimana[d - 1]).join(', '),
+                    _sport.toLowerCase(),
+                  ),
                   style: t.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -477,7 +466,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () => _modificaSettimana(senzaForza),
                   icon: const Icon(Icons.edit_calendar_rounded),
-                  label: const Text('Modifica settimana'),
+                  label: Text(l10n.modificaSettimana),
                 ),
               ),
             const SizedBox(height: 8),
@@ -510,15 +499,13 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 ),
               ),
               icon: const Icon(Icons.add_rounded),
-              label: Text(
-                _forza ? 'Aggiungi un giorno' : 'Aggiungi una seduta',
-              ),
+              label: Text(_forza ? l10n.aggiungiGiorno : l10n.aggiungiSeduta),
             ),
             const SizedBox(height: 24),
             PulsantePrincipale(
               onPressed: _salva,
               icona: Icons.check_rounded,
-              testo: 'Salva la scheda',
+              testo: l10n.salvaScheda,
             ),
           ],
         ),
@@ -628,16 +615,16 @@ class _GiornoCardState extends State<_GiornoCard> {
                 child: TextField(
                   controller: _nome,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome del giorno',
-                    hintText: 'Es. Busto',
+                  decoration: InputDecoration(
+                    labelText: l10n.nomeGiorno,
+                    hintText: l10n.esBusto,
                   ),
                   onChanged: (v) => widget.cambia(g.copyWith(nome: v.trim())),
                 ),
               ),
               if (widget.elimina != null)
                 IconButton(
-                  tooltip: 'Togli questo giorno',
+                  tooltip: l10n.togliQuestoGiorno,
                   onPressed: widget.elimina,
                   icon: const Icon(Icons.close_rounded),
                 ),
@@ -696,7 +683,7 @@ class _GiornoCardState extends State<_GiornoCard> {
           const SizedBox(height: 8),
           if (g.esercizi.isEmpty)
             Text(
-              _forza ? 'Nessun esercizio.' : 'Nessun passo.',
+              _forza ? l10n.nessunEsercizio : l10n.nessunPasso,
               style: t.bodySmall,
             ),
           Material(
@@ -710,7 +697,7 @@ class _GiornoCardState extends State<_GiornoCard> {
                     subtitle: Text(e.riassunto),
                     onTap: () => _modifica(i),
                     trailing: PopupMenuButton<String>(
-                      tooltip: 'Altro',
+                      tooltip: mostra('Altro'),
                       onSelected: (v) => switch (v) {
                         'su' => _sposta(i, -1),
                         'giu' => _sposta(i, 1),
@@ -720,16 +707,16 @@ class _GiornoCardState extends State<_GiornoCard> {
                       },
                       itemBuilder: (_) => [
                         if (i > 0)
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'su',
-                            child: Text('Sposta su'),
+                            child: Text(l10n.spostaSu),
                           ),
                         if (i < g.esercizi.length - 1)
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'giu',
-                            child: Text('Sposta giù'),
+                            child: Text(l10n.spostaGiu),
                           ),
-                        const PopupMenuItem(value: 'via', child: Text('Togli')),
+                        PopupMenuItem(value: 'via', child: Text(l10n.togli)),
                       ],
                     ),
                   ),
@@ -740,7 +727,7 @@ class _GiornoCardState extends State<_GiornoCard> {
           TextButton.icon(
             onPressed: _aggiungi,
             icon: const Icon(Icons.add_rounded),
-            label: Text(_forza ? 'Aggiungi esercizio' : 'Aggiungi un passo'),
+            label: Text(_forza ? l10n.aggiungiEsercizio2 : l10n.aggiungiPasso),
           ),
         ],
       ),
@@ -781,9 +768,9 @@ Future<EsercizioScheda?> modificaEsercizio(
               Text(e.nome, style: Theme.of(c).textTheme.titleLarge),
               Row(
                 children: [
-                  const Expanded(child: Text('Serie')),
+                  Expanded(child: Text(l10n.serie2)),
                   IconButton.filledTonal(
-                    tooltip: 'Una serie in meno',
+                    tooltip: l10n.serieMeno,
                     onPressed: serie > 1 ? () => aggiorna(() => serie--) : null,
                     icon: const Icon(Icons.remove_rounded),
                   ),
@@ -796,7 +783,7 @@ Future<EsercizioScheda?> modificaEsercizio(
                     ),
                   ),
                   IconButton.filledTonal(
-                    tooltip: 'Una serie in più',
+                    tooltip: l10n.seriePiu,
                     onPressed: serie < 20
                         ? () => aggiorna(() => serie++)
                         : null,
@@ -806,38 +793,33 @@ Future<EsercizioScheda?> modificaEsercizio(
               ),
               TextField(
                 controller: rip,
-                decoration: const InputDecoration(
-                  labelText: 'Ripetizioni',
-                  helperText:
-                      'Es. 10, 8-10, oppure 30 s per gli esercizi a tempo',
+                decoration: InputDecoration(
+                  labelText: l10n.ripetizioni,
+                  helperText: l10n.es10810,
                 ),
               ),
               TextField(
                 controller: rec,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Recupero (secondi)',
-                ),
+                decoration: InputDecoration(labelText: l10n.recuperoSecondi),
               ),
               TextField(
                 controller: kg,
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Kg',
-                  helperText:
-                      'Un peso per tutte le serie (20), oppure uno per serie '
-                      '(20 22,5 25). Vuoto a corpo libero.',
+                decoration: InputDecoration(
+                  labelText: l10n.kg3,
+                  helperText: l10n.pesoTutteSerie20,
                   helperMaxLines: 2,
                 ),
               ),
               TextField(
                 controller: note,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Note del personal trainer',
-                  hintText: 'Es. scendi in 3 secondi',
+                decoration: InputDecoration(
+                  labelText: l10n.notePersonalTrainer,
+                  hintText: l10n.esScendi3Secondi,
                 ),
               ),
               PulsantePrincipale(
@@ -854,7 +836,7 @@ Future<EsercizioScheda?> modificaEsercizio(
                   ),
                 ),
                 icona: Icons.check_rounded,
-                testo: 'Fatto',
+                testo: l10n.fatto,
               ),
             ],
           ),
@@ -884,22 +866,22 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
     final nome = await showDialog<String>(
       context: context,
       builder: (d) => AlertDialog(
-        title: const Text('Esercizio non in catalogo'),
+        title: Text(l10n.esercizioNonCatalogo),
         content: TextField(
           controller: c,
           autofocus: true,
           textCapitalization: TextCapitalization.sentences,
-          decoration: const InputDecoration(labelText: 'Nome'),
+          decoration: InputDecoration(labelText: l10n.nome),
           onSubmitted: (x) => Navigator.pop(d, x),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(d),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(d, c.text),
-            child: const Text('Aggiungi'),
+            child: Text(l10n.aggiungi),
           ),
         ],
       ),
@@ -920,16 +902,16 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
     );
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Scegli un esercizio')),
+      appBar: AppBar(title: Text(l10n.scegliEsercizio)),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: TextField(
               autofocus: false,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search_rounded),
-                hintText: 'Cerca (es. lat, panca, squat)',
+                hintText: l10n.cercaEsLatPanca,
               ),
               onChanged: (v) => setState(() => _cerca = v),
             ),
@@ -937,7 +919,7 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
           Material(
             type: MaterialType.transparency,
             child: SwitchListTile(
-              title: const Text('Solo con la mia attrezzatura'),
+              title: Text(l10n.soloMiaAttrezzatura),
               value: !_tutti,
               onChanged: (v) => setState(() => _tutti = !v),
             ),
@@ -949,7 +931,7 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.edit_rounded),
-                    title: const Text('Non c\'è? Scrivilo a mano'),
+                    title: Text(l10n.nonCScriviloMano),
                     onTap: _aMano,
                   ),
                   for (final e in lista)
@@ -975,10 +957,10 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
   }
 }
 
-const _fasi = [
+List<(String, String)> get _fasi => [
   ('riscaldamento', 'Riscaldamento'),
-  ('principale', 'Principale'),
-  ('defaticamento', 'Defaticamento'),
+  ('principale', l10n.principale),
+  ('defaticamento', l10n.defaticamento),
 ];
 
 /// Un passo di corsa, bici o nuoto: fase, cosa fare, quante volte, a tempo o
@@ -1030,7 +1012,7 @@ Future<EsercizioScheda?> modificaPasso(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               spacing: 12,
               children: [
-                Text('Passo di ${sport.toLowerCase()}', style: t.titleLarge),
+                Text(l10n.passo2(sport.toLowerCase()), style: t.titleLarge),
                 Wrap(
                   spacing: 8,
                   children: [
@@ -1046,17 +1028,17 @@ Future<EsercizioScheda?> modificaPasso(
                   controller: nome,
                   textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
-                    labelText: 'Cosa fare',
+                    labelText: l10n.cosaFare,
                     hintText: nuoto
-                        ? 'Es. Stile libero, gambe con tavoletta'
-                        : 'Es. Corsa facile, ripetute, salita',
+                        ? l10n.esStileLiberoGambe
+                        : l10n.esCorsaFacileRipetute,
                   ),
                 ),
                 Row(
                   children: [
-                    const Expanded(child: Text('Quante volte')),
+                    Expanded(child: Text(l10n.quanteVolte)),
                     IconButton.filledTonal(
-                      tooltip: 'Una in meno',
+                      tooltip: l10n.meno3,
                       onPressed: volte > 1
                           ? () => aggiorna(() => volte--)
                           : null,
@@ -1071,7 +1053,7 @@ Future<EsercizioScheda?> modificaPasso(
                       ),
                     ),
                     IconButton.filledTonal(
-                      tooltip: 'Una in più',
+                      tooltip: l10n.piu3,
                       onPressed: volte < 50
                           ? () => aggiorna(() => volte++)
                           : null,
@@ -1080,15 +1062,15 @@ Future<EsercizioScheda?> modificaPasso(
                   ],
                 ),
                 SegmentedButton<bool>(
-                  segments: const [
+                  segments: [
                     ButtonSegment(
                       value: false,
-                      label: Text('A tempo'),
+                      label: Text(l10n.tempo2),
                       icon: Icon(Icons.timer_rounded),
                     ),
                     ButtonSegment(
                       value: true,
-                      label: Text('A distanza'),
+                      label: Text(l10n.distanza2),
                       icon: Icon(Icons.straighten_rounded),
                     ),
                   ],
@@ -1102,35 +1084,35 @@ Future<EsercizioScheda?> modificaPasso(
                     decimal: true,
                   ),
                   decoration: InputDecoration(
-                    labelText: aDistanza ? 'Metri' : 'Minuti',
-                    hintText: aDistanza ? 'Es. 400' : 'Es. 10, oppure 1,5',
+                    labelText: aDistanza ? l10n.metri : l10n.minuti2,
+                    hintText: aDistanza ? l10n.es400 : l10n.es10Oppure1,
                   ),
                 ),
-                Text('Obiettivo principale', style: t.titleSmall),
+                Text(l10n.obiettivoPrincipale, style: t.titleSmall),
                 Wrap(
                   spacing: 6,
                   runSpacing: 4,
                   children: [
                     ChoiceChip(
-                      label: const Text('Libera'),
+                      label: Text(l10n.libera),
                       selected: scelta.isEmpty,
                       onSelected: (_) => aggiorna(() => scelta = ''),
                     ),
                     for (var z = 1; z <= 5; z++)
                       ChoiceChip(
-                        label: Text('Zona $z'),
+                        label: Text(l10n.zona(z)),
                         selected: scelta == 'zona $z',
                         onSelected: (_) => aggiorna(() => scelta = 'zona $z'),
                       ),
                     if (stessoSport(sport, 'Bici'))
                       ChoiceChip(
-                        label: const Text('Watt'),
+                        label: Text(l10n.watt),
                         selected: scelta == 'watt',
                         onSelected: (_) => aggiorna(() => scelta = 'watt'),
                       ),
                     if (!stessoSport(sport, 'Bici'))
                       ChoiceChip(
-                        label: const Text('Passo'),
+                        label: Text(l10n.passo),
                         selected: scelta == 'passo',
                         onSelected: (_) => aggiorna(() => scelta = 'passo'),
                       ),
@@ -1140,43 +1122,43 @@ Future<EsercizioScheda?> modificaPasso(
                   TextField(
                     controller: passo,
                     decoration: InputDecoration(
-                      labelText: 'Passo',
-                      hintText: nuoto ? 'Es. 1:50/100 m' : 'Es. 5:00/km',
+                      labelText: l10n.passo,
+                      hintText: nuoto ? l10n.es150100 : l10n.es500Km,
                     ),
                   ),
                 if (scelta == 'watt')
                   TextField(
                     controller: watt,
-                    decoration: const InputDecoration(
-                      labelText: 'Watt',
-                      hintText: 'Es. 200, oppure 190-210, oppure 88-94%',
+                    decoration: InputDecoration(
+                      labelText: l10n.watt,
+                      hintText: l10n.es200Oppure190,
                     ),
                   ),
                 TextField(
                   controller: secondario,
                   decoration: InputDecoration(
-                    labelText: 'Obiettivo secondario (facoltativo)',
+                    labelText: l10n.obiettivoSecondarioFacoltativo,
                     hintText: stessoSport(sport, 'Bici')
-                        ? 'Es. 85-90 rpm'
+                        ? l10n.es8590Rpm
                         : stessoSport(sport, 'Corsa')
-                        ? 'Es. 170-180 ppm'
-                        : 'Es. 40 bracciate al minuto',
+                        ? l10n.es170180Ppm
+                        : l10n.es40BracciateAl,
                   ),
                 ),
                 TextField(
                   controller: rec,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: 'Recupero (secondi)',
+                    labelText: l10n.recuperoSecondi,
                     helperText: nuoto
-                        ? 'Pausa a bordo vasca dopo ogni ripetizione'
-                        : 'Tra una ripetizione e l\'altra; vuoto se non c\'è',
+                        ? l10n.pausaBordoVascaDopo
+                        : l10n.traRipetizioneAltraVuoto,
                   ),
                 ),
                 TextField(
                   controller: note,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(labelText: 'Note'),
+                  decoration: InputDecoration(labelText: l10n.note),
                 ),
                 PulsantePrincipale(
                   onPressed: () {
@@ -1185,7 +1167,7 @@ Future<EsercizioScheda?> modificaPasso(
                       ScaffoldMessenger.of(c).showSnackBar(
                         avviso(
                           content: Text(
-                            aDistanza ? 'Scrivi i metri.' : 'Scrivi i minuti.',
+                            aDistanza ? l10n.scriviMetri : l10n.scriviMinuti,
                           ),
                         ),
                       );
@@ -1194,11 +1176,7 @@ Future<EsercizioScheda?> modificaPasso(
                     final wattScritti = obiettivoWatt(watt.text);
                     if (scelta == 'watt' && wattScritti.isEmpty) {
                       ScaffoldMessenger.of(c).showSnackBar(
-                        avviso(
-                          content: Text(
-                            'Scrivi i watt: per esempio 200, 190-210 o 88-94%.',
-                          ),
-                        ),
+                        avviso(content: Text(l10n.scriviWattEsempio200)),
                       );
                       return;
                     }
@@ -1232,7 +1210,7 @@ Future<EsercizioScheda?> modificaPasso(
                     );
                   },
                   icona: Icons.check_rounded,
-                  testo: 'Fatto',
+                  testo: l10n.fatto,
                 ),
               ],
             ),

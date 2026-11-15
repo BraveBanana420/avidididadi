@@ -1,0 +1,77 @@
+# Controlli su ogni pull request (e sui push a main e staging): testi
+# generati aggiornati, formattazione, analisi, test e APK di debug.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, staging]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verifica:
+    name: Analisi, test e APK di debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      # Il runner ha poco disco: NDK, mappe e Gradle lo riempiono. Si
+      # tolgono strumenti che qui non servono (non Java, Flutter o Android).
+      - name: Libera spazio sul disco
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/local/share/boost /usr/share/swift \
+            "$RUNNER_TOOL_CACHE/CodeQL"
+          df -h /
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.9"
+          channel: stable
+          cache: true
+
+      - name: Dipendenze
+        run: flutter pub get
+
+      - name: Testi generati aggiornati (lib/l10n)
+        run: |
+          flutter gen-l10n
+          git diff --exit-code -- lib/l10n || {
+            echo "::error::Gli ARB sono cambiati: lancia 'flutter gen-l10n' e fai il commit dei file generati."
+            exit 1
+          }
+
+      - name: Formattazione
+        run: dart format --output=none --set-exit-if-changed lib test tool
+
+      - name: Analisi
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+      - name: APK di debug
+        # Solo arm64 (i telefoni veri): meno disco e meno tempo.
+        run: |
+          flutter build apk --debug --target-platform android-arm64 \
+            --dart-define=COMMIT=${GITHUB_SHA::7}
+
+      - name: Carica l'APK di debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: avidididadi-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 7

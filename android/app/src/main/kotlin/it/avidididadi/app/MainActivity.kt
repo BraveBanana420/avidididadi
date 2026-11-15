@@ -83,7 +83,62 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     /** [urgente]: interrompe la frase in corso e la coda (le curve). */
-    private fun parla(testo: String, urgente: Boolean = false) {
+    /** Lingua della voce, scelta nell'app ("it", "en", "el"…). */
+    private var linguaVoce = "it"
+
+    private fun localeVoce(): Locale = Locale.forLanguageTag(linguaVoce)
+
+    /** Lingua che la sintesi ha accettato davvero (null: ancora da impostare). */
+    private var linguaImpostata: String? = null
+
+    /**
+     * Imposta [linguaVoce] se non è già quella in uso. Se il telefono non la
+     * accetta (voce che si sta ancora scaricando) ci riprova alla frase dopo,
+     * invece di restare per tutta la sessione nella lingua di prima.
+     */
+    private fun impostaLingua(t: TextToSpeech) {
+        if (linguaImpostata == linguaVoce) return
+        val esito = t.setLanguage(localeVoce())
+        if (esito >= TextToSpeech.LANG_AVAILABLE) {
+            linguaImpostata = linguaVoce
+        } else {
+            Log.w("Avidididadi", "voce $linguaVoce non ancora pronta ($esito)")
+        }
+    }
+
+    /** Se la sintesi vocale del telefono sa parlare [codice] (voce installata). */
+    private fun controllaVoce(codice: String, fine: (Boolean) -> Unit) {
+        val locale = Locale.forLanguageTag(codice)
+        val t = tts
+        if (t != null && ttsPronta) {
+            fine(t.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE)
+            return
+        }
+        var prova: TextToSpeech? = null
+        prova = TextToSpeech(this) { stato ->
+            val ok = stato == TextToSpeech.SUCCESS &&
+                (prova?.isLanguageAvailable(locale) ?: TextToSpeech.LANG_NOT_SUPPORTED) >=
+                TextToSpeech.LANG_AVAILABLE
+            prova?.shutdown()
+            runOnUiThread { fine(ok) }
+        }
+    }
+
+    /** Impostazioni della sintesi vocale, per installare una voce. */
+    private fun apriImpostazioniVoce() {
+        try {
+            startActivity(Intent("com.android.settings.TTS_SETTINGS").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        } catch (e: Exception) {
+            try {
+                startActivity(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (e2: Exception) {
+                Log.w("Avidididadi", "impostazioni della voce non disponibili: $e2")
+            }
+        }
+    }
+
+    private fun parla(testo: String, urgente: Boolean = false, lingua: String? = null) {
+        if (lingua != null) linguaVoce = lingua
         // Sintesi non ancora pronta: anche qui vale solo l'ultima frase urgente.
         if (urgente) inAttesa.clear()
         val t = tts
@@ -97,7 +152,7 @@ class MainActivity : FlutterFragmentActivity() {
                     inAttesa.clear()
                     return@TextToSpeech
                 }
-                pronta.language = Locale.ITALIAN
+                impostaLingua(pronta)
                 pronta.setAudioAttributes(voceAudio)
                 pronta.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(id: String?) {}
@@ -109,6 +164,7 @@ class MainActivity : FlutterFragmentActivity() {
                 inAttesa.clear()
             }
         } else if (ttsPronta) {
+            impostaLingua(t)
             di(t, testo, urgente)
         } else {
             inAttesa.add(testo)
@@ -245,7 +301,11 @@ class MainActivity : FlutterFragmentActivity() {
     private fun notificaAllenamento(dati: Map<*, *>) {
         val gestore = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         gestore.createNotificationChannel(
-            NotificationChannel(CANALE_ALLENAMENTO, "Allenamento in corso", NotificationManager.IMPORTANCE_LOW)
+            NotificationChannel(
+                CANALE_ALLENAMENTO,
+                dati["canale"] as? String ?: "Allenamento in corso",
+                NotificationManager.IMPORTANCE_LOW,
+            )
                 .apply { setShowBadge(false) },
         )
         val inPausa = dati["pausa"] == true
@@ -262,7 +322,7 @@ class MainActivity : FlutterFragmentActivity() {
         val testo = dati["testo"] as? String ?: ""
         val n = NotificationCompat.Builder(this, CANALE_ALLENAMENTO)
             .setSmallIcon(R.drawable.ic_notifica)
-            .setContentTitle(dati["titolo"] as? String ?: "Allenamento")
+            .setContentTitle(dati["titolo"] as? String ?: dati["allenamento"] as? String ?: "Allenamento")
             .setContentText(testo.ifEmpty { null })
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -271,7 +331,11 @@ class MainActivity : FlutterFragmentActivity() {
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(apri)
-            .addAction(0, if (inPausa) "Riprendi" else "Pausa", pausa)
+            .addAction(
+                0,
+                if (inPausa) dati["riprendi"] as? String ?: "Riprendi" else dati["pausa_testo"] as? String ?: "Pausa",
+                pausa,
+            )
         if (inPausa) {
             n.setShowWhen(false)
         } else {
@@ -299,6 +363,7 @@ class MainActivity : FlutterFragmentActivity() {
         tono = null
         tts?.shutdown()
         tts = null
+        linguaImpostata = null
         super.onDestroy()
     }
 
@@ -524,11 +589,16 @@ class MainActivity : FlutterFragmentActivity() {
                             // Testo solo, o testo e urgenza.
                             when (val a = call.arguments) {
                                 is Map<*, *> ->
-                                    parla(a["testo"] as String, a["urgente"] == true)
+                                    parla(a["testo"] as String, a["urgente"] == true, a["lingua"] as? String)
                                 else -> parla(a as String)
                             }
                             result.success("parlato")
                         }
+                    }
+                    "voceDisponibile" -> controllaVoce(call.arguments as String) { result.success(it) }
+                    "impostazioniVoce" -> {
+                        apriImpostazioniVoce()
+                        result.success(null)
                     }
                     // Vibrazione degli ultimi secondi: diretta, così funziona
                     // anche con la vibrazione al tocco spenta nel telefono.
@@ -584,7 +654,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     /**
-     * Titoli delle sessioni (es. "Pistoia - Fartlek FC" scritto da Garmin), che il
+     * Titoli delle sessioni (es. "Milano - Fartlek FC" scritto da Garmin), che il
      * pacchetto health non restituisce. Risponde con uuid -> titolo, solo per quelle
      * che ne hanno uno.
      */

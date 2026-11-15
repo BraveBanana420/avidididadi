@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'dati_live.dart';
+import 'l10n/lingua.dart';
 
 /// Bip negli ultimi secondi dei blocchi a tempo (recuperi compresi).
 final bipAttivo = ValueNotifier<bool>(true);
@@ -27,10 +28,10 @@ final mediaConSoste = ValueNotifier<bool>(false);
 /// Dove sta la mappa durante corsa, camminata e bici all'aperto.
 enum VistaMappa { pagine, minimappa, schermo }
 
-const nomiVisteMappa = {
-  VistaMappa.pagine: 'Due pagine',
-  VistaMappa.minimappa: 'Minimappa',
-  VistaMappa.schermo: 'Tutto schermo',
+Map<VistaMappa, String> get nomiVisteMappa => {
+  VistaMappa.pagine: l10n.duePagine,
+  VistaMappa.minimappa: l10n.minimappa,
+  VistaMappa.schermo: l10n.tuttoSchermo,
 };
 
 final vistaMappa = ValueNotifier<VistaMappa>(VistaMappa.pagine);
@@ -74,6 +75,12 @@ Future<void> caricaAvvisi() async {
       if (chiave.trim() == 'media') {
         mediaConSoste.value = valore.trim() == 'soste';
       }
+      if (chiave.trim() == 'voce_lingua') {
+        final v = valore.trim();
+        if (v == 'app' || v == 'telefono' || lingueVoce.containsKey(v)) {
+          linguaVoceScelta.value = v;
+        }
+      }
       if (chiave.trim() == 'vibrazione') {
         vibrazioneAttiva.value = valore.trim() != 'no';
       }
@@ -91,6 +98,7 @@ Future<void> salvaAvvisi({
   double? sogliaKmh,
   bool? conSoste,
   VistaMappa? mappa,
+  String? linguaVoce,
 }) async {
   if (bip != null) bipAttivo.value = bip;
   if (vibrazione != null) vibrazioneAttiva.value = vibrazione;
@@ -99,6 +107,7 @@ Future<void> salvaAvvisi({
   if (sogliaKmh != null) sogliaPausaKmh.value = sogliaKmh;
   if (conSoste != null) mediaConSoste.value = conSoste;
   if (mappa != null) vistaMappa.value = mappa;
+  if (linguaVoce != null) linguaVoceScelta.value = linguaVoce;
   try {
     await (await _file()).writeAsString(
       'bip=${bipAttivo.value ? 'si' : 'no'}\n'
@@ -107,7 +116,8 @@ Future<void> salvaAvvisi({
       'pausa=${modoPausa.value.name}\n'
       'soglia_kmh=${sogliaPausaKmh.value}\n'
       'media=${mediaConSoste.value ? 'soste' : 'movimento'}\n'
-      'mappa=${vistaMappa.value.name}\n',
+      'mappa=${vistaMappa.value.name}\n'
+      'voce_lingua=${linguaVoceScelta.value}\n',
     );
   } catch (_) {
     // vale solo per questa sessione

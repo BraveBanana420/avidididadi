@@ -1,0 +1,11 @@
+# Testi dell'app in italiano (modello) e inglese: lib/l10n/app_*.arb.
+# Dopo una modifica agli ARB: flutter gen-l10n (lo fa anche flutter pub get).
+arb-dir: lib/l10n
+output-dir: lib/l10n
+template-arb-file: app_it.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+nullable-getter: false
+relax-syntax: true
+untranslated-messages-file: build/l10n_mancanti.txt
+format: true

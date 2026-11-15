@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import 'sensore_ble.dart';
+import 'l10n/lingua.dart';
 
 export 'sensore_ble.dart' show Statistiche, StatoSensore;
 
@@ -28,7 +29,7 @@ class SensoreBattito extends SensoreBle {
   SensoreBattito()
     : super(
         nomeFile: 'sensore_battito.txt',
-        nomeDiBase: 'Sensore del battito',
+        nomeDiBase: l10n.sensoreBattito,
         servizi: [_servizio],
       );
 

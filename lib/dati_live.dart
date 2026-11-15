@@ -1,5 +1,6 @@
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 // Dati mostrati durante corsa, camminata e bici: velocità degli ultimi secondi
 // e tempo di ogni tratto (giro). Logica pura, senza schermate.
@@ -51,7 +52,7 @@ bool tipoAlChiuso(String tipo) =>
 
 /// "Al chiuso (tapis roulant)" o "(rulli)": come si chiama per lo sport.
 String attrezzoAlChiuso(String sport) =>
-    stessoSport(sport, 'Bici') ? 'rulli' : 'tapis roulant';
+    stessoSport(sport, 'Bici') ? l10n.parolaRulli : l10n.parolaTapisRoulant;
 
 /// Km scritti a mano ("5,2" o "5.2"); null se vuoto o non credibile.
 double? kmScritti(String testo) {

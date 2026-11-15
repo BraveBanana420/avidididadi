@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Backup automatico: lo stesso file del backup a mano, scritto da solo in una
 // cartella scelta una volta (fuori dall'app: resta anche disinstallandola).
@@ -182,11 +183,7 @@ Future<ImpostazioniBackup> scriviBackupAuto(
       'dati': dati,
     });
     if (ok != true) {
-      return b.copyWith(
-        errore:
-            'Non riesco a scrivere nella cartella: sceglila di nuovo '
-            '(forse è stata spostata o cancellata).',
-      );
+      return b.copyWith(errore: l10n.nonRiescoScrivereNella);
     }
     final elenco =
         await _canale.invokeMethod<List<Object?>>(
@@ -207,6 +204,6 @@ Future<ImpostazioniBackup> scriviBackupAuto(
     return b.copyWith(ultimo: adesso, errore: '');
   } catch (e) {
     debugPrint('Backup automatico: $e');
-    return b.copyWith(errore: 'Backup automatico non riuscito.');
+    return b.copyWith(errore: l10n.backupAutomaticoNonRiuscito);
   }
 }
