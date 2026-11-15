@@ -339,18 +339,47 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                                     ? scelti.add(sp)
                                     : scelti.remove(sp),
                               ),
-                        title: Text(
-                          [
-                            sp,
-                            n > 0
-                                ? '$n ${n == 1 ? 'volta' : 'volte'} a settimana'
-                                : sedute > 0
-                                ? '$sedute ${sedute == 1 ? 'seduta' : 'sedute'} in calendario'
-                                : 'nessuna seduta in calendario',
-                            if (attivi.contains(sp)) 'già preparato',
-                          ].join(' · '),
+                        // Titolo corto (solo lo sport): su un telefono
+                        // stretto il resto andava a capo su tre righe.
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
                         ),
-                        subtitle: Text(_descrizioni[sp]!),
+                        title: Row(
+                          spacing: 8,
+                          children: [
+                            Text(sp, style: t.titleMedium),
+                            if (attivi.contains(sp))
+                              Flexible(
+                                child: Text(
+                                  'già preparato',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: t.labelMedium?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 2,
+                          children: [
+                            Text(
+                              n > 0
+                                  ? '$n ${n == 1 ? 'volta' : 'volte'} a settimana'
+                                  : sedute > 0
+                                  ? '$sedute ${sedute == 1 ? 'seduta' : 'sedute'} in calendario'
+                                  : 'nessuna seduta in calendario',
+                              style: t.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(_descrizioni[sp]!),
+                          ],
+                        ),
                       );
                     }(),
                 ],
