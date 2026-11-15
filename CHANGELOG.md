@@ -28,7 +28,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Nuoto: le vasche corrette a mano valgono nel riepilogo, nei grafici e nelle immagini da condividere.
 - Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti.
 - Mappa durante l'allenamento: al posto della "i" c'è il tasto dei livelli, anche nella minimappa.
-- Condividi: tre grafiche per ogni sport (es. corsa: Mappa, Km per km, Poster; forza: Esercizi, Muscoli, Poster con il record; arrampicata: Seduta, Progressi, Poster col grado), più "La tua foto" dalla galleria con i numeri sopra; nella grafica Mappa di base la sola traccia, nitida, oppure la mappa vera Pulse, Strade o Satellite; marchio "#avidididadi" in alto.
+- Condividi: tre grafiche per ogni sport (es. corsa: Mappa, Km per km, Poster; forza: Esercizi, Muscoli, Poster con il record; arrampicata: Seduta, Progressi, Poster col grado), più "La tua foto" dalla galleria con i numeri sopra; nella Classica e nel Poster il percorso disegnato nitido, acceso a ogni condivisione e da spegnere con l'interruttore (spento, nella Classica c'è un grafico della seduta); nella grafica Mappa la mappa vera Pulse, Strade o Satellite, da un menu a tendina; marchio "#avidididadi" in alto.
 - Sessioni di corsa e bici: l'etichetta dice "Indoor" o "Outdoor" (prima "Al chiuso").
 - Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
 - Tasto "+": "Allenamento libero" diventa "Forza"; alla fine scrivi tutti gli esercizi fatti, con ripetizioni e kg (o corpo libero), anche dopo dal dettaglio della seduta; per plank e tenute scegli "Tempo" e scrivi i secondi. Arrampicata passa in fondo, prima di "Altra attività".
@@ -43,7 +43,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
 - Avvisi in basso più brevi: si chiudono scorrendo in qualsiasi direzione e "Annulla" ha il bordo, per non confonderlo con la chiusura.
 - Menu del "+" e altri fogli dal basso: non finiscono più sotto i tasti del telefono.
-- Lingua: al primo avvio e dal Profilo scegli italiano, inglese o greco; app, esercizi, coach e widget della schermata home seguono la lingua scelta.
+- Lingua: al primo avvio e dal Profilo scegli italiano, inglese o greco; app, esercizi, piano già creato, coach e widget della schermata home seguono la lingua scelta.
 - Voce dell'allenamento: ha una lingua sua (Durante l'allenamento → Lingua della voce), anche diversa da quella dell'app.
 - Corsa e camminata: i passi contati dal telefono, con i passi al minuto, durante l'allenamento, nella notifica e nel riepilogo.
 - Passi: il permesso "Attività fisica" si chiede solo la prima volta; si accendono e spengono da Profilo → Dati e collegamenti → Passi dal telefono.

@@ -183,8 +183,9 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   final _chiave = GlobalKey();
   final _mappa = GlobalKey<_MappaCondivisaState>();
   Percorso? _percorso;
-  // Spento di base: il percorso dice da dove si parte (spesso casa).
-  bool _conPercorso = false;
+  // Acceso di base, e di nuovo a ogni condivisione (non si salva): chi non
+  // vuole far vedere da dove parte (spesso casa) lo spegne con l'interruttore.
+  bool _conPercorso = true;
   GraficaCondivisa? _grafica; // null: la prima dello sport
   /// La traccia senza mappa sta già nella Classica: qui solo mappe vere.
   TipoMappa _tipo = TipoMappa.pulse;
