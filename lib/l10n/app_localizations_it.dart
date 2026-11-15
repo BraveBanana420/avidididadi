@@ -6914,4 +6914,36 @@ class AppLocalizationsIt extends AppLocalizations {
   String quantiPunti(Object p0) {
     return '$p0 punti';
   }
+
+  @override
+  String get parolaZona => 'zona';
+
+  @override
+  String poiCurva(Object p0) {
+    return 'poi $p0';
+  }
+
+  @override
+  String get linguaVoce => 'Lingua della voce';
+
+  @override
+  String get linguaVoceComeApp => 'Come l\'app';
+
+  @override
+  String get linguaVoceComeTelefono => 'Come il telefono';
+
+  @override
+  String get linguaVoceSpiega =>
+      'Indicazioni stradali, km, ritmo e zone. In una lingua diversa da quella dell\'app, i nomi degli esercizi restano nella lingua dell\'app.';
+
+  @override
+  String voceNonInstallata(Object p0) {
+    return 'La voce in $p0 non è installata sul telefono: installala dalle impostazioni della sintesi vocale, poi riprova.';
+  }
+
+  @override
+  String get installaVoce => 'Installa la voce';
+
+  @override
+  String get provaVoce => 'Prova la voce';
 }

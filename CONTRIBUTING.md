@@ -71,6 +71,10 @@ flutter build apk --debug
 - To add a language: copy `app_en.arb` to `app_xx.arb`, translate it, add the
   code to `lingueApp` in `lib/l10n/lingua.dart` and the words to
   `vocabolario.dart`.
+- To add a language **for the workout voice only** (like Greek in
+  `app_el.arb`): translate just the keys the voice uses (`l10nVoce.…`, the
+  test in `test/lingua_test.dart` lists any that are missing), add the code to
+  `lingueVoce` and the data words to `_parole` in `vocabolario.dart`.
 
 ## Privacy and security rules
 

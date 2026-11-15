@@ -6888,4 +6888,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String quantiPunti(Object p0) {
     return '$p0 points';
   }
+
+  @override
+  String get parolaZona => 'zone';
+
+  @override
+  String poiCurva(Object p0) {
+    return 'then $p0';
+  }
+
+  @override
+  String get linguaVoce => 'Voice language';
+
+  @override
+  String get linguaVoceComeApp => 'Same as the app';
+
+  @override
+  String get linguaVoceComeTelefono => 'Same as the phone';
+
+  @override
+  String get linguaVoceSpiega =>
+      'Turn-by-turn directions, km, pace and zones. In a language other than the app\'s, exercise names stay in the app\'s language.';
+
+  @override
+  String voceNonInstallata(Object p0) {
+    return 'The $p0 voice isn\'t installed on the phone: install it from the text-to-speech settings, then try again.';
+  }
+
+  @override
+  String get installaVoce => 'Install the voice';
+
+  @override
+  String get provaVoce => 'Test the voice';
 }

@@ -29,7 +29,8 @@ The app is available in Italian and English.
   heart rate, "How did it go?" after each session.
 - **Guided workout**: one step at a time with timer, rests, beeps and voice;
   GPS for running, walking and cycling (also with the screen off); routes to
-  follow with turn-by-turn voice directions.
+  follow with turn-by-turn voice directions. The voice can speak a different
+  language from the app (Italian, English, or Greek for the voice only).
 - **Smart trainer** (FTMS, e.g. Tacx Flux S): ERG mode with the watts of each
   block, calibration from the app; heart rate straps and bike sensors via
   Bluetooth.

@@ -29,7 +29,8 @@ tracciamento. L'app è in italiano e in inglese.
   battito a riposo, "Com'è andata?" dopo ogni seduta.
 - **Allenamento guidato**: un passo alla volta con timer, recuperi, bip e
   voce; GPS per corsa, camminata e bici (anche a schermo spento); percorsi da
-  seguire con le indicazioni a voce.
+  seguire con le indicazioni a voce. La voce può parlare una lingua diversa
+  da quella dell'app (italiano, inglese, o greco solo per la voce).
 - **Rullo smart** (FTMS, es. Tacx Flux S): modalità ERG con i watt di ogni
   blocco, calibrazione dall'app; fasce cardio e sensori della bici via
   Bluetooth.

@@ -79,10 +79,41 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     /** [urgente]: interrompe la frase in corso e la coda (le curve). */
-    /** Lingua della voce, scelta nell'app ("it" o "en"). */
+    /** Lingua della voce, scelta nell'app ("it", "en", "el"…). */
     private var linguaVoce = "it"
 
-    private fun localeVoce(): Locale = if (linguaVoce == "en") Locale.ENGLISH else Locale.ITALIAN
+    private fun localeVoce(): Locale = Locale.forLanguageTag(linguaVoce)
+
+    /** Se la sintesi vocale del telefono sa parlare [codice] (voce installata). */
+    private fun controllaVoce(codice: String, fine: (Boolean) -> Unit) {
+        val locale = Locale.forLanguageTag(codice)
+        val t = tts
+        if (t != null && ttsPronta) {
+            fine(t.isLanguageAvailable(locale) >= TextToSpeech.LANG_AVAILABLE)
+            return
+        }
+        var prova: TextToSpeech? = null
+        prova = TextToSpeech(this) { stato ->
+            val ok = stato == TextToSpeech.SUCCESS &&
+                (prova?.isLanguageAvailable(locale) ?: TextToSpeech.LANG_NOT_SUPPORTED) >=
+                TextToSpeech.LANG_AVAILABLE
+            prova?.shutdown()
+            runOnUiThread { fine(ok) }
+        }
+    }
+
+    /** Impostazioni della sintesi vocale, per installare una voce. */
+    private fun apriImpostazioniVoce() {
+        try {
+            startActivity(Intent("com.android.settings.TTS_SETTINGS").addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        } catch (e: Exception) {
+            try {
+                startActivity(Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            } catch (e2: Exception) {
+                Log.w("Avidididadi", "impostazioni della voce non disponibili: $e2")
+            }
+        }
+    }
 
     private fun parla(testo: String, urgente: Boolean = false, lingua: String? = null) {
         if (lingua != null && lingua != linguaVoce) {
@@ -487,6 +518,11 @@ class MainActivity : FlutterFragmentActivity() {
                             }
                             result.success("parlato")
                         }
+                    }
+                    "voceDisponibile" -> controllaVoce(call.arguments as String) { result.success(it) }
+                    "impostazioniVoce" -> {
+                        apriImpostazioniVoce()
+                        result.success(null)
                     }
                     // Vibrazione degli ultimi secondi: diretta, così funziona
                     // anche con la vibrazione al tocco spenta nel telefono.

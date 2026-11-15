@@ -10013,5 +10013,51 @@
         "type": "Object"
       }
     }
+  },
+  "parolaZona": "zona",
+  "@parolaZona": {
+    "description": "detto dalla voce: zona di battito"
+  },
+  "poiCurva": "poi {p0}",
+  "@poiCurva": {
+    "description": "curva subito dopo un'altra, a voce",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "linguaVoce": "Lingua della voce",
+  "@linguaVoce": {
+    "description": "aggiunta a mano"
+  },
+  "linguaVoceComeApp": "Come l'app",
+  "@linguaVoceComeApp": {
+    "description": "aggiunta a mano"
+  },
+  "linguaVoceComeTelefono": "Come il telefono",
+  "@linguaVoceComeTelefono": {
+    "description": "aggiunta a mano"
+  },
+  "linguaVoceSpiega": "Indicazioni stradali, km, ritmo e zone. In una lingua diversa da quella dell'app, i nomi degli esercizi restano nella lingua dell'app.",
+  "@linguaVoceSpiega": {
+    "description": "aggiunta a mano"
+  },
+  "voceNonInstallata": "La voce in {p0} non è installata sul telefono: installala dalle impostazioni della sintesi vocale, poi riprova.",
+  "@voceNonInstallata": {
+    "description": "aggiunta a mano",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "installaVoce": "Installa la voce",
+  "@installaVoce": {
+    "description": "aggiunta a mano"
+  },
+  "provaVoce": "Prova la voce",
+  "@provaVoce": {
+    "description": "aggiunta a mano"
   }
 }

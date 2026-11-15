@@ -93,29 +93,55 @@ const _inglese = {
 };
 
 /// Parole dentro le intensità ("zona 2", "passo 5:00/km", "FC 120-140
-/// bpm") e nei testi corti salvati dai generatori.
-final _parole = [
-  (RegExp(r'\bzona\b'), 'zone'),
-  (RegExp(r'\bZona\b'), 'Zone'),
-  (RegExp(r'\bpasso\b'), 'pace'),
-  (RegExp(r'\bPasso\b'), 'Pace'),
-  (RegExp(r'\bFC\b'), 'HR'),
-  (RegExp(r'\bfino a\b'), 'up to'),
-  (RegExp(r'\bper lato\b'), 'per side'),
-  (RegExp(r'\bripetizioni\b'), 'reps'),
-  (RegExp(r'\brip\b'), 'reps'),
-  (RegExp(r'\bserie\b'), 'sets'),
-  (RegExp(r'\brecupero\b'), 'rest'),
-  (RegExp(r'\bintensità\b'), 'intensity'),
-  (RegExp(r'\bpoi\b'), 'then'),
-  (RegExp(r'\bfacile\b'), 'easy'),
-  (RegExp(r'\bmedio\b'), 'moderate'),
-  (RegExp(r'\bsostenuto\b'), 'sustained'),
-  (RegExp(r'\bcostante\b'), 'steady'),
-  (RegExp(r'\brespirazione regolare\b'), 'regular breathing'),
-  (RegExp(r'\bdi fatica\b'), 'effort'),
-  (RegExp(r'\blenti\b'), 'slow'),
-];
+/// bpm") e nei testi corti salvati dai generatori, per lingua. Il greco serve
+/// solo alla voce.
+final _parole = <String, List<(RegExp, String)>>{
+  'en': [
+    (RegExp(r'\bzona\b'), 'zone'),
+    (RegExp(r'\bZona\b'), 'Zone'),
+    (RegExp(r'\bpasso\b'), 'pace'),
+    (RegExp(r'\bPasso\b'), 'Pace'),
+    (RegExp(r'\bFC\b'), 'HR'),
+    (RegExp(r'\bfino a\b'), 'up to'),
+    (RegExp(r'\bper lato\b'), 'per side'),
+    (RegExp(r'\bripetizioni\b'), 'reps'),
+    (RegExp(r'\brip\b'), 'reps'),
+    (RegExp(r'\bserie\b'), 'sets'),
+    (RegExp(r'\brecupero\b'), 'rest'),
+    (RegExp(r'\bintensità\b'), 'intensity'),
+    (RegExp(r'\bpoi\b'), 'then'),
+    (RegExp(r'\bfacile\b'), 'easy'),
+    (RegExp(r'\bmedio\b'), 'moderate'),
+    (RegExp(r'\bsostenuto\b'), 'sustained'),
+    (RegExp(r'\bcostante\b'), 'steady'),
+    (RegExp(r'\brespirazione regolare\b'), 'regular breathing'),
+    (RegExp(r'\bdi fatica\b'), 'effort'),
+    (RegExp(r'\blenti\b'), 'slow'),
+  ],
+  'el': [
+    (RegExp(r'\bzona\b'), 'ζώνη'),
+    (RegExp(r'\bZona\b'), 'Ζώνη'),
+    (RegExp(r'\bpasso\b'), 'ρυθμός'),
+    (RegExp(r'\bPasso\b'), 'Ρυθμός'),
+    (RegExp(r'\bFC\b'), 'παλμοί'),
+    (RegExp(r'\bbpm\b'), 'παλμοί το λεπτό'),
+    (RegExp(r'\bfino a\b'), 'έως'),
+    (RegExp(r'\bper lato\b'), 'ανά πλευρά'),
+    (RegExp(r'\bripetizioni\b'), 'επαναλήψεις'),
+    (RegExp(r'\brip\b'), 'επαναλήψεις'),
+    (RegExp(r'\bserie\b'), 'σετ'),
+    (RegExp(r'\brecupero\b'), 'αποκατάσταση'),
+    (RegExp(r'\bintensità\b'), 'ένταση'),
+    (RegExp(r'\bpoi\b'), 'μετά'),
+    (RegExp(r'\bfacile\b'), 'εύκολα'),
+    (RegExp(r'\bmedio\b'), 'μέτρια'),
+    (RegExp(r'\bsostenuto\b'), 'έντονα'),
+    (RegExp(r'\bcostante\b'), 'σταθερά'),
+    (RegExp(r'\brespirazione regolare\b'), 'σταθερή αναπνοή'),
+    (RegExp(r'\bdi fatica\b'), 'κόπωση'),
+    (RegExp(r'\blenti\b'), 'αργές'),
+  ],
+};
 
 /// Il nome salvato in italiano, mostrato nella lingua in uso.
 String mostra(String s) {
@@ -130,11 +156,18 @@ String mostra(String s) {
 
 /// Un testo corto salvato dai generatori (intensità, ripetizioni, riepilogo
 /// di un passo), con le parole note tradotte. In italiano resta com'è.
-String mostraTesto(String s) {
-  if (!inInglese || s.isEmpty) return s;
+String mostraTesto(String s) => traduciTesto(s, codiceLingua);
+
+/// Come [mostraTesto], per quello che dice la voce (nella sua lingua).
+String testoPerVoce(String s) => traduciTesto(s, codiceVoce);
+
+/// [s] (scritto in italiano nei dati) con le parole note in [lingua].
+String traduciTesto(String s, String lingua) {
+  final parole = _parole[lingua];
+  if (parole == null || s.isEmpty) return s;
   var t = s;
-  for (final (rx, en) in _parole) {
-    t = t.replaceAll(rx, en);
+  for (final (rx, tradotta) in parole) {
+    t = t.replaceAll(rx, tradotta);
   }
   return t;
 }

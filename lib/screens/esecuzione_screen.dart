@@ -423,7 +423,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final g = _guida;
     final m = g?.metriMancanti;
     if (g == null || m == null || g.fuori || g.arrivato || m < 300) return '';
-    return l10n.mancano(parlaMetri(m));
+    return l10nVoce.mancano(parlaMetri(m));
   }
 
   /// Prima di partire: al chiuso il GPS si spegne, all'aperto si riaccende.
@@ -987,11 +987,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (_pausaAuto) {
       totale.stop();
       blocco.stop();
-      voce.di(l10n.pausa3, valida: const Duration(seconds: 10));
+      voce.di(l10nVoce.pausa3, valida: const Duration(seconds: 10));
     } else {
       totale.start();
       blocco.start();
-      voce.di(l10n.siRiparte, valida: const Duration(seconds: 10));
+      voce.di(l10nVoce.siRiparte, valida: const Duration(seconds: 10));
     }
     avviso();
     _salvaInCorso();
@@ -1057,11 +1057,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           .replaceAll('.', ',');
     }
     voce.di(
-      l10n.allenamentoCompletato(
+      l10nVoce.allenamentoCompletato(
         parlaDurata(_tempoTotale),
         gps == null || gps!.km < 0.05
             ? ''
-            : l10n.chilometri(gps!.km.toStringAsFixed(1).replaceAll('.', ',')),
+            : l10nVoce.chilometri(decimaleVoce(gps!.km, 1)),
       ),
       urgente: aMano,
     );

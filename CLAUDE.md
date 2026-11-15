@@ -21,7 +21,7 @@ Le funzioni sono elencate in `README.md`.
 
 - `lib/screens/`: una schermata o un foglio per file (`*_screen.dart`, `*_sheet.dart`).
 - Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
-- **Testi**: italiano e inglese in `lib/l10n/app_it.arb` (modello) e `app_en.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. Configurazione in `lib/config.dart` (URL delle donazioni).
+- **Testi**: italiano e inglese in `lib/l10n/app_it.arb` (modello) e `app_en.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. La voce dell'allenamento ha una lingua sua (Durante l'allenamento → Lingua della voce, in `avvisi.txt`): le frasi dette usano `l10nVoce`, non `l10n`; il greco (`app_el.arb`) ha solo le frasi della voce. Configurazione in `lib/config.dart` (URL delle donazioni).
 - `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita.
 - **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 

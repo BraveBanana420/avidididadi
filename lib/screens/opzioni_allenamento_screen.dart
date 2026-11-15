@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../avvisi.dart';
 import '../dati_live.dart';
+import '../voce.dart';
 import '../widgets.dart';
 import '../l10n/lingua.dart';
 
@@ -16,10 +17,67 @@ class OpzioniAllenamentoScreen extends StatefulWidget {
 }
 
 class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
+  final _voce = Voce();
+
   @override
   void initState() {
     super.initState();
     caricaAvvisi();
+  }
+
+  /// Il nome di una scelta della lingua della voce.
+  String _nomeScelta(String scelta) => switch (scelta) {
+    'app' => l10n.linguaVoceComeApp,
+    'telefono' =>
+      '${l10n.linguaVoceComeTelefono} (${lingueVoce[codiceVocePer('telefono', codiceTelefono())] ?? ''})'
+          .replaceAll(' ()', ''),
+    _ => lingueVoce[scelta] ?? scelta,
+  };
+
+  Future<void> _scegliLinguaVoce() async {
+    final scelta = await showDialog<String>(
+      context: context,
+      builder: (c) => SimpleDialog(
+        title: Text(l10n.linguaVoce),
+        children: [
+          RadioGroup<String>(
+            groupValue: linguaVoceScelta.value,
+            onChanged: (v) => Navigator.pop(c, v),
+            child: Column(
+              children: [
+                for (final s in ['app', 'telefono', ...lingueVoce.keys])
+                  RadioListTile<String>(value: s, title: Text(_nomeScelta(s))),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+    if (scelta == null || !mounted) return;
+    // Una lingua diversa da quella dell'app: serve la sua voce sul telefono.
+    final codice = codiceVocePer(scelta, codiceTelefono());
+    if (codice != codiceLingua && !await voceDisponibile(codice)) {
+      if (!mounted) return;
+      final installa = await showDialog<bool>(
+        context: context,
+        builder: (c) => AlertDialog(
+          content: Text(l10n.voceNonInstallata(lingueVoce[codice] ?? codice)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: Text(l10n.annulla),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: Text(l10n.installaVoce),
+            ),
+          ],
+        ),
+      );
+      if (installa == true) await apriImpostazioniVoce();
+      return;
+    }
+    await salvaAvvisi(linguaVoce: scelta);
   }
 
   @override
@@ -45,6 +103,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
           sogliaPausaKmh,
           mediaConSoste,
           vistaMappa,
+          linguaVoceScelta,
         ]),
         builder: (context, _) => ListView(
           padding: const EdgeInsets.all(16),
@@ -60,6 +119,22 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                     subtitle: Text(l10n.diceEsercizioIniziaKm),
                     value: voceAttiva.value,
                     onChanged: (v) => salvaAvvisi(voce: v),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.translate_rounded),
+                    title: Text(l10n.linguaVoce),
+                    subtitle: Text(
+                      '${_nomeScelta(linguaVoceScelta.value)}\n'
+                      '${l10n.linguaVoceSpiega}',
+                    ),
+                    isThreeLine: true,
+                    onTap: _scegliLinguaVoce,
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.play_circle_outline_rounded),
+                    title: Text(l10n.provaVoce),
+                    subtitle: Text(fraseProvaVoce()),
+                    onTap: _voce.prova,
                   ),
                   SwitchListTile(
                     secondary: const Icon(Icons.volume_up_rounded),

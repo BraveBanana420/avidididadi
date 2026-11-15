@@ -75,6 +75,12 @@ Future<void> caricaAvvisi() async {
       if (chiave.trim() == 'media') {
         mediaConSoste.value = valore.trim() == 'soste';
       }
+      if (chiave.trim() == 'voce_lingua') {
+        final v = valore.trim();
+        if (v == 'app' || v == 'telefono' || lingueVoce.containsKey(v)) {
+          linguaVoceScelta.value = v;
+        }
+      }
       if (chiave.trim() == 'vibrazione') {
         vibrazioneAttiva.value = valore.trim() != 'no';
       }
@@ -92,6 +98,7 @@ Future<void> salvaAvvisi({
   double? sogliaKmh,
   bool? conSoste,
   VistaMappa? mappa,
+  String? linguaVoce,
 }) async {
   if (bip != null) bipAttivo.value = bip;
   if (vibrazione != null) vibrazioneAttiva.value = vibrazione;
@@ -100,6 +107,7 @@ Future<void> salvaAvvisi({
   if (sogliaKmh != null) sogliaPausaKmh.value = sogliaKmh;
   if (conSoste != null) mediaConSoste.value = conSoste;
   if (mappa != null) vistaMappa.value = mappa;
+  if (linguaVoce != null) linguaVoceScelta.value = linguaVoce;
   try {
     await (await _file()).writeAsString(
       'bip=${bipAttivo.value ? 'si' : 'no'}\n'
@@ -108,7 +116,8 @@ Future<void> salvaAvvisi({
       'pausa=${modoPausa.value.name}\n'
       'soglia_kmh=${sogliaPausaKmh.value}\n'
       'media=${mediaConSoste.value ? 'soste' : 'movimento'}\n'
-      'mappa=${vistaMappa.value.name}\n',
+      'mappa=${vistaMappa.value.name}\n'
+      'voce_lingua=${linguaVoceScelta.value}\n',
     );
   } catch (_) {
     // vale solo per questa sessione

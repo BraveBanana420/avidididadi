@@ -7,6 +7,8 @@ import 'package:allenamenti_app/glossario.dart';
 import 'package:allenamenti_app/l10n/lingua.dart';
 import 'package:allenamenti_app/l10n/vocabolario.dart';
 import 'package:allenamenti_app/models.dart';
+import 'package:allenamenti_app/navigazione.dart';
+import 'package:allenamenti_app/voce.dart';
 import 'package:allenamenti_app/screens/lingua_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +22,10 @@ Set<String> _segnaposto(String testo) => {
 };
 
 void main() {
-  tearDown(() => usaLingua('it'));
+  tearDown(() {
+    usaLingua('it');
+    linguaVoceScelta.value = 'app';
+  });
 
   group('file ARB', () {
     final it = _arb('it');
@@ -141,5 +146,81 @@ void main() {
     await t.pump();
     expect(codiceLingua, 'en');
     expect(find.text('Continue'), findsOneWidget);
+  });
+
+  group('lingua della voce', () {
+    test('di base è quella dell\'app', () {
+      expect(codiceVocePer('app', 'el'), 'it');
+      usaLingua('en');
+      expect(codiceVocePer('app', 'el'), 'en');
+    });
+
+    test('come il telefono, se la voce conosce la sua lingua', () {
+      expect(codiceVocePer('telefono', 'el'), 'el');
+      expect(codiceVocePer('telefono', 'en'), 'en');
+      // Una lingua senza frasi: resta quella dell'app.
+      expect(codiceVocePer('telefono', 'ja'), 'it');
+      expect(codiceVocePer('el', 'it'), 'el');
+    });
+
+    test('app in inglese, indicazioni stradali in greco', () {
+      usaLingua('en');
+      linguaVoceScelta.value = 'el';
+      expect(codiceVoce, 'el');
+      expect(fraseProvaVoce(), 'Σε 200 μέτρα, στρίψε δεξιά.');
+      expect(parlaMetri(1200), '1,2 χιλιόμετρα');
+      expect(testoPerVoce('zona 2'), 'ζώνη 2');
+      expect(fraseZona(4, 1), 'Ζώνη 4, χαλάρωσε.');
+      // Sullo schermo le curve restano nella lingua dell'app.
+      expect(const Curva(0, 90).frase, 'turn right');
+    });
+
+    test('in inglese i decimali col punto', () {
+      usaLingua('en');
+      expect(parlaMetri(1200), '1.2 kilometers');
+      usaLingua('it');
+      expect(parlaMetri(1200), '1,2 chilometri');
+    });
+
+    test(
+      'ogni frase della voce esiste in greco, con gli stessi segnaposto',
+      () {
+        final it = _arb('it');
+        final el = _arb('el');
+        final usate = <String>{};
+        for (final f in Directory('lib').listSync(recursive: true)) {
+          if (f is! File || !f.path.endsWith('.dart')) continue;
+          final testo = f.readAsStringSync();
+          for (final m in RegExp(r'l10nVoce\.(\w+)').allMatches(testo)) {
+            usate.add(m[1]!);
+          }
+        }
+        // Le curve e le distanze passano dai testi della voce con "t.".
+        usate.addAll([
+          'destra',
+          'sinistra',
+          'tieniDestra',
+          'tieniSinistra',
+          'giraVerso',
+          'curvaStretta',
+          'tornaIndietro',
+          'poiSubito',
+          'poiCurva',
+          'tra',
+          'quantiMetri',
+          'parolaChilometro',
+          'parolaChilometri',
+        ]);
+        expect(usate.length, greaterThan(40));
+        for (final k in usate) {
+          expect(el.containsKey(k), isTrue, reason: 'manca in app_el.arb: $k');
+          expect(
+            _segnaposto(el[k] as String),
+            _segnaposto(it[k] as String),
+            reason: k,
+          );
+        }
+      },
+    );
   });
 }

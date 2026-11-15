@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,8 +32,46 @@ List<String> get inizialiGiorni => l10n.widgetLettere.split(',');
 
 /// Lingua del telefono, se è una di quelle dell'app; altrimenti l'inglese.
 String linguaDelTelefono() {
-  final c = WidgetsBinding.instance.platformDispatcher.locale.languageCode;
+  final c = ui.PlatformDispatcher.instance.locale.languageCode;
   return lingueApp.containsKey(c) ? c : 'en';
+}
+
+/// Lingue della voce dell'allenamento: quelle dell'app più quelle tradotte
+/// solo per la voce (indicazioni stradali, km, ritmo, zone). Nelle seconde
+/// i nomi degli esercizi restano nella lingua dell'app.
+const lingueVoce = {'it': 'Italiano', 'en': 'English', 'el': 'Ελληνικά'};
+
+/// Lingua della voce scelta: 'app', 'telefono' o un codice di [lingueVoce].
+/// Salvata in avvisi.txt.
+final linguaVoceScelta = ValueNotifier<String>('app');
+
+/// La lingua in cui parla davvero la voce: con 'telefono' quella del
+/// telefono, se la voce la conosce; altrimenti quella dell'app.
+String get codiceVoce =>
+    codiceVocePer(linguaVoceScelta.value, codiceTelefono());
+
+/// La lingua del telefono (codice di due lettere, es. 'el').
+String codiceTelefono() => ui.PlatformDispatcher.instance.locale.languageCode;
+
+/// [codiceVoce] spiegato: [scelta] dell'utente, [telefono] lingua del telefono.
+String codiceVocePer(String scelta, String telefono) {
+  if (lingueVoce.containsKey(scelta)) return scelta;
+  if (scelta == 'telefono' && lingueVoce.containsKey(telefono)) {
+    return telefono;
+  }
+  return codiceLingua;
+}
+
+/// Le frasi dette dalla voce, nella lingua della voce.
+AppLocalizations get l10nVoce => codiceVoce == codiceLingua
+    ? _testi
+    : lookupAppLocalizations(Locale(codiceVoce));
+
+/// Un numero con i decimali come si dicono nella lingua della voce
+/// ("1,2" in italiano e greco, "1.2" in inglese).
+String decimaleVoce(double v, int cifre) {
+  final t = v.toStringAsFixed(cifre);
+  return codiceVoce == 'en' ? t : t.replaceAll('.', ',');
 }
 
 /// Imposta la lingua dei testi senza salvarla (anche nei test).

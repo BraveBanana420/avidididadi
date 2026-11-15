@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_el.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_it.dart';
 
@@ -94,6 +95,7 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('el'),
     Locale('en'),
     Locale('it'),
   ];
@@ -11495,6 +11497,60 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{p0} punti'**
   String quantiPunti(Object p0);
+
+  /// detto dalla voce: zona di battito
+  ///
+  /// In it, this message translates to:
+  /// **'zona'**
+  String get parolaZona;
+
+  /// curva subito dopo un'altra, a voce
+  ///
+  /// In it, this message translates to:
+  /// **'poi {p0}'**
+  String poiCurva(Object p0);
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua della voce'**
+  String get linguaVoce;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Come l\'app'**
+  String get linguaVoceComeApp;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Come il telefono'**
+  String get linguaVoceComeTelefono;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Indicazioni stradali, km, ritmo e zone. In una lingua diversa da quella dell\'app, i nomi degli esercizi restano nella lingua dell\'app.'**
+  String get linguaVoceSpiega;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'La voce in {p0} non è installata sul telefono: installala dalle impostazioni della sintesi vocale, poi riprova.'**
+  String voceNonInstallata(Object p0);
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Installa la voce'**
+  String get installaVoce;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Prova la voce'**
+  String get provaVoce;
 }
 
 class _AppLocalizationsDelegate
@@ -11508,7 +11564,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'it'].contains(locale.languageCode);
+      <String>['el', 'en', 'it'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -11517,6 +11573,8 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'el':
+      return AppLocalizationsEl();
     case 'en':
       return AppLocalizationsEn();
     case 'it':
