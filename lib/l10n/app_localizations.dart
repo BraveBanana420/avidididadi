@@ -11629,6 +11629,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Traccia'**
   String get traccia;
+
+  /// workout_screen.dart: titolo degli intervalli registrati di una sessione
+  ///
+  /// In it, this message translates to:
+  /// **'Intervalli'**
+  String get intervalliFatti;
 }
 
 class _AppLocalizationsDelegate

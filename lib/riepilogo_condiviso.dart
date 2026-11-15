@@ -296,10 +296,9 @@ DatiPoster posterDi(
   SedutaArrampicata? arrampicata,
   int passoNuoto = 0,
 }) {
-  final etichetta = titoloSessione(
-    s.sport,
-    s.tipo,
-  ).replaceAll(': ', ' · ').toUpperCase();
+  final etichetta = maiuscole(
+    titoloSessione(s.sport, s.tipo).replaceAll(': ', ' · '),
+  );
   final tempo = s.durataMin >= 60
       ? (
           l10n.tempo,
@@ -347,7 +346,7 @@ DatiPoster posterDi(
         : s.tipo;
     return (
       etichetta: l10n.altraAttivita,
-      grande: nome.toUpperCase(),
+      grande: maiuscole(nome),
       sotto: s.durataMin >= 60
           ? l10n.quanteOre(tempo.$2)
           : l10n.quantiMinuti(s.durataMin),

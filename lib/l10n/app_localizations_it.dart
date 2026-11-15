@@ -6990,4 +6990,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get traccia => 'Traccia';
+
+  @override
+  String get intervalliFatti => 'Intervalli';
 }

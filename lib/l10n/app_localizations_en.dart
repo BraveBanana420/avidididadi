@@ -6964,4 +6964,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get traccia => 'Track';
+
+  @override
+  String get intervalliFatti => 'Intervals';
 }

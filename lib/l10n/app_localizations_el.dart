@@ -7020,4 +7020,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get traccia => 'Ίχνος';
+
+  @override
+  String get intervalliFatti => 'Διαστήματα';
 }

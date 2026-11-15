@@ -139,7 +139,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     );
 
     final riga = <String>[
-      if (widget.fascia.isNotEmpty) widget.fascia,
+      if (widget.fascia.isNotEmpty) mostra(widget.fascia),
       if (widget.durataMin > 0 && svolte.isEmpty) '${widget.durataMin} min',
     ].join(', ');
 
@@ -248,7 +248,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     // Cos'è questa seduta, in parole semplici: chiusa, si apre col tocco.
     if (spiegazione != null) {
       children.add(
-        _Spiegazione(titolo: tipo.isEmpty ? sport : tipo, testo: spiegazione),
+        _Spiegazione(
+          titolo: mostra(tipo.isEmpty ? sport : tipo),
+          testo: spiegazione,
+        ),
       );
       children.add(const SizedBox(height: 12));
     }
@@ -309,9 +312,9 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       children.add(
         Text(
           svolte.isEmpty
-              ? (nome.isEmpty ? 'Allenamento' : nome)
+              ? (nome.isEmpty ? l10n.parolaAllenamento : mostra(nome))
               : l10n.allenamentoPrevisto(
-                  nome.isEmpty ? l10n.parolaAllenamento : nome,
+                  nome.isEmpty ? l10n.parolaAllenamento : mostra(nome),
                 ),
           style: t.titleLarge,
         ),
@@ -323,7 +326,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
         final ultimo = k == steps.length - 1;
         if (s.fase != faseCorrente) {
           faseCorrente = s.fase;
-          if (s.fase.isNotEmpty) children.add(_TitoloFase(s.fase));
+          if (s.fase.isNotEmpty) children.add(_TitoloFase(mostra(s.fase)));
         }
         final esercizio = perId[s.esercizio];
         final scelto = selezionato == s.ordine;
@@ -331,7 +334,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (s.descrizione.isNotEmpty)
-              Text(s.descrizione, style: t.titleSmall),
+              Text(
+                perId[s.esercizio]?.nome ?? mostra(s.descrizione),
+                style: t.titleSmall,
+              ),
             // "zona 2" diventa anche bpm, con le zone personali.
             if (s.riepilogo.isNotEmpty)
               Text(
@@ -348,7 +354,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 l10n.comeTiDeviSentire(sensazioneDi(s.riepilogo)!),
                 style: t.bodySmall?.copyWith(fontStyle: FontStyle.italic),
               ),
-            if (s.note.isNotEmpty) Text(s.note, style: t.bodySmall),
+            if (s.note.isNotEmpty)
+              Text(mostraTesto(s.note), style: t.bodySmall),
           ],
         );
         final segno = _SegnoFase(fase: s.fase, ultimo: ultimo);
@@ -812,7 +819,9 @@ class _DatiSessione extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(right: 4),
                     child: Chip(
-                      label: Text(state.alChiuso(s) ? 'Indoor' : 'Outdoor'),
+                      label: Text(
+                        mostra(state.alChiuso(s) ? 'Indoor' : 'Outdoor'),
+                      ),
                       visualDensity: VisualDensity.compact,
                     ),
                   ),
@@ -865,7 +874,7 @@ class _DatiSessione extends StatelessWidget {
             if (s.parti.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                daFreeletics(s) ? l10n.blocchi : 'Intervalli',
+                daFreeletics(s) ? l10n.blocchi : l10n.intervalliFatti,
                 style: t.titleSmall,
               ),
               const SizedBox(height: 4),
@@ -1165,7 +1174,7 @@ class _IntervalliState extends State<_Intervalli> {
                 children: [
                   if (i.nome.isNotEmpty)
                     Text(
-                      i.nome,
+                      mostra(i.nome),
                       style: conSezioni ? t.titleSmall : t.labelMedium,
                     ),
                   Text(rigaIntervallo(i, s.sport)),
@@ -1186,7 +1195,9 @@ class _IntervalliState extends State<_Intervalli> {
           if (!i.recupero && fasi[k] != sezione) {
             sezione = fasi[k];
             conLinea.add(
-              _TitoloFase(sezione.isEmpty ? l10n.fuoriProgramma : sezione),
+              _TitoloFase(
+                sezione.isEmpty ? l10n.fuoriProgramma : mostra(sezione),
+              ),
             );
           }
           conLinea.add(
@@ -1220,7 +1231,9 @@ class _IntervalliState extends State<_Intervalli> {
               children: [
                 Expanded(
                   child: Text(
-                    aMano == null ? 'Intervalli' : l10n.intervalliCorrettiMano,
+                    aMano == null
+                        ? l10n.intervalliFatti
+                        : l10n.intervalliCorrettiMano,
                     style: t.titleSmall,
                   ),
                 ),
@@ -1270,7 +1283,7 @@ class _TitoloFase extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(top: 18, bottom: 8),
     child: Text(
-      testo.toUpperCase(),
+      maiuscole(testo),
       style: Theme.of(context).textTheme.labelMedium?.copyWith(
         letterSpacing: 1.2,
         fontWeight: FontWeight.w800,

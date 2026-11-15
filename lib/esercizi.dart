@@ -313,10 +313,15 @@ class Esercizio {
 
 Future<List<Esercizio>> caricaEsercizi() async {
   final testo = await rootBundle.loadString('assets/esercizi.json');
-  return [
+  final lista = [
     for (final j in jsonDecode(testo) as List)
       Esercizio.da(j as Map<String, dynamic>),
   ];
+  // I passi salvano il nome in italiano: così si vedono nella lingua scelta.
+  for (final e in lista) {
+    registraNomeEsercizio(e.nomeIt, {'en': e.nomeEn, 'el': e.nomeEl});
+  }
+  return lista;
 }
 
 /// Il conteggio scritto bene: "1 esercizio", "6 esercizi".

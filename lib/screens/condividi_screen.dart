@@ -1543,7 +1543,11 @@ class ImmagineProgressi extends StatelessWidget {
           const SizedBox(height: 14),
           _treNumeri([
             if (seduta.chiuse > 0)
-              (seduta.falesia ? 'Vie' : l10n.blocchi, '${seduta.chiuse}', ''),
+              (
+                seduta.falesia ? mostra('Vie') : l10n.blocchi,
+                '${seduta.chiuse}',
+                '',
+              ),
             (l10n.tempo, fmtDurataBreve(s.durataMin), ''),
             if (seduta.progetto.isNotEmpty)
               (l10n.progetto2, seduta.progetto, ''),

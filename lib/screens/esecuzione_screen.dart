@@ -1662,7 +1662,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                               children: [
                                 Text(l10n.parolaRecupero, style: t.titleMedium),
                                 if (b.note.isNotEmpty)
-                                  Text(b.note, style: t.bodySmall),
+                                  Text(mostraTesto(b.note), style: t.bodySmall),
                               ],
                             ),
                           )
@@ -1735,7 +1735,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 if (b.note.isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4),
-                                    child: Text(b.note, style: t.bodySmall),
+                                    child: Text(
+                                      mostraTesto(b.note),
+                                      style: t.bodySmall,
+                                    ),
                                   ),
                               ],
                             ),
@@ -1795,7 +1798,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     children: [
                                       Text(l10n.poi, style: t.bodySmall),
                                       TestoUnaRiga(
-                                        prossimo.titolo,
+                                        mostra(prossimo.titolo),
                                         style: t.titleMedium,
                                       ),
                                       if (prossimo.dettaglio.isNotEmpty)
@@ -1930,7 +1933,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               TestoUnaRiga(
                 widget.libera
                     ? mostra(widget.nome)
-                    : l10n.esercizi2(widget.nome, nPassi),
+                    : l10n.esercizi2(mostra(widget.nome), nPassi),
                 style: t.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -2098,7 +2101,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             _zonePotenza,
             _zone,
           ),
-          note: b.note,
+          note: mostraTesto(b.note),
           range: _rangeBlocco,
           obiettivo2: recupero ? '' : b.obiettivo2,
           versoSecondario: recupero ? 0 : _versoCadenza,
@@ -2794,7 +2797,7 @@ class _Dato extends StatelessWidget {
                   ],
                   Expanded(
                     child: Text(
-                      etichetta.toUpperCase(),
+                      maiuscole(etichetta),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: t.labelSmall?.copyWith(
