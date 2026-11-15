@@ -1480,11 +1480,15 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                         zone: _zone,
                                         // Pagina dei soli dati, senza testo
                                         // sotto: numeri grandi, da leggere
-                                        // con un colpo d'occhio.
+                                        // con un colpo d'occhio. Con watt e
+                                        // cadenza non ci starebbero: si torna
+                                        // alla griglia.
                                         grande:
                                             _senzaTesto &&
                                             vistaMappa.value ==
-                                                VistaMappa.pagine,
+                                                VistaMappa.pagine &&
+                                            !_conWatt &&
+                                            !_conCadenza,
                                       )
                                     else if (bici)
                                       // Rulli: velocità e km dal sensore.
@@ -2569,7 +2573,7 @@ class _GrigliaLive extends StatelessWidget {
     final giro = metriGiro(sport) ~/ 1000;
     final ultimo = this.ultimo;
     final quarto = sensoreBattito.ricordato
-        ? _DatoBattito(zone: zone)
+        ? _DatoBattito(zone: zone, grande: grande)
         : _Dato(
             etichetta: giro == 1 ? 'Ultimo km' : 'Ultimi $giro km',
             valore: ultimo == null
@@ -2774,7 +2778,8 @@ class _DatoPotenza extends StatelessWidget {
 /// Il battito di adesso con la zona; un tocco apre il foglio del sensore.
 class _DatoBattito extends StatelessWidget {
   final Zone zone;
-  const _DatoBattito({required this.zone});
+  final bool grande;
+  const _DatoBattito({required this.zone, this.grande = false});
 
   @override
   Widget build(BuildContext context) {
@@ -2791,6 +2796,7 @@ class _DatoBattito extends StatelessWidget {
       valore: bpm?.toString() ?? '–',
       unita: 'bpm',
       onTap: () => mostraBattito(context),
+      grande: grande,
     );
   }
 }

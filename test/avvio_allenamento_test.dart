@@ -147,6 +147,43 @@ void main() {
     await _chiudi(tester);
   });
 
+  testWidgets('bici all\'aperto libera: numeri grandi finché ci stanno', (
+    tester,
+  ) async {
+    final prima = vistaMappa.value;
+    vistaMappa.value = VistaMappa.pagine;
+    addTearDown(() {
+      vistaMappa.value = prima;
+      sensoreBici.stato = StatoSensore.spento;
+      sensoreBici.azzera();
+    });
+    await _apri(
+      tester,
+      'Bici',
+      '',
+      libera: true,
+      passo: _passo('Bici', durata: '', note: _notaLibera),
+    );
+    final inizia = find.textContaining('Inizia');
+    if (inizia.evaluate().isNotEmpty) await tester.tap(inizia.first);
+    await tester.pump(const Duration(milliseconds: 300));
+
+    // Senza sensori: un dato per riga, uno sotto l'altro.
+    Offset dove(String testo) => tester.getTopLeft(find.text(testo));
+    expect(dove('VELOCITÀ').dx, dove('DISTANZA').dx);
+    expect(dove('VELOCITÀ').dy, greaterThan(dove('DISTANZA').dy));
+    expect(find.text('POTENZA'), findsNothing);
+
+    // Arrivano watt e cadenza: compaiono, e si torna alla griglia a due.
+    sensoreBici.stato = StatoSensore.collegato;
+    sensoreBici.leggi(1, [0x00, 0x00, 0xC8, 0x00]);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.textContaining('POTENZA'), findsOneWidget);
+    expect(dove('VELOCITÀ').dy, dove('DISTANZA').dy);
+    expect(dove('VELOCITÀ').dx, greaterThan(dove('DISTANZA').dx));
+    await _chiudi(tester);
+  });
+
   testWidgets('forza libera: il cerchio resta, il testo doppio no', (
     tester,
   ) async {
