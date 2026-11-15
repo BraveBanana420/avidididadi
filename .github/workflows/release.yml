@@ -1,0 +1,136 @@
+# APK di rilascio firmato, pubblicato nelle Releases quando si carica
+# un'etichetta v* (es. v0.2.0) che corrisponde alla versione di pubspec.yaml.
+#
+# Secrets del repository (Settings → Secrets and variables → Actions):
+#   ANDROID_KEYSTORE_BASE64   il file .jks codificato in base64
+#   ANDROID_KEYSTORE_PASSWORD la password del keystore (storePassword)
+#   ANDROID_KEY_PASSWORD      la password della chiave (keyPassword)
+#   ANDROID_KEY_ALIAS         l'alias della chiave (es. upload)
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  apk:
+    name: APK firmato
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: L'etichetta corrisponde a pubspec.yaml
+        id: versione
+        run: |
+          v=$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)
+          if [ "v$v" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::L'etichetta è $GITHUB_REF_NAME ma pubspec.yaml dice $v."
+            exit 1
+          fi
+          echo "numero=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Controlla i secrets
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          for n in KEYSTORE STORE_PW KEY_PW ALIAS; do
+            if [ -z "${!n}" ]; then
+              echo "::error::Manca un secret per la firma (vedi l'inizio di release.yml)."
+              exit 1
+            fi
+          done
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.47.9"
+          channel: stable
+          cache: true
+
+      - name: Dipendenze, analisi e test
+        run: |
+          flutter pub get
+          flutter analyze
+          flutter test
+
+      # La chiave resta nella cartella temporanea del runner e si cancella
+      # alla fine, anche se qualcosa va storto.
+      - name: Chiave di firma
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          printf '%s' "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload-keystore.jks"
+          {
+            echo "storePassword=$STORE_PW"
+            echo "keyPassword=$KEY_PW"
+            echo "keyAlias=$ALIAS"
+            echo "storeFile=$RUNNER_TEMP/upload-keystore.jks"
+          } > android/key.properties
+
+      - name: APK di rilascio
+        run: |
+          flutter build apk --release --split-per-abi \
+            --dart-define=COMMIT=${GITHUB_SHA::7}
+
+      - name: Nomi dei file, firma e checksum
+        env:
+          VERSIONE: ${{ steps.versione.outputs.numero }}
+        run: |
+          mkdir -p uscita
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            cp "build/app/outputs/flutter-apk/app-$abi-release.apk" \
+              "uscita/Avidididadi-$VERSIONE-$abi.apk"
+          done
+          apksigner=$(ls "$ANDROID_HOME"/build-tools/*/apksigner | sort -V | tail -1)
+          "$apksigner" verify --print-certs "uscita/Avidididadi-$VERSIONE-arm64-v8a.apk"
+          (cd uscita && sha256sum *.apk > SHA256SUMS.txt)
+
+      - name: Note di rilascio dal CHANGELOG
+        env:
+          VERSIONE: ${{ steps.versione.outputs.numero }}
+        run: |
+          awk -v v="## $VERSIONE" '
+            $0 == v { dentro = 1; next }
+            dentro && /^## / { exit }
+            dentro { print }
+          ' CHANGELOG.md > note.md
+          if [ ! -s note.md ]; then
+            echo "Versione $VERSIONE." > note.md
+          fi
+          {
+            echo
+            echo "Install \`Avidididadi-$VERSIONE-arm64-v8a.apk\` on almost every recent phone (\`armeabi-v7a\` for older 32-bit ones)."
+          } >> note.md
+
+      - name: Pubblica la release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Avidididadi ${{ steps.versione.outputs.numero }}
+          body_path: note.md
+          files: |
+            uscita/*.apk
+            uscita/SHA256SUMS.txt
+          fail_on_unmatched_files: true
+
+      - name: Cancella la chiave
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload-keystore.jks" android/key.properties

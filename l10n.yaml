@@ -8,3 +8,4 @@ output-class: AppLocalizations
 nullable-getter: false
 relax-syntax: true
 untranslated-messages-file: build/l10n_mancanti.txt
+format: true
