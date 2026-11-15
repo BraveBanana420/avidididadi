@@ -26,6 +26,9 @@ String get codiceLingua => _testi.localeName;
 /// (vocabolario dei dati, voce, formati).
 bool get inInglese => codiceLingua == 'en';
 
+/// Iniziali dei giorni da lunedì (L M M G V S D, o M T W T F S S).
+List<String> get inizialiGiorni => l10n.widgetLettere.split(',');
+
 /// Lingua del telefono, se è una di quelle dell'app; altrimenti l'inglese.
 String linguaDelTelefono() {
   final c = WidgetsBinding.instance.platformDispatcher.locale.languageCode;

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'csv.dart';
 import 'models.dart';
 import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 /// Un attrezzo che si può avere a disposizione.
 class Attrezzo {
@@ -250,7 +251,7 @@ Map<String, String> get nomiSchemi => {
 /// Un esercizio del catalogo (selezione in italiano di free-exercise-db).
 class Esercizio {
   final String id;
-  final String nome;
+  final String nomeIt;
   final String nomeEn;
   final String tipo; // forza | mobilita
   final String schema;
@@ -259,12 +260,18 @@ class Esercizio {
   attrezzi; // basta uno dei gruppi; vuoto = corpo libero
   final List<String> muscoli;
   final List<String> muscoliSecondari;
-  final List<String> istruzioni;
+  final List<String> istruzioniIt;
+  final List<String> istruzioniEn;
   final List<String> immagini;
+
+  /// Nome e istruzioni nella lingua in uso.
+  String get nome => inInglese ? nomeEn : nomeIt;
+  List<String> get istruzioni =>
+      inInglese && istruzioniEn.isNotEmpty ? istruzioniEn : istruzioniIt;
 
   Esercizio.da(Map<String, dynamic> j)
     : id = j['id'],
-      nome = j['nome'],
+      nomeIt = j['nome'],
       nomeEn = j['nome_en'],
       tipo = j['tipo'],
       schema = j['schema'],
@@ -275,7 +282,8 @@ class Esercizio {
       ],
       muscoli = List<String>.from(j['muscoli']),
       muscoliSecondari = List<String>.from(j['muscoli_secondari']),
-      istruzioni = List<String>.from(j['istruzioni']),
+      istruzioniIt = List<String>.from(j['istruzioni']),
+      istruzioniEn = List<String>.from(j['istruzioni_en'] ?? const []),
       immagini = List<String>.from(j['immagini']);
 
   bool get corpoLibero => attrezzi.isEmpty;
@@ -286,10 +294,10 @@ class Esercizio {
 
   /// "Corpo libero", oppure le alternative: "Kettlebell o Manubri".
   String get descrizioneAttrezzi => attrezzi.isEmpty
-      ? 'Corpo libero'
+      ? mostra('Corpo libero')
       : attrezzi
             .map((g) => g.map((k) => attrezzoDa(k)?.nome ?? k).join(' + '))
-            .join(' o ');
+            .join(inInglese ? ' or ' : ' o ');
 }
 
 Future<List<Esercizio>> caricaEsercizi() async {

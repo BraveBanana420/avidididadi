@@ -6743,4 +6743,55 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get glossarioMobilita => 'Mobilità';
+
+  @override
+  String get widgetOggi => 'OGGI';
+
+  @override
+  String get widgetApri => 'Apri l\'app per vedere il piano';
+
+  @override
+  String get widgetNessuno => 'Nessun allenamento questa settimana';
+
+  @override
+  String widgetFatti(Object fatti, Object totale) {
+    return '$fatti di $totale fatti questa settimana';
+  }
+
+  @override
+  String get widgetLettere => 'L,M,M,G,V,S,D';
+
+  @override
+  String get notificaCanale => 'Allenamento in corso';
+
+  @override
+  String get notificaAllenamento => 'Allenamento';
+
+  @override
+  String get lingua => 'Lingua';
+
+  @override
+  String get linguaTitolo => 'Scegli la lingua';
+
+  @override
+  String get linguaSpiega =>
+      'Potrai cambiarla quando vuoi dal Profilo. I dati che hai già scritto restano come sono.';
+
+  @override
+  String get linguaSotto => 'Italiano o inglese';
+
+  @override
+  String get sostieniProgetto => 'Sostieni il progetto';
+
+  @override
+  String get sostieniSotto =>
+      'Una donazione aiuta lo sviluppo. Non sblocca nulla: l\'app è tutta gratuita.';
+
+  @override
+  String get linkNonAperto => 'Non riesco ad aprire il link.';
+
+  @override
+  String battitiAlMinuto(Object p0) {
+    return '$p0 battiti/min';
+  }
 }

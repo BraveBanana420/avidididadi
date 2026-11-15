@@ -38,6 +38,11 @@ Future<void> mostraNotifica({
       'base': base.millisecondsSinceEpoch,
       'indietro': contoAllaRovescia,
       'pausa': inPausa,
+      // Testi fissi della notifica nella lingua dell'app.
+      'canale': l10n.notificaCanale,
+      'allenamento': l10n.notificaAllenamento,
+      'riprendi': l10n.riprendi,
+      'pausa_testo': l10n.pausa2,
     });
   } catch (_) {}
 }

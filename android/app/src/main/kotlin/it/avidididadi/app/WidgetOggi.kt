@@ -125,16 +125,20 @@ object WidgetOggi {
             v.setTextColor(R.id.sottotitolo, suHero)
         }
 
+        // Testi nella lingua dell'app (in italiano finché l'app non li manda).
+        val testi = dati?.optJSONObject("testi")
+        fun scritta(chiave: String, base: String) = testi?.optString(chiave)?.ifEmpty { null } ?: base
         val oggi = LocalDate.now()
         val giorni = dati?.optJSONObject("giorni")
         val g = giorni?.optJSONObject(oggi.toString())
         if (g == null) {
             v.setTextViewText(R.id.titolo, "Avidididadi")
-            v.setTextViewText(R.id.sottotitolo, "Apri l'app per vedere il piano")
+            v.setTextViewText(R.id.sottotitolo, scritta("apri", "Apri l'app per vedere il piano"))
             v.setViewVisibility(R.id.play, View.GONE)
         } else {
             val altre = g.optInt("altre")
-            v.setTextViewText(R.id.etichetta, if (altre > 0) "OGGI · +$altre" else "OGGI")
+            val etichetta = scritta("oggi", "OGGI")
+            v.setTextViewText(R.id.etichetta, if (altre > 0) "$etichetta · +$altre" else etichetta)
             v.setTextViewText(R.id.titolo, g.optString("titolo"))
             v.setTextViewText(R.id.sottotitolo, g.optString("sottotitolo"))
             val icona = BitmapFactory.decodeFile(g.optString("icona"))
@@ -158,6 +162,8 @@ object WidgetOggi {
                 val cerchio = gi?.optString("cerchio") ?: "vuoto"
                 val eOggi = d == oggi
                 v.setTextColor(LETTERE[i], if (eOggi) testo else testo2)
+                testi?.optJSONArray("lettere")?.optString(i)?.takeIf { it.isNotEmpty() }
+                    ?.let { v.setTextViewText(LETTERE[i], it) }
                 when (cerchio) {
                     "fatto" -> {
                         fatti++
@@ -184,7 +190,12 @@ object WidgetOggi {
             }
             v.setTextColor(R.id.riepilogo, testo2)
             v.setTextViewText(R.id.riepilogo,
-                if (totale == 0) "Nessun allenamento questa settimana" else "$fatti di $totale fatti questa settimana")
+                if (totale == 0) {
+                    scritta("nessuno", "Nessun allenamento questa settimana")
+                } else {
+                    scritta("fatti", "{fatti} di {totale} fatti questa settimana")
+                        .replace("{fatti}", "$fatti").replace("{totale}", "$totale")
+                })
         }
         return v
     }

@@ -11261,6 +11261,96 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Mobilità'**
   String get glossarioMobilita;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'OGGI'**
+  String get widgetOggi;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Apri l\'app per vedere il piano'**
+  String get widgetApri;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Nessun allenamento questa settimana'**
+  String get widgetNessuno;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'{fatti} di {totale} fatti questa settimana'**
+  String widgetFatti(Object fatti, Object totale);
+
+  /// iniziali dei giorni da lunedì, separate da virgole
+  ///
+  /// In it, this message translates to:
+  /// **'L,M,M,G,V,S,D'**
+  String get widgetLettere;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamento in corso'**
+  String get notificaCanale;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamento'**
+  String get notificaAllenamento;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Lingua'**
+  String get lingua;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Scegli la lingua'**
+  String get linguaTitolo;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Potrai cambiarla quando vuoi dal Profilo. I dati che hai già scritto restano come sono.'**
+  String get linguaSpiega;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Italiano o inglese'**
+  String get linguaSotto;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Sostieni il progetto'**
+  String get sostieniProgetto;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Una donazione aiuta lo sviluppo. Non sblocca nulla: l\'app è tutta gratuita.'**
+  String get sostieniSotto;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'Non riesco ad aprire il link.'**
+  String get linkNonAperto;
+
+  /// aggiunta a mano
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} battiti/min'**
+  String battitiAlMinuto(Object p0);
 }
 
 class _AppLocalizationsDelegate

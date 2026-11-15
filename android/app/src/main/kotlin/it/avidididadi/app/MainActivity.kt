@@ -79,7 +79,16 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     /** [urgente]: interrompe la frase in corso e la coda (le curve). */
-    private fun parla(testo: String, urgente: Boolean = false) {
+    /** Lingua della voce, scelta nell'app ("it" o "en"). */
+    private var linguaVoce = "it"
+
+    private fun localeVoce(): Locale = if (linguaVoce == "en") Locale.ENGLISH else Locale.ITALIAN
+
+    private fun parla(testo: String, urgente: Boolean = false, lingua: String? = null) {
+        if (lingua != null && lingua != linguaVoce) {
+            linguaVoce = lingua
+            if (ttsPronta) tts?.language = localeVoce()
+        }
         // Sintesi non ancora pronta: anche qui vale solo l'ultima frase urgente.
         if (urgente) inAttesa.clear()
         val t = tts
@@ -93,7 +102,7 @@ class MainActivity : FlutterFragmentActivity() {
                     inAttesa.clear()
                     return@TextToSpeech
                 }
-                pronta.language = Locale.ITALIAN
+                pronta.language = localeVoce()
                 pronta.setAudioAttributes(voceAudio)
                 pronta.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(id: String?) {}
@@ -208,7 +217,11 @@ class MainActivity : FlutterFragmentActivity() {
     private fun notificaAllenamento(dati: Map<*, *>) {
         val gestore = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         gestore.createNotificationChannel(
-            NotificationChannel(CANALE_ALLENAMENTO, "Allenamento in corso", NotificationManager.IMPORTANCE_LOW)
+            NotificationChannel(
+                CANALE_ALLENAMENTO,
+                dati["canale"] as? String ?: "Allenamento in corso",
+                NotificationManager.IMPORTANCE_LOW,
+            )
                 .apply { setShowBadge(false) },
         )
         val inPausa = dati["pausa"] == true
@@ -225,7 +238,7 @@ class MainActivity : FlutterFragmentActivity() {
         val testo = dati["testo"] as? String ?: ""
         val n = NotificationCompat.Builder(this, CANALE_ALLENAMENTO)
             .setSmallIcon(R.drawable.ic_notifica)
-            .setContentTitle(dati["titolo"] as? String ?: "Allenamento")
+            .setContentTitle(dati["titolo"] as? String ?: dati["allenamento"] as? String ?: "Allenamento")
             .setContentText(testo.ifEmpty { null })
             .setOngoing(true)
             .setOnlyAlertOnce(true)
@@ -234,7 +247,11 @@ class MainActivity : FlutterFragmentActivity() {
             .setCategory(NotificationCompat.CATEGORY_WORKOUT)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(apri)
-            .addAction(0, if (inPausa) "Riprendi" else "Pausa", pausa)
+            .addAction(
+                0,
+                if (inPausa) dati["riprendi"] as? String ?: "Riprendi" else dati["pausa_testo"] as? String ?: "Pausa",
+                pausa,
+            )
         if (inPausa) {
             n.setShowWhen(false)
         } else {
@@ -465,7 +482,7 @@ class MainActivity : FlutterFragmentActivity() {
                             // Testo solo, o testo e urgenza.
                             when (val a = call.arguments) {
                                 is Map<*, *> ->
-                                    parla(a["testo"] as String, a["urgente"] == true)
+                                    parla(a["testo"] as String, a["urgente"] == true, a["lingua"] as? String)
                                 else -> parla(a as String)
                             }
                             result.success("parlato")

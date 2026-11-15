@@ -1858,5 +1858,20 @@
   "parolaMetro": "meter",
   "parolaMetri": "meters",
   "glossarioRecupero": "Recovery",
-  "glossarioMobilita": "Mobility"
+  "glossarioMobilita": "Mobility",
+  "widgetOggi": "TODAY",
+  "widgetApri": "Open the app to see the plan",
+  "widgetNessuno": "No workouts this week",
+  "widgetFatti": "{fatti} of {totale} done this week",
+  "widgetLettere": "M,T,W,T,F,S,S",
+  "notificaCanale": "Workout in progress",
+  "notificaAllenamento": "Workout",
+  "lingua": "Language",
+  "linguaTitolo": "Choose your language",
+  "linguaSpiega": "You can change it anytime from Profile. The data you've already entered stays as it is.",
+  "linguaSotto": "Italian or English",
+  "sostieniProgetto": "Support the project",
+  "sostieniSotto": "A donation helps development. It doesn't unlock anything: the whole app is free.",
+  "linkNonAperto": "I can't open the link.",
+  "battitiAlMinuto": "{p0} bpm"
 }

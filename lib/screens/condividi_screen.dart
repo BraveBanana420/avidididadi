@@ -1930,7 +1930,7 @@ class ImmagineSettimana extends StatelessWidget {
   final RiepilogoSettimana riepilogo;
   const ImmagineSettimana({super.key, required this.riepilogo});
 
-  static const _lettere = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+  static List<String> get _lettere => inizialiGiorni;
 
   @override
   Widget build(BuildContext context) {

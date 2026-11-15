@@ -28,6 +28,9 @@ import 'storico_misure_screen.dart';
 import '../generatore_forza.dart';
 import '../l10n/lingua.dart';
 import '../l10n/vocabolario.dart';
+import 'lingua_screen.dart';
+import '../config.dart';
+import '../link.dart';
 
 class ProfileScreen extends StatelessWidget {
   final AppState state;
@@ -379,6 +382,12 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     voce(
+                      Icons.translate_rounded,
+                      l10n.lingua,
+                      lingueApp[codiceLingua]!,
+                      const LinguaScreen(),
+                    ),
+                    voce(
                       Icons.bluetooth_rounded,
                       l10n.mieiSensori,
                       l10n.fasciaCardioRulloSensori,
@@ -437,8 +446,16 @@ class ProfileScreen extends StatelessWidget {
                       segno: const IconaQuadrata(Icons.restart_alt_rounded),
                       titolo: l10n.configurazioneGuidata,
                       sottotitolo: l10n.rifaiPianoRispondendoPoche,
-                      linea: false,
                       onTap: () => _rifaiConfigurazione(context),
+                    ),
+                    // Solo un link: donare non sblocca nessuna funzione.
+                    RigaPulse(
+                      segno: const IconaQuadrata(Icons.favorite_rounded),
+                      titolo: l10n.sostieniProgetto,
+                      sottotitolo: l10n.sostieniSotto,
+                      linea: false,
+                      fine: const Icon(Icons.open_in_new_rounded, size: 20),
+                      onTap: () => apriLink(context, urlDonazioni),
                     ),
                   ],
                 ),

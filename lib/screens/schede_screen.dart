@@ -138,7 +138,7 @@ String descriviValidita(Scheda s) {
       : l10n.dalAl(d(s.inizio), d(s.fine!));
 }
 
-const _iniziali = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+List<String> get _iniziali => inizialiGiorni;
 const _durate = [15, 30, 60];
 
 /// Scrittura e modifica di una scheda.

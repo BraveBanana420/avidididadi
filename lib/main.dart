@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'avviso.dart';
 import 'app_state.dart';
@@ -23,10 +22,13 @@ import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
 import 'l10n/lingua.dart';
+import 'l10n/app_localizations.dart';
+import 'screens/lingua_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await caricaTema();
+  await caricaLingua();
   await caricaTour();
   runApp(const AllenamentiApp());
 }
@@ -37,17 +39,18 @@ class AllenamentiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([tema, neon]),
+      listenable: Listenable.merge([tema, neon, lingua]),
       builder: (context, _) => MaterialApp(
         title: 'Avidididadi',
         debugShowCheckedModeBanner: false,
         theme: creaTema(Brightness.light, neon: neon.value),
         darkTheme: creaTema(Brightness.dark, neon: neon.value),
         themeMode: tema.value,
-        // Tutta l'app in italiano: calendari in GG/MM/AAAA e settimana da lunedì.
-        locale: const Locale('it'),
-        supportedLocales: const [Locale('it')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        // Italiano o inglese, scelta nell'app (non quella del telefono):
+        // anche i calendari e i pulsanti di sistema la seguono.
+        locale: Locale(codiceLingua),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         // I colori degli sport seguono il tema in uso.
         builder: (context, child) {
           temaScuroAttivo = Theme.of(context).brightness == Brightness.dark;
@@ -116,6 +119,15 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       WidgetsBinding.instance.addPostFrameCallback((_) => _apriPrivacy());
     }
     await state.load();
+    // Primo avvio: prima di tutto la lingua.
+    if (lingua.value == null && mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          fullscreenDialog: true,
+          builder: (_) => const LinguaScreen(primoAvvio: true),
+        ),
+      );
+    }
     // Prima di usare l'app si accettano termini e informativa (di nuovo se
     // sono cambiati).
     if (state.profilo.terminiAccettati != versioneTermini && mounted) {

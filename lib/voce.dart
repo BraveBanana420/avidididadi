@@ -224,6 +224,7 @@ class Voce {
       return await _canale.invokeMethod<String>('parla', {
             'testo': testo,
             'urgente': urgente,
+            'lingua': codiceLingua,
           }) ??
           'errore';
     } catch (_) {

@@ -516,7 +516,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
           Row(
             children: [
-              for (final l in const ['L', 'M', 'M', 'G', 'V', 'S', 'D'])
+              for (final l in inizialiGiorni)
                 Expanded(
                   child: Center(child: Text(l, style: t.labelMedium)),
                 ),
@@ -728,7 +728,7 @@ class _StripSettimana extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            const ['L', 'M', 'M', 'G', 'V', 'S', 'D'][i],
+                            inizialiGiorni[i],
                             style: t.labelMedium?.copyWith(
                               color: d == oggi
                                   ? scheme.onSurface
@@ -1206,7 +1206,7 @@ class _Fatto extends StatelessWidget {
         stessoSport(s.sport, 'Nuoto')
             ? '${(s.distanzaKm * 1000).round()} m'
             : '${fmtNum(s.distanzaKm)} km',
-      if (s.fcMedia > 0) '${s.fcMedia} battiti/min',
+      if (s.fcMedia > 0) l10n.battitiAlMinuto(s.fcMedia),
     ];
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),

@@ -9715,5 +9715,78 @@
   "glossarioMobilita": "Mobilità",
   "@glossarioMobilita": {
     "description": "aggiunta a mano"
+  },
+  "widgetOggi": "OGGI",
+  "@widgetOggi": {
+    "description": "aggiunta a mano"
+  },
+  "widgetApri": "Apri l'app per vedere il piano",
+  "@widgetApri": {
+    "description": "aggiunta a mano"
+  },
+  "widgetNessuno": "Nessun allenamento questa settimana",
+  "@widgetNessuno": {
+    "description": "aggiunta a mano"
+  },
+  "widgetFatti": "{fatti} di {totale} fatti questa settimana",
+  "@widgetFatti": {
+    "description": "aggiunta a mano",
+    "placeholders": {
+      "fatti": {
+        "type": "Object"
+      },
+      "totale": {
+        "type": "Object"
+      }
+    }
+  },
+  "widgetLettere": "L,M,M,G,V,S,D",
+  "@widgetLettere": {
+    "description": "iniziali dei giorni da lunedì, separate da virgole"
+  },
+  "notificaCanale": "Allenamento in corso",
+  "@notificaCanale": {
+    "description": "aggiunta a mano"
+  },
+  "notificaAllenamento": "Allenamento",
+  "@notificaAllenamento": {
+    "description": "aggiunta a mano"
+  },
+  "lingua": "Lingua",
+  "@lingua": {
+    "description": "aggiunta a mano"
+  },
+  "linguaTitolo": "Scegli la lingua",
+  "@linguaTitolo": {
+    "description": "aggiunta a mano"
+  },
+  "linguaSpiega": "Potrai cambiarla quando vuoi dal Profilo. I dati che hai già scritto restano come sono.",
+  "@linguaSpiega": {
+    "description": "aggiunta a mano"
+  },
+  "linguaSotto": "Italiano o inglese",
+  "@linguaSotto": {
+    "description": "aggiunta a mano"
+  },
+  "sostieniProgetto": "Sostieni il progetto",
+  "@sostieniProgetto": {
+    "description": "aggiunta a mano"
+  },
+  "sostieniSotto": "Una donazione aiuta lo sviluppo. Non sblocca nulla: l'app è tutta gratuita.",
+  "@sostieniSotto": {
+    "description": "aggiunta a mano"
+  },
+  "linkNonAperto": "Non riesco ad aprire il link.",
+  "@linkNonAperto": {
+    "description": "aggiunta a mano"
+  },
+  "battitiAlMinuto": "{p0} battiti/min",
+  "@battitiAlMinuto": {
+    "description": "aggiunta a mano",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   }
 }

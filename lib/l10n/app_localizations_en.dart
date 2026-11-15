@@ -6717,4 +6717,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get glossarioMobilita => 'Mobility';
+
+  @override
+  String get widgetOggi => 'TODAY';
+
+  @override
+  String get widgetApri => 'Open the app to see the plan';
+
+  @override
+  String get widgetNessuno => 'No workouts this week';
+
+  @override
+  String widgetFatti(Object fatti, Object totale) {
+    return '$fatti of $totale done this week';
+  }
+
+  @override
+  String get widgetLettere => 'M,T,W,T,F,S,S';
+
+  @override
+  String get notificaCanale => 'Workout in progress';
+
+  @override
+  String get notificaAllenamento => 'Workout';
+
+  @override
+  String get lingua => 'Language';
+
+  @override
+  String get linguaTitolo => 'Choose your language';
+
+  @override
+  String get linguaSpiega =>
+      'You can change it anytime from Profile. The data you\'ve already entered stays as it is.';
+
+  @override
+  String get linguaSotto => 'Italian or English';
+
+  @override
+  String get sostieniProgetto => 'Support the project';
+
+  @override
+  String get sostieniSotto =>
+      'A donation helps development. It doesn\'t unlock anything: the whole app is free.';
+
+  @override
+  String get linkNonAperto => 'I can\'t open the link.';
+
+  @override
+  String battitiAlMinuto(Object p0) {
+    return '$p0 bpm';
+  }
 }
