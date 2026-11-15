@@ -27,6 +27,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Il runner ha poco disco: NDK, mappe e Gradle lo riempiono. Si
+      # tolgono strumenti che qui non servono (non Java, Flutter o Android).
+      - name: Libera spazio sul disco
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/local/share/boost /usr/share/swift \
+            "$RUNNER_TOOL_CACHE/CodeQL"
+          df -h /
+
       - name: L'etichetta corrisponde a pubspec.yaml
         id: versione
         run: |
