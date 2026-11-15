@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../intensita.dart';
 import '../esecuzione.dart';
+import '../pulse.dart';
 
 /// Previsto e fatto in tutta la seduta di corsa: dietro le fasce
 /// dell'intensità da tenere blocco per blocco, sopra la linea di quella
@@ -44,9 +45,8 @@ class GraficoIntensitaSeduta extends StatelessWidget {
                 linea: scheme.onSurface,
                 fascia: colore,
                 griglia: scheme.outlineVariant,
-                etichetta: (t.labelSmall ?? const TextStyle()).copyWith(
-                  color: scheme.onSurfaceVariant,
-                ),
+                etichetta: (t.labelSmall ?? const TextStyle()).cifreFisse
+                    .copyWith(color: scheme.onSurfaceVariant),
               ),
             ),
           ),

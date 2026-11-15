@@ -863,7 +863,7 @@ class _DatiSessione extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(nome, style: t.labelSmall),
-                          Text(valore, style: t.titleMedium),
+                          Text(valore, style: t.titleMedium?.cifreFisse),
                         ],
                       ),
                     ),

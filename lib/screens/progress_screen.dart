@@ -437,7 +437,10 @@ class _RiassuntoState extends State<_Riassunto> {
         FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
-          child: Text(valore, style: t.headlineSmall?.copyWith(color: colore)),
+          child: Text(
+            valore,
+            style: t.headlineSmall?.cifreFisse.copyWith(color: colore),
+          ),
         ),
         Text(
           etichetta,
@@ -520,7 +523,7 @@ class _RiassuntoState extends State<_Riassunto> {
                     previste == 0 || fatte > previste
                         ? '$fatte'
                         : '$fatte/$previste',
-                    style: t.headlineSmall,
+                    style: t.headlineSmall?.cifreFisse,
                   ),
                   Text(
                     'settimana',

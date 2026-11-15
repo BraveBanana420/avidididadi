@@ -12,6 +12,13 @@ import 'tema.dart';
 double spazioBarra(BuildContext context) =>
     MediaQuery.paddingOf(context).bottom + 16;
 
+/// Cifre tutte larghe uguali, per i numeri che cambiano: così un "1" al posto
+/// di un "8" non sposta il resto della riga.
+extension CifreFisse on TextStyle {
+  TextStyle get cifreFisse =>
+      copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+}
+
 /// Durata di un movimento dell'interfaccia: zero se nel telefono sono spente
 /// le animazioni (Impostazioni → Accessibilità).
 Duration durataMovimento(BuildContext context, [int ms = 500]) =>

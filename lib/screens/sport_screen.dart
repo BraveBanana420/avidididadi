@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../pulse.dart';
 import '../arrampicata.dart';
 import '../charts.dart';
 import '../models.dart';
@@ -259,7 +260,7 @@ class SportScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(tile.valore, style: t.titleLarge),
+                          Text(tile.valore, style: t.titleLarge?.cifreFisse),
                           Text(
                             tile.etichetta,
                             style: t.bodySmall,

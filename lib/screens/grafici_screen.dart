@@ -229,7 +229,7 @@ class _Riquadro extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(valore, style: t.titleLarge),
+                      Text(valore, style: t.titleLarge?.cifreFisse),
                       Text(nome, style: t.bodySmall),
                     ],
                   ),
