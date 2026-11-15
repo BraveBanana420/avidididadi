@@ -124,6 +124,14 @@ Fatto (su `staging`, da provare sul telefono e nei 4 temi):
   degli ultimi sei mesi); bici in un grafico solo (fasce e linea dei watt,
   le barre restano solo senza i watt al secondo). Da guardare con sedute
   vere: i nomi dei tratti devono combaciare con i passi in programma.
+- [x] **Grafica leggibile** (14-15/11, ramo `ccr-ab3c04e0-ed0jix` unito in
+  `staging` il 15/11): colori degli sport più scuri sul fondo chiaro, assi
+  dei grafici su numeri tondi (`assi.dart`), mappa a tema più contrastata,
+  "+" di Oggi che si sposta scorrendo, anello e barra animati, pagina "Dati"
+  della bici all'aperto con numeri grandi (griglia con watt o cadenza),
+  niente tratti di zero secondi. La prova "rosso e oro" è stata annullata.
+  `tool/schermate` disegna le schermate nei 4 temi senza telefono. Da
+  guardare sul telefono nei 4 temi.
 
 Da riprendere, forse:
 - [ ] **Provare il primo avvio** su un telefono pulito (o dopo un backup):

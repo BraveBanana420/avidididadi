@@ -4,6 +4,13 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 
 ## 0.1.0
 
+- Colori degli sport più leggibili: stessa tinta, più scuri sul fondo chiaro (e bici più chiara sullo scuro).
+- Grafici: assi su numeri tondi (0, 200, 400 W), passo sui tempi tondi senza che le soste schiaccino la scala.
+- Mappa a tema: strade, acqua e verde staccano di più dal fondo.
+- Bici all'aperto senza sensori: nella pagina "Dati" un dato per riga con numeri grandi; con watt o cadenza torna la griglia a due colonne.
+- Oggi: il "+" si fa da parte mentre scorri in giù e torna risalendo; anello e barra di avanzamento si riempiono quando compaiono.
+- Settimana: con più allenamenti del previsto si legge "5 fatti"; "1 esercizio" al posto di "1 esercizi".
+- Riepilogo: non compaiono più i tratti di zero secondi in coda agli intervalli.
 - Corsa strutturata: nel riepilogo "Previsto e fatto", un grafico solo con le fasce dell'intensità da tenere e la linea di quella tenuta, in zone (battito o passo secondo l'obiettivo del blocco).
 - Bici con i watt: nel riepilogo un grafico solo, con le barre colorate del programma e sopra la linea dei watt veri.
 - Riepilogo della sessione: la matita apre una pagina sola per nome, indoor/outdoor, dati, esercizi della forza ed eliminazione; in basso "Grafici" e accanto il tasto tondo per condividere.
