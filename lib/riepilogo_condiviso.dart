@@ -348,7 +348,9 @@ DatiPoster posterDi(
     return (
       etichetta: l10n.altraAttivita,
       grande: nome.toUpperCase(),
-      sotto: s.durataMin >= 60 ? '${tempo.$2} ore' : '${s.durataMin} minuti',
+      sotto: s.durataMin >= 60
+          ? l10n.quanteOre(tempo.$2)
+          : l10n.quantiMinuti(s.durataMin),
       numeri: senza(l10n.tempo),
     );
   }
@@ -479,7 +481,9 @@ String periodoSettimana(DateTime lunedi) {
 /// Il testo che accompagna l'immagine della settimana.
 String testoSettimana(RiepilogoSettimana r) => [
   l10n.miaSettimana(periodoSettimana(r.lunedi)),
-  r.previste > 0 ? l10n.sedute(r.fatte, r.previste) : '${r.fatte} sedute',
+  r.previste > 0
+      ? l10n.sedute(r.fatte, r.previste)
+      : l10n.quanteSedute(r.fatte),
   fmtDurataBreve(r.minuti),
   if (r.km >= 1) '${fmtNum(r.km.roundToDouble())} km',
 ].join(' · ');

@@ -304,7 +304,7 @@ class _MascheraState extends State<_Maschera>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${i + 1} di ${widget.passi.length}',
+              l10n.passoDiTour(i + 1, widget.passi.length),
               style: t.labelMedium?.copyWith(color: scheme.primary),
             ),
             const SizedBox(height: 4),

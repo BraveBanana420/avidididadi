@@ -9788,5 +9788,230 @@
         "type": "Object"
       }
     }
+  },
+  "giraVerso": "gira {p0}",
+  "@giraVerso": {
+    "description": "navigazione.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "mancanoAncora": "mancano {p0}",
+  "@mancanoAncora": {
+    "description": "screens/mappa_live.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "recuperoDi": "recupero {p0}",
+  "@recuperoDi": {
+    "description": "allenamento_arrampicata.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteSerie": "{p0} serie",
+  "@quanteSerie": {
+    "description": "allenamento_arrampicata.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteRipetizioni": "{p0} ripetizioni",
+  "@quanteRipetizioni": {
+    "description": "allenamento_arrampicata.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteAggiornate": "{p0} aggiornate",
+  "@quanteAggiornate": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteRimosse": "{p0} rimosse",
+  "@quanteRimosse": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "aggiornato": "{p0} aggiornato",
+  "@aggiornato": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiChili": "{p0} chili",
+  "@quantiChili": {
+    "description": "voce.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "unoEAltro": "{p0} e {p1}",
+  "@unoEAltro": {
+    "description": "voce.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiWatt": "{p0} watt",
+  "@quantiWatt": {
+    "description": "voce.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiMetri": "{p0} metri",
+  "@quantiMetri": {
+    "description": "navigazione.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "connesso": "{p0} connesso",
+  "@connesso": {
+    "description": "screens/assistente_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "passoDiTour": "{p0} di {p1}",
+  "@passoDiTour": {
+    "description": "screens/tour.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiEsercizi": "{p0} esercizi",
+  "@quantiEsercizi": {
+    "description": "esercizi.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "backupSessioni": "{p0} sessioni",
+  "@backupSessioni": {
+    "description": "backup.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "backupMisure": "{p0} misure",
+  "@backupMisure": {
+    "description": "backup.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "backupFeedback": "{p0} feedback",
+  "@backupFeedback": {
+    "description": "backup.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiGiorni": "{p0} giorni",
+  "@quantiGiorni": {
+    "description": "screens/schede_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteOre": "{p0} ore",
+  "@quanteOre": {
+    "description": "riepilogo_condiviso.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiMinuti": "{p0} minuti",
+  "@quantiMinuti": {
+    "description": "riepilogo_condiviso.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteSedute": "{p0} sedute",
+  "@quanteSedute": {
+    "description": "riepilogo_condiviso.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "quanteProvate": "{p0} provat{p1}",
+  "@quanteProvate": {
+    "description": "arrampicata.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "quantiPunti": "{p0} punti",
+  "@quantiPunti": {
+    "description": "screens/progress_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   }
 }

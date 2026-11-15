@@ -11351,6 +11351,150 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{p0} battiti/min'**
   String battitiAlMinuto(Object p0);
+
+  /// navigazione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'gira {p0}'**
+  String giraVerso(Object p0);
+
+  /// screens/mappa_live.dart
+  ///
+  /// In it, this message translates to:
+  /// **'mancano {p0}'**
+  String mancanoAncora(Object p0);
+
+  /// allenamento_arrampicata.dart
+  ///
+  /// In it, this message translates to:
+  /// **'recupero {p0}'**
+  String recuperoDi(Object p0);
+
+  /// allenamento_arrampicata.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} serie'**
+  String quanteSerie(Object p0);
+
+  /// allenamento_arrampicata.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} ripetizioni'**
+  String quanteRipetizioni(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} aggiornate'**
+  String quanteAggiornate(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} rimosse'**
+  String quanteRimosse(Object p0);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} aggiornato'**
+  String aggiornato(Object p0);
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} chili'**
+  String quantiChili(Object p0);
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} e {p1}'**
+  String unoEAltro(Object p0, Object p1);
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} watt'**
+  String quantiWatt(Object p0);
+
+  /// navigazione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} metri'**
+  String quantiMetri(Object p0);
+
+  /// screens/assistente_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} connesso'**
+  String connesso(Object p0);
+
+  /// screens/tour.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} di {p1}'**
+  String passoDiTour(Object p0, Object p1);
+
+  /// esercizi.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} esercizi'**
+  String quantiEsercizi(Object p0);
+
+  /// backup.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} sessioni'**
+  String backupSessioni(Object p0);
+
+  /// backup.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} misure'**
+  String backupMisure(Object p0);
+
+  /// backup.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} feedback'**
+  String backupFeedback(Object p0);
+
+  /// screens/schede_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} giorni'**
+  String quantiGiorni(Object p0);
+
+  /// riepilogo_condiviso.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} ore'**
+  String quanteOre(Object p0);
+
+  /// riepilogo_condiviso.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} minuti'**
+  String quantiMinuti(Object p0);
+
+  /// riepilogo_condiviso.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} sedute'**
+  String quanteSedute(Object p0);
+
+  /// arrampicata.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} provat{p1}'**
+  String quanteProvate(Object p0, Object p1);
+
+  /// screens/progress_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} punti'**
+  String quantiPunti(Object p0);
 }
 
 class _AppLocalizationsDelegate

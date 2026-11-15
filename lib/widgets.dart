@@ -196,7 +196,7 @@ class SessioneSvoltaTile extends StatelessWidget {
     final s = sessione;
     final c = coloreSport(s.sport);
     final parti = <String>[
-      // Nome dato dall'app (es. "Pistoia - Fartlek FC") per le sessioni di Health Connect.
+      // Nome dato dall'app (es. "Milano - Fartlek FC") per le sessioni di Health Connect.
       if (s.id.startsWith('hc-') && s.note.isNotEmpty) s.note,
       if (s.durataMin > 0) '${s.durataMin} min',
       if (s.distanzaKm > 0) '${fmtNum(s.distanzaKm)} km',

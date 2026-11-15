@@ -9,7 +9,7 @@ void main() {
     expect(numeroAsse(1.5), '1.5');
   });
 
-  test('la potenza della corsa di Pistoia: 0, 200, 400, 600 W', () {
+  test('la potenza della corsa di Milano: 0, 200, 400, 600 W', () {
     final s = scalaTonda(126, 585);
     expect(tacche(s), [600, 400, 200, 0]);
   });

@@ -309,4 +309,5 @@ Future<List<Esercizio>> caricaEsercizi() async {
 }
 
 /// Il conteggio scritto bene: "1 esercizio", "6 esercizi".
-String quantiEsercizi(int n) => n == 1 ? l10n.n1Esercizio : '$n esercizi';
+String quantiEsercizi(int n) =>
+    n == 1 ? l10n.n1Esercizio : l10n.quantiEsercizi(n);

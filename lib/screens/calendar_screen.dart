@@ -1448,7 +1448,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
     if (!mounted) return;
     Navigator.pop(context);
     messenger.showSnackBar(
-      avviso(content: Text('${dataLunga(widget.data)} aggiornato')),
+      avviso(content: Text(l10n.aggiornato(dataLunga(widget.data)))),
     );
   }
 

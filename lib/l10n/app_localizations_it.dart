@@ -6794,4 +6794,124 @@ class AppLocalizationsIt extends AppLocalizations {
   String battitiAlMinuto(Object p0) {
     return '$p0 battiti/min';
   }
+
+  @override
+  String giraVerso(Object p0) {
+    return 'gira $p0';
+  }
+
+  @override
+  String mancanoAncora(Object p0) {
+    return 'mancano $p0';
+  }
+
+  @override
+  String recuperoDi(Object p0) {
+    return 'recupero $p0';
+  }
+
+  @override
+  String quanteSerie(Object p0) {
+    return '$p0 serie';
+  }
+
+  @override
+  String quanteRipetizioni(Object p0) {
+    return '$p0 ripetizioni';
+  }
+
+  @override
+  String quanteAggiornate(Object p0) {
+    return '$p0 aggiornate';
+  }
+
+  @override
+  String quanteRimosse(Object p0) {
+    return '$p0 rimosse';
+  }
+
+  @override
+  String aggiornato(Object p0) {
+    return '$p0 aggiornato';
+  }
+
+  @override
+  String quantiChili(Object p0) {
+    return '$p0 chili';
+  }
+
+  @override
+  String unoEAltro(Object p0, Object p1) {
+    return '$p0 e $p1';
+  }
+
+  @override
+  String quantiWatt(Object p0) {
+    return '$p0 watt';
+  }
+
+  @override
+  String quantiMetri(Object p0) {
+    return '$p0 metri';
+  }
+
+  @override
+  String connesso(Object p0) {
+    return '$p0 connesso';
+  }
+
+  @override
+  String passoDiTour(Object p0, Object p1) {
+    return '$p0 di $p1';
+  }
+
+  @override
+  String quantiEsercizi(Object p0) {
+    return '$p0 esercizi';
+  }
+
+  @override
+  String backupSessioni(Object p0) {
+    return '$p0 sessioni';
+  }
+
+  @override
+  String backupMisure(Object p0) {
+    return '$p0 misure';
+  }
+
+  @override
+  String backupFeedback(Object p0) {
+    return '$p0 feedback';
+  }
+
+  @override
+  String quantiGiorni(Object p0) {
+    return '$p0 giorni';
+  }
+
+  @override
+  String quanteOre(Object p0) {
+    return '$p0 ore';
+  }
+
+  @override
+  String quantiMinuti(Object p0) {
+    return '$p0 minuti';
+  }
+
+  @override
+  String quanteSedute(Object p0) {
+    return '$p0 sedute';
+  }
+
+  @override
+  String quanteProvate(Object p0, Object p1) {
+    return '$p0 provat$p1';
+  }
+
+  @override
+  String quantiPunti(Object p0) {
+    return '$p0 punti';
+  }
 }

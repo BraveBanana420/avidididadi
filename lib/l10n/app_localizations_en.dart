@@ -2503,7 +2503,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String provatSenzaChiuderl(Object p0, Object p1) {
-    return 'Tried without sending$p0$p1';
+    return 'Tried without sending';
   }
 
   @override
@@ -6767,5 +6767,125 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String battitiAlMinuto(Object p0) {
     return '$p0 bpm';
+  }
+
+  @override
+  String giraVerso(Object p0) {
+    return 'turn $p0';
+  }
+
+  @override
+  String mancanoAncora(Object p0) {
+    return '$p0 to go';
+  }
+
+  @override
+  String recuperoDi(Object p0) {
+    return 'rest $p0';
+  }
+
+  @override
+  String quanteSerie(Object p0) {
+    return '$p0 sets';
+  }
+
+  @override
+  String quanteRipetizioni(Object p0) {
+    return '$p0 reps';
+  }
+
+  @override
+  String quanteAggiornate(Object p0) {
+    return '$p0 updated';
+  }
+
+  @override
+  String quanteRimosse(Object p0) {
+    return '$p0 removed';
+  }
+
+  @override
+  String aggiornato(Object p0) {
+    return '$p0 updated';
+  }
+
+  @override
+  String quantiChili(Object p0) {
+    return '$p0 kilos';
+  }
+
+  @override
+  String unoEAltro(Object p0, Object p1) {
+    return '$p0 and $p1';
+  }
+
+  @override
+  String quantiWatt(Object p0) {
+    return '$p0 watts';
+  }
+
+  @override
+  String quantiMetri(Object p0) {
+    return '$p0 meters';
+  }
+
+  @override
+  String connesso(Object p0) {
+    return '$p0 connected';
+  }
+
+  @override
+  String passoDiTour(Object p0, Object p1) {
+    return '$p0 of $p1';
+  }
+
+  @override
+  String quantiEsercizi(Object p0) {
+    return '$p0 exercises';
+  }
+
+  @override
+  String backupSessioni(Object p0) {
+    return '$p0 sessions';
+  }
+
+  @override
+  String backupMisure(Object p0) {
+    return '$p0 measurements';
+  }
+
+  @override
+  String backupFeedback(Object p0) {
+    return '$p0 feedback';
+  }
+
+  @override
+  String quantiGiorni(Object p0) {
+    return '$p0 days';
+  }
+
+  @override
+  String quanteOre(Object p0) {
+    return '$p0 hours';
+  }
+
+  @override
+  String quantiMinuti(Object p0) {
+    return '$p0 minutes';
+  }
+
+  @override
+  String quanteSedute(Object p0) {
+    return '$p0 sessions';
+  }
+
+  @override
+  String quanteProvate(Object p0, Object p1) {
+    return '$p0 tried';
+  }
+
+  @override
+  String quantiPunti(Object p0) {
+    return '$p0 points';
   }
 }

@@ -32,11 +32,11 @@ dart format lib test                        # formattazione
 flutter analyze                             # deve dare "No issues found!"
 flutter test                                # tutti i test devono passare
 flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD) # APK firmato, arm64 ~32 MB
-adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
-- **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
+- **Telefono** (numero di serie in `NOTE_PRIVATE.md`, qui `<seriale>`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
 - **Versione** (`version:` in `pubspec.yaml`, `MAJOR.MINOR.PATCH+build`): **prima della pubblicazione il primo numero resta 0**. La **1.0.0** arriva solo quando l'utente pubblica l'app.
   - **Resta ferma su `staging`**, anche a ogni installazione e negli APK dei tester: le prove si riconoscono dal **commit**, che l'APK mostra nel Profilo ("versione 0.1.0 (32) · prova a1b2c3d") grazie a `--dart-define=COMMIT=...` nel comando di build.

@@ -314,7 +314,7 @@ class Curva {
     final lato = destra ? l10n.destra : l10n.sinistra;
     return switch (tipo) {
       TipoCurva.leggera => destra ? l10n.tieniDestra : l10n.tieniSinistra,
-      TipoCurva.normale => 'gira $lato',
+      TipoCurva.normale => l10n.giraVerso(lato),
       TipoCurva.stretta => l10n.curvaStretta(lato),
       TipoCurva.inversione => l10n.tornaIndietro,
     };
@@ -392,7 +392,7 @@ class AvvisoGuida {
 
 /// "250 metri", "1,2 chilometri".
 String parlaMetri(double m) {
-  if (m < 1000) return '${m.round()} metri';
+  if (m < 1000) return l10n.quantiMetri(m.round());
   final km = (m / 100).round() / 10;
   final testo = km == km.roundToDouble()
       ? '${km.round()}'

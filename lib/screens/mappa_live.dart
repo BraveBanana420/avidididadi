@@ -344,7 +344,7 @@ class BannerGuida extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'mancano ${fmtMetri(mancano)}',
+                    l10n.mancanoAncora(fmtMetri(mancano)),
                     style: t.labelMedium?.copyWith(color: testo),
                   ),
                 ],

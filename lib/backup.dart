@@ -43,10 +43,12 @@ class DatiBackup {
   /// Riassunto per la conferma prima del ripristino.
   String get riassunto => [
     l10n.creato(dataLunga(creato)),
-    '${_righe('sessioni.csv') + _righe('health_connect_sessioni.csv')} sessioni',
+    l10n.backupSessioni(
+      _righe('sessioni.csv') + _righe('health_connect_sessioni.csv'),
+    ),
     l10n.giorniPiano(_righe('piano.csv')),
-    '${_righe('misure.csv')} misure',
-    '${_righe('feedback.csv')} feedback',
+    l10n.backupMisure(_righe('misure.csv')),
+    l10n.backupFeedback(_righe('feedback.csv')),
     if (foto != null) l10n.fotoProfilo,
   ].join(' · ');
 }

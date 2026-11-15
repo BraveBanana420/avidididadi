@@ -2618,8 +2618,8 @@ class AppState extends ChangeNotifier {
       }
       return [
         if (aggiunte > 0) l10n.sessioniNuove(aggiunte),
-        if (cambiate > 0) '$cambiate aggiornate',
-        if (tolte > 0) '$tolte rimosse',
+        if (cambiate > 0) l10n.quanteAggiornate(cambiate),
+        if (tolte > 0) l10n.quanteRimosse(tolte),
       ].join(', ');
     } catch (e) {
       debugPrint('Health Connect: errore $e');

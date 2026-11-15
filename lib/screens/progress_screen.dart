@@ -195,7 +195,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
                 sport: sportOrdinati,
                 etichette: etichette,
                 conteggi: conteggi,
-                formato: fatica ? (v) => '${v.round()} punti' : fmtOre,
+                formato: fatica ? (v) => l10n.quantiPunti(v.round()) : fmtOre,
                 formatoAsse: fatica ? (v) => '${v.round()}' : null,
                 titoloColonna: perMese
                     ? (i) =>

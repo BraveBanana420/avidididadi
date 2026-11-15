@@ -24,13 +24,13 @@ String parlaDurata(Duration d) {
     final r = s % 60;
     return r == 0
         ? unita(m, l10n.parolaMinuto, l10n.parolaMinuti)
-        : '${unita(m, l10n.parolaMinuto, l10n.parolaMinuti)} e $r';
+        : l10n.unoEAltro(unita(m, l10n.parolaMinuto, l10n.parolaMinuti), r);
   }
   final m = s % 3600 ~/ 60;
   final ore = unita(s ~/ 3600, l10n.parolaOra, l10n.parolaOre);
   return m == 0
       ? ore
-      : '$ore e ${unita(m, l10n.parolaMinuto, l10n.parolaMinuti)}';
+      : l10n.unoEAltro(ore, unita(m, l10n.parolaMinuto, l10n.parolaMinuti));
 }
 
 /// "5 e 42 al chilometro" a piedi, "27 chilometri all'ora" in bici.
@@ -101,11 +101,14 @@ String parlato(String testo) {
   );
   t = t.replaceAllMapped(
     RegExp(r'\b(\d+(?:,\d+)?) ?kg\b'),
-    (m) => '${m[1]} chili',
+    (m) => l10n.quantiChili(m[1]!),
   );
   t = t.replaceAll('/10', l10n.su102);
   t = t.replaceAll(RegExp(r'\brpm\b', caseSensitive: false), l10n.giriAlMinuto);
-  t = t.replaceAllMapped(RegExp(r'\b(\d+) ?W\b'), (m) => '${m[1]} watt');
+  t = t.replaceAllMapped(
+    RegExp(r'\b(\d+) ?W\b'),
+    (m) => l10n.quantiWatt(m[1]!),
+  );
   return t;
 }
 

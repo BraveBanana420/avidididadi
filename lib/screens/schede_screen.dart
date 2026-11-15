@@ -413,7 +413,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
               children: [
                 for (final g in _durate)
                   ChoiceChip(
-                    label: Text('$g giorni'),
+                    label: Text(l10n.quantiGiorni(g)),
                     selected: durata == g,
                     onSelected: (_) => _cambia(
                       s.copyWith(

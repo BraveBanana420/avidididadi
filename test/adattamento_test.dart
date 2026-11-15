@@ -197,7 +197,7 @@ void main() {
         id: 'hc-lungo',
         data: giorno(0, 6),
         sport: 'Corsa',
-        tipo: 'Pistoia Corsa',
+        tipo: 'Milano Corsa',
         durataMin: min,
         distanzaKm: 15.02,
       );

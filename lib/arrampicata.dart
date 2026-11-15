@@ -158,7 +158,7 @@ class SedutaArrampicata {
       [
         if (chiuse > 0)
           '$chiuse ${falesia ? l10n.vieChiuse : l10n.blocchiChiusi}',
-        if (provate > 0) '$provate provat${falesia ? 'e' : 'i'}',
+        if (provate > 0) l10n.quanteProvate(provate, falesia ? 'e' : 'i'),
       ].join(', '),
     if (metri > 0 || (falesia && corda.isNotEmpty))
       [

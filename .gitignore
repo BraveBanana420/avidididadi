@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+Thumbs.db
 .atom/
 .build/
 .buildlog/
@@ -50,11 +51,34 @@ app.*.map.json
 # Dati personali e segreti: mai nel repository.
 /backup/
 *.gz
+# Firma dell'APK (chiave e password): restano solo sul PC e nei secrets di
+# GitHub Actions.
 *.jks
 *.keystore
+*.p12
+*.pem
+*.der
 key.properties
+**/key.properties
+android/app/upload-keystore*
+# Variabili d'ambiente e file di servizi esterni.
+.env
+.env.*
+google-services.json
+# Dati degli allenamenti esportati dall'app (sessioni, percorsi, backup):
+# nel repository non ci sono CSV, GPX o FIT, e non devono entrarci.
+*.csv
+*.gpx
+*.fit
+*.tcx
 # Note e file solo locali.
 NOTE_PRIVATE.md
+*.local.md
+local.properties
+# Build e pacchetti.
 *.apk
 *.aab
-.env
+*.idsig
+/android/app/build/
+/android/.gradle/
+/android/build/

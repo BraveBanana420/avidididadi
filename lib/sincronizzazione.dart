@@ -84,7 +84,7 @@ String nomeFonte(String pacchetto, String nome) {
   return attivitaDaNome(tipoHc);
 }
 
-/// Tipo di corsa ricavato dal titolo scritto dall'app (es. "Pistoia - Fartlek FC").
+/// Tipo di corsa ricavato dal titolo scritto dall'app (es. "Milano - Fartlek FC").
 String tipoDaTitolo(String sport, String tipo, String titolo) {
   if (sport != 'Corsa') return tipo;
   final t = titolo.toLowerCase();
@@ -106,7 +106,7 @@ class RecordHc {
   final double? distanzaM; // totali della sessione, se l'app li ha scritti
   final double? calorie;
   final int? passi;
-  final String titolo; // nome dato dall'app, es. "Pistoia - Fartlek FC"
+  final String titolo; // nome dato dall'app, es. "Milano - Fartlek FC"
   const RecordHc({
     required this.uuid,
     required this.tipo,

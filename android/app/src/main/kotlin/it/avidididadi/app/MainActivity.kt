@@ -542,7 +542,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     /**
-     * Titoli delle sessioni (es. "Pistoia - Fartlek FC" scritto da Garmin), che il
+     * Titoli delle sessioni (es. "Milano - Fartlek FC" scritto da Garmin), che il
      * pacchetto health non restituisce. Risponde con uuid -> titolo, solo per quelle
      * che ne hanno uno.
      */

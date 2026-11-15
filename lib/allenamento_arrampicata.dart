@@ -73,16 +73,16 @@ class EsercizioArrampicata {
   /// "3 × 4 · recupero 10 min", "6 × 7 s / 3 s · 40%".
   String get riassunto => [
     [
-      if (serie > 1) '$serie serie',
+      if (serie > 1) l10n.quanteSerie(serie),
       if (ripetizioni > 1)
         lavoroS > 0
             ? '$ripetizioni × ${_tempo(lavoroS)}'
                   '${pausaS > 0 ? ' / ${_tempo(pausaS)}' : ''}'
-            : '$ripetizioni ripetizioni'
+            : l10n.quanteRipetizioni(ripetizioni)
       else if (lavoroS > 0)
         _tempo(lavoroS),
     ].join(' · '),
-    if (recuperoS > 0 && serie > 1) 'recupero ${_tempo(recuperoS)}',
+    if (recuperoS > 0 && serie > 1) l10n.recuperoDi(_tempo(recuperoS)),
     if (intensita.isNotEmpty) intensita,
   ].where((x) => x.isNotEmpty).join(' · ');
 

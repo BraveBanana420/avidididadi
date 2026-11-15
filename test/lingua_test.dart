@@ -39,8 +39,8 @@ void main() {
     });
 
     test('gli stessi segnaposto, così nessun dato si perde', () {
-      // Unica eccezione voluta: "Provat{0} senza chiuderl{1}" (desinenze).
-      const desinenze = {'provatSenzaChiuderl'};
+      // Eccezioni volute: desinenze italiane ("provate", "provati").
+      const desinenze = {'provatSenzaChiuderl', 'quanteProvate'};
       for (final k in chiavi) {
         if (desinenze.contains(k)) continue;
         expect(
@@ -92,7 +92,7 @@ void main() {
       expect(mostra('Corsa'), 'Running');
       expect(mostra('Mattina'), 'Morning');
       expect(mostra('lento'), 'easy');
-      expect(mostra('Pistoia giro lungo'), 'Pistoia giro lungo');
+      expect(mostra('Milano giro lungo'), 'Milano giro lungo');
       expect(titoloSessione('Corsa', 'Lento'), 'Running: Easy');
       expect(nomeSessione('Nuoto', ''), 'Swimming');
       expect(mostraTesto('zona 2'), 'zone 2');

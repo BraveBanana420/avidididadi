@@ -780,7 +780,7 @@ class StatoAssistente extends StatelessWidget {
     final (icona, testo, colore) = switch (state.connessione) {
       StatoConnessione.connesso => (
         Icons.check_circle_rounded,
-        '$nome connesso',
+        l10n.connesso(nome),
         scheme.onSurface,
       ),
       StatoConnessione.errore => (
@@ -864,7 +864,7 @@ class RiquadroConnessione extends StatelessWidget {
               color: scheme.onSecondaryContainer,
             ),
             title: Text(
-              '$nome connesso',
+              l10n.connesso(nome),
               style: t.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: scheme.onSecondaryContainer,
