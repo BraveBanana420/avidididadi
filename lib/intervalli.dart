@@ -617,11 +617,29 @@ List<IntervalloFatto> intervalliDaTratti(
 bool sedutaStrutturata(List<WorkoutStep> passi) =>
     _trattiDelPiano(passi).where((t) => !t.recupero).length >= 2;
 
+/// Sotto questa durata un tratto in coda è solo il tempo di fermare l'orologio.
+const secondiCodaBreve = 10;
+
+/// Toglie dalla fine i tratti senza nome di pochi secondi ("4 m · 0:00"):
+/// nascono tra l'ultimo giro e lo stop, e nella lista sono solo rumore.
+/// Senza nessun tratto con un nome la lista resta com'è.
+List<IntervalloFatto> senzaCodaBreve(List<IntervalloFatto> lista) {
+  if (!lista.any((i) => i.nome.isNotEmpty)) return lista;
+  var fine = lista.length;
+  while (fine > 0 &&
+      lista[fine - 1].nome.isEmpty &&
+      lista[fine - 1].secondi < secondiCodaBreve) {
+    fine--;
+  }
+  return fine == lista.length ? lista : lista.sublist(0, fine);
+}
+
 /// I tratti senza nome dopo l'ultimo abbinato alla seduta (i chilometri in
 /// più a fine allenamento) diventano una riga sola, con le somme: tanti giri
 /// da 1 km "fuori programma" non dicono niente. Se non c'è nessun nome, o
 /// il tratto in più è uno solo, la lista resta com'è.
 List<IntervalloFatto> conFuoriProgrammaUniti(List<IntervalloFatto> lista) {
+  lista = senzaCodaBreve(lista);
   final ultimo = lista.lastIndexWhere((i) => i.nome.isNotEmpty);
   if (ultimo < 0) return lista;
   final coda = lista.sublist(ultimo + 1);

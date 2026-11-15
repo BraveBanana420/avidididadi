@@ -42,22 +42,50 @@ void main() {
     expect(Pulse.per(scuro: true, neon: true), same(Pulse.scuroNeon));
   });
 
-  test('colori degli sport: stessi nei due temi, distinti tra loro', () {
-    for (final n in [false, true]) {
-      neonAttivo = n;
-      final colori = [
-        for (final s in ['Forza', 'Corsa', 'Nuoto', 'Bici', 'Mobilità'])
-          coloreSport(s),
-      ];
-      expect(colori.toSet().length, 5);
-      temaScuroAttivo = !temaScuroAttivo;
-      expect([
-        for (final s in ['Forza', 'Corsa', 'Nuoto', 'Bici', 'Mobilità'])
-          coloreSport(s),
-      ], colori);
+  test('colori degli sport: distinti tra loro e leggibili su ogni fondo', () {
+    double contrasto(Color a, Color b) {
+      final x = a.computeLuminance(), y = b.computeLuminance();
+      return (math.max(x, y) + 0.05) / (math.min(x, y) + 0.05);
     }
+
+    final primaScuro = temaScuroAttivo;
+    addTearDown(() {
+      temaScuroAttivo = primaScuro;
+      neonAttivo = false;
+    });
+    const sport = [
+      'Forza',
+      'Corsa',
+      'Nuoto',
+      'Bici',
+      'Mobilità',
+      'Arrampicata',
+      'Camminata',
+      'Attività libera',
+    ];
+    for (final n in [false, true]) {
+      for (final scuro in [true, false]) {
+        neonAttivo = n;
+        temaScuroAttivo = scuro;
+        final fondo = Color(scuro ? 0xFF0B0B0D : 0xFFF6F6FA);
+        final colori = [for (final s in sport) coloreSport(s)];
+        expect(colori.toSet().length, sport.length);
+        for (final (i, c) in colori.indexed) {
+          expect(
+            contrasto(c, fondo),
+            greaterThanOrEqualTo(3),
+            reason: '${sport[i]} neon=$n scuro=$scuro',
+          );
+        }
+      }
+    }
+    // Sul fondo scuro restano i colori di sempre (tranne la bici, più chiara).
     neonAttivo = false;
+    temaScuroAttivo = true;
     expect(coloreSport('Forza'), const Color(0xFF8E8E96));
+    expect(coloreSport('Nuoto'), const Color(0xFFFF8A3D));
+    neonAttivo = true;
+    expect(coloreSport('Arrampicata'), const Color(0xFFFFE600));
   });
 
   test('camminata: si vede sul fondo chiaro, resta luminosa sullo scuro', () {

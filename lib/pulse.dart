@@ -12,6 +12,13 @@ import 'tema.dart';
 double spazioBarra(BuildContext context) =>
     MediaQuery.paddingOf(context).bottom + 16;
 
+/// Durata di un movimento dell'interfaccia: zero se nel telefono sono spente
+/// le animazioni (Impostazioni → Accessibilità).
+Duration durataMovimento(BuildContext context, [int ms = 500]) =>
+    MediaQuery.disableAnimationsOf(context)
+    ? Duration.zero
+    : Duration(milliseconds: ms);
+
 /// Riquadro in rilievo: sfumatura e ombra del tema. Con [gradiente] e [ombra]
 /// diventa per esempio il riquadro della seduta di oggi.
 class SuperficiePulse extends StatelessWidget {
@@ -152,16 +159,23 @@ class AnelloPulse extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Pulse.di(context);
     final scheme = Theme.of(context).colorScheme;
+    // Si riempie da zero quando compare, e scorre a ogni cambio di valore.
     return SizedBox(
       width: dimensione,
       height: dimensione,
-      child: CustomPaint(
-        painter: _Anello(
-          valore: valore.clamp(0, 1).toDouble(),
-          spessore: spessore,
-          colori: p.anello,
-          traccia: scheme.surfaceContainerHigh,
-          bagliore: alone ? p.bagliore : null,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: valore.clamp(0, 1).toDouble()),
+        duration: durataMovimento(context),
+        curve: Curves.easeOutCubic,
+        builder: (context, v, child) => CustomPaint(
+          painter: _Anello(
+            valore: v,
+            spessore: spessore,
+            colori: p.anello,
+            traccia: scheme.surfaceContainerHigh,
+            bagliore: alone ? p.bagliore : null,
+          ),
+          child: child,
         ),
         child: Center(child: child),
       ),
@@ -525,8 +539,12 @@ class BarraAvanzamento extends StatelessWidget {
         borderRadius: BorderRadius.circular(altezza),
       ),
       alignment: Alignment.centerLeft,
-      child: FractionallySizedBox(
-        widthFactor: valore.clamp(0, 1).toDouble(),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: valore.clamp(0, 1).toDouble()),
+        duration: durataMovimento(context),
+        curve: Curves.easeOutCubic,
+        builder: (context, v, child) =>
+            FractionallySizedBox(widthFactor: v, child: child),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: p.anello),

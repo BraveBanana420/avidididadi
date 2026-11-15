@@ -511,7 +511,9 @@ class _RiassuntoState extends State<_Riassunto> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    previste == 0 ? '$fatte' : '$fatte/$previste',
+                    previste == 0 || fatte > previste
+                        ? '$fatte'
+                        : '$fatte/$previste',
                     style: t.headlineSmall,
                   ),
                   Text(

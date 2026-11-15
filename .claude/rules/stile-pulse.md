@@ -14,21 +14,24 @@ paths:
 - **Accento**: **rosso** di default (`#FF3B47`, sfumatura `#FF6B73 → #FF3B47 → #B3122A`) oppure **neon** (rosa `#FF2E93`, verde acqua `#00D2C3`, azzurro `#2EA8FF`, viola `#B566FF`). Salvato con `neon` / `neonAttivo` in `neon.txt`.
 - Le quattro varianti sono `Pulse.scuro`, `Pulse.chiaroRosso`, `Pulse.scuroNeon` e `Pulse.chiaro`, scelte con `Pulse.per(scuro:, neon:)`.
 - **Mai colori fissi nei widget**: usa `Theme.of(context).colorScheme`, `Pulse.di(context)` e `coloreSport(sport)`.
-- **Ogni modifica grafica va controllata nelle 4 combinazioni.**
+- **Ogni modifica grafica va controllata nelle 4 combinazioni.** Senza telefono: `flutter test tool/schermate/schermate_test.dart` disegna le quattro sezioni, le pagine interne principali e l'avvio dell'allenamento guidato con dati di esempio nei 4 temi, in `build/schermate/<tema>/*.png` (mappe e dati dell'orologio non ci sono).
+- **Movimento**: `durataMovimento(context)` dà la durata delle animazioni, zero se sul telefono sono spente. Anello e barra di avanzamento si riempiono da soli quando compaiono.
+- **Grafici**: assi su numeri tondi con `scalaTonda` e `tacche` (`lib/assi.dart`).
 
-**Colori degli sport** (uguali nel chiaro e nello scuro, tranne la camminata):
+**Colori degli sport**:
+
+Stessa tinta nel chiaro e nello scuro, ma ogni colore deve staccare dal fondo (contrasto di almeno 3, lo controlla `test/tema_test.dart`). Dove il colore è uno solo vale per i due fondi; altrimenti "scuro / chiaro".
 
 | Sport | Standard | Neon |
 |---|---|---|
-| Forza | `#8E8E96` | `#9D4DFF` |
+| Forza | `#8E8E96` / `#7B7B85` | `#9D4DFF` |
 | Corsa | `#FF3B47` | `#FF2E93` |
-| Nuoto | `#FF8A3D` | `#00B2FF` |
-| Bici | `#B3123A` | `#00E0B8` |
-| Mobilità | `#F48FB1` | `#FF7A00` |
-| Arrampicata | `#4FA3A5` | `#FFE600` |
-| Attività libera | `#7C83FD` | `#7C83FD` |
-| Camminata (fondo scuro) | `#E0A33A` | `#C6FF3D` |
-| Camminata (fondo chiaro) | `#B87A0F` | `#5F9400` |
+| Nuoto | `#FF8A3D` / `#E0660A` | `#00B2FF` / `#0090DB` |
+| Bici | `#CF2450` / `#B3123A` | `#00E0B8` / `#009C82` |
+| Mobilità | `#F48FB1` / `#DB5C8E` | `#FF7A00` / `#E66400` |
+| Arrampicata | `#4FA3A5` / `#3A8C8E` | `#FFE600` / `#A38500` |
+| Attività libera | `#7C83FD` / `#6C73F5` | `#7C83FD` / `#6C73F5` |
+| Camminata | `#E0A33A` / `#B87A0F` | `#C6FF3D` / `#5F9400` |
 
 - Le **spunte** sui pallini e i quadrati degli sport hanno sempre il colore del fondo (`colorScheme.surface`), mai bianco o nero a seconda del pallino.
 - **Energia**: verde `#22E07A`, giallo `#FFC233`, rosso `#FF3B47`, con alone al neon (`FulmineNeon`).

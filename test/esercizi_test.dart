@@ -2,6 +2,12 @@ import 'package:allenamenti_app/esercizi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('conteggio degli esercizi: singolare e plurale', () {
+    expect(quantiEsercizi(1), '1 esercizio');
+    expect(quantiEsercizi(6), '6 esercizi');
+    expect(quantiEsercizi(0), '0 esercizi');
+  });
+
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('leggiPesi', () {
