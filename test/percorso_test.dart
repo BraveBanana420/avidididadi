@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:allenamenti_app/backup.dart';
 import 'package:allenamenti_app/models.dart';
@@ -154,5 +155,40 @@ void main() {
       '<trkpt lat="43.91" lon="10.91"/>',
     );
     expect(r.punti.length, 2);
+  });
+
+  test('inquadratura: il percorso sta nello spazio libero sopra i numeri', () {
+    // Firenze, giro di 4 km a cavallo dell'Arno.
+    const limiti = (43.762, 11.245, 43.775, 11.262);
+    final q = inquadratura(
+      limiti,
+      larghezza: 360,
+      altezza: 450,
+      sinistra: 40,
+      sopra: 70,
+      destra: 40,
+      sotto: 170,
+    );
+    double x(double lon) => (lon + 180) / 360;
+    double y(double lat) {
+      final r = lat * math.pi / 180;
+      return (1 - math.log(math.tan(r) + 1 / math.cos(r)) / math.pi) / 2;
+    }
+
+    final scala = 512 * math.pow(2, q.zoom);
+    // Posizione in punti dentro la mappa 360 × 450.
+    double px(double lon) => 180 + (x(lon) - x(q.lon)) * scala;
+    double py(double lat) => 225 + (y(lat) - y(q.lat)) * scala;
+    final (a, b, c, d) = limiti;
+    expect(px(b), greaterThanOrEqualTo(40 - 0.01));
+    expect(px(d), lessThanOrEqualTo(320 + 0.01));
+    expect(py(c), greaterThanOrEqualTo(70 - 0.01));
+    expect(py(a), lessThanOrEqualTo(280 + 0.01));
+    // Almeno un lato tocca il margine: lo zoom è il più grande possibile.
+    final tocca = (px(b) - 40).abs() < 0.01 || (py(c) - 70).abs() < 0.01;
+    expect(tocca, isTrue);
+    // Centrato nello spazio libero.
+    expect((px(b) + px(d)) / 2, closeTo(180, 0.01));
+    expect((py(c) + py(a)) / 2, closeTo(175, 0.01));
   });
 }
