@@ -130,12 +130,12 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
                           onPressed: state.assistenteInAttesa
                               ? null
                               : state.nuovaChat,
-                          icon: const Icon(Icons.add_comment_outlined),
+                          icon: const Icon(Icons.add_comment_rounded),
                         ),
                       IconButton(
                         tooltip: 'Impostazioni assistente',
                         onPressed: _impostazioni,
-                        icon: const Icon(Icons.settings_outlined),
+                        icon: const Icon(Icons.settings_rounded),
                       ),
                     ],
                   ),
@@ -234,7 +234,7 @@ class _AssistenteScreenState extends State<AssistenteScreen> {
         IconButton(
           tooltip: 'Invia',
           onPressed: state.assistenteInAttesa ? null : _invia,
-          icon: const Icon(Icons.send),
+          icon: const Icon(Icons.send_rounded),
         ),
       ],
     ),
@@ -261,7 +261,9 @@ class _Presentazione extends StatelessWidget {
           ListTile(
             contentPadding: EdgeInsets.zero,
             leading: Icon(
-              f == Fornitore.ollama ? Icons.computer : Icons.cloud_outlined,
+              f == Fornitore.ollama
+                  ? Icons.computer_rounded
+                  : Icons.cloud_rounded,
             ),
             title: Text(nomiFornitori[f]!),
             subtitle: Text(descrizioniFornitori[f]!),
@@ -274,7 +276,7 @@ class _Presentazione extends StatelessWidget {
         const SizedBox(height: 16),
         FilledButton.icon(
           onPressed: onConfigura,
-          icon: const Icon(Icons.settings_outlined),
+          icon: const Icon(Icons.settings_rounded),
           label: const Text('Configura assistente'),
         ),
       ],
@@ -428,7 +430,7 @@ class SchedaProposta extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(Icons.check_rounded),
                   label: Text('Applica ${esito.accettate.length} modifiche'),
                 ),
             ],
@@ -558,7 +560,9 @@ class _ImpostazioniAssistenteScreenState
                 title: Text(m),
                 subtitle: m == consigliato ? const Text('Consigliato') : null,
                 leading: Icon(
-                  m == consigliato ? Icons.star : Icons.smart_toy_outlined,
+                  m == consigliato
+                      ? Icons.star_rounded
+                      : Icons.smart_toy_rounded,
                 ),
                 onTap: () => Navigator.pop(c, m),
               ),
@@ -597,7 +601,7 @@ class _ImpostazioniAssistenteScreenState
             Card(
               child: c.esterno
                   ? ListTile(
-                      leading: const Icon(Icons.link),
+                      leading: const Icon(Icons.link_rounded),
                       title: Text('Collegato a ${c.appEsterna}'),
                       subtitle: const Text(
                         'Il coach è nella sua app. Scollega dalla pagina '
@@ -605,7 +609,7 @@ class _ImpostazioniAssistenteScreenState
                       ),
                     )
                   : ListTile(
-                      leading: const Icon(Icons.forum_outlined),
+                      leading: const Icon(Icons.forum_rounded),
                       title: const Text(
                         'Usa il tuo abbonamento (Claude, ChatGPT, Gemini…)',
                       ),
@@ -613,7 +617,7 @@ class _ImpostazioniAssistenteScreenState
                         "Senza chiave API: parli con il coach nell'app del "
                         'tuo assistente.',
                       ),
-                      trailing: const Icon(Icons.chevron_right),
+                      trailing: const Icon(Icons.chevron_right_rounded),
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute<void>(
                           builder: (_) =>
@@ -650,7 +654,7 @@ class _ImpostazioniAssistenteScreenState
               if (chiaveSalvata != null)
                 Card(
                   child: ListTile(
-                    leading: const Icon(Icons.key),
+                    leading: const Icon(Icons.key_rounded),
                     title: Text('Chiave salvata ••••$finale'),
                     subtitle: const Text('Cifrata sul telefono.'),
                     trailing: TextButton(
@@ -727,7 +731,7 @@ class _ImpostazioniAssistenteScreenState
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
                 onPressed: _scegliModello,
-                icon: const Icon(Icons.list_alt),
+                icon: const Icon(Icons.list_alt_rounded),
                 label: const Text('Scegli tra i modelli disponibili'),
               ),
             ),
@@ -805,22 +809,22 @@ class StatoAssistente extends StatelessWidget {
     final nome = _nomeBreve(c.fornitore);
     final (icona, testo, colore) = switch (state.connessione) {
       StatoConnessione.connesso => (
-        Icons.check_circle,
+        Icons.check_circle_rounded,
         '$nome connesso',
         scheme.onSurface,
       ),
       StatoConnessione.errore => (
-        Icons.error_outline,
+        Icons.error_outline_rounded,
         '$nome non raggiungibile',
         scheme.primary,
       ),
       StatoConnessione.inVerifica => (
-        Icons.sync,
+        Icons.sync_rounded,
         'Verifica di $nome…',
         scheme.onSurfaceVariant,
       ),
       StatoConnessione.daVerificare => (
-        Icons.radio_button_unchecked,
+        Icons.radio_button_unchecked_rounded,
         nome,
         scheme.onSurfaceVariant,
       ),
@@ -865,7 +869,7 @@ class RiquadroConnessione extends StatelessWidget {
       case StatoConnessione.daVerificare:
         return OutlinedButton.icon(
           onPressed: onProva,
-          icon: const Icon(Icons.wifi_tethering),
+          icon: const Icon(Icons.wifi_tethering_rounded),
           label: const Text('Prova connessione'),
         );
       case StatoConnessione.inVerifica:
@@ -885,7 +889,7 @@ class RiquadroConnessione extends StatelessWidget {
           color: scheme.secondaryContainer,
           child: ListTile(
             leading: Icon(
-              Icons.check_circle,
+              Icons.check_circle_rounded,
               size: 32,
               color: scheme.onSecondaryContainer,
             ),
@@ -915,7 +919,7 @@ class RiquadroConnessione extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.error_outline, color: scheme.primary),
+                    Icon(Icons.error_outline_rounded, color: scheme.primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(

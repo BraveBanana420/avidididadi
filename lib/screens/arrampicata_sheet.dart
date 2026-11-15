@@ -127,12 +127,12 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 ButtonSegment(
                   value: Ambiente.indoor,
                   label: Text('Indoor'),
-                  icon: Icon(Icons.roofing),
+                  icon: Icon(Icons.roofing_rounded),
                 ),
                 ButtonSegment(
                   value: Ambiente.outdoor,
                   label: Text('Outdoor'),
-                  icon: Icon(Icons.landscape_outlined),
+                  icon: Icon(Icons.landscape_rounded),
                 ),
               ],
               selected: {ambiente!},
@@ -248,7 +248,7 @@ class _ArrampicataSheetState extends State<ArrampicataSheet> {
                 minimumSize: const Size.fromHeight(52),
               ),
               onPressed: d == null ? null : _salva,
-              icon: const Icon(Icons.check),
+              icon: const Icon(Icons.check_rounded),
               label: const Text('Salva'),
             ),
           ],
@@ -316,7 +316,7 @@ class _Contatore extends StatelessWidget {
         IconButton.filledTonal(
           tooltip: 'Meno',
           onPressed: valore > minimo ? () => onChanged(valore - 1) : null,
-          icon: const Icon(Icons.remove),
+          icon: const Icon(Icons.remove_rounded),
         ),
         SizedBox(
           width: 44,
@@ -329,7 +329,7 @@ class _Contatore extends StatelessWidget {
         IconButton.filledTonal(
           tooltip: 'Più',
           onPressed: () => onChanged(valore + 1),
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add_rounded),
         ),
       ],
     );

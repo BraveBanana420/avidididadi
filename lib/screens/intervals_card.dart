@@ -78,11 +78,14 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
           children: [
             Row(
               children: [
-                const Icon(Icons.watch_outlined),
+                const Icon(Icons.watch_rounded),
                 const SizedBox(width: 10),
                 Expanded(child: Text('intervals.icu', style: t.titleMedium)),
                 if (state.intervalsCollegato)
-                  const Icon(Icons.check_circle, color: Color(0xFF22E07A)),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Color(0xFF22E07A),
+                  ),
               ],
             ),
             const SizedBox(height: 6),
@@ -135,7 +138,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
             onPressed: _inCorso || state.sincronizzandoIntervals
                 ? null
                 : () => _esegui(state.sincronizzaIntervals),
-            icon: const Icon(Icons.sync),
+            icon: const Icon(Icons.sync_rounded),
             label: const Text('Sincronizza ora'),
           ),
           TextButton(onPressed: _scollega, child: const Text('Scollega')),
@@ -184,7 +187,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
           onPressed: _inCorso || state.inviando
               ? null
               : () => _esegui(state.inviaPianoIntervals),
-          icon: const Icon(Icons.send_outlined),
+          icon: const Icon(Icons.send_rounded),
           label: const Text('Invia ora'),
         ),
         const SizedBox(height: 8),
@@ -242,7 +245,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
           suffixIcon: IconButton(
             tooltip: 'Incolla dagli appunti',
             onPressed: _incolla,
-            icon: const Icon(Icons.content_paste),
+            icon: const Icon(Icons.content_paste_rounded),
           ),
         ),
       ),
@@ -263,7 +266,7 @@ class _SezioneIntervalsState extends State<SezioneIntervals> {
                 height: 18,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
-            : const Icon(Icons.link),
+            : const Icon(Icons.link_rounded),
         label: const Text('Collega'),
       ),
     ];

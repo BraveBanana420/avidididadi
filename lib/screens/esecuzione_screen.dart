@@ -1322,7 +1322,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   final navigator = Navigator.of(context);
                   if (await _confermaUscita()) navigator.pop();
                 },
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close_rounded),
               ),
               Expanded(
                 child: Column(
@@ -1349,7 +1349,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     onPressed: () => mostraSensoreBici(context),
                     icon: Icon(
                       sensoreBici.stato == StatoSensore.collegato
-                          ? Icons.pedal_bike
+                          ? Icons.pedal_bike_rounded
                           : Icons.pedal_bike_outlined,
                     ),
                   ),
@@ -1363,8 +1363,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     onPressed: () => mostraBattito(context),
                     icon: Icon(
                       sensoreBattito.stato == StatoSensore.collegato
-                          ? Icons.favorite
-                          : Icons.favorite_border,
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
                     ),
                   ),
                 ),
@@ -1373,15 +1373,18 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 onPressed: _apriOpzioni,
                 icon: ValueListenableBuilder(
                   valueListenable: bipAttivo,
-                  builder: (_, bip, _) =>
-                      Icon(bip ? Icons.volume_up : Icons.volume_off),
+                  builder: (_, bip, _) => Icon(
+                    bip ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                  ),
                 ),
               ),
               if (!_aspettaIlVia)
                 IconButton(
                   tooltip: pausa ? 'Riprendi' : 'Pausa',
                   onPressed: _pausa,
-                  icon: Icon(pausa ? Icons.play_arrow : Icons.pause),
+                  icon: Icon(
+                    pausa ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                  ),
                 ),
             ],
           ),
@@ -1694,7 +1697,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                   )
                                 else
                                   const IconaQuadrata(
-                                    Icons.skip_next,
+                                    Icons.skip_next_rounded,
                                     evidenza: true,
                                   ),
                                 const SizedBox(width: 14),
@@ -1759,7 +1762,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   tooltip: 'Esercizio precedente',
                   iconSize: 28,
                   onPressed: preparati || i == 0 ? null : _indietro,
-                  icon: const Icon(Icons.skip_previous),
+                  icon: const Icon(Icons.skip_previous_rounded),
                 ),
                 const SizedBox(width: 12),
               ],
@@ -1768,12 +1771,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   altezza: 64,
                   onPressed: pausa ? null : _avanti,
                   icona: preparati
-                      ? Icons.play_arrow
+                      ? Icons.play_arrow_rounded
                       : recupero
-                      ? Icons.fast_forward
+                      ? Icons.fast_forward_rounded
                       : b.aTempo
-                      ? Icons.skip_next
-                      : Icons.check,
+                      ? Icons.skip_next_rounded
+                      : Icons.check_rounded,
                   testo: _aspettaIlVia
                       ? 'Inizia'
                       : preparati
@@ -1803,7 +1806,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             color: scheme.onSecondaryContainer,
                           ),
                         )
-                      : const Icon(Icons.skip_next),
+                      : const Icon(Icons.skip_next_rounded),
                 ),
               ],
             ],
@@ -1877,8 +1880,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     contentPadding: EdgeInsets.zero,
                     secondary: Icon(
                       stessoSport(widget.sport, 'Bici')
-                          ? Icons.pedal_bike
-                          : Icons.directions_run,
+                          ? Icons.pedal_bike_rounded
+                          : Icons.directions_run_rounded,
                     ),
                     title: Text('Indoor (${attrezzoAlChiuso(widget.sport)})'),
                     subtitle: Text(
@@ -1898,7 +1901,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   type: MaterialType.transparency,
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.route),
+                    leading: const Icon(Icons.route_rounded),
                     title: Text(_percorso?.nome ?? 'Segui un percorso'),
                     subtitle: Text(
                       _percorso == null
@@ -1907,11 +1910,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                           : descriviPercorso(_percorso!),
                     ),
                     trailing: _percorso == null
-                        ? const Icon(Icons.chevron_right)
+                        ? const Icon(Icons.chevron_right_rounded)
                         : IconButton(
                             tooltip: 'Togli il percorso',
                             onPressed: () => _usaPercorso(null),
-                            icon: const Icon(Icons.close),
+                            icon: const Icon(Icons.close_rounded),
                           ),
                     onTap: _scegliPercorso,
                   ),
@@ -1942,7 +1945,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(
-                    rullo ? Icons.pedal_bike : Icons.pedal_bike_outlined,
+                    rullo
+                        ? Icons.pedal_bike_rounded
+                        : Icons.pedal_bike_outlined,
                   ),
                   title: Text(_alChiuso ? 'Rullo e sensori' : 'Sensori bici'),
                   subtitle: Text(
@@ -1952,15 +1957,19 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         ? 'Collegato'
                         : 'Tocca per collegare',
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => mostraSensoreBici(context),
                 ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(battito ? Icons.favorite : Icons.favorite_border),
+                leading: Icon(
+                  battito
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                ),
                 title: const Text('Battito'),
                 subtitle: Text(battito ? 'Collegato' : 'Tocca per collegare'),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => mostraBattito(context),
               ),
             ],
@@ -2190,7 +2199,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             dimensione: 120,
             spessore: 10,
             child: Icon(
-              Icons.emoji_events_outlined,
+              Icons.emoji_events_rounded,
               size: 52,
               color: scheme.onSurface,
             ),
@@ -2364,13 +2373,13 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         // Per chi non ha niente che misuri la seduta: durata, metri, battito…
         OutlinedButton.icon(
           onPressed: () => _salvaEChiudi(aMano: true),
-          icon: const Icon(Icons.edit_note),
+          icon: const Icon(Icons.edit_note_rounded),
           label: const Text('Inserisci i dati a mano'),
         ),
         const SizedBox(height: 8),
         PulsantePrincipale(
           onPressed: () => _salvaEChiudi(feedback: true),
-          icona: Icons.rate_review_outlined,
+          icona: Icons.rate_review_rounded,
           testo: "Com'è andata?",
         ),
         const SizedBox(height: 8),
@@ -2392,22 +2401,22 @@ class _StatoGps extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final (icona, colore, testo) = switch (gps.stato) {
       StatoGps.pronto => (
-        Icons.gps_fixed,
+        Icons.gps_fixed_rounded,
         const Color(0xFF22E07A),
         'Segnale GPS buono · ±${gps.precisione.round()} m',
       ),
       StatoGps.cerca || StatoGps.spento => (
-        Icons.gps_not_fixed,
+        Icons.gps_not_fixed_rounded,
         const Color(0xFFFFC233),
         "Cerco il segnale GPS… meglio all'aperto",
       ),
       StatoGps.permessoNegato => (
-        Icons.gps_off,
+        Icons.gps_off_rounded,
         scheme.error,
         'GPS non permesso: tocca per attivarlo',
       ),
       StatoGps.disattivato => (
-        Icons.gps_off,
+        Icons.gps_off_rounded,
         scheme.error,
         'Posizione spenta: tocca per accenderla',
       ),
@@ -2462,8 +2471,8 @@ class _SceltaPagina extends StatelessWidget {
         spacing: 8,
         children: [
           for (final (k, icona, nome) in [
-            (0, Icons.speed, 'Dati'),
-            (1, Icons.map_outlined, 'Mappa'),
+            (0, Icons.speed_rounded, 'Dati'),
+            (1, Icons.map_rounded, 'Mappa'),
           ])
             Material(
               color: k == pagina
@@ -2758,7 +2767,7 @@ class _DatoPotenza extends StatelessWidget {
         : versoRange(w, o, z);
     final zo = z == null || o == null ? 0 : z.zonaDi((o.$1 + o.$2) ~/ 2);
     return _Dato(
-      icona: Icons.bolt,
+      icona: Icons.bolt_rounded,
       etichetta: n > 0 ? 'Potenza · Z$n' : 'Potenza',
       valore: w?.toString() ?? '–',
       unita: 'W',
@@ -2786,7 +2795,7 @@ class _DatoBattito extends StatelessWidget {
     final bpm = sensoreBattito.bpm;
     final n = bpm == null ? 0 : zone.zonaDi(bpm);
     return _Dato(
-      icona: Icons.favorite,
+      icona: Icons.favorite_rounded,
       etichetta: switch (sensoreBattito.stato) {
         StatoSensore.collegato when n > 0 => 'Battito · Z$n',
         StatoSensore.collegato => 'Battito',
@@ -2825,7 +2834,7 @@ class _AvvisoGiro extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.flag, size: 18, color: colore),
+                Icon(Icons.flag_rounded, size: 18, color: colore),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -3174,7 +3183,7 @@ class _Contatore extends StatelessWidget {
             IconButton.filledTonal(
               tooltip: '$etichetta: meno',
               onPressed: meno,
-              icon: const Icon(Icons.remove),
+              icon: const Icon(Icons.remove_rounded),
             ),
             Expanded(
               child: InkWell(
@@ -3195,7 +3204,7 @@ class _Contatore extends StatelessWidget {
             IconButton.filledTonal(
               tooltip: '$etichetta: più',
               onPressed: piu,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_rounded),
             ),
           ],
         ),
@@ -3255,7 +3264,7 @@ class _PesiSchedaState extends State<_PesiScheda> {
                       });
                       if (mounted) setState(() => _salvati = true);
                     },
-                    icon: const Icon(Icons.save_outlined),
+                    icon: const Icon(Icons.save_rounded),
                     label: const Text('Aggiorna la scheda'),
                   ),
           ],
@@ -3291,7 +3300,7 @@ class _RiepilogoArrampicata extends StatelessWidget {
     if (a == null) {
       return FilledButton.tonalIcon(
         onPressed: apri,
-        icon: const Icon(Icons.terrain),
+        icon: const Icon(Icons.terrain_rounded),
         label: const Text('Segna vie, blocchi e gradi'),
       );
     }
@@ -3309,7 +3318,7 @@ class _RiepilogoArrampicata extends StatelessWidget {
           IconButton(
             tooltip: 'Modifica',
             onPressed: apri,
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.edit_rounded),
           ),
         ],
       ),

@@ -12,11 +12,13 @@ import 'mappa_percorso.dart';
 /// L'icona della curva, come nei navigatori.
 IconData iconaCurva(Curva c) => switch (c.tipo) {
   TipoCurva.leggera =>
-    c.destra ? Icons.turn_slight_right : Icons.turn_slight_left,
-  TipoCurva.normale => c.destra ? Icons.turn_right : Icons.turn_left,
+    c.destra ? Icons.turn_slight_right_rounded : Icons.turn_slight_left_rounded,
+  TipoCurva.normale =>
+    c.destra ? Icons.turn_right_rounded : Icons.turn_left_rounded,
   TipoCurva.stretta =>
-    c.destra ? Icons.turn_sharp_right : Icons.turn_sharp_left,
-  TipoCurva.inversione => c.destra ? Icons.u_turn_right : Icons.u_turn_left,
+    c.destra ? Icons.turn_sharp_right_rounded : Icons.turn_sharp_left_rounded,
+  TipoCurva.inversione =>
+    c.destra ? Icons.u_turn_right_rounded : Icons.u_turn_left_rounded,
 };
 
 /// La mappa durante l'allenamento: segue la posizione e gira nella direzione
@@ -222,7 +224,7 @@ class _Freccia extends StatelessWidget {
       ],
     ),
     child: Icon(
-      ferma ? Icons.gps_not_fixed : Icons.navigation,
+      ferma ? Icons.gps_not_fixed_rounded : Icons.navigation_rounded,
       color: colore,
       size: 26,
     ),
@@ -248,13 +250,13 @@ class BannerGuida extends StatelessWidget {
       bool allarme,
     ) = switch (g) {
       _ when g.arrivato => (
-        Icons.sports_score,
+        Icons.sports_score_rounded,
         'Arrivo',
         'Percorso completato',
         false,
       ),
       _ when g.progresso == null => (
-        Icons.near_me_outlined,
+        Icons.near_me_rounded,
         g.distanza == null ? '…' : fmtMetri(g.distanza!),
         g.distanza == null
             ? 'Cerco la posizione'
@@ -262,7 +264,7 @@ class BannerGuida extends StatelessWidget {
         false,
       ),
       _ when g.fuori => (
-        Icons.wrong_location_outlined,
+        Icons.wrong_location_rounded,
         fmtMetri(g.distanza ?? 0),
         'Fuori percorso: torna sulla traccia',
         true,
@@ -275,7 +277,7 @@ class BannerGuida extends StatelessWidget {
           false,
         ),
         null => (
-          Icons.straight,
+          Icons.straight_rounded,
           fmtMetri(g.metriMancanti ?? 0),
           "Dritto fino all'arrivo",
           false,

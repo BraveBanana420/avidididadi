@@ -151,7 +151,7 @@ class _Pagina extends StatelessWidget {
                 );
               }
             },
-            icona: Icons.share,
+            icona: Icons.share_rounded,
             testo: 'Condividi',
           ),
           const SizedBox(height: 8),
@@ -454,7 +454,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         ] else if (grafica == GraficaCondivisa.foto) ...[
           OutlinedButton.icon(
             onPressed: _scegliFoto,
-            icon: const Icon(Icons.photo_library_outlined),
+            icon: const Icon(Icons.photo_library_rounded),
             label: const Text('Scegli un\'altra foto'),
           ),
           const SizedBox(height: 8),
@@ -484,17 +484,17 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
 }
 
 IconData _iconaGrafica(GraficaCondivisa g) => switch (g) {
-  GraficaCondivisa.classica => Icons.view_agenda_outlined,
-  GraficaCondivisa.mappa => Icons.map_outlined,
-  GraficaCondivisa.poster => Icons.text_fields,
-  GraficaCondivisa.kmPerKm => Icons.format_list_numbered,
-  GraficaCondivisa.profilo => Icons.landscape_outlined,
-  GraficaCondivisa.ripetute => Icons.bar_chart,
-  GraficaCondivisa.esercizi => Icons.checklist,
-  GraficaCondivisa.muscoli => Icons.accessibility_new,
-  GraficaCondivisa.seduta => Icons.terrain_outlined,
-  GraficaCondivisa.progressi => Icons.trending_up,
-  GraficaCondivisa.foto => Icons.photo_outlined,
+  GraficaCondivisa.classica => Icons.view_agenda_rounded,
+  GraficaCondivisa.mappa => Icons.map_rounded,
+  GraficaCondivisa.poster => Icons.text_fields_rounded,
+  GraficaCondivisa.kmPerKm => Icons.format_list_numbered_rounded,
+  GraficaCondivisa.profilo => Icons.landscape_rounded,
+  GraficaCondivisa.ripetute => Icons.bar_chart_rounded,
+  GraficaCondivisa.esercizi => Icons.checklist_rounded,
+  GraficaCondivisa.muscoli => Icons.accessibility_new_rounded,
+  GraficaCondivisa.seduta => Icons.terrain_rounded,
+  GraficaCondivisa.progressi => Icons.trending_up_rounded,
+  GraficaCondivisa.foto => Icons.photo_rounded,
 };
 
 /// Il marchio dell'app in cima alle immagini: "#avidididadi", minuscolo,
@@ -906,7 +906,7 @@ class _Record extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Row(
           children: [
-            Icon(Icons.emoji_events_outlined, color: scheme.primary),
+            Icon(Icons.emoji_events_rounded, color: scheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -1376,7 +1376,7 @@ class ImmagineArrampicata extends StatelessWidget {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(top: 6, right: 10),
-                    child: Icon(Icons.circle, size: 8, color: colore),
+                    child: Icon(Icons.circle_rounded, size: 8, color: colore),
                   ),
                   Expanded(
                     child: Text(
@@ -1901,7 +1901,7 @@ class _CondividiSettimanaState extends State<_CondividiSettimana> {
               onPressed: _indietro < 52
                   ? () => setState(() => _indietro++)
                   : null,
-              icon: const Icon(Icons.chevron_left),
+              icon: const Icon(Icons.chevron_left_rounded),
             ),
             Expanded(
               child: Text(
@@ -1915,7 +1915,7 @@ class _CondividiSettimanaState extends State<_CondividiSettimana> {
               onPressed: _indietro > 0
                   ? () => setState(() => _indietro--)
                   : null,
-              icon: const Icon(Icons.chevron_right),
+              icon: const Icon(Icons.chevron_right_rounded),
             ),
           ],
         ),

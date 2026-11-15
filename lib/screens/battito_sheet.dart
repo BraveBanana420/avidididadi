@@ -20,9 +20,9 @@ Future<void> mostraBattito(BuildContext context) => _mostra(
         "Una fascia cardio o un orologio che trasmette il battito via "
         "Bluetooth. Lo vedi durante l'allenamento; alla fine si salvano media "
         'e massimo.',
-    icona: Icons.favorite,
-    iconaVuota: Icons.favorite_border,
-    iconaTrovato: Icons.monitor_heart_outlined,
+    icona: Icons.favorite_rounded,
+    iconaVuota: Icons.favorite_border_rounded,
+    iconaTrovato: Icons.monitor_heart_rounded,
     dati: () => sensoreBattito.bpm == null ? null : '${sensoreBattito.bpm} bpm',
     aiuto:
         'Garmin: sull\'orologio cerca "Trasmetti frequenza cardiaca" (di '
@@ -45,7 +45,7 @@ Future<void> mostraSensoreBici(BuildContext context) => _mostra(
         'Rulli smart (Tacx, Wahoo, Elite…), misuratore di potenza o sensore '
         'di velocità e cadenza, via Bluetooth. Alla fine si salvano potenza e '
         'cadenza medie.',
-    icona: Icons.pedal_bike,
+    icona: Icons.pedal_bike_rounded,
     iconaVuota: Icons.pedal_bike_outlined,
     iconaTrovato: Icons.pedal_bike_outlined,
     dati: () => [
@@ -186,7 +186,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                   OutlinedButton.icon(
                     onPressed: () =>
                         apriImpostazioniGps(StatoGps.permessoNegato),
-                    icon: const Icon(Icons.settings),
+                    icon: const Icon(Icons.settings_rounded),
                     label: const Text('Apri le impostazioni'),
                   ),
                 ],
@@ -270,7 +270,7 @@ class _FoglioSensoreState extends State<_FoglioSensore> {
                 if (!cerco)
                   OutlinedButton.icon(
                     onPressed: _cerca,
-                    icon: const Icon(Icons.bluetooth_searching),
+                    icon: const Icon(Icons.bluetooth_searching_rounded),
                     label: Text(
                       s.ricordato ? 'Cerca un altro sensore' : 'Cerca di nuovo',
                     ),
@@ -355,7 +355,7 @@ class _CalibraRullo extends StatelessWidget {
           else if (b.faseCalibrazione != FaseCalibrazione.riuscita)
             OutlinedButton.icon(
               onPressed: b.calibra,
-              icon: const Icon(Icons.tune),
+              icon: const Icon(Icons.tune_rounded),
               label: Text(
                 b.faseCalibrazione == FaseCalibrazione.errore
                     ? 'Riprova'

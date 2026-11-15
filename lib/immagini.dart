@@ -113,7 +113,10 @@ class _DueFotogrammiState extends State<_DueFotogrammi> {
                 return ColoredBox(
                   color: scheme.surfaceContainerHighest,
                   child: Center(
-                    child: Icon(Icons.wifi_off, color: scheme.onSurfaceVariant),
+                    child: Icon(
+                      Icons.wifi_off_rounded,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               }
@@ -124,7 +127,10 @@ class _DueFotogrammiState extends State<_DueFotogrammi> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.wifi_off, color: scheme.onSurfaceVariant),
+                        Icon(
+                          Icons.wifi_off_rounded,
+                          color: scheme.onSurfaceVariant,
+                        ),
                         const SizedBox(height: 8),
                         Text(
                           'Immagine non disponibile senza rete',

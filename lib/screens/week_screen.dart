@@ -102,7 +102,7 @@ class WeekScreen extends StatelessWidget {
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => _riporta(context),
-              icon: const Icon(Icons.sync),
+              icon: const Icon(Icons.sync_rounded),
               label: const Text('Porta tutta la settimana nel calendario'),
             ),
             Padding(
@@ -138,7 +138,7 @@ class WeekScreen extends StatelessWidget {
                 ),
                 IconButton(
                   tooltip: 'Aggiungi sessione',
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add_rounded),
                   onPressed: () => _aggiungi(context, g),
                 ),
               ],
@@ -157,7 +157,7 @@ class WeekScreen extends StatelessWidget {
                 onTap: () => _modificaEsistente(context, s),
                 trailing: IconButton(
                   tooltip: 'Elimina',
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const Icon(Icons.delete_outline_rounded),
                   onPressed: () async {
                     final prima = [...state.settimana];
                     state.settimana.remove(s);

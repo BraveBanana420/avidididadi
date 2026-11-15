@@ -85,36 +85,36 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                       ),
                       const SizedBox(height: 24),
                       punto(
-                        Icons.phone_android,
+                        Icons.phone_android_rounded,
                         'I dati restano sul telefono',
                         "Nessun account, nessun server, nessuna pubblicità.",
                       ),
                       punto(
-                        Icons.favorite_outline,
+                        Icons.favorite_outline_rounded,
                         'Health Connect solo in lettura',
                         'Allenamenti, battito, sonno e percorsi delle tue app '
                             '(es. Garmin), solo se lo permetti.',
                       ),
                       punto(
-                        Icons.gps_fixed,
+                        Icons.gps_fixed_rounded,
                         'GPS solo durante corsa e bici',
                         "Mentre ti alleni con l'app, con una notifica fissa. "
                             'Mai in altri momenti.',
                       ),
                       punto(
-                        Icons.map_outlined,
+                        Icons.map_rounded,
                         'Mappe e immagini da internet',
                         'Da OpenFreeMap, Esri (satellite) e GitHub: il percorso non '
                             'viene inviato.',
                       ),
                       punto(
-                        Icons.forum_outlined,
+                        Icons.forum_rounded,
                         'Assistente facoltativo',
                         'Invia un riassunto degli allenamenti al servizio che '
                             'scegli, solo se lo attivi tu.',
                       ),
                       punto(
-                        Icons.health_and_safety_outlined,
+                        Icons.health_and_safety_rounded,
                         'Non è un consiglio medico',
                         'Piani e consigli sono stime: in caso di dubbi o '
                             'problemi di salute, chiedi al medico.',
@@ -125,12 +125,12 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                         children: [
                           OutlinedButton.icon(
                             onPressed: () => _apri(const TerminiScreen()),
-                            icon: const Icon(Icons.gavel_outlined),
+                            icon: const Icon(Icons.gavel_rounded),
                             label: const Text('Termini e condizioni'),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => _apri(const PrivacyScreen()),
-                            icon: const Icon(Icons.privacy_tip_outlined),
+                            icon: const Icon(Icons.privacy_tip_rounded),
                             label: const Text('Informativa privacy'),
                           ),
                         ],
@@ -163,7 +163,7 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                         padding: const EdgeInsets.only(left: 8),
                         child: PulsantePrincipale(
                           onPressed: accetto ? _entra : null,
-                          icona: Icons.arrow_forward,
+                          icona: Icons.arrow_forward_rounded,
                           testo: 'Entra',
                         ),
                       ),

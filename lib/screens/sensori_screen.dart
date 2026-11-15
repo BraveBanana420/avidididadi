@@ -97,7 +97,7 @@ class _SensoriScreenState extends State<SensoriScreen> {
           const SizedBox(height: 12),
           _riga(
             sensoreBattito,
-            Icons.favorite_border,
+            Icons.favorite_border_rounded,
             'Battito',
             'Fascia cardio o orologio che trasmette il battito',
             linea: bici,

@@ -92,7 +92,7 @@ class PercorsiScreen extends StatelessWidget {
             Navigator.pop(context, p.id);
           }
         },
-        icon: const Icon(Icons.upload_file),
+        icon: const Icon(Icons.upload_file_rounded),
         label: const Text('Aggiungi GPX'),
       ),
       body: ListenableBuilder(
@@ -103,7 +103,7 @@ class PercorsiScreen extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 120),
               children: [
-                Icon(Icons.route, size: 56, color: scheme.primary),
+                Icon(Icons.route_rounded, size: 56, color: scheme.primary),
                 const SizedBox(height: 12),
                 Text(
                   'Nessun percorso',
@@ -167,7 +167,7 @@ class _DoveTrovarli extends StatelessWidget {
     child: Theme(
       data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
       child: const ExpansionTile(
-        leading: Icon(Icons.help_outline),
+        leading: Icon(Icons.help_outline_rounded),
         title: Text('Dove trovo un GPX?'),
         childrenPadding: EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
@@ -245,7 +245,7 @@ class _VocePercorso extends StatelessWidget {
                           ? Row(
                               children: [
                                 Icon(
-                                  Icons.offline_pin_outlined,
+                                  Icons.offline_pin_rounded,
                                   size: 14,
                                   color: scheme.primary,
                                 ),
@@ -262,10 +262,10 @@ class _VocePercorso extends StatelessWidget {
                 IconButton(
                   tooltip: 'Vedi il percorso',
                   onPressed: onInfo,
-                  icon: const Icon(Icons.map_outlined),
+                  icon: const Icon(Icons.map_rounded),
                 )
               else
-                const Icon(Icons.chevron_right),
+                const Icon(Icons.chevron_right_rounded),
             ],
           ),
         ),
@@ -363,7 +363,7 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
                 minimum: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 child: PulsantePrincipale(
                   testo: 'Usa questo percorso',
-                  icona: Icons.check,
+                  icona: Icons.check_rounded,
                   onPressed: () => Navigator.pop(context, p.id),
                 ),
               )
@@ -374,12 +374,12 @@ class _PercorsoScreenState extends State<PercorsoScreen> {
             IconButton(
               tooltip: 'Rinomina',
               onPressed: () => _rinomina(p),
-              icon: const Icon(Icons.edit_outlined),
+              icon: const Icon(Icons.edit_rounded),
             ),
             IconButton(
               tooltip: 'Elimina',
               onPressed: () => _elimina(p),
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline_rounded),
             ),
           ],
         ),
@@ -726,7 +726,7 @@ class PercorsoDellaSeduta extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
         child: Row(
           children: [
-            Icon(Icons.route, color: coloreSport(sport)),
+            Icon(Icons.route_rounded, color: coloreSport(sport)),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -751,7 +751,7 @@ class PercorsoDellaSeduta extends StatelessWidget {
               IconButton(
                 tooltip: 'Togli il percorso',
                 onPressed: () => state.assegnaPercorso(giorno, sport, null),
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close_rounded),
               ),
             TextButton(
               onPressed: () => _scegli(context),
@@ -802,19 +802,19 @@ class _MappaOfflineCardState extends State<MappaOfflineCard> {
         final errore = mappeOffline.errori[id];
         final (IconData icona, String titolo, String testo) = avanti != null
             ? (
-                Icons.downloading,
+                Icons.downloading_rounded,
                 'Scarico la mappa… ${(avanti * 100).round()}%',
                 'Puoi usare l\'app intanto.',
               )
             : fatto
             ? (
-                Icons.offline_pin_outlined,
+                Icons.offline_pin_rounded,
                 'Mappa scaricata',
                 'Strade e percorso si vedono anche senza rete (non il '
                     'satellite).',
               )
             : (
-                Icons.cloud_download_outlined,
+                Icons.cloud_download_rounded,
                 'Mappa senza rete',
                 errore ??
                     'Scarica la zona attorno al percorso ($_peso), per '

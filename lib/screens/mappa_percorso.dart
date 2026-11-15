@@ -111,9 +111,9 @@ Future<Map<String, dynamic>?> _scaricaStrade() async {
 
 /// Le icone dei tipi di mappa, nel foglio dei livelli e nei chip.
 const iconeMappe = {
-  TipoMappa.pulse: Icons.auto_awesome_outlined,
-  TipoMappa.strade: Icons.map_outlined,
-  TipoMappa.satellite: Icons.satellite_alt_outlined,
+  TipoMappa.pulse: Icons.auto_awesome_rounded,
+  TipoMappa.strade: Icons.map_rounded,
+  TipoMappa.satellite: Icons.satellite_alt_rounded,
 };
 
 /// Da dove vengono i dati di ogni tipo di mappa: vanno sempre citati.
@@ -149,7 +149,9 @@ class PulsanteLivelli extends StatelessWidget {
                 ListTile(
                   leading: Icon(iconeMappe[t]),
                   title: Text(nomiMappe[t]!),
-                  trailing: t == attuale ? const Icon(Icons.check) : null,
+                  trailing: t == attuale
+                      ? const Icon(Icons.check_rounded)
+                      : null,
                   onTap: () {
                     _scegliTipo(t);
                     Navigator.pop(c);
@@ -169,7 +171,7 @@ class PulsanteLivelli extends StatelessWidget {
         ),
       ),
     ),
-    icon: const Icon(Icons.layers_outlined),
+    icon: const Icon(Icons.layers_rounded),
   );
 }
 
@@ -436,7 +438,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
         children: [
           Row(
             children: [
-              const Icon(Icons.route),
+              const Icon(Icons.route_rounded),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -458,7 +460,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
             children: [
               FilledButton.icon(
                 onPressed: _chiedi,
-                icon: const Icon(Icons.map_outlined),
+                icon: const Icon(Icons.map_rounded),
                 label: const Text('Mostra il percorso'),
               ),
               TextButton(
@@ -467,7 +469,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
               ),
               TextButton.icon(
                 onPressed: _aggiungiGpx,
-                icon: const Icon(Icons.upload_file),
+                icon: const Icon(Icons.upload_file_rounded),
                 label: const Text('Aggiungi GPX'),
               ),
             ],
@@ -512,7 +514,7 @@ class _AnteprimaPercorsoState extends State<AnteprimaPercorso> {
                   tooltip: 'Aggiungi GPX',
                   iconSize: 26,
                   onPressed: _aggiungiGpx,
-                  icon: const Icon(Icons.add_location_alt_outlined),
+                  icon: const Icon(Icons.add_location_alt_rounded),
                 ),
                 Text('GPX', style: t.labelSmall),
               ],

@@ -465,7 +465,7 @@ class RigaPulse extends StatelessWidget {
             if (fine != null)
               fine!
             else if (onTap != null)
-              Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
           ],
         ),
       ),

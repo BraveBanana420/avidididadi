@@ -91,7 +91,7 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.privacy_tip_outlined),
+                    const Icon(Icons.privacy_tip_rounded),
                     const SizedBox(width: 8),
                     Text('Prima di iniziare', style: t.titleSmall),
                   ],
@@ -137,7 +137,7 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
           const SizedBox(height: 8),
           PulsantePrincipale(
             onPressed: consenso ? _collega : null,
-            icona: Icons.link,
+            icona: Icons.link_rounded,
             testo: 'Collega $app',
           ),
           TextButton(
@@ -236,7 +236,7 @@ class PannelloAgente extends StatelessWidget {
         if (state.erroreAgente != null)
           Card(
             child: ListTile(
-              leading: const Icon(Icons.error_outline),
+              leading: const Icon(Icons.error_outline_rounded),
               title: const Text('Risposta non usabile'),
               subtitle: Text(state.erroreAgente!),
             ),
@@ -279,7 +279,7 @@ class PannelloAgente extends StatelessWidget {
               PulsantePrincipale(
                 altezza: 52,
                 onPressed: () => _manda(context, completo: !iniziato),
-                icona: Icons.ios_share,
+                icona: Icons.ios_share_rounded,
                 testo: iniziato ? 'Manda dati aggiornati' : 'Inizia con $_app',
               ),
               Wrap(
@@ -314,7 +314,7 @@ class PannelloAgente extends StatelessWidget {
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _incolla(context),
-                icon: const Icon(Icons.content_paste),
+                icon: const Icon(Icons.content_paste_rounded),
                 label: const Text('Incolla la risposta'),
               ),
             ],
@@ -323,7 +323,7 @@ class PannelloAgente extends StatelessWidget {
         const SizedBox(height: 12),
         Card(
           child: ExpansionTile(
-            leading: const Icon(Icons.lightbulb_outline),
+            leading: const Icon(Icons.lightbulb_outline_rounded),
             title: const Text('Consiglio: le istruzioni una volta sola'),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
@@ -339,7 +339,7 @@ class PannelloAgente extends StatelessWidget {
                   istruzioniAgente(c.codiceEsterno),
                   'Istruzioni copiate.',
                 ),
-                icon: const Icon(Icons.copy),
+                icon: const Icon(Icons.copy_rounded),
                 label: const Text('Copia solo le istruzioni'),
               ),
             ],
@@ -349,7 +349,7 @@ class PannelloAgente extends StatelessWidget {
         Center(
           child: TextButton.icon(
             onPressed: () => _scollega(context),
-            icon: const Icon(Icons.link_off),
+            icon: const Icon(Icons.link_off_rounded),
             label: Text('Scollega $_app'),
           ),
         ),

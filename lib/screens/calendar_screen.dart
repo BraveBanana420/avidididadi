@@ -288,8 +288,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               setState(() => meseAperto = !meseAperto),
                           icon: Icon(
                             meseAperto
-                                ? Icons.expand_less
-                                : Icons.calendar_month,
+                                ? Icons.expand_less_rounded
+                                : Icons.calendar_month_rounded,
                           ),
                           label: Text(
                             meseAperto
@@ -339,7 +339,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             const TitoloSezione('Il tuo piano'),
                             RigaPulse(
                               segno: const IconaQuadrata(
-                                Icons.edit_calendar_outlined,
+                                Icons.edit_calendar_rounded,
                               ),
                               titolo: selezionato == oggi
                                   ? 'Cambia gli allenamenti di oggi'
@@ -350,7 +350,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             ),
                             if (!selezionato.isAfter(oggi))
                               RigaPulse(
-                                segno: const IconaQuadrata(Icons.edit_note),
+                                segno: const IconaQuadrata(
+                                  Icons.edit_note_rounded,
+                                ),
                                 titolo: selezionato == oggi
                                     ? 'Scrivi un\'attività fatta oggi'
                                     : 'Scrivi un\'attività fatta '
@@ -363,7 +365,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             RigaPulse(
                               key: ChiaviTour.settimanaTipo,
                               segno: const IconaQuadrata(
-                                Icons.view_week_outlined,
+                                Icons.view_week_rounded,
                               ),
                               titolo: 'La mia settimana tipo',
                               sottotitolo:
@@ -375,7 +377,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               ),
                             ),
                             RigaPulse(
-                              segno: const IconaQuadrata(Icons.auto_awesome),
+                              segno: const IconaQuadrata(
+                                Icons.auto_awesome_rounded,
+                              ),
                               titolo: 'Allunga il calendario',
                               sottotitolo:
                                   'Ripete la settimana tipo nei prossimi mesi: '
@@ -499,7 +503,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               IconButton(
                 tooltip: 'Mese prima',
                 onPressed: () => _vai(-1),
-                icon: const Icon(Icons.chevron_left),
+                icon: const Icon(Icons.chevron_left_rounded),
               ),
               Expanded(
                 child: Center(child: Text(nomeMese, style: t.titleMedium)),
@@ -507,7 +511,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               IconButton(
                 tooltip: 'Mese dopo',
                 onPressed: () => _vai(1),
-                icon: const Icon(Icons.chevron_right),
+                icon: const Icon(Icons.chevron_right_rounded),
               ),
             ],
           ),
@@ -770,7 +774,11 @@ class _StripSettimana extends StatelessWidget {
                                     : null,
                               ),
                               child: fatto
-                                  ? Icon(Icons.check, size: 20, color: suColore)
+                                  ? Icon(
+                                      Icons.check_rounded,
+                                      size: 20,
+                                      color: suColore,
+                                    )
                                   : Text(
                                       '${d.day}',
                                       style: TextStyle(
@@ -921,7 +929,7 @@ class SchedaGiorno extends StatelessWidget {
                     'puoi fare 20 minuti di mobilità.',
                   ),
                 ),
-                const Icon(Icons.play_arrow),
+                const Icon(Icons.play_arrow_rounded),
               ],
             ),
           ),
@@ -1018,8 +1026,8 @@ class _HeroSeduta extends StatelessWidget {
                               ? "Vedi l'allenamento"
                               : 'Inizia',
                           icona: passi.isEmpty
-                              ? Icons.chevron_right
-                              : Icons.play_arrow,
+                              ? Icons.chevron_right_rounded
+                              : Icons.play_arrow_rounded,
                           gradiente: LinearGradient(colors: [ink, ink]),
                           colore: Colors.white,
                           onPressed: passi.isEmpty
@@ -1052,7 +1060,7 @@ class _HeroSeduta extends StatelessWidget {
                                 width: 60,
                                 height: 60,
                                 child: Icon(
-                                  Icons.format_list_bulleted,
+                                  Icons.format_list_bulleted_rounded,
                                   color: ink,
                                 ),
                               ),
@@ -1104,7 +1112,7 @@ class _Riposo extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const IconaQuadrata(Icons.bedtime_outlined),
+          const IconaQuadrata(Icons.bedtime_rounded),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -1132,7 +1140,7 @@ class _Riposo extends StatelessWidget {
                   TextButton.icon(
                     style: TextButton.styleFrom(padding: EdgeInsets.zero),
                     onPressed: onAggiungi,
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add_rounded),
                     label: const Text('Voglio allenarmi lo stesso'),
                   ),
               ],
@@ -1182,7 +1190,7 @@ class _DaFare extends StatelessWidget {
                     : passi.first.nome,
                 passi: passi,
               ),
-              icon: const Icon(Icons.play_arrow),
+              icon: const Icon(Icons.play_arrow_rounded),
             )
           : null,
     );
@@ -1232,7 +1240,7 @@ class _Fatto extends StatelessWidget {
                     ],
                   ),
                   child: Icon(
-                    Icons.check,
+                    Icons.check_rounded,
                     color: Theme.of(context).colorScheme.surface,
                   ),
                 ),
@@ -1251,7 +1259,7 @@ class _Fatto extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right),
+                const Icon(Icons.chevron_right_rounded),
               ],
             ),
             if (f == null) ...[
@@ -1261,7 +1269,7 @@ class _Fatto extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: () =>
                       apriFeedback(context, state, s.data, s.sport, s),
-                  icon: const Icon(Icons.rate_review_outlined),
+                  icon: const Icon(Icons.rate_review_rounded),
                   label: const Text("Com'è andata?"),
                 ),
               ),
@@ -1359,13 +1367,13 @@ class _GeneraSheetState extends State<GeneraSheet> {
           ),
           OutlinedButton.icon(
             onPressed: _scegliData,
-            icon: const Icon(Icons.event),
+            icon: const Icon(Icons.event_rounded),
             label: Text('Parti da ${dataLunga(inizio)}'),
           ),
           const SizedBox(height: 8),
           FilledButton.icon(
             onPressed: _genera,
-            icon: const Icon(Icons.auto_awesome),
+            icon: const Icon(Icons.auto_awesome_rounded),
             label: const Text('Allunga il calendario'),
           ),
         ],
@@ -1495,7 +1503,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
                   onTap: () => _modifica(i),
                   trailing: IconButton(
                     tooltip: 'Rimuovi',
-                    icon: const Icon(Icons.delete_outline),
+                    icon: const Icon(Icons.delete_outline_rounded),
                     onPressed: () => setState(() => righe.removeAt(i)),
                   ),
                 ),
@@ -1503,7 +1511,7 @@ class _GiornoSheetState extends State<GiornoSheet> {
             const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: _aggiungi,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_rounded),
               label: const Text('Aggiungi attività'),
             ),
             const SizedBox(height: 8),
@@ -1620,7 +1628,7 @@ class PromemoriaPiano extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              Icons.notifications_active_outlined,
+              Icons.notifications_active_rounded,
               color: scheme.onPrimaryContainer,
             ),
             const SizedBox(width: 12),
@@ -1641,7 +1649,7 @@ class PromemoriaPiano extends StatelessWidget {
             IconButton(
               tooltip: 'Più tardi',
               onPressed: state.chiudiPromemoria,
-              icon: Icon(Icons.close, color: scheme.onPrimaryContainer),
+              icon: Icon(Icons.close_rounded, color: scheme.onPrimaryContainer),
             ),
           ],
         ),
@@ -1814,7 +1822,7 @@ class PulsanteLibera extends StatelessWidget {
               child: SizedBox(
                 width: 60,
                 height: 60,
-                child: Icon(Icons.add, size: 32, color: p.suPrimario),
+                child: Icon(Icons.add_rounded, size: 32, color: p.suPrimario),
               ),
             ),
           ),

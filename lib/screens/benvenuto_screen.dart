@@ -110,7 +110,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                     IconButton(
                       tooltip: 'Indietro',
                       onPressed: inCorso ? null : () => _vai(passo - 1),
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back_rounded),
                     ),
                     Expanded(
                       child: ClipRRect(
@@ -256,7 +256,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                         children: [
                           PulsantePrincipale(
                             onPressed: () => _crea(subito: true),
-                            icona: Icons.play_arrow,
+                            icona: Icons.play_arrow_rounded,
                             testo: 'Inizia oggi',
                           ),
                           const SizedBox(height: 4),
@@ -275,8 +275,8 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                             ? _crea
                             : () => _vai(passo + 1),
                         icona: ultimo
-                            ? Icons.auto_awesome
-                            : Icons.arrow_forward,
+                            ? Icons.auto_awesome_rounded
+                            : Icons.arrow_forward_rounded,
                         testo: ultimo
                             ? 'Crea il mio piano'
                             : passo == 2 && sport.isEmpty
@@ -304,7 +304,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
               dimensione: 130,
               spessore: 10,
               child: Icon(
-                Icons.directions_run,
+                Icons.directions_run_rounded,
                 size: 60,
                 color: scheme.onSurface,
               ),
@@ -379,37 +379,37 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
           const SizedBox(height: 8),
           if (orologio == false) ...[
             punto(
-              Icons.gps_fixed,
+              Icons.gps_fixed_rounded,
               'Corsa, camminata e bici le registra il telefono con il GPS, e '
               'ti guida a voce passo passo.',
             ),
             punto(
-              Icons.sentiment_satisfied_alt,
+              Icons.sentiment_satisfied_alt_rounded,
               'Le zone (per esempio "zona 2") seguile a sensazione: in zona 2 '
               'riesci ancora a parlare.',
             ),
             punto(
-              Icons.rate_review_outlined,
+              Icons.rate_review_rounded,
               'Dopo ogni seduta rispondi a "Com\'è andata?": è così che il '
               'piano capisce la fatica e si adatta.',
             ),
             punto(
-              Icons.pool,
+              Icons.pool_rounded,
               'Il nuoto, senza orologio, lo segni a mano dopo la vasca.',
             ),
             punto(
-              Icons.bedtime_outlined,
+              Icons.bedtime_rounded,
               'Energia e sonno restano vuoti: servono i dati di un orologio.',
             ),
           ] else if (orologio == true) ...[
             punto(
-              Icons.link,
+              Icons.link_rounded,
               'Dopo collegalo da Profilo → Dati e collegamenti: con Health '
               'Connect, o con intervals.icu per Garmin e gli altri. Le '
               'attività arrivano da sole, con battito e sonno.',
             ),
             punto(
-              Icons.bolt,
+              Icons.bolt_rounded,
               'Hai un rullo smart? Collegalo durante l\'allenamento: l\'app '
               'gli manda i watt di ogni passo.',
             ),
@@ -459,7 +459,7 @@ class _BenvenutoScreenState extends State<BenvenutoScreen> {
                         ? Theme.of(context).colorScheme.surfaceContainerHighest
                         : coloreSport(s.sport).withValues(alpha: 0.18),
                     child: Icon(
-                      s == null ? Icons.bedtime_outlined : iconaSport(s.sport),
+                      s == null ? Icons.bedtime_rounded : iconaSport(s.sport),
                       color: s == null ? null : coloreSport(s.sport),
                     ),
                   ),
@@ -532,7 +532,7 @@ class _Scelta extends StatelessWidget {
                     ),
                   ),
                   Icon(
-                    scelta ? Icons.check_circle : Icons.circle_outlined,
+                    scelta ? Icons.check_circle_rounded : Icons.circle_outlined,
                     color: scelta ? scheme.primary : scheme.outline,
                     size: 28,
                   ),
@@ -617,7 +617,7 @@ class _TesseraSport extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final p = Pulse.di(context);
     final segno = Icon(
-      scelta ? Icons.check_circle : Icons.circle_outlined,
+      scelta ? Icons.check_circle_rounded : Icons.circle_outlined,
       size: 26,
       color: scelta ? scheme.primary : scheme.outline,
     );

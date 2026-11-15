@@ -99,7 +99,7 @@ class SchedeScreen extends StatelessWidget {
               const SizedBox(height: 16),
               PulsantePrincipale(
                 onPressed: () => _nuova(context),
-                icona: Icons.add,
+                icona: Icons.add_rounded,
                 testo: 'Nuova scheda',
               ),
               if (inCorso.isNotEmpty) ...[
@@ -400,7 +400,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
               IconButton(
                 tooltip: 'Elimina',
                 onPressed: _elimina,
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline_rounded),
               ),
           ],
         ),
@@ -444,7 +444,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 Expanded(child: Text(descriviValidita(s), style: t.bodyMedium)),
                 TextButton.icon(
                   onPressed: _scegliInizio,
-                  icon: const Icon(Icons.event_outlined),
+                  icon: const Icon(Icons.event_rounded),
                   label: const Text('Inizio'),
                 ),
               ],
@@ -476,7 +476,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
                   onPressed: () => _modificaSettimana(senzaForza),
-                  icon: const Icon(Icons.edit_calendar_outlined),
+                  icon: const Icon(Icons.edit_calendar_rounded),
                   label: const Text('Modifica settimana'),
                 ),
               ),
@@ -509,7 +509,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
                   ],
                 ),
               ),
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_rounded),
               label: Text(
                 _forza ? 'Aggiungi un giorno' : 'Aggiungi una seduta',
               ),
@@ -517,7 +517,7 @@ class _SchedaScreenState extends State<SchedaScreen> {
             const SizedBox(height: 24),
             PulsantePrincipale(
               onPressed: _salva,
-              icona: Icons.check,
+              icona: Icons.check_rounded,
               testo: 'Salva la scheda',
             ),
           ],
@@ -639,7 +639,7 @@ class _GiornoCardState extends State<_GiornoCard> {
                 IconButton(
                   tooltip: 'Togli questo giorno',
                   onPressed: widget.elimina,
-                  icon: const Icon(Icons.close),
+                  icon: const Icon(Icons.close_rounded),
                 ),
             ],
           ),
@@ -739,7 +739,7 @@ class _GiornoCardState extends State<_GiornoCard> {
           const SizedBox(height: 4),
           TextButton.icon(
             onPressed: _aggiungi,
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_rounded),
             label: Text(_forza ? 'Aggiungi esercizio' : 'Aggiungi un passo'),
           ),
         ],
@@ -785,7 +785,7 @@ Future<EsercizioScheda?> modificaEsercizio(
                   IconButton.filledTonal(
                     tooltip: 'Una serie in meno',
                     onPressed: serie > 1 ? () => aggiorna(() => serie--) : null,
-                    icon: const Icon(Icons.remove),
+                    icon: const Icon(Icons.remove_rounded),
                   ),
                   SizedBox(
                     width: 44,
@@ -800,7 +800,7 @@ Future<EsercizioScheda?> modificaEsercizio(
                     onPressed: serie < 20
                         ? () => aggiorna(() => serie++)
                         : null,
-                    icon: const Icon(Icons.add),
+                    icon: const Icon(Icons.add_rounded),
                   ),
                 ],
               ),
@@ -853,7 +853,7 @@ Future<EsercizioScheda?> modificaEsercizio(
                     note: note.text.trim(),
                   ),
                 ),
-                icona: Icons.check,
+                icona: Icons.check_rounded,
                 testo: 'Fatto',
               ),
             ],
@@ -928,7 +928,7 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
             child: TextField(
               autofocus: false,
               decoration: const InputDecoration(
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(Icons.search_rounded),
                 hintText: 'Cerca (es. lat, panca, squat)',
               ),
               onChanged: (v) => setState(() => _cerca = v),
@@ -948,7 +948,7 @@ class _SceltaEsercizioScreenState extends State<SceltaEsercizioScreen> {
               child: ListView(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.edit_outlined),
+                    leading: const Icon(Icons.edit_rounded),
                     title: const Text('Non c\'è? Scrivilo a mano'),
                     onTap: _aMano,
                   ),
@@ -1060,7 +1060,7 @@ Future<EsercizioScheda?> modificaPasso(
                       onPressed: volte > 1
                           ? () => aggiorna(() => volte--)
                           : null,
-                      icon: const Icon(Icons.remove),
+                      icon: const Icon(Icons.remove_rounded),
                     ),
                     SizedBox(
                       width: 44,
@@ -1075,7 +1075,7 @@ Future<EsercizioScheda?> modificaPasso(
                       onPressed: volte < 50
                           ? () => aggiorna(() => volte++)
                           : null,
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.add_rounded),
                     ),
                   ],
                 ),
@@ -1084,12 +1084,12 @@ Future<EsercizioScheda?> modificaPasso(
                     ButtonSegment(
                       value: false,
                       label: Text('A tempo'),
-                      icon: Icon(Icons.timer_outlined),
+                      icon: Icon(Icons.timer_rounded),
                     ),
                     ButtonSegment(
                       value: true,
                       label: Text('A distanza'),
-                      icon: Icon(Icons.straighten),
+                      icon: Icon(Icons.straighten_rounded),
                     ),
                   ],
                   selected: {aDistanza},
@@ -1231,7 +1231,7 @@ Future<EsercizioScheda?> modificaPasso(
                       ),
                     );
                   },
-                  icona: Icons.check,
+                  icona: Icons.check_rounded,
                   testo: 'Fatto',
                 ),
               ],

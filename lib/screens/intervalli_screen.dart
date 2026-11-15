@@ -103,7 +103,7 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
                     dense: i.recupero,
                     leading: Icon(
                       i.recupero
-                          ? Icons.pause_circle_outline
+                          ? Icons.pause_circle_outline_rounded
                           : iconaSport(s.sport),
                       color: i.recupero
                           ? scheme.onSurfaceVariant
@@ -119,7 +119,7 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
                     subtitle: i.recupero
                         ? null
                         : Text(rigaIntervallo(i, s.sport)),
-                    trailing: const Icon(Icons.edit_outlined, size: 18),
+                    trailing: const Icon(Icons.edit_rounded, size: 18),
                     onTap: () => _modifica(n),
                   );
                 },
@@ -133,19 +133,19 @@ class _IntervalliScreenState extends State<IntervalliScreen> {
               spacing: 12,
               children: [
                 OutlinedButton.icon(
-                  icon: const Icon(Icons.add),
+                  icon: const Icon(Icons.add_rounded),
                   label: const Text('Aggiungi un tratto'),
                   onPressed: _aggiungi,
                 ),
                 if (modificati)
                   TextButton.icon(
-                    icon: const Icon(Icons.undo),
+                    icon: const Icon(Icons.undo_rounded),
                     label: const Text("Torna a quelli dell'orologio"),
                     onPressed: _originali,
                   ),
                 PulsantePrincipale(
                   onPressed: _salva,
-                  icona: Icons.check,
+                  icona: Icons.check_rounded,
                   testo: 'Salva',
                 ),
               ],
@@ -230,12 +230,12 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
                 segments: const [
                   ButtonSegment(
                     value: false,
-                    icon: Icon(Icons.play_circle_outline),
+                    icon: Icon(Icons.play_circle_outline_rounded),
                     label: Text('Lavoro'),
                   ),
                   ButtonSegment(
                     value: true,
-                    icon: Icon(Icons.pause_circle_outline),
+                    icon: Icon(Icons.pause_circle_outline_rounded),
                     label: Text('Recupero'),
                   ),
                 ],
@@ -285,7 +285,7 @@ class _FoglioTrattoState extends State<_FoglioTratto> {
               FilledButton(onPressed: _conferma, child: const Text('Fatto')),
               if (i != null)
                 TextButton.icon(
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const Icon(Icons.delete_outline_rounded),
                   label: const Text('Togli questo tratto'),
                   onPressed: () => Navigator.pop(context, false),
                 ),

@@ -212,7 +212,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.circle, size: 10, color: coloreSport(s)),
+                        Icon(
+                          Icons.circle_rounded,
+                          size: 10,
+                          color: coloreSport(s),
+                        ),
                         const SizedBox(width: 4),
                         Text(s),
                       ],
@@ -302,7 +306,7 @@ class _TesseraSport extends StatelessWidget {
                 child: Icon(iconaSport(sport), color: c),
               ),
               const Spacer(),
-              const Icon(Icons.chevron_right),
+              const Icon(Icons.chevron_right_rounded),
             ],
           ),
           const SizedBox(height: 10),
@@ -455,7 +459,7 @@ class _RiassuntoState extends State<_Riassunto> {
             IconButton(
               tooltip: 'Condividi la settimana',
               onPressed: w.condividi,
-              icon: const Icon(Icons.share_outlined),
+              icon: const Icon(Icons.share_rounded),
             ),
           ],
         ),
@@ -474,7 +478,9 @@ class _RiassuntoState extends State<_Riassunto> {
         TextButton.icon(
           style: TextButton.styleFrom(padding: EdgeInsets.zero),
           onPressed: () => setState(() => dettagli = !dettagli),
-          icon: Icon(dettagli ? Icons.expand_less : Icons.expand_more),
+          icon: Icon(
+            dettagli ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+          ),
           label: const Text('Come lo calcolo'),
         ),
         AnimatedSize(

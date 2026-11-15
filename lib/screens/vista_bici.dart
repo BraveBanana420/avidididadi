@@ -211,7 +211,7 @@ class _Principali extends StatelessWidget {
         children: [
           Expanded(
             child: _Grande(
-              icona: Icons.bolt,
+              icona: Icons.bolt_rounded,
               etichetta: zw > 0 ? 'Potenza · Z$zw' : 'Potenza',
               valore: d.watt?.toString() ?? '–',
               unita: 'W',
@@ -222,7 +222,7 @@ class _Principali extends StatelessWidget {
           ),
           Expanded(
             child: _Grande(
-              icona: Icons.favorite,
+              icona: Icons.favorite_rounded,
               etichetta: zb > 0 ? 'Battito · Z$zb' : 'Battito',
               valore: d.bpm?.toString() ?? '–',
               unita: 'bpm',
@@ -597,7 +597,7 @@ class _CollegaSensori extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(Icons.pedal_bike, size: 20, color: scheme.primary),
+          Icon(Icons.pedal_bike_rounded, size: 20, color: scheme.primary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
@@ -606,7 +606,7 @@ class _CollegaSensori extends StatelessWidget {
               style: t.bodySmall,
             ),
           ),
-          Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+          Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
         ],
       ),
     );
@@ -826,7 +826,7 @@ class ControlloErg extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(14, 4, 6, 4),
         child: Row(
           children: [
-            Icon(Icons.tune, size: 18, color: scheme.primary),
+            Icon(Icons.tune_rounded, size: 18, color: scheme.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -856,14 +856,14 @@ class ControlloErg extends StatelessWidget {
                 onPressed: scala > 0.71
                     ? () => scalaCambia(((scala - 0.05) * 100).round() / 100)
                     : null,
-                icon: const Icon(Icons.remove),
+                icon: const Icon(Icons.remove_rounded),
               ),
               IconButton(
                 tooltip: '5% in più',
                 onPressed: scala < 1.29
                     ? () => scalaCambia(((scala + 0.05) * 100).round() / 100)
                     : null,
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_rounded),
               ),
             ],
             Switch(value: acceso, onChanged: cambia),

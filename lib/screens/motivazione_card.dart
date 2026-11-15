@@ -10,9 +10,9 @@ class Motivazione extends StatelessWidget {
   const Motivazione({super.key, required this.state});
 
   static const _icone = {
-    TipoSpinta.fila: Icons.local_fire_department_outlined,
-    TipoSpinta.traguardo: Icons.flag_outlined,
-    TipoSpinta.record: Icons.emoji_events_outlined,
+    TipoSpinta.fila: Icons.local_fire_department_rounded,
+    TipoSpinta.traguardo: Icons.flag_rounded,
+    TipoSpinta.record: Icons.emoji_events_rounded,
   };
 
   @override

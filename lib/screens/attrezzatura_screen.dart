@@ -161,7 +161,7 @@ class AttrezzaturaScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.edit_outlined, size: 16),
+                              const Icon(Icons.edit_rounded, size: 16),
                             ],
                           ),
                         )

@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       context: context,
       barrierDismissible: false,
       builder: (c) => AlertDialog(
-        icon: const Icon(Icons.restore),
+        icon: const Icon(Icons.restore_rounded),
         title: const Text('Allenamento interrotto'),
         content: Text(
           "L'app si era chiusa durante l'allenamento: ${r.riassunto}. "
@@ -277,10 +277,10 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         chiavi: ChiaviTour.voci,
         attiva: tab,
         voci: const [
-          VoceBarra(Icons.today_outlined, 'Oggi'),
-          VoceBarra(Icons.insights_outlined, 'Progressi'),
-          VoceBarra(Icons.forum_outlined, 'Coach'),
-          VoceBarra(Icons.person_outline, 'Profilo'),
+          VoceBarra(Icons.today_rounded, 'Oggi'),
+          VoceBarra(Icons.insights_rounded, 'Progressi'),
+          VoceBarra(Icons.forum_rounded, 'Coach'),
+          VoceBarra(Icons.person_outline_rounded, 'Profilo'),
         ],
         onTocca: (i) {
           // Animazione solo verso la sezione accanto, altrimenti salto diretto.

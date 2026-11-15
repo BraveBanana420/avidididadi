@@ -352,7 +352,7 @@ class _MascheraState extends State<_Maschera>
                   IconButton(
                     tooltip: 'Indietro',
                     onPressed: _indietro,
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_rounded),
                   ),
                 FilledButton(
                   onPressed: _avanti,

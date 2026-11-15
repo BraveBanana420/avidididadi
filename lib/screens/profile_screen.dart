@@ -58,7 +58,7 @@ class ProfileScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
+              leading: const Icon(Icons.photo_library_rounded),
               title: const Text('Scegli dalla galleria'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -66,7 +66,7 @@ class ProfileScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
+              leading: const Icon(Icons.photo_camera_rounded),
               title: const Text('Scatta una foto'),
               onTap: () {
                 Navigator.pop(ctx);
@@ -75,7 +75,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             if (state.fileFoto != null)
               ListTile(
-                leading: const Icon(Icons.delete_outline),
+                leading: const Icon(Icons.delete_outline_rounded),
                 title: const Text('Rimuovi foto'),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -189,7 +189,7 @@ class ProfileScreen extends StatelessWidget {
                               child: foto != null
                                   ? null
                                   : p.iniziali.isEmpty
-                                  ? const Icon(Icons.person, size: 40)
+                                  ? const Icon(Icons.person_rounded, size: 40)
                                   : Text(p.iniziali, style: t.headlineSmall),
                             ),
                           ),
@@ -200,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
                               radius: 14,
                               backgroundColor: scheme.primary,
                               child: Icon(
-                                Icons.photo_camera,
+                                Icons.photo_camera_rounded,
                                 size: 15,
                                 color: scheme.onPrimary,
                               ),
@@ -231,7 +231,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                             onPressed: () =>
                                 apri(DatiPersonaliScreen(state: state)),
-                            icon: const Icon(Icons.edit_outlined, size: 18),
+                            icon: const Icon(Icons.edit_rounded, size: 18),
                             label: Text(
                               datiPersonali.isEmpty
                                   ? 'Inserisci i tuoi dati'
@@ -247,7 +247,7 @@ class ProfileScreen extends StatelessWidget {
                 Column(
                   children: [
                     voce(
-                      Icons.flag_outlined,
+                      Icons.flag_rounded,
                       'Il mio obiettivo',
                       o == null
                           ? 'Nessuna gara: ti alleni per stare in forma'
@@ -255,7 +255,7 @@ class ProfileScreen extends StatelessWidget {
                       ObiettivoScreen(state: state),
                     ),
                     voce(
-                      Icons.tune,
+                      Icons.tune_rounded,
                       'Le mie attività',
                       state.attivitaScelte.join(', '),
                       AttivitaScreen(state: state),
@@ -265,7 +265,7 @@ class ProfileScreen extends StatelessWidget {
                       key: ChiaviTour.prepara,
                       children: [
                         voce(
-                          Icons.auto_awesome,
+                          Icons.auto_awesome_rounded,
                           'Prepara le sedute',
                           p.obiettivo.isEmpty && p.sportGenerati.isEmpty
                               ? "Scegli gli sport: l'app scrive gli allenamenti passo passo"
@@ -278,7 +278,7 @@ class ProfileScreen extends StatelessWidget {
                           evidenza: true,
                         ),
                         voce(
-                          Icons.assignment_outlined,
+                          Icons.assignment_rounded,
                           'Le mie schede',
                           state.schedeAttive.isEmpty
                               ? "Le schede del personal trainer o dell'allenatore"
@@ -288,7 +288,7 @@ class ProfileScreen extends StatelessWidget {
                       ],
                     ),
                     voce(
-                      Icons.fitness_center,
+                      Icons.fitness_center_rounded,
                       'La mia attrezzatura',
                       state.attrezzatura.isEmpty
                           ? 'Solo corpo libero'
@@ -298,7 +298,7 @@ class ProfileScreen extends StatelessWidget {
                       AttrezzaturaScreen(state: state),
                     ),
                     voce(
-                      Icons.menu_book_outlined,
+                      Icons.menu_book_rounded,
                       'Esercizi',
                       'Come si fanno, con immagini e muscoli usati',
                       CatalogoScreen(state: state),
@@ -306,7 +306,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     if (p.modoAvanzato)
                       voce(
-                        Icons.monitor_heart_outlined,
+                        Icons.monitor_heart_rounded,
                         'Le mie zone',
                         'Quanto spingere: battiti al minuto e watt in bici',
                         ZoneScreen(state: state),
@@ -347,7 +347,7 @@ class ProfileScreen extends StatelessWidget {
                 Column(
                   children: [
                     RigaPulse(
-                      segno: const IconaQuadrata(Icons.dark_mode_outlined),
+                      segno: const IconaQuadrata(Icons.dark_mode_rounded),
                       titolo: 'Tema scuro',
                       sottotitolo: 'Fondo grafite oppure bianco',
                       onTap: cambiaTema,
@@ -357,7 +357,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     RigaPulse(
-                      segno: const IconaQuadrata(Icons.auto_awesome_outlined),
+                      segno: const IconaQuadrata(Icons.auto_awesome_rounded),
                       titolo: 'Versione neon',
                       sottotitolo:
                           'Rosa, verde acqua e azzurro al posto del rosso',
@@ -368,13 +368,13 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     voce(
-                      Icons.bluetooth,
+                      Icons.bluetooth_rounded,
                       'I miei sensori',
                       'Fascia cardio, rullo e sensori della bici',
                       SensoriScreen(state: state),
                     ),
                     RigaPulse(
-                      segno: const IconaQuadrata(Icons.speed),
+                      segno: const IconaQuadrata(Icons.speed_rounded),
                       titolo: 'Funzioni avanzate',
                       sottotitolo: 'Zone, watt, sensori Bluetooth, rullo e intervals.icu',
                       onTap: () => state.impostaAvanzata(!p.modoAvanzato),
@@ -384,26 +384,26 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     voce(
-                      Icons.directions_run,
+                      Icons.directions_run_rounded,
                       "Durante l'allenamento",
                       'Voce, bip, pausa automatica e passo medio',
                       const OpzioniAllenamentoScreen(),
                     ),
                     if (state.attivitaScelta('Arrampicata'))
                       voce(
-                        Icons.terrain,
+                        Icons.terrain_rounded,
                         'Allenamenti di arrampicata',
                         'I tuoi allenamenti: creali, falli o mettili nel piano',
                         AllenamentiArrampicataScreen(state: state),
                       ),
                     voce(
-                      Icons.route,
+                      Icons.route_rounded,
                       'I miei percorsi',
                       'GPX da seguire con mappa e indicazioni a voce',
                       PercorsiScreen(state: state),
                     ),
                     voce(
-                      Icons.sync,
+                      Icons.sync_rounded,
                       'Dati e collegamenti',
                       'Orologio e app, backup dei dati',
                       DatiCollegamentiScreen(state: state),
@@ -411,19 +411,19 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     // Il giro guidato, vicino agli altri aiuti.
                     RigaPulse(
-                      segno: const IconaQuadrata(Icons.help_outline),
+                      segno: const IconaQuadrata(Icons.help_outline_rounded),
                       titolo: "Giro guidato dell'app",
                       sottotitolo: 'Le 10 funzioni principali, una alla volta',
                       onTap: () => avviaTour(context),
                     ),
                     voce(
-                      Icons.school_outlined,
+                      Icons.school_rounded,
                       "Le parole dell'allenamento",
                       'Zone, carico, fartlek… spiegati semplici',
                       const GlossarioScreen(),
                     ),
                     RigaPulse(
-                      segno: const IconaQuadrata(Icons.restart_alt),
+                      segno: const IconaQuadrata(Icons.restart_alt_rounded),
                       titolo: 'Configurazione guidata',
                       sottotitolo: 'Rifai il piano rispondendo a poche domande',
                       linea: false,

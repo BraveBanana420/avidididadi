@@ -13,12 +13,12 @@ import 'esecuzione_screen.dart';
 // ora, aggiungi al piano) e builder per crearli o cambiarli a mano.
 
 IconData iconaTipoArrampicata(String tipo) => switch (tipo) {
-  'trave' => Icons.horizontal_rule,
-  'boulder' => Icons.landscape_outlined,
-  'circuito' => Icons.loop,
-  'campus' => Icons.stairs_outlined,
-  'vie' => Icons.terrain,
-  _ => Icons.more_horiz,
+  'trave' => Icons.horizontal_rule_rounded,
+  'boulder' => Icons.landscape_rounded,
+  'circuito' => Icons.loop_rounded,
+  'campus' => Icons.stairs_rounded,
+  'vie' => Icons.terrain_rounded,
+  _ => Icons.more_horiz_rounded,
 };
 
 /// Elenco degli allenamenti, come schede da riusare.
@@ -38,7 +38,7 @@ class AllenamentiArrampicataScreen extends StatelessWidget {
             builder: (_) => ModificaArrampicataScreen(state: state),
           ),
         ),
-        icon: const Icon(Icons.add),
+        icon: const Icon(Icons.add_rounded),
         label: const Text('Nuovo'),
       ),
       body: ListenableBuilder(
@@ -157,7 +157,7 @@ class _Scheda extends StatelessWidget {
                           ),
                         const Spacer(),
                         Icon(
-                          Icons.schedule,
+                          Icons.schedule_rounded,
                           size: 16,
                           color: scheme.onSurfaceVariant,
                         ),
@@ -264,12 +264,12 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                         ModificaArrampicataScreen(state: state, allenamento: a),
                   ),
                 ),
-                icon: const Icon(Icons.edit_outlined),
+                icon: const Icon(Icons.edit_rounded),
               ),
               IconButton(
                 tooltip: 'Elimina',
                 onPressed: () => _elimina(context, a),
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline_rounded),
               ),
             ],
           ),
@@ -289,7 +289,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                       visualDensity: VisualDensity.compact,
                     ),
                   Chip(
-                    avatar: const Icon(Icons.schedule, size: 16),
+                    avatar: const Icon(Icons.schedule_rounded, size: 16),
                     label: Text('${a.minuti} min'),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -313,7 +313,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                         passi: a.passi('libera'),
                         libera: true,
                       ),
-                      icona: Icons.play_arrow,
+                      icona: Icons.play_arrow_rounded,
                       testo: 'Inizia ora',
                     ),
                   ),
@@ -322,7 +322,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _aggiungi(context, a),
-                icon: const Icon(Icons.event_available),
+                icon: const Icon(Icons.event_available_rounded),
                 label: const Text('Aggiungi al piano'),
               ),
               const SizedBox(height: 20),
@@ -352,7 +352,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.edit_note, color: scheme.primary),
+                    Icon(Icons.edit_note_rounded, color: scheme.primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -558,14 +558,14 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
                           final x = _esercizi.removeAt(k);
                           _esercizi.insert(k - 1, x);
                         }),
-                        icon: const Icon(Icons.arrow_upward),
+                        icon: const Icon(Icons.arrow_upward_rounded),
                       ),
                     IconButton(
                       tooltip: 'Togli',
                       onPressed: () => setState(
                         () => _esercizi = [..._esercizi]..removeAt(k),
                       ),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
@@ -573,7 +573,7 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
             ),
           OutlinedButton.icon(
             onPressed: () => _esercizio(),
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add_rounded),
             label: const Text('Aggiungi un esercizio'),
           ),
           if (_errore != null) ...[

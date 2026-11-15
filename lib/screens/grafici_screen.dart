@@ -473,7 +473,7 @@ class _SogliaDaCorsa extends StatelessWidget {
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: () => state.impostaFtpCorsa(soglia),
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(Icons.check_rounded),
                   label: const Text('Usala come FTP di corsa'),
                 ),
               ],

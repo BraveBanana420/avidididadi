@@ -61,7 +61,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
                   child: TextField(
                     decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: Icon(Icons.search_rounded),
                       hintText: 'Cerca per nome o muscolo',
                     ),
                     onChanged: (v) => setState(() => cerca = v),
@@ -131,7 +131,7 @@ class _CatalogoScreenState extends State<CatalogoScreen> {
                               ),
                               trailing: IconButton(
                                 tooltip: 'Immagini e istruzioni',
-                                icon: const Icon(Icons.chevron_right),
+                                icon: const Icon(Icons.chevron_right_rounded),
                                 onPressed: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => EsercizioScreen(
@@ -187,7 +187,7 @@ class EsercizioScreen extends StatelessWidget {
               Chip(label: Text(maiuscola(e.livello))),
               Chip(label: Text(nomiSchemi[e.schema] ?? e.schema)),
               Chip(
-                avatar: const Icon(Icons.fitness_center, size: 18),
+                avatar: const Icon(Icons.fitness_center_rounded, size: 18),
                 label: Text(e.descrizioneAttrezzi),
               ),
             ],

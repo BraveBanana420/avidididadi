@@ -26,25 +26,25 @@ IconData iconaSport(String sport) {
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return Icons.fitness_center;
+      return Icons.fitness_center_rounded;
     case 'corsa':
-      return Icons.directions_run;
+      return Icons.directions_run_rounded;
     case 'nuoto':
-      return Icons.pool;
+      return Icons.pool_rounded;
     case 'bici':
-      return Icons.directions_bike;
+      return Icons.directions_bike_rounded;
     case 'mobilità':
-      return Icons.self_improvement;
+      return Icons.self_improvement_rounded;
     case 'camminata':
-      return Icons.directions_walk;
+      return Icons.directions_walk_rounded;
     case 'arrampicata':
-      return Icons.terrain;
+      return Icons.terrain_rounded;
     case 'attività libera':
-      return Icons.bolt;
+      return Icons.bolt_rounded;
     case 'riposo':
-      return Icons.bedtime_outlined;
+      return Icons.bedtime_rounded;
     default:
-      return Icons.sports;
+      return Icons.sports_rounded;
   }
 }
 
@@ -175,7 +175,9 @@ class SessioneCard extends StatelessWidget {
               ? '${riga.fascia}, ${riga.durataMin} min'
               : riga.fascia,
         ),
-        trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+        trailing: onTap == null
+            ? null
+            : const Icon(Icons.chevron_right_rounded),
       ),
     );
   }
@@ -206,7 +208,7 @@ class SessioneSvoltaTile extends StatelessWidget {
           backgroundColor: c,
           // La spunta ha il colore del fondo del tema, su ogni sport.
           child: Icon(
-            Icons.check,
+            Icons.check_rounded,
             color: Theme.of(context).colorScheme.surface,
           ),
         ),

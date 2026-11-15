@@ -36,7 +36,7 @@ class AnimazioneWebp extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     Widget errore(BuildContext c, Object e, StackTrace? s) => Center(
-      child: Icon(Icons.broken_image_outlined, color: scheme.onSurfaceVariant),
+      child: Icon(Icons.broken_image_rounded, color: scheme.onSurfaceVariant),
     );
     return AspectRatio(
       aspectRatio: 2,

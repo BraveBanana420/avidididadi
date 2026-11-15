@@ -49,7 +49,11 @@ class PulsanteStorico extends StatelessWidget {
             width: 40,
             height: 40,
             child: pesi.length < 2
-                ? Icon(Icons.show_chart, size: 22, color: scheme.primary)
+                ? Icon(
+                    Icons.show_chart_rounded,
+                    size: 22,
+                    color: scheme.primary,
+                  )
                 : Padding(
                     padding: const EdgeInsets.all(10),
                     child: CustomPaint(

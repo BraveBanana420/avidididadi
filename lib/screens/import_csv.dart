@@ -76,7 +76,7 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
-        leading: const Icon(Icons.tune),
+        leading: const Icon(Icons.tune_rounded),
         title: const Text('Opzioni avanzate'),
         subtitle: const Text('Import manuale da CSV, senza sincronizzazione'),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -101,12 +101,12 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
             children: [
               OutlinedButton.icon(
                 onPressed: _scaricaModello,
-                icon: const Icon(Icons.download),
+                icon: const Icon(Icons.download_rounded),
                 label: const Text('Scarica modello CSV'),
               ),
               FilledButton.tonalIcon(
                 onPressed: _importa,
-                icon: const Icon(Icons.upload_file),
+                icon: const Icon(Icons.upload_file_rounded),
                 label: const Text('Importa CSV'),
               ),
             ],

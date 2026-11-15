@@ -188,7 +188,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           padding: const EdgeInsets.only(bottom: 12),
           child: Row(
             children: [
-              const Icon(Icons.swap_horiz, size: 18),
+              const Icon(Icons.swap_horiz_rounded, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -214,8 +214,8 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
           child: ListTile(
             leading: Icon(
               f == null
-                  ? Icons.rate_review_outlined
-                  : Icons.check_circle_outline,
+                  ? Icons.rate_review_rounded
+                  : Icons.check_circle_outline_rounded,
             ),
             title: Text(f == null ? "Com'è andata?" : 'Fatica ${f.fatica}/10'),
             subtitle: Text(
@@ -232,7 +232,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             trailing: f == null
                 ? const Text('Rispondi')
                 : const Icon(
-                    Icons.edit_outlined,
+                    Icons.edit_rounded,
                     size: 20,
                     semanticLabel: 'Modifica',
                   ),
@@ -274,7 +274,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                 ),
               ),
             ),
-            icon: const Icon(Icons.edit_note),
+            icon: const Icon(Icons.edit_note_rounded),
             label: const Text("L'ho già fatta: scrivi i dati"),
           ),
         ),
@@ -400,7 +400,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             Expanded(child: testo),
                             IconButton(
                               tooltip: 'Immagini e istruzioni',
-                              icon: const Icon(Icons.chevron_right),
+                              icon: const Icon(Icons.chevron_right_rounded),
                               onPressed: dettaglio,
                             ),
                           ],
@@ -437,7 +437,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
               ),
               child: PulsantePrincipale(
                 testo: 'Inizia allenamento',
-                icona: Icons.play_arrow,
+                icona: Icons.play_arrow_rounded,
                 onPressed: () => avviaAllenamento(
                   context,
                   state,
@@ -502,7 +502,7 @@ class _SpiegazioneState extends State<_Spiegazione> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.lightbulb_outline, color: scheme.primary),
+              Icon(Icons.lightbulb_outline_rounded, color: scheme.primary),
               const SizedBox(width: 12),
               Expanded(
                 child: AnimatedSize(
@@ -520,7 +520,9 @@ class _SpiegazioneState extends State<_Spiegazione> {
                   ),
                 ),
               ),
-              Icon(aperta ? Icons.expand_less : Icons.expand_more),
+              Icon(
+                aperta ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+              ),
             ],
           ),
         ),
@@ -574,7 +576,7 @@ class _SenzaEsercizi extends StatelessWidget {
                     nome: sportArrampicata,
                     passi: passiLiberi(sport, sportArrampicata),
                   ),
-                  icon: const Icon(Icons.play_arrow),
+                  icon: const Icon(Icons.play_arrow_rounded),
                   label: const Text('Inizia la seduta'),
                 ),
               OutlinedButton.icon(
@@ -583,7 +585,7 @@ class _SenzaEsercizi extends StatelessWidget {
                     builder: (_) => AllenamentiArrampicataScreen(state: state),
                   ),
                 ),
-                icon: const Icon(Icons.terrain),
+                icon: const Icon(Icons.terrain_rounded),
                 label: const Text('Scegli un allenamento'),
               ),
             ],
@@ -625,7 +627,7 @@ class _SenzaEsercizi extends StatelessWidget {
                         CreaPianoScreen(state: state, sportIniziale: sport),
                   ),
                 ),
-                icon: const Icon(Icons.auto_awesome),
+                icon: const Icon(Icons.auto_awesome_rounded),
                 label: Text('Prepara le sedute di ${sport.toLowerCase()}'),
               ),
             ],
@@ -709,7 +711,10 @@ class _DatiSessione extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        icon: Icon(Icons.delete_outline, color: Theme.of(c).colorScheme.error),
+        icon: Icon(
+          Icons.delete_outline_rounded,
+          color: Theme.of(c).colorScheme.error,
+        ),
         title: const Text('Eliminare la sessione?'),
         content: Text(
           'Sparisce dal calendario, dai Progressi e dal carico, insieme al '
@@ -832,7 +837,7 @@ class _DatiSessione extends StatelessWidget {
                 IconButton(
                   tooltip: 'Modifica la sessione',
                   onPressed: () => _modifica(context),
-                  icon: const Icon(Icons.edit_outlined, size: 20),
+                  icon: const Icon(Icons.edit_rounded, size: 20),
                 ),
               ],
             ),
@@ -937,7 +942,7 @@ class _DatiSessione extends StatelessWidget {
                   idSessione: s.id,
                   data: s.data,
                 ),
-                icon: const Icon(Icons.terrain),
+                icon: const Icon(Icons.terrain_rounded),
                 label: Text(
                   arrampicataDi(state.arrampicate, s.id, s.data) == null
                       ? 'Segna vie, blocchi e gradi'
@@ -964,14 +969,14 @@ class _DatiSessione extends StatelessWidget {
                             GraficiScreen(state: state, sessione: s),
                       ),
                     ),
-                    icon: const Icon(Icons.show_chart),
+                    icon: const Icon(Icons.show_chart_rounded),
                     label: const Text('Grafici'),
                   ),
                 // Un'immagine della sessione per WhatsApp, Instagram…
                 IconButton.outlined(
                   tooltip: 'Condividi',
                   onPressed: () => apriCondividiSessione(context, state, s),
-                  icon: const Icon(Icons.share_outlined),
+                  icon: const Icon(Icons.share_rounded),
                 ),
                 // Solo quelle registrate dall'app: quelle dell'orologio
                 // sono già su Garmin Connect, intervals.icu e simili.
@@ -979,7 +984,7 @@ class _DatiSessione extends StatelessWidget {
                 if (state.invioSessione(s) == InvioSessione.tasto)
                   OutlinedButton.icon(
                     onPressed: () => _inviaIntervals(context),
-                    icon: const Icon(Icons.cloud_upload_outlined),
+                    icon: const Icon(Icons.cloud_upload_rounded),
                     label: const Text('Invia a intervals.icu'),
                   ),
                 if (s.fonte == fonteApp &&
@@ -987,18 +992,18 @@ class _DatiSessione extends StatelessWidget {
                     !state.alChiuso(s))
                   OutlinedButton.icon(
                     onPressed: () => _salvaGpx(context),
-                    icon: const Icon(Icons.route_outlined),
+                    icon: const Icon(Icons.route_rounded),
                     label: const Text('Salva GPX'),
                   ),
               ],
             ),
             if (switch (state.invioSessione(s)) {
                   InvioSessione.inviata => (
-                    Icons.cloud_done_outlined,
+                    Icons.cloud_done_rounded,
                     'Su intervals.icu',
                   ),
                   InvioSessione.automatico => (
-                    Icons.cloud_queue,
+                    Icons.cloud_queue_rounded,
                     'Parte da sola per intervals.icu appena c\'è rete',
                   ),
                   _ => null,
@@ -1239,7 +1244,7 @@ class _IntervalliState extends State<_Intervalli> {
                 ),
                 IconButton(
                   tooltip: 'Modifica gli intervalli',
-                  icon: const Icon(Icons.edit_outlined, size: 20),
+                  icon: const Icon(Icons.edit_rounded, size: 20),
                   onPressed: () => Navigator.of(context).push(
                     MaterialPageRoute<void>(
                       builder: (_) => IntervalliScreen(

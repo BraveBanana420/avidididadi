@@ -107,7 +107,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
                     await state.hc.installa();
                     _aggiorna();
                   },
-                  icon: const Icon(Icons.download),
+                  icon: const Icon(Icons.download_rounded),
                   label: Text(
                     s.disponibilita == DisponibilitaHc.daAggiornare
                         ? 'Aggiorna Health Connect'
@@ -159,12 +159,12 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
                 children: [
                   FilledButton.icon(
                     onPressed: state.sincronizzando ? null : _sincronizza,
-                    icon: const Icon(Icons.sync),
+                    icon: const Icon(Icons.sync_rounded),
                     label: const Text('Sincronizza ora'),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => _rivediPermessi(s),
-                    icon: const Icon(Icons.lock_open_outlined),
+                    icon: const Icon(Icons.lock_open_rounded),
                     label: const Text('Rivedi permessi'),
                   ),
                 ],
@@ -196,7 +196,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
   Widget _riga(String nome, bool ok, ColorScheme scheme) => Row(
     children: [
       Icon(
-        ok ? Icons.check_circle : Icons.cancel_outlined,
+        ok ? Icons.check_circle_rounded : Icons.cancel_rounded,
         size: 18,
         color: ok ? scheme.primary : scheme.onSurfaceVariant,
       ),

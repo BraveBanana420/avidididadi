@@ -114,7 +114,7 @@ class SchedaAllenamenti extends StatelessWidget {
                           ),
                         );
                       },
-                icon: const Icon(Icons.event_available),
+                icon: const Icon(Icons.event_available_rounded),
                 label: const Text('Metti nel calendario'),
               ),
           ],
@@ -206,7 +206,7 @@ class SchedaPiano extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.copy),
+                    icon: const Icon(Icons.copy_rounded),
                     label: Text('Copia i problemi per $app'),
                   ),
               ] else
@@ -229,7 +229,7 @@ class SchedaPiano extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.check),
+                    icon: const Icon(Icons.check_rounded),
                     label: const Text('Applica il piano'),
                   ),
                 ),
@@ -337,7 +337,7 @@ class SchedaArrampicata extends StatelessWidget {
                     ),
                   );
                 },
-                icon: const Icon(Icons.save_alt),
+                icon: const Icon(Icons.save_alt_rounded),
                 label: Text(
                   conData > passate ? 'Salva e metti nel calendario' : 'Salva',
                 ),

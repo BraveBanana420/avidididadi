@@ -261,7 +261,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
               tooltip: 'Elimina la sessione',
               color: Theme.of(context).colorScheme.error,
               onPressed: () => Navigator.pop(context, 'elimina'),
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline_rounded),
             ),
         ],
       ),
@@ -313,7 +313,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                 ),
                 OutlinedButton.icon(
                   onPressed: _scegliOra,
-                  icon: const Icon(Icons.schedule),
+                  icon: const Icon(Icons.schedule_rounded),
                   label: Text(
                     'Inizio ${two(inizio.hour)}:${two(inizio.minute)}',
                   ),
@@ -330,7 +330,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                     idSessione: s.id,
                     data: s.data,
                   ),
-                  icon: const Icon(Icons.terrain),
+                  icon: const Icon(Icons.terrain_rounded),
                   label: const Text('Vie, blocchi e gradi'),
                 ),
               // Forza: esercizi, serie e kg scritti a mano.
@@ -342,7 +342,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                           SerieAManoScreen(state: widget.state, giorno: s.data),
                     ),
                   ),
-                  icon: const Icon(Icons.fitness_center),
+                  icon: const Icon(Icons.fitness_center_rounded),
                   label: const Text('Esercizi, serie e kg'),
                 ),
               Text('Come è andata', style: t.titleMedium),
@@ -366,7 +366,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
               ),
               PulsantePrincipale(
                 onPressed: _salva,
-                icona: Icons.check,
+                icona: Icons.check_rounded,
                 testo: 'Salva',
               ),
               // Quanto scritto a mano si toglie: tornano i dati dell'orologio.
@@ -378,7 +378,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                     await widget.state.annullaCorrezioni(s.id);
                     navigator.pop();
                   },
-                  icon: const Icon(Icons.undo),
+                  icon: const Icon(Icons.undo_rounded),
                   label: const Text('Torna ai dati originali'),
                 ),
             ],

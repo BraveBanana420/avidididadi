@@ -148,7 +148,7 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
             child: InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Data della gara',
-                suffixIcon: Icon(Icons.calendar_today_outlined),
+                suffixIcon: Icon(Icons.calendar_today_rounded),
               ),
               child: Text(
                 data == null ? 'Tocca per sceglierla' : _dataBreve(data!),
@@ -187,7 +187,7 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
             const SizedBox(height: 24),
             OutlinedButton.icon(
               onPressed: _rimuovi,
-              icon: const Icon(Icons.delete_outline),
+              icon: const Icon(Icons.delete_outline_rounded),
               label: const Text('Rimuovi obiettivo'),
             ),
           ],
@@ -212,15 +212,15 @@ class IconaTriathlon extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: Icon(Icons.pool, size: piccola),
+            child: Icon(Icons.pool_rounded, size: piccola),
           ),
           Align(
             alignment: Alignment.bottomLeft,
-            child: Icon(Icons.directions_bike, size: piccola),
+            child: Icon(Icons.directions_bike_rounded, size: piccola),
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: Icon(Icons.directions_run, size: piccola),
+            child: Icon(Icons.directions_run_rounded, size: piccola),
           ),
         ],
       ),
@@ -340,7 +340,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   libera: true,
                 );
               },
-              icon: const Icon(Icons.play_arrow),
+              icon: const Icon(Icons.play_arrow_rounded),
               label: const Text('Inizia ora'),
             ),
             OutlinedButton.icon(
@@ -369,7 +369,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   ),
                 );
               },
-              icon: const Icon(Icons.event_available),
+              icon: const Icon(Icons.event_available_rounded),
               label: const Text('Mettilo nel calendario'),
             ),
           ],
@@ -547,7 +547,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _apriTest,
-            icon: const Icon(Icons.timer_outlined),
+            icon: const Icon(Icons.timer_rounded),
             label: const Text('Fai il test per calcolarla'),
           ),
           if (errore != null) ...[

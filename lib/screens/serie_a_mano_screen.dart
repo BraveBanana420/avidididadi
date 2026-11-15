@@ -167,7 +167,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
               Expanded(child: Text(e.nome, style: t.titleMedium)),
               IconButton(
                 tooltip: 'Togli l\'esercizio',
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline_rounded),
                 onPressed: () => setState(() {
                   for (final s in _esercizi.removeAt(i).serie) {
                     s.dispose();
@@ -181,12 +181,12 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
             segments: const [
               ButtonSegment(
                 value: false,
-                icon: Icon(Icons.fitness_center),
+                icon: Icon(Icons.fitness_center_rounded),
                 label: Text('Ripetizioni e kg'),
               ),
               ButtonSegment(
                 value: true,
-                icon: Icon(Icons.timer_outlined),
+                icon: Icon(Icons.timer_rounded),
                 label: Text('Tempo'),
               ),
             ],
@@ -215,7 +215,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
                 ],
                 IconButton(
                   tooltip: 'Togli la serie',
-                  icon: const Icon(Icons.remove_circle_outline),
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
                   onPressed: () =>
                       setState(() => e.serie.removeAt(j).dispose()),
                 ),
@@ -224,7 +224,7 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_rounded),
               label: const Text('Serie'),
               // La nuova serie copia l'ultima: di solito si ripete uguale.
               onPressed: () => setState(
@@ -264,13 +264,13 @@ class _SerieAManoScreenState extends State<SerieAManoScreen> {
               ),
               for (var i = 0; i < _esercizi.length; i++) _esercizio(context, i),
               OutlinedButton.icon(
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_rounded),
                 label: const Text('Aggiungi esercizio'),
                 onPressed: _aggiungi,
               ),
               PulsantePrincipale(
                 onPressed: _salva,
-                icona: Icons.check,
+                icona: Icons.check_rounded,
                 testo: 'Salva',
               ),
             ],

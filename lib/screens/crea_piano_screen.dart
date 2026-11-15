@@ -211,7 +211,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                         )
                         .join(', '),
             ),
-            trailing: const Icon(Icons.edit_outlined),
+            trailing: const Icon(Icons.edit_rounded),
             onTap: () => Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (_) => AttrezzaturaScreen(state: state),
@@ -230,7 +230,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
       clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
         shape: const Border(),
-        leading: const Icon(Icons.trending_up),
+        leading: const Icon(Icons.trending_up_rounded),
         title: Text('${sport.join(', ')}: come crescere'),
         subtitle: const Text('Seduta lunga, e cosa fare se è facile'),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -391,7 +391,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => WeekScreen(state: state)),
                 ),
-                icon: const Icon(Icons.view_week_outlined),
+                icon: const Icon(Icons.view_week_rounded),
                 label: const Text('Cambia giorni e minuti (settimana tipo)'),
               ),
             ),
@@ -419,7 +419,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
               Card(
                 margin: const EdgeInsets.only(top: 12),
                 child: ListTile(
-                  leading: const Icon(Icons.info_outline),
+                  leading: const Icon(Icons.info_outline_rounded),
                   title: Text(
                     '${assenti.join(' e ')}: nessun giorno nel calendario',
                   ),
@@ -428,7 +428,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                     'Apri la settimana tipo e tocca "Porta tutta la settimana '
                     'nel calendario".',
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => WeekScreen(state: state)),
                   ),
@@ -438,12 +438,12 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
             if (calendarioVuoto)
               Card(
                 child: ListTile(
-                  leading: const Icon(Icons.event_busy),
+                  leading: const Icon(Icons.event_busy_rounded),
                   title: const Text('Il calendario è vuoto'),
                   subtitle: const Text(
                     'Prima allunga il calendario: poi le sedute si riempiono.',
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => showModalBottomSheet<void>(
                     context: context,
                     isScrollControlled: true,
@@ -473,7 +473,7 @@ class _CreaPianoScreenState extends State<CreaPianoScreen> {
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.auto_awesome),
+                    : const Icon(Icons.auto_awesome_rounded),
                 label: Text(
                   scelti.isEmpty
                       ? (attivi.isEmpty

@@ -78,7 +78,7 @@ class _Dettaglio extends StatelessWidget {
                     tooltip: 'Chiudi',
                     onPressed: onChiudi,
                     visualDensity: VisualDensity.compact,
-                    icon: const Icon(Icons.close, size: 18),
+                    icon: const Icon(Icons.close_rounded, size: 18),
                   ),
                 ),
               ],

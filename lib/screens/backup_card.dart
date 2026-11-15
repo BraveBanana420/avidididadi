@@ -183,7 +183,7 @@ class _SezioneBackupState extends State<SezioneBackup> {
             children: [
               OutlinedButton.icon(
                 onPressed: inCorso ? null : _automaticoOra,
-                icon: const Icon(Icons.backup_outlined),
+                icon: const Icon(Icons.backup_rounded),
                 label: const Text('Fallo ora'),
               ),
               TextButton(
@@ -220,12 +220,12 @@ class _SezioneBackupState extends State<SezioneBackup> {
               children: [
                 FilledButton.icon(
                   onPressed: inCorso ? null : _salva,
-                  icon: const Icon(Icons.save_alt),
+                  icon: const Icon(Icons.save_alt_rounded),
                   label: const Text('Salva backup'),
                 ),
                 OutlinedButton.icon(
                   onPressed: inCorso ? null : _ripristina,
-                  icon: const Icon(Icons.restore),
+                  icon: const Icon(Icons.restore_rounded),
                   label: const Text('Ripristina'),
                 ),
               ],
@@ -299,7 +299,7 @@ class _PromemoriaBackupState extends State<PromemoriaBackup> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  errore ? Icons.error_outline : Icons.shield_outlined,
+                  errore ? Icons.error_outline_rounded : Icons.shield_rounded,
                   color: colore,
                 ),
                 const SizedBox(width: 12),

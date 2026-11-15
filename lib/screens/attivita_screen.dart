@@ -90,7 +90,7 @@ class _AttivitaScreenState extends State<AttivitaScreen> {
         ),
         child: PulsantePrincipale(
           testo: 'Salva',
-          icona: Icons.check,
+          icona: Icons.check_rounded,
           onPressed: scelte.isEmpty || inCorso ? null : _salva,
         ),
       ),

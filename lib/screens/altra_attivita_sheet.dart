@@ -92,7 +92,7 @@ class _FoglioAltraAttivitaState extends State<_FoglioAltraAttivita> {
                   type: MaterialType.transparency,
                   child: SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    secondary: const Icon(Icons.route),
+                    secondary: const Icon(Icons.route_rounded),
                     title: const Text('Registra il percorso GPS'),
                     subtitle: const Text(
                       'Mappa, distanza e velocità, anche a schermo spento. '

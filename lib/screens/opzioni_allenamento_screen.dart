@@ -54,7 +54,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.record_voice_over_outlined),
+                    secondary: const Icon(Icons.record_voice_over_rounded),
                     title: const Text('Voce'),
                     subtitle: const Text(
                       "Dice l'esercizio che inizia, i km e se sei fuori zona "
@@ -64,7 +64,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                     onChanged: (v) => salvaAvvisi(voce: v),
                   ),
                   SwitchListTile(
-                    secondary: const Icon(Icons.volume_up),
+                    secondary: const Icon(Icons.volume_up_rounded),
                     title: const Text('Bip'),
                     subtitle: const Text(
                       'Negli ultimi $secondiAvviso secondi di recuperi ed '
@@ -75,7 +75,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                     onChanged: (v) => salvaAvvisi(bip: v),
                   ),
                   SwitchListTile(
-                    secondary: const Icon(Icons.vibration),
+                    secondary: const Icon(Icons.vibration_rounded),
                     title: const Text('Vibrazione'),
                     subtitle: const Text('Insieme ai bip.'),
                     value: vibrazioneAttiva.value,
@@ -190,7 +190,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                   children: [
                     RadioListTile(
                       value: VistaMappa.pagine,
-                      secondary: Icon(Icons.view_carousel_outlined),
+                      secondary: Icon(Icons.view_carousel_rounded),
                       title: Text('Due pagine'),
                       subtitle: Text(
                         'Scorri di lato: in una timer e dati, nell\'altra la '
@@ -199,7 +199,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                     ),
                     RadioListTile(
                       value: VistaMappa.minimappa,
-                      secondary: Icon(Icons.picture_in_picture_outlined),
+                      secondary: Icon(Icons.picture_in_picture_rounded),
                       title: Text('Minimappa'),
                       subtitle: Text(
                         'Una mappa piccola sempre in vista, sopra il timer.',
@@ -207,7 +207,7 @@ class _OpzioniAllenamentoScreenState extends State<OpzioniAllenamentoScreen> {
                     ),
                     RadioListTile(
                       value: VistaMappa.schermo,
-                      secondary: Icon(Icons.fullscreen),
+                      secondary: Icon(Icons.fullscreen_rounded),
                       title: Text('Tutto schermo'),
                       subtitle: Text(
                         'La mappa occupa tutto, con tempo e dati sopra.',

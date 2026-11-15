@@ -108,7 +108,7 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
             child: InputDecorator(
               decoration: const InputDecoration(
                 labelText: 'Data di nascita',
-                suffixIcon: Icon(Icons.calendar_today_outlined),
+                suffixIcon: Icon(Icons.calendar_today_rounded),
               ),
               child: Text(
                 nascita == null

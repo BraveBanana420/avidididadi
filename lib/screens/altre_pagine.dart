@@ -48,13 +48,13 @@ class DatiCollegamentiScreen extends StatelessWidget {
           TextButton.icon(
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const PrivacyScreen())),
-            icon: const Icon(Icons.privacy_tip_outlined),
+            icon: const Icon(Icons.privacy_tip_rounded),
             label: const Text('Privacy e uso dei dati'),
           ),
           TextButton.icon(
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const TerminiScreen())),
-            icon: const Icon(Icons.gavel_outlined),
+            icon: const Icon(Icons.gavel_rounded),
             label: const Text('Termini e condizioni'),
           ),
           const _Versione(),
