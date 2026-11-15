@@ -84,6 +84,24 @@ class MainActivity : FlutterFragmentActivity() {
 
     private fun localeVoce(): Locale = Locale.forLanguageTag(linguaVoce)
 
+    /** Lingua che la sintesi ha accettato davvero (null: ancora da impostare). */
+    private var linguaImpostata: String? = null
+
+    /**
+     * Imposta [linguaVoce] se non è già quella in uso. Se il telefono non la
+     * accetta (voce che si sta ancora scaricando) ci riprova alla frase dopo,
+     * invece di restare per tutta la sessione nella lingua di prima.
+     */
+    private fun impostaLingua(t: TextToSpeech) {
+        if (linguaImpostata == linguaVoce) return
+        val esito = t.setLanguage(localeVoce())
+        if (esito >= TextToSpeech.LANG_AVAILABLE) {
+            linguaImpostata = linguaVoce
+        } else {
+            Log.w("Avidididadi", "voce $linguaVoce non ancora pronta ($esito)")
+        }
+    }
+
     /** Se la sintesi vocale del telefono sa parlare [codice] (voce installata). */
     private fun controllaVoce(codice: String, fine: (Boolean) -> Unit) {
         val locale = Locale.forLanguageTag(codice)
@@ -116,10 +134,7 @@ class MainActivity : FlutterFragmentActivity() {
     }
 
     private fun parla(testo: String, urgente: Boolean = false, lingua: String? = null) {
-        if (lingua != null && lingua != linguaVoce) {
-            linguaVoce = lingua
-            if (ttsPronta) tts?.language = localeVoce()
-        }
+        if (lingua != null) linguaVoce = lingua
         // Sintesi non ancora pronta: anche qui vale solo l'ultima frase urgente.
         if (urgente) inAttesa.clear()
         val t = tts
@@ -133,7 +148,7 @@ class MainActivity : FlutterFragmentActivity() {
                     inAttesa.clear()
                     return@TextToSpeech
                 }
-                pronta.language = localeVoce()
+                impostaLingua(pronta)
                 pronta.setAudioAttributes(voceAudio)
                 pronta.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                     override fun onStart(id: String?) {}
@@ -145,6 +160,7 @@ class MainActivity : FlutterFragmentActivity() {
                 inAttesa.clear()
             }
         } else if (ttsPronta) {
+            impostaLingua(t)
             di(t, testo, urgente)
         } else {
             inAttesa.add(testo)
@@ -309,6 +325,7 @@ class MainActivity : FlutterFragmentActivity() {
         tono = null
         tts?.shutdown()
         tts = null
+        linguaImpostata = null
         super.onDestroy()
     }
 

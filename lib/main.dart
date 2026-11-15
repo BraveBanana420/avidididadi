@@ -138,10 +138,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         ),
       );
     }
-    // Il widget della schermata home segue piano, sedute fatte e tema.
+    // Il widget della schermata home segue piano, sedute fatte, tema e
+    // lingua.
     state.addListener(_aggiornaWidget);
     tema.addListener(_aggiornaWidget);
     neon.addListener(_aggiornaWidget);
+    lingua.addListener(_aggiornaWidget);
     _aggiornaWidget();
     if (azione == azioneAvviaWidget) _avviaOggi();
     // Avidididadi nel menu Condividi solo con l'assistente esterno collegato
@@ -258,6 +260,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     state.removeListener(_aggiornaWidget);
     tema.removeListener(_aggiornaWidget);
     neon.removeListener(_aggiornaWidget);
+    lingua.removeListener(_aggiornaWidget);
     pagine.dispose();
     super.dispose();
   }
