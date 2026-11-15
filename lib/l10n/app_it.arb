@@ -10112,5 +10112,9 @@
   "permessoPassiNegato": "Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell'app, alla voce Permessi.",
   "@permessoPassiNegato": {
     "description": "quando il permesso dei passi è negato"
+  },
+  "traccia": "Traccia",
+  "@traccia": {
+    "description": "tipo di immagine: solo il percorso, senza mappa sotto"
   }
 }

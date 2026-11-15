@@ -6987,4 +6987,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get permessoPassiNegato =>
       'Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell\'app, alla voce Permessi.';
+
+  @override
+  String get traccia => 'Traccia';
 }

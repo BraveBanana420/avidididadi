@@ -11623,6 +11623,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell\'app, alla voce Permessi.'**
   String get permessoPassiNegato;
+
+  /// tipo di immagine: solo il percorso, senza mappa sotto
+  ///
+  /// In it, this message translates to:
+  /// **'Traccia'**
+  String get traccia;
 }
 
 class _AppLocalizationsDelegate

@@ -186,7 +186,9 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   // Spento di base: il percorso dice da dove si parte (spesso casa).
   bool _conPercorso = false;
   GraficaCondivisa? _grafica; // null: la prima dello sport
-  TipoMappa _tipo = tipoMappa.value;
+  /// null: solo la traccia, disegnata dall'app e nitida (di base); le
+  /// mappe vere si fotografano e vengono un po' sfocate.
+  TipoMappa? _tipo;
   List<IntervalloFatto> _tratti = const [];
   List<Campione> _quota = const [];
 
@@ -209,9 +211,6 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         }
       });
     }
-    leggiTipoMappa().then((_) {
-      if (mounted) setState(() => _tipo = tipoMappa.value);
-    });
     // Bici: i blocchi del poster; nuoto: le ripetute; mobilità: gli esercizi.
     if (['Bici', 'Nuoto', 'Mobilità'].any((x) => stessoSport(s.sport, x))) {
       widget.state.intervalliDi(s).then((l) {
@@ -248,7 +247,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   }
 
   Future<bool> _fotografa(GraficaCondivisa grafica) async {
-    if (grafica != GraficaCondivisa.mappa) return true;
+    if (grafica != GraficaCondivisa.mappa || _tipo == null) return true;
     final foto = await _mappa.currentState?.istantanea();
     if (foto == null || !mounted) return false;
     await precacheImage(MemoryImage(foto), context);
@@ -328,19 +327,23 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
       immagine: switch (grafica) {
         GraficaCondivisa.mappa => ImmagineMappa(
           sessione: s,
-          mappa: Stack(
-            fit: StackFit.expand,
-            children: [
-              _MappaCondivisa(
-                key: _mappa,
-                percorso: _percorso!,
-                sport: s.sport,
-                tipo: _tipo,
-              ),
-              if (_istantanea case final f?) Image.memory(f, fit: BoxFit.cover),
-            ],
-          ),
-          crediti: creditiMappe[_tipo]!,
+          mappa: switch (_tipo) {
+            null => SoloTraccia(percorso: _percorso!, sport: s.sport),
+            final TipoMappa tipo => Stack(
+              fit: StackFit.expand,
+              children: [
+                _MappaCondivisa(
+                  key: _mappa,
+                  percorso: _percorso!,
+                  sport: s.sport,
+                  tipo: tipo,
+                ),
+                if (_istantanea case final f?)
+                  Image.memory(f, fit: BoxFit.cover),
+              ],
+            ),
+          },
+          crediti: _tipo == null ? null : creditiMappe[_tipo],
         ),
         GraficaCondivisa.poster => ImmaginePoster(
           sessione: s,
@@ -434,8 +437,13 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
         if (grafica == GraficaCondivisa.mappa) ...[
           Text(l10n.tipoMappa, style: t.titleSmall),
           const SizedBox(height: 8),
-          SegmentedButton<TipoMappa>(
+          SegmentedButton<TipoMappa?>(
             segments: [
+              ButtonSegment(
+                value: null,
+                label: Text(l10n.traccia),
+                icon: const Icon(Icons.route_rounded),
+              ),
               for (final m in TipoMappa.values)
                 ButtonSegment(
                   value: m,
@@ -696,7 +704,9 @@ class _MappaCondivisaState extends State<_MappaCondivisa> {
 class ImmagineMappa extends StatelessWidget {
   final Sessione sessione;
   final Widget mappa;
-  final String crediti;
+
+  /// Chi ha fatto la mappa; null con la sola traccia.
+  final String? crediti;
   const ImmagineMappa({
     super.key,
     required this.sessione,
@@ -790,19 +800,49 @@ class ImmagineMappa extends StatelessWidget {
                       for (final n in numeri) Expanded(child: _Numero(n)),
                     ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    crediti,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: t.labelSmall?.copyWith(
-                      fontSize: 8,
-                      color: scheme.onSurfaceVariant,
+                  if (crediti case final c?) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      c,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: t.labelSmall?.copyWith(
+                        fontSize: 8,
+                        color: scheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
+                  ] else
+                    const SizedBox(height: 6),
                 ],
               ),
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Solo la traccia sul fondo del tema, senza mappa: la disegna l'app, quindi
+/// resta nitida nell'immagine. Sta nella parte alta, sopra la fascia dei
+/// numeri, con il pallino della partenza e l'anello dell'arrivo.
+class SoloTraccia extends StatelessWidget {
+  final Percorso percorso;
+  final String sport;
+  const SoloTraccia({super.key, required this.percorso, required this.sport});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        for (final g in Pulse.di(context).sfondo)
+          DecoratedBox(decoration: BoxDecoration(gradient: g)),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(32, 64, 32, 168),
+          child: CustomPaint(
+            painter: _Giro(percorso, coloreSport(sport), fondo: scheme.surface),
           ),
         ),
       ],
@@ -1831,7 +1871,11 @@ class ImmagineSessione extends StatelessWidget {
 class _Giro extends CustomPainter {
   final Percorso percorso;
   final Color colore;
-  _Giro(this.percorso, this.colore);
+
+  /// Con il colore del fondo disegna anche partenza (pallino) e arrivo
+  /// (anello).
+  final Color? fondo;
+  _Giro(this.percorso, this.colore, {this.fondo});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -1879,11 +1923,26 @@ class _Giro extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..strokeJoin = StrokeJoin.round,
     );
+    if (fondo case final f?) {
+      final arrivo = o(punti.last);
+      canvas.drawCircle(arrivo, 7, Paint()..color = f);
+      canvas.drawCircle(
+        arrivo,
+        5.5,
+        Paint()
+          ..color = colore
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3,
+      );
+      final partenza = o(punti.first);
+      canvas.drawCircle(partenza, 7, Paint()..color = f);
+      canvas.drawCircle(partenza, 5, Paint()..color = colore);
+    }
   }
 
   @override
   bool shouldRepaint(_Giro old) =>
-      old.percorso != percorso || old.colore != colore;
+      old.percorso != percorso || old.colore != colore || old.fondo != fondo;
 }
 
 // ---------------------------------------------------------------------
