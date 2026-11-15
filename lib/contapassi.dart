@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'avvisi.dart';
+
 // Passi contati dal sensore del telefono (lo stesso del contapassi di
 // Android), solo durante corsa e camminata: non serve l'orologio.
 
@@ -106,14 +108,25 @@ class SensorePassi {
   /// Falso se il telefono non ha il sensore o il permesso non c'è.
   bool disponibile = false;
 
-  /// Chiede il permesso "Attività fisica" (una volta) e accende il sensore.
+  /// Accende il sensore, se i passi sono accesi. Il permesso "Attività
+  /// fisica" si chiede solo la prima volta: poi dall'interruttore in Dati e
+  /// collegamenti.
   Future<void> avvia() async {
     if (_tic != null) return;
+    await caricaAvvisi();
+    if (!passiAttivi.value) {
+      disponibile = false;
+      return;
+    }
+    final chiedi = !passiChiesti.value;
     try {
-      disponibile = await _canale.invokeMethod<bool>('passiAvvia') ?? false;
+      disponibile =
+          await _canale.invokeMethod<bool>('passiAvvia', chiedi) ?? false;
     } catch (_) {
       disponibile = false;
     }
+    // Il salvataggio non deve ritardare il sensore.
+    if (chiedi) unawaited(salvaAvvisi(passiChiesto: true));
     if (!disponibile) return;
     _tic = Timer.periodic(const Duration(seconds: 1), (_) => _leggi());
   }
@@ -129,6 +142,16 @@ class SensorePassi {
         ora: DateTime.now(),
       );
     } catch (_) {}
+  }
+
+  /// Dall'interruttore: chiede il permesso se manca. Falso se il telefono
+  /// non ha il sensore o il permesso è negato.
+  static Future<bool> chiediPermesso() async {
+    try {
+      return await _canale.invokeMethod<bool>('passiPermesso') ?? false;
+    } catch (_) {
+      return false;
+    }
   }
 
   void ferma() {

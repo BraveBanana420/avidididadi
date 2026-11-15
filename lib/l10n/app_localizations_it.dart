@@ -6976,4 +6976,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String quantiPassi(Object p0) {
     return '$p0 passi';
   }
+
+  @override
+  String get passiDalTelefono => 'Passi dal telefono';
+
+  @override
+  String get passiDalTelefonoSpiega =>
+      'In corsa e camminata l\'app conta i passi con il sensore del telefono (permesso \"Attività fisica\"), anche senza orologio.';
+
+  @override
+  String get permessoPassiNegato =>
+      'Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell\'app, alla voce Permessi.';
 }

@@ -224,20 +224,92 @@ void main() {
     final inizia = find.textContaining('Inizia');
     if (inizia.evaluate().isNotEmpty) await tester.tap(inizia.first);
     await tester.pump(const Duration(milliseconds: 300));
+    // Lo schermo del Samsung S24 (360 × 780), quello su cui si prova.
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    await tester.pump();
 
-    // Senza sensori: un dato per riga, uno sotto l'altro.
-    Offset dove(String testo) => tester.getTopLeft(find.text(testo));
+    // Senza sensori: un dato per riga, uno sotto l'altro. Le due versioni
+    // (numeri grandi e griglia) ci sono entrambe: conta quella che si vede.
+    Offset dove(String testo) =>
+        tester.getTopLeft(find.text(testo).hitTestable());
     expect(dove('VELOCITÀ').dx, dove('DISTANZA').dx);
     expect(dove('VELOCITÀ').dy, greaterThan(dove('DISTANZA').dy));
     expect(find.text('POTENZA'), findsNothing);
 
-    // Arrivano watt e cadenza: compaiono, e si torna alla griglia a due.
+    // Arrivano watt e cadenza: compaiono e non ci stanno più tutti grandi:
+    // si torna da soli alla griglia a due.
     sensoreBici.stato = StatoSensore.collegato;
     sensoreBici.leggi(1, [0x00, 0x00, 0xC8, 0x00]);
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.textContaining('POTENZA'), findsOneWidget);
-    expect(dove('VELOCITÀ').dy, dove('DISTANZA').dy);
+    expect(find.textContaining('POTENZA').hitTestable(), findsOneWidget);
+    // Stessa riga (le caselle possono differire di poco in altezza).
+    expect(dove('VELOCITÀ').dy, closeTo(dove('DISTANZA').dy, 3));
     expect(dove('VELOCITÀ').dx, greaterThan(dove('DISTANZA').dx));
+    await _chiudi(tester);
+  });
+
+  testWidgets('camminata libera: con i passi i numeri passano alla griglia', (
+    tester,
+  ) async {
+    final prima = vistaMappa.value;
+    vistaMappa.value = VistaMappa.pagine;
+    addTearDown(() => vistaMappa.value = prima);
+    const canale = MethodChannel('avidididadi/avvio');
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canale, (
+      call,
+    ) async {
+      if (call.method == 'passiAvvia') return true;
+      if (call.method == 'passiLetti') return Float64List.fromList([1000, 0]);
+      return null;
+    });
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        canale,
+        null,
+      ),
+    );
+    // GPS già permesso: il contapassi parte dopo la sua richiesta.
+    for (final c in const [
+      'flutter.baseflow.com/geolocator_android',
+      'flutter.baseflow.com/geolocator',
+    ]) {
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        MethodChannel(c),
+        (chiamata) async => switch (chiamata.method) {
+          'isLocationServiceEnabled' => true,
+          'checkPermission' || 'requestPermission' => 3,
+          _ => null,
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          MethodChannel(c),
+          null,
+        ),
+      );
+    }
+    await _apri(
+      tester,
+      'Camminata',
+      '',
+      libera: true,
+      passo: _passo('Camminata', durata: '', note: _notaLibera),
+    );
+    final inizia = find.textContaining('Inizia');
+    if (inizia.evaluate().isNotEmpty) await tester.tap(inizia.first);
+    await tester.pump(const Duration(seconds: 2));
+    // Lo schermo del Samsung S24 (360 × 780).
+    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.devicePixelRatio = 3;
+    await tester.pump();
+
+    // I passi si vedono e distanza e passo stanno sulla stessa riga: la
+    // griglia, invece dei numeri grandi che farebbero scorrere la pagina.
+    Offset dove(String testo) =>
+        tester.getTopLeft(find.text(testo).hitTestable());
+    expect(find.text('PASSI').hitTestable(), findsOneWidget);
+    expect(dove('PASSO').dy, closeTo(dove('DISTANZA').dy, 3));
     await _chiudi(tester);
   });
 

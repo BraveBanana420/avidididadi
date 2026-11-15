@@ -6950,4 +6950,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String quantiPassi(Object p0) {
     return '$p0 steps';
   }
+
+  @override
+  String get passiDalTelefono => 'Steps from the phone';
+
+  @override
+  String get passiDalTelefonoSpiega =>
+      'While running and walking the app counts your steps with the phone\'s sensor (\"Physical activity\" permission), even without a watch.';
+
+  @override
+  String get permessoPassiNegato =>
+      'The \"Physical activity\" permission is not granted: you can allow it in the app settings, under Permissions.';
 }

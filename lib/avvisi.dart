@@ -25,6 +25,14 @@ final sogliaPausaKmh = ValueNotifier<double>(4);
 /// Passo medio con le soste (tempo totale) o solo in movimento.
 final mediaConSoste = ValueNotifier<bool>(false);
 
+/// Passi dal contapassi del telefono in corsa e camminata. Si spegne in
+/// Dati e collegamenti.
+final passiAttivi = ValueNotifier<bool>(true);
+
+/// Vero dopo la prima richiesta del permesso "Attività fisica": da lì non si
+/// chiede più a ogni allenamento, ma solo dall'interruttore.
+final passiChiesti = ValueNotifier<bool>(false);
+
 /// Dove sta la mappa durante corsa, camminata e bici all'aperto.
 enum VistaMappa { pagine, minimappa, schermo }
 
@@ -81,6 +89,12 @@ Future<void> caricaAvvisi() async {
           linguaVoceScelta.value = v;
         }
       }
+      if (chiave.trim() == 'passi') {
+        passiAttivi.value = valore.trim() != 'no';
+      }
+      if (chiave.trim() == 'passi_chiesti') {
+        passiChiesti.value = valore.trim() == 'si';
+      }
       if (chiave.trim() == 'vibrazione') {
         vibrazioneAttiva.value = valore.trim() != 'no';
       }
@@ -99,6 +113,8 @@ Future<void> salvaAvvisi({
   bool? conSoste,
   VistaMappa? mappa,
   String? linguaVoce,
+  bool? passi,
+  bool? passiChiesto,
 }) async {
   if (bip != null) bipAttivo.value = bip;
   if (vibrazione != null) vibrazioneAttiva.value = vibrazione;
@@ -108,6 +124,8 @@ Future<void> salvaAvvisi({
   if (conSoste != null) mediaConSoste.value = conSoste;
   if (mappa != null) vistaMappa.value = mappa;
   if (linguaVoce != null) linguaVoceScelta.value = linguaVoce;
+  if (passi != null) passiAttivi.value = passi;
+  if (passiChiesto != null) passiChiesti.value = passiChiesto;
   try {
     await (await _file()).writeAsString(
       'bip=${bipAttivo.value ? 'si' : 'no'}\n'
@@ -117,7 +135,9 @@ Future<void> salvaAvvisi({
       'soglia_kmh=${sogliaPausaKmh.value}\n'
       'media=${mediaConSoste.value ? 'soste' : 'movimento'}\n'
       'mappa=${vistaMappa.value.name}\n'
-      'voce_lingua=${linguaVoceScelta.value}\n',
+      'voce_lingua=${linguaVoceScelta.value}\n'
+      'passi=${passiAttivi.value ? 'si' : 'no'}\n'
+      'passi_chiesti=${passiChiesti.value ? 'si' : 'no'}\n',
     );
   } catch (_) {
     // vale solo per questa sessione

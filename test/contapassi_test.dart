@@ -1,5 +1,7 @@
+import 'package:allenamenti_app/avvisi.dart';
 import 'package:allenamenti_app/contapassi.dart';
 import 'package:allenamenti_app/notifica_allenamento.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -111,5 +113,42 @@ void main() {
       testoNotifica(sport: 'Corsa', km: 5, mps: 1000 / 330, passi: 4800),
       '5,00 km · 5:30 min/km',
     );
+  });
+  group('permesso "Attività fisica"', () {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    final chiamate = <(String, Object?)>[];
+    setUp(() {
+      chiamate.clear();
+      passiAttivi.value = true;
+      passiChiesti.value = false;
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(const MethodChannel('avidididadi/avvio'), (
+            c,
+          ) async {
+            chiamate.add((c.method, c.arguments));
+            return c.method == 'passiAvvia' ? false : null;
+          });
+    });
+
+    test('si chiede solo al primo allenamento', () async {
+      final primo = SensorePassi(ContaPassi(), attivo: () => true);
+      await primo.avvia();
+      expect(chiamate.first, ('passiAvvia', true));
+      expect(passiChiesti.value, isTrue);
+      chiamate.clear();
+      final secondo = SensorePassi(ContaPassi(), attivo: () => true);
+      await secondo.avvia();
+      // Negato la prima volta: non si richiede a ogni allenamento.
+      expect(chiamate.first, ('passiAvvia', false));
+      expect(secondo.disponibile, isFalse);
+    });
+
+    test('spenti in Dati e collegamenti: il sensore non si tocca', () async {
+      passiAttivi.value = false;
+      final s = SensorePassi(ContaPassi(), attivo: () => true);
+      await s.avvia();
+      expect(chiamate.where((c) => c.$1 == 'passiAvvia'), isEmpty);
+      expect(s.disponibile, isFalse);
+    });
   });
 }

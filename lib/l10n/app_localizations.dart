@@ -11605,6 +11605,24 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'{p0} passi'**
   String quantiPassi(Object p0);
+
+  /// interruttore in Dati e collegamenti
+  ///
+  /// In it, this message translates to:
+  /// **'Passi dal telefono'**
+  String get passiDalTelefono;
+
+  /// sotto l'interruttore dei passi
+  ///
+  /// In it, this message translates to:
+  /// **'In corsa e camminata l\'app conta i passi con il sensore del telefono (permesso \"Attività fisica\"), anche senza orologio.'**
+  String get passiDalTelefonoSpiega;
+
+  /// quando il permesso dei passi è negato
+  ///
+  /// In it, this message translates to:
+  /// **'Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell\'app, alla voce Permessi.'**
+  String get permessoPassiNegato;
 }
 
 class _AppLocalizationsDelegate

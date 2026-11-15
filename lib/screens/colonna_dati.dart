@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 /// Sotto questa altezza la minimappa non serve più a orientarsi.
 const altezzaMinimaMappa = 150.0;
@@ -125,4 +126,62 @@ class _Disposizione extends MultiChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_Disposizione oldDelegate) => false;
+}
+
+/// Mostra [grande] se ci sta tutto nell'altezza a disposizione, altrimenti
+/// [compatto] (che può scorrere). Così i numeri grandi restano finché c'è
+/// posto e, quando arrivano altri dati (sensori della bici, passi), la
+/// pagina si riorganizza da sola invece di scorrere.
+class GrandeSeCiSta extends MultiChildRenderObjectWidget {
+  GrandeSeCiSta({super.key, required Widget grande, required Widget compatto})
+    : super(children: [grande, compatto]);
+
+  @override
+  RenderObject createRenderObject(BuildContext context) => _RenderGrande();
+}
+
+class _DatiGrande extends ContainerBoxParentData<RenderBox> {}
+
+class _RenderGrande extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, _DatiGrande>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _DatiGrande> {
+  RenderBox? _scelto;
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! _DatiGrande) child.parentData = _DatiGrande();
+  }
+
+  @override
+  void performLayout() {
+    final grande = firstChild!;
+    final compatto = childAfter(grande)!;
+    // Il grande si misura senza limite di altezza: se poi non ci sta, vince
+    // il compatto, che si adatta allo spazio e al limite scorre.
+    grande.layout(
+      BoxConstraints(
+        minWidth: constraints.minWidth,
+        maxWidth: constraints.maxWidth,
+      ),
+      parentUsesSize: true,
+    );
+    compatto.layout(constraints, parentUsesSize: true);
+    _scelto = grande.size.height <= constraints.maxHeight ? grande : compatto;
+    size = constraints.constrain(_scelto!.size);
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    if (_scelto case final c?) context.paintChild(c, offset);
+  }
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      _scelto?.hitTest(result, position: position) ?? false;
+
+  @override
+  void visitChildrenForSemantics(RenderObjectVisitor visitor) {
+    if (_scelto case final c?) visitor(c);
+  }
 }

@@ -10100,5 +10100,17 @@
         "type": "Object"
       }
     }
+  },
+  "passiDalTelefono": "Passi dal telefono",
+  "@passiDalTelefono": {
+    "description": "interruttore in Dati e collegamenti"
+  },
+  "passiDalTelefonoSpiega": "In corsa e camminata l'app conta i passi con il sensore del telefono (permesso \"Attività fisica\"), anche senza orologio.",
+  "@passiDalTelefonoSpiega": {
+    "description": "sotto l'interruttore dei passi"
+  },
+  "permessoPassiNegato": "Il permesso \"Attività fisica\" non è concesso: puoi darlo dalle impostazioni dell'app, alla voce Permessi.",
+  "@permessoPassiNegato": {
+    "description": "quando il permesso dei passi è negato"
   }
 }

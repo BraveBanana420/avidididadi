@@ -1915,5 +1915,8 @@
   "etichettaRecupero": "recovery",
   "passiDuranteAllenamento": "Steps during the workout",
   "soloCorsaCamminataPassi": "Only for running and walking, and only while workout mode is open, the app reads the phone's step counter (\"Physical activity\" permission) to show you steps and steps per minute. In the session it saves the total steps taken with the timer running: it stays on the phone and in the backup. Once the workout is closed the app no longer reads the sensor. Without the permission the workout works anyway, just without steps.",
-  "quantiPassi": "{p0} steps"
+  "quantiPassi": "{p0} steps",
+  "passiDalTelefono": "Steps from the phone",
+  "passiDalTelefonoSpiega": "While running and walking the app counts your steps with the phone's sensor (\"Physical activity\" permission), even without a watch.",
+  "permessoPassiNegato": "The \"Physical activity\" permission is not granted: you can allow it in the app settings, under Permissions."
 }

@@ -267,13 +267,28 @@ class MainActivity : FlutterFragmentActivity() {
         override fun onAccuracyChanged(s: Sensor?, precisione: Int) {}
     }
 
-    // Permesso "Attività fisica" (Android 10+), chiesto al primo allenamento.
+    // Permesso "Attività fisica" (Android 10+): chiesto al primo allenamento,
+    // poi solo dall'interruttore in Dati e collegamenti.
     private var attesaPassi: MethodChannel.Result? = null
+    /** Vero se la richiesta viene dall'interruttore: il sensore resta spento. */
+    private var soloPermessoPassi = false
     private val richiestaPassi =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { ok ->
-            attesaPassi?.success(ok && ascoltaPassi())
+            attesaPassi?.success(ok && (soloPermessoPassi || ascoltaPassi()))
             attesaPassi = null
         }
+
+    private fun permessoPassi(): Boolean =
+        Build.VERSION.SDK_INT < 29 ||
+            checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) ==
+            PackageManager.PERMISSION_GRANTED
+
+    private fun chiediPermessoPassi(result: MethodChannel.Result, solo: Boolean) {
+        attesaPassi?.success(false)
+        attesaPassi = result
+        soloPermessoPassi = solo
+        richiestaPassi.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+    }
 
     /** Accende il contapassi; falso se il telefono non ha il sensore. */
     private fun ascoltaPassi(): Boolean {
@@ -520,19 +535,29 @@ class MainActivity : FlutterFragmentActivity() {
                         result.success(null)
                     }
                     // Contapassi del telefono: corsa e camminata, senza orologio.
+                    // Argomento: se chiedere il permesso quando manca (solo la
+                    // prima volta).
                     "passiAvvia" -> {
+                        val chiedi = call.arguments as? Boolean ?: true
                         val gestore = getSystemService(SENSOR_SERVICE) as SensorManager
                         if (gestore.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) == null) {
                             result.success(false)
-                        } else if (Build.VERSION.SDK_INT < 29 ||
-                            checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) ==
-                            PackageManager.PERMISSION_GRANTED
-                        ) {
+                        } else if (permessoPassi()) {
                             result.success(ascoltaPassi())
+                        } else if (chiedi) {
+                            chiediPermessoPassi(result, solo = false)
                         } else {
-                            attesaPassi?.success(false)
-                            attesaPassi = result
-                            richiestaPassi.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                            result.success(false)
+                        }
+                    }
+                    // Dall'interruttore: chiede il permesso, senza accendere il sensore.
+                    "passiPermesso" -> {
+                        val gestore = getSystemService(SENSOR_SERVICE) as SensorManager
+                        when {
+                            gestore.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) == null ->
+                                result.success(false)
+                            permessoPassi() -> result.success(true)
+                            else -> chiediPermessoPassi(result, solo = true)
                         }
                     }
                     "passiLetti" -> result.success(passiLetti)

@@ -9,6 +9,7 @@ import '../widgets.dart';
 import 'backup_card.dart';
 import 'health_connect_card.dart';
 import 'intervals_card.dart';
+import 'passi_card.dart';
 import 'import_csv.dart';
 import 'privacy_screen.dart';
 import '../l10n/lingua.dart';
@@ -31,6 +32,8 @@ class DatiCollegamentiScreen extends StatelessWidget {
           Text(l10n.collegaOrologioOApp, style: t.bodyMedium),
           const SizedBox(height: 12),
           SezioneHealthConnect(state: state),
+          const SizedBox(height: 12),
+          const SezionePassi(),
           const SizedBox(height: 12),
           // intervals.icu e l'import da file: solo con le funzioni avanzate.
           if (state.profilo.modoAvanzato) ...[

@@ -815,6 +815,145 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     setState(() {});
   }
 
+  /// I numeri della seduta. [grande]: corsa e camminata uno per riga,
+  /// con i numeri grandi (solo se ci stanno: vedi [GrandeSeCiSta]).
+  Widget _numeri(BuildContext context, {required bool grande}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListenableBuilder(
+            listenable: Listenable.merge([sensoreBattito, sensoreBici]),
+            builder: (_, _) {
+              final bici = _bici && sensoreBici.ricordato;
+              return Column(
+                spacing: 8,
+                children: [
+                  const SizedBox.shrink(),
+                  if (gps != null)
+                    _GrigliaLive(
+                      sport: widget.sport,
+                      gps: gps!,
+                      tempo: _tempoMedia,
+                      ultimo: giri!.giri.lastOrNull,
+                      zone: _zone,
+                      // Pagina dei soli dati: numeri grandi, da leggere con un colpo
+                      // d'occhio, se ci stanno.
+                      grande: grande,
+                    )
+                  else if (bici)
+                    // Rulli: velocità e km dal sensore.
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.velocita,
+                            valore: fmtVelocita(
+                              widget.sport,
+                              sensoreBici.velocita,
+                            ),
+                            unita: 'km/h',
+                          ),
+                        ),
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.distanza,
+                            valore: (_metriSensore / 1000)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                            unita: 'km',
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Solo i dati che arrivano davvero: un
+                  // rullo ricordato ma lontano non conta.
+                  if (_conWatt || _conCadenza)
+                    Row(
+                      spacing: 8,
+                      children: [
+                        if (_conWatt)
+                          Expanded(
+                            child: _DatoPotenza(
+                              watt: _watt,
+                              zone: _zonePotenza,
+                              obiettivo: _rangeBlocco,
+                              onTap: () => mostraSensoreBici(context),
+                            ),
+                          ),
+                        if (_conCadenza)
+                          Expanded(
+                            child: _Dato(
+                              etichetta: l10n.cadenza,
+                              valore:
+                                  sensoreBici.cadenza?.round().toString() ??
+                                  '–',
+                              unita: 'rpm',
+                              onTap: () => mostraSensoreBici(context),
+                            ),
+                          ),
+                      ],
+                    ),
+                  if (sensorePassi.disponibile)
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.passi,
+                            valore: fmtPassi(contaPassi.passi),
+                            unita: '',
+                          ),
+                        ),
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.passiAlMinuto,
+                            valore:
+                                contaPassi
+                                    .cadenza(DateTime.now())
+                                    ?.toString() ??
+                                '–',
+                            unita: '',
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (gps == null && _conBattito) _DatoBattito(zone: _zone),
+                  if (bici && sensoreBici.comandabile)
+                    ControlloErg(
+                      acceso: _ergAcceso,
+                      watt: _ergAcceso ? _wattErg : null,
+                      scala: _ergScala,
+                      cambia: (acceso) => setState(() {
+                        _ergAcceso = acceso;
+                        _comandaRullo();
+                      }),
+                      scalaCambia: (s) => setState(() {
+                        _ergScala = s;
+                        _comandaRullo();
+                      }),
+                    ),
+                ],
+              );
+            },
+          ),
+          if (_barre case final barre?) ...[
+            const SizedBox(height: 8),
+            DiagrammaInCorso(
+              barre: barre,
+              zone: _zonePotenza!,
+              corrente: i,
+              trascorso: _tempoBlocco.inSeconds,
+              durata: _durata,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   void _nuovoBlocco({required bool aMano}) {
     _inizioTratto = DateTime.now();
     _metriInizio = _metriOra;
@@ -1491,160 +1630,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             ),
                           )
                         : null,
-                    numeri: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListenableBuilder(
-                              listenable: Listenable.merge([
-                                sensoreBattito,
-                                sensoreBici,
-                              ]),
-                              builder: (_, _) {
-                                final bici = _bici && sensoreBici.ricordato;
-                                return Column(
-                                  spacing: 8,
-                                  children: [
-                                    const SizedBox.shrink(),
-                                    if (gps != null)
-                                      _GrigliaLive(
-                                        sport: widget.sport,
-                                        gps: gps!,
-                                        tempo: _tempoMedia,
-                                        ultimo: giri!.giri.lastOrNull,
-                                        zone: _zone,
-                                        // Pagina dei soli dati, senza testo
-                                        // sotto: numeri grandi, da leggere
-                                        // con un colpo d'occhio. Con watt e
-                                        // cadenza non ci starebbero: si torna
-                                        // alla griglia.
-                                        grande:
-                                            _senzaTesto &&
-                                            vistaMappa.value ==
-                                                VistaMappa.pagine &&
-                                            !_conWatt &&
-                                            !_conCadenza,
-                                      )
-                                    else if (bici)
-                                      // Rulli: velocità e km dal sensore.
-                                      Row(
-                                        spacing: 8,
-                                        children: [
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: l10n.velocita,
-                                              valore: fmtVelocita(
-                                                widget.sport,
-                                                sensoreBici.velocita,
-                                              ),
-                                              unita: 'km/h',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: l10n.distanza,
-                                              valore: (_metriSensore / 1000)
-                                                  .toStringAsFixed(2)
-                                                  .replaceAll('.', ','),
-                                              unita: 'km',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    // Solo i dati che arrivano davvero: un
-                                    // rullo ricordato ma lontano non conta.
-                                    if (_conWatt || _conCadenza)
-                                      Row(
-                                        spacing: 8,
-                                        children: [
-                                          if (_conWatt)
-                                            Expanded(
-                                              child: _DatoPotenza(
-                                                watt: _watt,
-                                                zone: _zonePotenza,
-                                                obiettivo: _rangeBlocco,
-                                                onTap: () =>
-                                                    mostraSensoreBici(context),
-                                              ),
-                                            ),
-                                          if (_conCadenza)
-                                            Expanded(
-                                              child: _Dato(
-                                                etichetta: l10n.cadenza,
-                                                valore:
-                                                    sensoreBici.cadenza
-                                                        ?.round()
-                                                        .toString() ??
-                                                    '–',
-                                                unita: 'rpm',
-                                                onTap: () =>
-                                                    mostraSensoreBici(context),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    if (sensorePassi.disponibile)
-                                      Row(
-                                        spacing: 8,
-                                        children: [
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: l10n.passi,
-                                              valore: fmtPassi(
-                                                contaPassi.passi,
-                                              ),
-                                              unita: '',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: l10n.passiAlMinuto,
-                                              valore:
-                                                  contaPassi
-                                                      .cadenza(DateTime.now())
-                                                      ?.toString() ??
-                                                  '–',
-                                              unita: '',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    if (gps == null && _conBattito)
-                                      _DatoBattito(zone: _zone),
-                                    if (bici && sensoreBici.comandabile)
-                                      ControlloErg(
-                                        acceso: _ergAcceso,
-                                        watt: _ergAcceso ? _wattErg : null,
-                                        scala: _ergScala,
-                                        cambia: (acceso) => setState(() {
-                                          _ergAcceso = acceso;
-                                          _comandaRullo();
-                                        }),
-                                        scalaCambia: (s) => setState(() {
-                                          _ergScala = s;
-                                          _comandaRullo();
-                                        }),
-                                      ),
-                                  ],
-                                );
-                              },
+                    // Attività libera all'aperto con le pagine: numeri
+                    // grandi finché ci stanno, poi la griglia.
+                    numeri:
+                        gps != null &&
+                            _senzaTesto &&
+                            vistaMappa.value == VistaMappa.pagine
+                        ? GrandeSeCiSta(
+                            grande: _numeri(context, grande: true),
+                            compatto: SingleChildScrollView(
+                              child: _numeri(context, grande: false),
                             ),
-                            if (_barre case final barre?) ...[
-                              const SizedBox(height: 8),
-                              DiagrammaInCorso(
-                                barre: barre,
-                                zone: _zonePotenza!,
-                                corrente: i,
-                                trascorso: _tempoBlocco.inSeconds,
-                                durata: _durata,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
+                          )
+                        : SingleChildScrollView(
+                            child: _numeri(context, grande: false),
+                          ),
                     testo: ListView(
                       shrinkWrap: true,
                       padding: _senzaTesto && _tempoPiatto

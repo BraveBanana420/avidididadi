@@ -7006,4 +7006,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String quantiPassi(Object p0) {
     return '$p0 βήματα';
   }
+
+  @override
+  String get passiDalTelefono => 'Βήματα από το κινητό';
+
+  @override
+  String get passiDalTelefonoSpiega =>
+      'Στο τρέξιμο και στο περπάτημα η εφαρμογή μετράει τα βήματα με τον αισθητήρα του κινητού (άδεια «Σωματική δραστηριότητα»), ακόμα και χωρίς ρολόι.';
+
+  @override
+  String get permessoPassiNegato =>
+      'Η άδεια «Σωματική δραστηριότητα» δεν έχει δοθεί: μπορείς να τη δώσεις από τις ρυθμίσεις της εφαρμογής, στις Άδειες.';
 }
