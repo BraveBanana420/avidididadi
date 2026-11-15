@@ -9,6 +9,7 @@ import 'percorso.dart';
 import 'registro_forza.dart';
 import 'serie_sessione.dart';
 import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 // I dati delle immagini da condividere (WhatsApp, Instagram…): una sessione
 // o la settimana. Qui solo numeri e testi; il disegno è in
@@ -90,7 +91,7 @@ Map<GraficaCondivisa, String> get nomiGrafiche => {
   GraficaCondivisa.poster: l10n.poster,
   GraficaCondivisa.kmPerKm: l10n.kmKm,
   GraficaCondivisa.profilo: l10n.salita,
-  GraficaCondivisa.ripetute: 'Ripetute',
+  GraficaCondivisa.ripetute: mostra('Ripetute'),
   GraficaCondivisa.esercizi: l10n.esercizi,
   GraficaCondivisa.muscoli: l10n.muscoli,
   GraficaCondivisa.seduta: l10n.seduta,
