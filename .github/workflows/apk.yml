@@ -1,0 +1,125 @@
+# APK firmato, costruito su GitHub.
+#
+# - A mano (Actions → "APK" → Run workflow), da qualsiasi ramo: l'APK resta
+#   negli "Artifacts" del lavoro per 30 giorni. Per provarlo sul telefono.
+# - Con un'etichetta v<versione> su main: l'APK e il file delle novità vanno
+#   in una Release (privata come il repository), da scaricare quando si vuole.
+#
+# La chiave di firma sta nei Secrets del repository (Settings → Secrets and
+# variables → Actions), mai nei file:
+#   KEYSTORE_BASE64   il file .jks in base64
+#   KEYSTORE_PASSWORD la password del keystore
+#   KEY_PASSWORD      la password della chiave
+#   KEY_ALIAS         l'alias della chiave (di solito "upload")
+
+name: APK
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # per creare la Release
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # serve a controllare che l'etichetta sia su main
+
+      - name: Versione
+        id: versione
+        run: |
+          v=$(grep '^version:' pubspec.yaml | sed 's/version: *//; s/+.*//')
+          echo "v=$v" >> "$GITHUB_OUTPUT"
+          echo "Versione $v"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            if [ "$GITHUB_REF_NAME" != "v$v" ]; then
+              echo "::error::L'etichetta $GITHUB_REF_NAME non è la versione di pubspec.yaml (v$v)."
+              exit 1
+            fi
+            if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+              echo "::error::L'APK per gli amici si fa da main: l'etichetta non è su main."
+              exit 1
+            fi
+          fi
+
+      - name: Controlla la chiave di firma
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Mancano i Secrets della firma (KEYSTORE_BASE64 e gli altri): vedi in cima a questo file."
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.9'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+      - name: Chiave di firma
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/firma.jks
+          {
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyPassword=$KEY_PASSWORD"
+            echo "keyAlias=${KEY_ALIAS:-upload}"
+            echo "storeFile=firma.jks"
+          } > android/key.properties
+
+      - run: flutter build apk --release --split-per-abi
+
+      - name: APK e novità
+        env:
+          V: ${{ steps.versione.outputs.v }}
+        run: |
+          mkdir -p uscita
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+            "uscita/Avidididadi-$V.apk"
+          # La sezione della versione nel CHANGELOG, senza il titolo.
+          awk -v v="## $V" '$0 == v {dentro=1; next} /^## / {dentro=0} dentro' \
+            CHANGELOG.md | sed '/./,$!d' > "uscita/Avidididadi-$V-novita.txt"
+          if [ ! -s "uscita/Avidididadi-$V-novita.txt" ]; then
+            echo "Nessuna sezione $V in CHANGELOG.md" > "uscita/Avidididadi-$V-novita.txt"
+          fi
+          ls -l uscita
+
+      - name: Togli la chiave
+        if: always()
+        run: rm -f android/app/firma.jks android/key.properties
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Avidididadi-${{ steps.versione.outputs.v }}
+          path: uscita/
+          retention-days: 30
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Avidididadi ${{ steps.versione.outputs.v }}
+          body_path: uscita/Avidididadi-${{ steps.versione.outputs.v }}-novita.txt
+          files: |
+            uscita/Avidididadi-${{ steps.versione.outputs.v }}.apk
+            uscita/Avidididadi-${{ steps.versione.outputs.v }}-novita.txt

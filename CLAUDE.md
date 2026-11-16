@@ -139,6 +139,9 @@ adb -s RFCY916AAVK install -r build/app/outputs/flutter-apk/app-arm64-v8a-releas
 ```
 
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
+- **APK su GitHub** (`.github/workflows/apk.yml`, anche dalle sessioni nel cloud, dove la chiave non c'è): la chiave di firma sta nei Secrets del repository (`KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS`). Il workflow fa `analyze`, `test` e l'APK arm64 firmato `Avidididadi-<versione>.apk` con le novità prese da `CHANGELOG.md`.
+  - A mano (Actions → APK → Run workflow), da qualsiasi ramo: APK negli Artifacts per 30 giorni, per le prove.
+  - Con l'etichetta `v<versione>` su main: APK e `-novita.txt` in una Release (privata come il repository). Il workflow si ferma se l'etichetta non è su main o non è la versione di `pubspec.yaml`. Da lì si scarica e si copia sul Desktop.
 - **Telefono** (Samsung `RFCY916AAVK`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.
 - **Versione** (`version:` in `pubspec.yaml`, versionamento semantico `MAJOR.MINOR.PATCH+build`): alzala tu **solo quando installi l'app sul telefono** (o prepari l'APK per gli amici), non a ogni modifica: guarda tutte le modifiche dall'ultima installazione e scegli il salto più grande.
