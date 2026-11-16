@@ -251,6 +251,20 @@ void main() {
     });
   });
 
+  test('FTP scritto con la versione di prima: confermato adesso', () {
+    final p = Profilo()..ftpManuale = 245;
+    expect(datePerSoglieVecchie(p, oggi), isTrue);
+    expect(p.ftpData, oggi);
+    expect(p.passoCriticoData, isNull); // nessun passo scritto
+    expect(datePerSoglieVecchie(p, oggi), isFalse); // una volta sola
+  });
+
+  test('il nome dato sull\'orologio dice il test', () {
+    expect(testBiciDa('Ramp test'), 'rampa');
+    expect(testBiciDa('Test FTP rampa'), 'rampa');
+    expect(testBiciDa('FTP 20 min'), 'venti');
+  });
+
   test('il nome dice il test', () {
     expect(testBiciDa('Test FTP $nomeTestFtpBiciRampa'), 'rampa');
     expect(testBiciDa('Test FTP'), 'venti');

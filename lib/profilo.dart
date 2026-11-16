@@ -196,6 +196,21 @@ class Profilo {
   }
 }
 
+/// Dà una data all'FTP e al passo critico scritti prima che l'app salvasse
+/// quando sono stati confermati. Vero se ha cambiato qualcosa.
+bool datePerSoglieVecchie(Profilo p, DateTime oggi) {
+  var cambiato = false;
+  if (p.ftpManuale > 0 && p.ftpData == null) {
+    p.ftpData = oggi;
+    cambiato = true;
+  }
+  if (p.passoCriticoManuale > 0 && p.passoCriticoData == null) {
+    p.passoCriticoData = oggi;
+    cambiato = true;
+  }
+  return cambiato;
+}
+
 /// Campi delle misure corporee, nell'ordine delle colonne di misure.csv.
 const campiMisure = [
   'peso_kg',

@@ -290,6 +290,11 @@ class AppState extends ChangeNotifier {
       await Storage.readTabella('schede_esercizi.csv'),
     );
     profilo = Profilo.da(await Storage.readTabella('profilo.csv'));
+    // FTP e passo scritti con una versione senza le date: valgono come
+    // confermati adesso, altrimenti l'app proporrebbe subito un altro test.
+    if (datePerSoglieVecchie(profilo, soloData(DateTime.now()))) {
+      await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    }
     assistente = ConfigAssistente.da(
       await Storage.readTabella('assistente.csv'),
     );

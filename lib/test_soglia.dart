@@ -25,10 +25,11 @@ bool eTest(String testo) =>
     RegExp(r'\btest\b|\bftp\b', caseSensitive: false).hasMatch(testo);
 
 /// Il test di bici scritto in un testo: "rampa", "venti" o vuoto se non è un
-/// test.
+/// test. Vale anche il nome dato sull'orologio ("Ramp test", "Test FTP").
 String testBiciDa(String testo) {
   if (!eTest(testo)) return '';
-  return testo.toLowerCase().contains('rampa') ? 'rampa' : 'venti';
+  final t = testo.toLowerCase();
+  return t.contains('ramp') || t.contains('ράμπα') ? 'rampa' : 'venti';
 }
 
 WorkoutStep _passo(
