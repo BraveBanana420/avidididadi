@@ -6964,4 +6964,245 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get intervalliFatti => 'Intervals';
+
+  @override
+  String get tsPedalataFacile => 'Easy pedaling';
+
+  @override
+  String get tsPedalaSciolto => 'Spin easy. The real test starts after this.';
+
+  @override
+  String tsGradinoRampa(Object p0) {
+    return 'Ramp: step $p0';
+  }
+
+  @override
+  String get tsRampaNota =>
+      'Each minute a bit harder. Keep going until you can\'t hold the cadence anymore, then tap Next until the cool-down.';
+
+  @override
+  String get tsRisultatoNeiGrafici =>
+      'You\'ll find the result in this ride\'s charts.';
+
+  @override
+  String get tsMinutiSvelti => 'Fast minutes';
+
+  @override
+  String get tsMinutiSveltiNota =>
+      'Fast but not all-out: they wake up your legs.';
+
+  @override
+  String get tsVentiSenzaFtp =>
+      'The hardest effort you can hold to the end, steady. Start a little easy and finish strong.';
+
+  @override
+  String tsVentiConFtp(Object p0) {
+    return 'Start around $p0 W and hold it: if you feel good after 10 minutes, push a bit more. Finish strong.';
+  }
+
+  @override
+  String get tsStileSceltaFacile => 'Any stroke, easy';
+
+  @override
+  String get tsStileLiberoProgressione => 'Freestyle, building';
+
+  @override
+  String get tsOgni50Svelto => 'Each 50 m a bit faster.';
+
+  @override
+  String get tsTest400 => 'Test: 400 m all-out';
+
+  @override
+  String get tsTest400Nota =>
+      'As fast as you can hold, steady, without starting too hard. Note your time.';
+
+  @override
+  String get tsTest200 => 'Test: 200 m all-out';
+
+  @override
+  String get tsTest200Nota =>
+      'As fast as you can hold. Note your time, then enter both times in Profile → My zones.';
+
+  @override
+  String get tsMancaFtp =>
+      'We don\'t know your FTP yet: without it, workouts go by feel.';
+
+  @override
+  String get tsMancaPasso =>
+      'We don\'t know your critical swim speed yet: without it, workouts go by feel.';
+
+  @override
+  String get tsVecchioFtp =>
+      'Your FTP hasn\'t been updated for over 8 weeks: you may have improved since.';
+
+  @override
+  String get tsVecchioPasso =>
+      'Your critical swim speed hasn\'t been updated for over 8 weeks: you may have improved since.';
+
+  @override
+  String get tsTroppoFacile =>
+      'Your last intervals felt easy: your FTP may be higher.';
+
+  @override
+  String get tsTroppoDuro =>
+      'You couldn\'t finish your last intervals: your FTP may be too high.';
+
+  @override
+  String get tsTestFtpBici => 'Bike FTP test';
+
+  @override
+  String get tsRulloSmart => 'Smart trainer';
+
+  @override
+  String get tsSuStrada => 'On the road';
+
+  @override
+  String get tsRampaTesto1 =>
+      '10 easy minutes, then a ramp: every minute the trainer asks for a few more watts, until you can\'t go on. About 25 minutes in all.';
+
+  @override
+  String get tsRampaTesto2 =>
+      'In ERG the trainer holds the watts by itself: you don\'t need to know how hard to push. Your FTP is 75% of your best minute.';
+
+  @override
+  String get tsVentiTesto1 =>
+      'Warm-up with 3 fast minutes, then 20 minutes as hard as you can hold, then 10 easy minutes. About 55 minutes.';
+
+  @override
+  String get tsVentiTesto2Senza =>
+      'Without an FTP you go by feel: start a little easy and finish strong. You need a power meter.';
+
+  @override
+  String tsVentiTesto2Con(Object p0) {
+    return 'You start around your current FTP ($p0 W). You need a power meter.';
+  }
+
+  @override
+  String get tsVentiTesto3 => 'Your FTP is 95% of the 20-minute average.';
+
+  @override
+  String get tsNuotoTesto1 =>
+      'Warm-up, then 400 m as fast as you can hold, a 5-minute break and 200 m all-out. About 1300 m in all.';
+
+  @override
+  String get tsNuotoTesto2 =>
+      'Note both times (your watch or the pool clock): your critical swim speed is the difference divided by 2.';
+
+  @override
+  String get tsHoFattoTest => 'I did the test: enter the times';
+
+  @override
+  String get tsTempiTest => 'Test times';
+
+  @override
+  String get tsEs400 => 'm:ss, e.g. 8:20';
+
+  @override
+  String get tsEs200 => 'm:ss, e.g. 3:55';
+
+  @override
+  String get tsCalcola => 'Calculate';
+
+  @override
+  String get tsControllaTempi =>
+      'Check the times (m:ss): the 400 must be at least almost twice the 200.';
+
+  @override
+  String tsPassoSalvato(Object p0) {
+    return 'Critical swim speed: $p0. Saved.';
+  }
+
+  @override
+  String tsTestNelCalendario(Object p0) {
+    return 'Test in the calendar: $p0. It replaces that day\'s workout.';
+  }
+
+  @override
+  String get tsSeNonSaiTest => 'If you don\'t know it, take the test below.';
+
+  @override
+  String get tsFaiTestCalcolarlo => 'Take the test to calculate it';
+
+  @override
+  String tsUsciteDicono(Object p0) {
+    return 'Your rides say $p0 W';
+  }
+
+  @override
+  String tsDalTest(Object p0) {
+    return 'From the test on $p0.';
+  }
+
+  @override
+  String tsHaiTenuto(Object p0, Object p1, Object p2) {
+    return 'On $p0 you held $p1 W for 20 minutes: your FTP is at least $p2 W.';
+  }
+
+  @override
+  String get tsUsaloComeFtp => 'Use it as FTP';
+
+  @override
+  String tsTuoFtp(Object p0) {
+    return 'Your FTP: $p0 W';
+  }
+
+  @override
+  String tsComeRampa(Object p0) {
+    return 'It\'s 75% of your best minute in the ramp ($p0 W).';
+  }
+
+  @override
+  String tsComeVenti(Object p0) {
+    return 'It\'s 95% of your 20 test minutes ($p0 W average).';
+  }
+
+  @override
+  String tsComeUscita(Object p0) {
+    return 'It\'s 95% of your best 20 minutes ($p0 W). Without a test it only says you\'re at least at this level.';
+  }
+
+  @override
+  String tsAdessoUsi(Object p0) {
+    return 'You currently use $p0 W.';
+  }
+
+  @override
+  String tsPropostaPrima(Object p0) {
+    return 'From your rides your bike FTP is at least $p0 W. Use it for your zones?';
+  }
+
+  @override
+  String tsPropostaSalito(Object p0, Object p1) {
+    return 'Your rides say your bike FTP went up: $p0 W (was $p1). Update it?';
+  }
+
+  @override
+  String get tsAggiorna => 'Update';
+
+  @override
+  String get tsTestRampaRullo => 'Ramp FTP test on the trainer';
+
+  @override
+  String get tsTestNuotoPiscina => 'Critical swim speed test in the pool';
+
+  @override
+  String tsPropostaTest(Object p0, Object p1, Object p2) {
+    return '$p0 $p1: $p2?';
+  }
+
+  @override
+  String tsPropostaTestAlPosto(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0 $p1: $p2, instead of $p3?';
+  }
+
+  @override
+  String get tsMettilo => 'Add it';
+
+  @override
+  String tsTestNelCalendarioBreve(Object p0) {
+    return 'Test in the calendar: $p0.';
+  }
+
+  @override
+  String get tsNonRiuscito => 'I couldn\'t add it to the calendar.';
 }

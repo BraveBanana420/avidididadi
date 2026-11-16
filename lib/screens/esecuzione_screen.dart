@@ -1358,6 +1358,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           ),
         );
       }
+      // I watt migliori servono alla stima dell'FTP (e al risultato dei test).
+      if (_seriePotenza.isNotEmpty) {
+        await widget.state.registraPotenza(fatta, _seriePotenza);
+      }
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }

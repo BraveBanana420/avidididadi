@@ -34,6 +34,9 @@ tracciamento. L'app è in italiano, inglese e greco.
 - **Rullo smart** (FTMS, es. Tacx Flux S): modalità ERG con i watt di ogni
   blocco, calibrazione dall'app; fasce cardio e sensori della bici via
   Bluetooth.
+- **Test delle soglie**: test FTP in bici (a rampa sul rullo o da 20 minuti
+  su strada) e di corsa, test del passo critico in piscina; l'FTP si stima
+  anche dalle uscite e un test si propone solo quando serve.
 - **Health Connect** (solo lettura): sessioni di Garmin, Freeletics e altre
   app, battito, sonno, HRV, percorsi.
 - **intervals.icu** (facoltativo, con la tua chiave API): attività complete da

@@ -6990,4 +6990,245 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get intervalliFatti => 'Intervalli';
+
+  @override
+  String get tsPedalataFacile => 'Pedalata facile';
+
+  @override
+  String get tsPedalaSciolto => 'Pedala sciolto. Il test vero comincia dopo.';
+
+  @override
+  String tsGradinoRampa(Object p0) {
+    return 'Rampa: gradino $p0';
+  }
+
+  @override
+  String get tsRampaNota =>
+      'Ogni minuto un po\' più duro. Vai avanti finché non riesci più a tenere la cadenza: poi tocca Avanti fino al defaticamento.';
+
+  @override
+  String get tsRisultatoNeiGrafici =>
+      'Il risultato lo trovi nei grafici di questa uscita.';
+
+  @override
+  String get tsMinutiSvelti => 'Minuti svelti';
+
+  @override
+  String get tsMinutiSveltiNota =>
+      'Svelti ma non al massimo: svegliano le gambe.';
+
+  @override
+  String get tsVentiSenzaFtp =>
+      'Il ritmo più forte che riesci a tenere fino alla fine, costante. Parti un po\' piano e chiudi in crescendo.';
+
+  @override
+  String tsVentiConFtp(Object p0) {
+    return 'Parti intorno a $p0 W e tienili: se dopo 10 minuti stai bene, alza un po\'. Chiudi in crescendo.';
+  }
+
+  @override
+  String get tsStileSceltaFacile => 'Stile a scelta, facile';
+
+  @override
+  String get tsStileLiberoProgressione => 'Stile libero in progressione';
+
+  @override
+  String get tsOgni50Svelto => 'Ogni 50 m un po\' più svelto.';
+
+  @override
+  String get tsTest400 => 'Test: 400 m al massimo';
+
+  @override
+  String get tsTest400Nota =>
+      'Il più veloce che riesci a tenere, costante, senza partire troppo forte. Segnati il tempo.';
+
+  @override
+  String get tsTest200 => 'Test: 200 m al massimo';
+
+  @override
+  String get tsTest200Nota =>
+      'Il più veloce che riesci a tenere. Segnati il tempo, poi scrivi i due tempi in Profilo → Le mie zone.';
+
+  @override
+  String get tsMancaFtp =>
+      'Non sappiamo ancora il tuo FTP: senza, le sedute vanno a sensazione.';
+
+  @override
+  String get tsMancaPasso =>
+      'Non sappiamo ancora il tuo passo critico: senza, le sedute vanno a sensazione.';
+
+  @override
+  String get tsVecchioFtp =>
+      'Il tuo FTP non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.';
+
+  @override
+  String get tsVecchioPasso =>
+      'Il tuo passo critico non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.';
+
+  @override
+  String get tsTroppoFacile =>
+      'Gli ultimi intervalli ti sono sembrati facili: forse l\'FTP è più alto.';
+
+  @override
+  String get tsTroppoDuro =>
+      'Gli ultimi intervalli non sei riuscito a finirli: forse l\'FTP è troppo alto.';
+
+  @override
+  String get tsTestFtpBici => 'Test FTP in bici';
+
+  @override
+  String get tsRulloSmart => 'Rullo smart';
+
+  @override
+  String get tsSuStrada => 'Su strada';
+
+  @override
+  String get tsRampaTesto1 =>
+      '10 minuti facili, poi una rampa: ogni minuto il rullo chiede qualche watt in più, finché non ce la fai più. Circa 25 minuti in tutto.';
+
+  @override
+  String get tsRampaTesto2 =>
+      'Il rullo in ERG tiene i watt da solo: non serve sapere quanto spingere. L\'FTP è il 75% del tuo minuto migliore.';
+
+  @override
+  String get tsVentiTesto1 =>
+      'Riscaldamento con 3 minuti svelti, poi 20 minuti al massimo che riesci a tenere, poi 10 minuti sciolti. Circa 55 minuti.';
+
+  @override
+  String get tsVentiTesto2Senza =>
+      'Senza un FTP si va a sensazione: parti un po\' piano e chiudi in crescendo. Serve un sensore di potenza.';
+
+  @override
+  String tsVentiTesto2Con(Object p0) {
+    return 'Si parte intorno al tuo FTP di adesso ($p0 W). Serve un sensore di potenza.';
+  }
+
+  @override
+  String get tsVentiTesto3 => 'L\'FTP è il 95% della media dei 20 minuti.';
+
+  @override
+  String get tsNuotoTesto1 =>
+      'Riscaldamento, poi 400 m al massimo che riesci a tenere, 5 minuti di pausa e 200 m al massimo. Circa 1300 m in tutto.';
+
+  @override
+  String get tsNuotoTesto2 =>
+      'Segnati i due tempi (l\'orologio o il cronometro della piscina): il passo critico è la differenza divisa per 2.';
+
+  @override
+  String get tsHoFattoTest => 'Ho fatto il test: scrivi i tempi';
+
+  @override
+  String get tsTempiTest => 'I tempi del test';
+
+  @override
+  String get tsEs400 => 'm:ss, es. 8:20';
+
+  @override
+  String get tsEs200 => 'm:ss, es. 3:55';
+
+  @override
+  String get tsCalcola => 'Calcola';
+
+  @override
+  String get tsControllaTempi =>
+      'Controlla i tempi (m:ss): il 400 deve essere almeno quasi il doppio del 200.';
+
+  @override
+  String tsPassoSalvato(Object p0) {
+    return 'Passo critico: $p0. Salvato.';
+  }
+
+  @override
+  String tsTestNelCalendario(Object p0) {
+    return 'Test nel calendario: $p0. Prende il posto della seduta di quel giorno.';
+  }
+
+  @override
+  String get tsSeNonSaiTest => 'Se non lo sai, fai il test qui sotto.';
+
+  @override
+  String get tsFaiTestCalcolarlo => 'Fai il test per calcolarlo';
+
+  @override
+  String tsUsciteDicono(Object p0) {
+    return 'Le tue uscite dicono $p0 W';
+  }
+
+  @override
+  String tsDalTest(Object p0) {
+    return 'Dal test del $p0.';
+  }
+
+  @override
+  String tsHaiTenuto(Object p0, Object p1, Object p2) {
+    return 'Il $p0 hai tenuto $p1 W per 20 minuti: il tuo FTP è almeno $p2 W.';
+  }
+
+  @override
+  String get tsUsaloComeFtp => 'Usalo come FTP';
+
+  @override
+  String tsTuoFtp(Object p0) {
+    return 'Il tuo FTP: $p0 W';
+  }
+
+  @override
+  String tsComeRampa(Object p0) {
+    return 'È il 75% del tuo minuto migliore nella rampa ($p0 W).';
+  }
+
+  @override
+  String tsComeVenti(Object p0) {
+    return 'È il 95% dei tuoi 20 minuti del test ($p0 W di media).';
+  }
+
+  @override
+  String tsComeUscita(Object p0) {
+    return 'È il 95% dei tuoi migliori 20 minuti ($p0 W). Senza un test dice solo che sei almeno a questo livello.';
+  }
+
+  @override
+  String tsAdessoUsi(Object p0) {
+    return 'Adesso usi $p0 W.';
+  }
+
+  @override
+  String tsPropostaPrima(Object p0) {
+    return 'Dalle tue uscite il tuo FTP in bici è almeno $p0 W. Lo uso per le zone?';
+  }
+
+  @override
+  String tsPropostaSalito(Object p0, Object p1) {
+    return 'Le tue uscite dicono che il tuo FTP in bici è salito: $p0 W (prima $p1). Lo aggiorno?';
+  }
+
+  @override
+  String get tsAggiorna => 'Aggiorna';
+
+  @override
+  String get tsTestRampaRullo => 'Test FTP a rampa sul rullo';
+
+  @override
+  String get tsTestNuotoPiscina => 'Test del passo critico in piscina';
+
+  @override
+  String tsPropostaTest(Object p0, Object p1, Object p2) {
+    return '$p0 $p1: $p2?';
+  }
+
+  @override
+  String tsPropostaTestAlPosto(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0 $p1: $p2, al posto di $p3?';
+  }
+
+  @override
+  String get tsMettilo => 'Mettilo';
+
+  @override
+  String tsTestNelCalendarioBreve(Object p0) {
+    return 'Test nel calendario: $p0.';
+  }
+
+  @override
+  String get tsNonRiuscito => 'Non sono riuscito a metterlo nel calendario.';
 }

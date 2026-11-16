@@ -10,6 +10,7 @@ import '../percorso.dart';
 import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import '../l10n/lingua.dart';
 
@@ -112,6 +113,11 @@ class _GraficiScreenState extends State<GraficiScreen> {
                     zone: widget.state.zonePotenza,
                   ),
                   const SizedBox(height: 12),
+                  _SogliaDaBici(
+                    state: widget.state,
+                    sessione: s,
+                    serie: serie.potenza,
+                  ),
                 ] else if (stessoSport(s.sport, 'Corsa')) ...[
                   ListenableBuilder(
                     listenable: widget.state,
@@ -466,6 +472,68 @@ class _SogliaDaCorsa extends StatelessWidget {
                   onPressed: () => state.impostaFtpCorsa(soglia),
                   icon: const Icon(Icons.check_rounded),
                   label: Text(l10n.usalaComeFtpCorsa),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Dopo un test in bici, o un'uscita più forte dell'FTP di adesso: propone
+/// l'FTP nuovo. Dal test vale anche se è più basso.
+class _SogliaDaBici extends StatelessWidget {
+  final AppState state;
+  final Sessione sessione;
+  final List<Campione> serie;
+  const _SogliaDaBici({
+    required this.state,
+    required this.sessione,
+    required this.serie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final test = state.testBiciDel(sessione);
+    final p = potenzaMiglioreDa(sessione.id, sessione.data, serie, test: test);
+    final ftp = p?.ftp;
+    if (p == null || ftp == null || ftp < 50 || ftp > 600) {
+      return const SizedBox.shrink();
+    }
+    return ListenableBuilder(
+      listenable: state,
+      builder: (context, _) {
+        final attuale = state.ftpBici;
+        // Un'uscita normale dice solo "almeno": vale se è più alta del 3%.
+        final mostra = test.isNotEmpty
+            ? ftp != attuale
+            : attuale == null || ftp >= attuale * 1.03;
+        if (!mostra) return const SizedBox.shrink();
+        final come = switch (test) {
+          'rampa' => l10n.tsComeRampa(p.w1),
+          'venti' => l10n.tsComeVenti(p.w20),
+          _ => l10n.tsComeUscita(p.w20),
+        };
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SuperficiePulse(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tsTuoFtp(ftp), style: t.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  attuale == null ? come : '$come ${l10n.tsAdessoUsi(attuale)}',
+                  style: t.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () => state.impostaFtp(ftp),
+                  icon: const Icon(Icons.check_rounded),
+                  label: Text(l10n.tsUsaloComeFtp),
                 ),
               ],
             ),

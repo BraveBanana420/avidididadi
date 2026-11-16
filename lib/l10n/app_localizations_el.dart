@@ -7020,4 +7020,247 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get intervalliFatti => 'Διαστήματα';
+
+  @override
+  String get tsPedalataFacile => 'Εύκολο πετάλι';
+
+  @override
+  String get tsPedalaSciolto =>
+      'Κάνε χαλαρό πετάλι. Το κανονικό τεστ ξεκινά μετά.';
+
+  @override
+  String tsGradinoRampa(Object p0) {
+    return 'Ράμπα: σκαλί $p0';
+  }
+
+  @override
+  String get tsRampaNota =>
+      'Κάθε λεπτό λίγο πιο δύσκολα. Συνέχισε μέχρι να μην μπορείς να κρατήσεις τον ρυθμό πεταλιού· μετά πάτα Επόμενο μέχρι την αποθεραπεία.';
+
+  @override
+  String get tsRisultatoNeiGrafici =>
+      'Το αποτέλεσμα θα το βρεις στα γραφήματα αυτής της διαδρομής.';
+
+  @override
+  String get tsMinutiSvelti => 'Γρήγορα λεπτά';
+
+  @override
+  String get tsMinutiSveltiNota =>
+      'Γρήγορα αλλά όχι στο μέγιστο: ξυπνούν τα πόδια.';
+
+  @override
+  String get tsVentiSenzaFtp =>
+      'Η πιο δυνατή προσπάθεια που μπορείς να κρατήσεις ως το τέλος, σταθερά. Ξεκίνα λίγο χαλαρά και τελείωσε δυνατά.';
+
+  @override
+  String tsVentiConFtp(Object p0) {
+    return 'Ξεκίνα γύρω στα $p0 W και κράτα τα: αν μετά από 10 λεπτά νιώθεις καλά, ανέβασε λίγο. Τελείωσε δυνατά.';
+  }
+
+  @override
+  String get tsStileSceltaFacile => 'Ελεύθερη επιλογή στυλ, χαλαρά';
+
+  @override
+  String get tsStileLiberoProgressione => 'Ελεύθερο με προοδευτική αύξηση';
+
+  @override
+  String get tsOgni50Svelto => 'Κάθε 50 μ. λίγο πιο γρήγορα.';
+
+  @override
+  String get tsTest400 => 'Τεστ: 400 μ. στο μέγιστο';
+
+  @override
+  String get tsTest400Nota =>
+      'Όσο πιο γρήγορα μπορείς να κρατήσεις, σταθερά, χωρίς να ξεκινήσεις πολύ δυνατά. Σημείωσε τον χρόνο.';
+
+  @override
+  String get tsTest200 => 'Τεστ: 200 μ. στο μέγιστο';
+
+  @override
+  String get tsTest200Nota =>
+      'Όσο πιο γρήγορα μπορείς να κρατήσεις. Σημείωσε τον χρόνο και μετά γράψε τους δύο χρόνους στο Προφίλ → Οι ζώνες μου.';
+
+  @override
+  String get tsMancaFtp =>
+      'Δεν ξέρουμε ακόμα το FTP σου: χωρίς αυτό, οι προπονήσεις γίνονται με την αίσθηση.';
+
+  @override
+  String get tsMancaPasso =>
+      'Δεν ξέρουμε ακόμα τον κρίσιμο ρυθμό σου: χωρίς αυτόν, οι προπονήσεις γίνονται με την αίσθηση.';
+
+  @override
+  String get tsVecchioFtp =>
+      'Το FTP σου δεν έχει ενημερωθεί πάνω από 8 εβδομάδες: μπορεί να έχεις βελτιωθεί στο μεταξύ.';
+
+  @override
+  String get tsVecchioPasso =>
+      'Ο κρίσιμος ρυθμός σου δεν έχει ενημερωθεί πάνω από 8 εβδομάδες: μπορεί να έχεις βελτιωθεί στο μεταξύ.';
+
+  @override
+  String get tsTroppoFacile =>
+      'Τα τελευταία διαλειμματικά σου φάνηκαν εύκολα: ίσως το FTP είναι υψηλότερο.';
+
+  @override
+  String get tsTroppoDuro =>
+      'Δεν κατάφερες να τελειώσεις τα τελευταία διαλειμματικά: ίσως το FTP είναι πολύ υψηλό.';
+
+  @override
+  String get tsTestFtpBici => 'Τεστ FTP ποδηλάτου';
+
+  @override
+  String get tsRulloSmart => 'Έξυπνο προπονητήριο';
+
+  @override
+  String get tsSuStrada => 'Στον δρόμο';
+
+  @override
+  String get tsRampaTesto1 =>
+      '10 εύκολα λεπτά και μετά μια ράμπα: κάθε λεπτό το προπονητήριο ζητά λίγα watt παραπάνω, μέχρι να μην μπορείς άλλο. Περίπου 25 λεπτά συνολικά.';
+
+  @override
+  String get tsRampaTesto2 =>
+      'Σε ERG το προπονητήριο κρατά μόνο του τα watt: δεν χρειάζεται να ξέρεις πόσο να πιέσεις. Το FTP είναι το 75% του καλύτερου λεπτού σου.';
+
+  @override
+  String get tsVentiTesto1 =>
+      'Ζέσταμα με 3 γρήγορα λεπτά, μετά 20 λεπτά όσο πιο δυνατά μπορείς να κρατήσεις και μετά 10 χαλαρά λεπτά. Περίπου 55 λεπτά.';
+
+  @override
+  String get tsVentiTesto2Senza =>
+      'Χωρίς FTP πας με την αίσθηση: ξεκίνα λίγο χαλαρά και τελείωσε δυνατά. Χρειάζεται μετρητής ισχύος.';
+
+  @override
+  String tsVentiTesto2Con(Object p0) {
+    return 'Ξεκινάς γύρω από το τωρινό σου FTP ($p0 W). Χρειάζεται μετρητής ισχύος.';
+  }
+
+  @override
+  String get tsVentiTesto3 =>
+      'Το FTP είναι το 95% του μέσου όρου των 20 λεπτών.';
+
+  @override
+  String get tsNuotoTesto1 =>
+      'Ζέσταμα, μετά 400 μ. όσο πιο γρήγορα μπορείς, 5 λεπτά διάλειμμα και 200 μ. στο μέγιστο. Περίπου 1300 μ. συνολικά.';
+
+  @override
+  String get tsNuotoTesto2 =>
+      'Σημείωσε τους δύο χρόνους (ρολόι ή χρονόμετρο της πισίνας): ο κρίσιμος ρυθμός είναι η διαφορά διά 2.';
+
+  @override
+  String get tsHoFattoTest => 'Έκανα το τεστ: γράψε τους χρόνους';
+
+  @override
+  String get tsTempiTest => 'Οι χρόνοι του τεστ';
+
+  @override
+  String get tsEs400 => 'λ:δδ, π.χ. 8:20';
+
+  @override
+  String get tsEs200 => 'λ:δδ, π.χ. 3:55';
+
+  @override
+  String get tsCalcola => 'Υπολογισμός';
+
+  @override
+  String get tsControllaTempi =>
+      'Έλεγξε τους χρόνους (λ:δδ): το 400 πρέπει να είναι τουλάχιστον σχεδόν διπλάσιο από το 200.';
+
+  @override
+  String tsPassoSalvato(Object p0) {
+    return 'Κρίσιμος ρυθμός: $p0. Αποθηκεύτηκε.';
+  }
+
+  @override
+  String tsTestNelCalendario(Object p0) {
+    return 'Τεστ στο ημερολόγιο: $p0. Παίρνει τη θέση της προπόνησης εκείνης της μέρας.';
+  }
+
+  @override
+  String get tsSeNonSaiTest => 'Αν δεν το ξέρεις, κάνε το τεστ παρακάτω.';
+
+  @override
+  String get tsFaiTestCalcolarlo => 'Κάνε το τεστ για να το υπολογίσεις';
+
+  @override
+  String tsUsciteDicono(Object p0) {
+    return 'Οι διαδρομές σου λένε $p0 W';
+  }
+
+  @override
+  String tsDalTest(Object p0) {
+    return 'Από το τεστ της $p0.';
+  }
+
+  @override
+  String tsHaiTenuto(Object p0, Object p1, Object p2) {
+    return 'Στις $p0 κράτησες $p1 W για 20 λεπτά: το FTP σου είναι τουλάχιστον $p2 W.';
+  }
+
+  @override
+  String get tsUsaloComeFtp => 'Χρησιμοποίησέ το ως FTP';
+
+  @override
+  String tsTuoFtp(Object p0) {
+    return 'Το FTP σου: $p0 W';
+  }
+
+  @override
+  String tsComeRampa(Object p0) {
+    return 'Είναι το 75% του καλύτερου λεπτού σου στη ράμπα ($p0 W).';
+  }
+
+  @override
+  String tsComeVenti(Object p0) {
+    return 'Είναι το 95% των 20 λεπτών του τεστ ($p0 W μέσος όρος).';
+  }
+
+  @override
+  String tsComeUscita(Object p0) {
+    return 'Είναι το 95% των καλύτερων 20 λεπτών σου ($p0 W). Χωρίς τεστ δείχνει μόνο ότι είσαι τουλάχιστον σε αυτό το επίπεδο.';
+  }
+
+  @override
+  String tsAdessoUsi(Object p0) {
+    return 'Τώρα χρησιμοποιείς $p0 W.';
+  }
+
+  @override
+  String tsPropostaPrima(Object p0) {
+    return 'Από τις διαδρομές σου το FTP ποδηλάτου είναι τουλάχιστον $p0 W. Να το χρησιμοποιήσω για τις ζώνες;';
+  }
+
+  @override
+  String tsPropostaSalito(Object p0, Object p1) {
+    return 'Οι διαδρομές σου λένε ότι το FTP ποδηλάτου ανέβηκε: $p0 W (πριν $p1). Να το ενημερώσω;';
+  }
+
+  @override
+  String get tsAggiorna => 'Ενημέρωση';
+
+  @override
+  String get tsTestRampaRullo => 'Τεστ FTP ράμπας στο προπονητήριο';
+
+  @override
+  String get tsTestNuotoPiscina => 'Τεστ κρίσιμου ρυθμού στην πισίνα';
+
+  @override
+  String tsPropostaTest(Object p0, Object p1, Object p2) {
+    return '$p0 $p1: $p2;';
+  }
+
+  @override
+  String tsPropostaTestAlPosto(Object p0, Object p1, Object p2, Object p3) {
+    return '$p0 $p1: $p2, στη θέση του $p3;';
+  }
+
+  @override
+  String get tsMettilo => 'Πρόσθεσέ το';
+
+  @override
+  String tsTestNelCalendarioBreve(Object p0) {
+    return 'Τεστ στο ημερολόγιο: $p0.';
+  }
+
+  @override
+  String get tsNonRiuscito => 'Δεν κατάφερα να το προσθέσω στο ημερολόγιο.';
 }

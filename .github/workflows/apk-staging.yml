@@ -1,0 +1,119 @@
+# APK firmato a ogni push su staging (o a mano da Actions → "APK di prova"
+# → Run workflow): lo stesso APK da installare sul telefono e da dare ai
+# tester, scaricabile dagli Artifacts del lavoro per 30 giorni.
+#
+# Usa gli stessi Secrets della firma di release.yml (ANDROID_KEYSTORE_BASE64,
+# ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_PASSWORD, ANDROID_KEY_ALIAS). Se
+# mancano, il lavoro si ferma con un avviso e senza errore: analisi e test li
+# fa già ci.yml.
+name: APK di prova
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apk-staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: APK firmato di staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Ci sono i secrets della firma?
+        id: firma
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          for n in KEYSTORE STORE_PW KEY_PW ALIAS; do
+            if [ -z "${!n}" ]; then
+              echo "::notice::Mancano i secrets della firma (vedi l'inizio di release.yml): niente APK firmato."
+              echo "ok=no" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "ok=si" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v5
+        if: steps.firma.outputs.ok == 'si'
+
+      # Il runner ha poco disco: NDK, mappe e Gradle lo riempiono.
+      - name: Libera spazio sul disco
+        if: steps.firma.outputs.ok == 'si'
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/.ghcup \
+            /usr/local/share/boost /usr/share/swift \
+            "$RUNNER_TOOL_CACHE/CodeQL"
+
+      - uses: actions/setup-java@v5
+        if: steps.firma.outputs.ok == 'si'
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        if: steps.firma.outputs.ok == 'si'
+        with:
+          flutter-version: "3.47.9"
+          channel: stable
+          cache: true
+
+      - name: Versione
+        if: steps.firma.outputs.ok == 'si'
+        id: versione
+        run: |
+          v=$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)
+          echo "numero=$v" >> "$GITHUB_OUTPUT"
+
+      # La chiave resta nella cartella temporanea del runner e si cancella
+      # alla fine, anche se qualcosa va storto.
+      - name: Chiave di firma
+        if: steps.firma.outputs.ok == 'si'
+        env:
+          KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          printf '%s' "$KEYSTORE" | base64 --decode > "$RUNNER_TEMP/upload-keystore.jks"
+          {
+            echo "storePassword=$STORE_PW"
+            echo "keyPassword=$KEY_PW"
+            echo "keyAlias=$ALIAS"
+            echo "storeFile=$RUNNER_TEMP/upload-keystore.jks"
+          } > android/key.properties
+
+      # Solo arm64 (i telefoni veri): meno disco e meno tempo. Il commit si
+      # vede nel Profilo ("prova a1b2c3d").
+      - name: APK firmato
+        if: steps.firma.outputs.ok == 'si'
+        env:
+          VERSIONE: ${{ steps.versione.outputs.numero }}
+        run: |
+          flutter pub get
+          flutter build apk --release --target-platform android-arm64 \
+            --dart-define=COMMIT=${GITHUB_SHA::7}
+          mkdir -p uscita
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "uscita/Avidididadi-$VERSIONE.apk"
+
+      - name: Cancella la chiave
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload-keystore.jks" android/key.properties
+
+      - uses: actions/upload-artifact@v4
+        if: steps.firma.outputs.ok == 'si'
+        with:
+          name: Avidididadi-${{ steps.versione.outputs.numero }}-${{ github.sha }}
+          path: uscita/Avidididadi-${{ steps.versione.outputs.numero }}.apk
+          retention-days: 30

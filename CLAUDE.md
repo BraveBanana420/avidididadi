@@ -23,6 +23,7 @@ Le funzioni sono elencate in `README.md`.
 - Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
 - **Testi**: italiano e inglese in `lib/l10n/app_it.arb` (modello) e `app_en.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. La voce dell'allenamento ha una lingua sua (Durante l'allenamento → Lingua della voce, in `avvisi.txt`): le frasi dette usano `l10nVoce`, non `l10n`; il greco (`app_el.arb`) ha solo le frasi della voce. Configurazione in `lib/config.dart` (URL delle donazioni).
 - `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita.
+- **Test delle soglie** in `lib/test_soglia.dart`: FTP della bici (rampa o 20 minuti), passo critico, stima dell'FTP dalle uscite (`potenze_migliori.csv`) e quando proporre un test.
 - **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
 ## 4. Comandi
@@ -91,6 +92,7 @@ Repository: `https://github.com/BraveBanana420/avidididadi`, branch principale `
   - **rami `funzione/<nome-breve>`**: solo se una funzione grossa va provata a parte. Nascono da `staging` e tornano in `staging`; dopo l'unione si cancellano, anche su GitHub;
   - **APK per gli amici (tester)**: da `staging`, senza etichetta (si riconosce dal commit mostrato nell'app). L'etichetta della versione (`git tag -a v<versione>`, poi `git push origin v<versione>`) va sul commit di `main` a ogni unione: la GitHub Action `release.yml` compila l'APK firmato e lo pubblica nelle Releases (l'etichetta deve essere uguale alla versione di `pubspec.yaml`). Mai spostare un'etichetta già caricata.
   - **CI**: `ci.yml` controlla ogni pull request (testi generati, formattazione, analisi, test, APK di debug). Le PR esterne vanno verso `staging`.
+  - **APK di prova firmato**: `apk-staging.yml`, a ogni push su `staging` (o a mano da Actions), con gli stessi Secrets di `release.yml`. L'APK arm64 `Avidididadi-<versione>.apk` sta negli Artifacts del lavoro per 30 giorni. Così si installa anche senza PC (per esempio dalle sessioni nel cloud). Senza Secrets si ferma con un avviso.
 - **Al termine di ogni modifica completata e funzionante esegui sempre**:
   1. `git add` dei file della modifica;
   2. `git commit` con un **messaggio chiaro in italiano** che descriva la modifica;

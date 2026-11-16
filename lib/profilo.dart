@@ -49,6 +49,12 @@ class Profilo {
   int passoCriticoManuale = 0; // secondi per 100 m
   int ftpManuale = 0; // watt; 0 = quello di intervals.icu, se c'è
   int ftpCorsaManuale = 0; // watt; 0 = intervals.icu, altrimenti la stima
+  // Quando l'FTP della bici e il passo critico sono stati confermati (scritti,
+  // da un test o da una proposta accettata): servono a proporre un test.
+  DateTime? ftpData;
+  DateTime? passoCriticoData;
+  // Test proposti e rimandati: sport -> fino a quando non riproporli.
+  final Map<String, DateTime> testRimandati = {};
 
   Obiettivo? get obiettivoGara => garaSport.isEmpty || garaData == null
       ? null
@@ -116,6 +122,17 @@ class Profilo {
     ['attivita', attivita.join(',')],
     ['senza_lungo', senzaLungo ? 'si' : ''],
     ['avanzata', avanzata],
+    ['ftp_data', ftpData == null ? '' : isoData(ftpData!)],
+    [
+      'passo_critico_data',
+      passoCriticoData == null ? '' : isoData(passoCriticoData!),
+    ],
+    [
+      'test_rimandati',
+      testRimandati.entries
+          .map((e) => '${e.key}:${isoData(e.value)}')
+          .join(','),
+    ],
   ];
 
   static Profilo da(Tabella? t) {
@@ -168,6 +185,13 @@ class Profilo {
     p.passoCriticoManuale = int.tryParse(m['passo_critico_s'] ?? '') ?? 0;
     p.ftpManuale = int.tryParse(m['ftp'] ?? '') ?? 0;
     p.ftpCorsaManuale = int.tryParse(m['ftp_corsa'] ?? '') ?? 0;
+    p.ftpData = parseData(m['ftp_data'] ?? '');
+    p.passoCriticoData = parseData(m['passo_critico_data'] ?? '');
+    for (final x in (m['test_rimandati'] ?? '').split(',')) {
+      final kv = x.split(':');
+      final d = kv.length == 2 ? parseData(kv[1].trim()) : null;
+      if (d != null) p.testRimandati[kv[0].trim()] = d;
+    }
     return p;
   }
 }

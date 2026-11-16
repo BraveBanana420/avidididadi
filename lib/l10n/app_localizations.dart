@@ -11629,6 +11629,378 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Intervalli'**
   String get intervalliFatti;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Pedalata facile'**
+  String get tsPedalataFacile;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Pedala sciolto. Il test vero comincia dopo.'**
+  String get tsPedalaSciolto;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Rampa: gradino {p0}'**
+  String tsGradinoRampa(Object p0);
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ogni minuto un po\' più duro. Vai avanti finché non riesci più a tenere la cadenza: poi tocca Avanti fino al defaticamento.'**
+  String get tsRampaNota;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il risultato lo trovi nei grafici di questa uscita.'**
+  String get tsRisultatoNeiGrafici;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Minuti svelti'**
+  String get tsMinutiSvelti;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Svelti ma non al massimo: svegliano le gambe.'**
+  String get tsMinutiSveltiNota;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il ritmo più forte che riesci a tenere fino alla fine, costante. Parti un po\' piano e chiudi in crescendo.'**
+  String get tsVentiSenzaFtp;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Parti intorno a {p0} W e tienili: se dopo 10 minuti stai bene, alza un po\'. Chiudi in crescendo.'**
+  String tsVentiConFtp(Object p0);
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Stile a scelta, facile'**
+  String get tsStileSceltaFacile;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Stile libero in progressione'**
+  String get tsStileLiberoProgressione;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ogni 50 m un po\' più svelto.'**
+  String get tsOgni50Svelto;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test: 400 m al massimo'**
+  String get tsTest400;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il più veloce che riesci a tenere, costante, senza partire troppo forte. Segnati il tempo.'**
+  String get tsTest400Nota;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test: 200 m al massimo'**
+  String get tsTest200;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il più veloce che riesci a tenere. Segnati il tempo, poi scrivi i due tempi in Profilo → Le mie zone.'**
+  String get tsTest200Nota;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Non sappiamo ancora il tuo FTP: senza, le sedute vanno a sensazione.'**
+  String get tsMancaFtp;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Non sappiamo ancora il tuo passo critico: senza, le sedute vanno a sensazione.'**
+  String get tsMancaPasso;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo FTP non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.'**
+  String get tsVecchioFtp;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo passo critico non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.'**
+  String get tsVecchioPasso;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Gli ultimi intervalli ti sono sembrati facili: forse l\'FTP è più alto.'**
+  String get tsTroppoFacile;
+
+  /// test_soglia.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Gli ultimi intervalli non sei riuscito a finirli: forse l\'FTP è troppo alto.'**
+  String get tsTroppoDuro;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test FTP in bici'**
+  String get tsTestFtpBici;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Rullo smart'**
+  String get tsRulloSmart;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Su strada'**
+  String get tsSuStrada;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'10 minuti facili, poi una rampa: ogni minuto il rullo chiede qualche watt in più, finché non ce la fai più. Circa 25 minuti in tutto.'**
+  String get tsRampaTesto1;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il rullo in ERG tiene i watt da solo: non serve sapere quanto spingere. L\'FTP è il 75% del tuo minuto migliore.'**
+  String get tsRampaTesto2;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Riscaldamento con 3 minuti svelti, poi 20 minuti al massimo che riesci a tenere, poi 10 minuti sciolti. Circa 55 minuti.'**
+  String get tsVentiTesto1;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Senza un FTP si va a sensazione: parti un po\' piano e chiudi in crescendo. Serve un sensore di potenza.'**
+  String get tsVentiTesto2Senza;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Si parte intorno al tuo FTP di adesso ({p0} W). Serve un sensore di potenza.'**
+  String tsVentiTesto2Con(Object p0);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'L\'FTP è il 95% della media dei 20 minuti.'**
+  String get tsVentiTesto3;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Riscaldamento, poi 400 m al massimo che riesci a tenere, 5 minuti di pausa e 200 m al massimo. Circa 1300 m in tutto.'**
+  String get tsNuotoTesto1;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Segnati i due tempi (l\'orologio o il cronometro della piscina): il passo critico è la differenza divisa per 2.'**
+  String get tsNuotoTesto2;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ho fatto il test: scrivi i tempi'**
+  String get tsHoFattoTest;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'I tempi del test'**
+  String get tsTempiTest;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'m:ss, es. 8:20'**
+  String get tsEs400;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'m:ss, es. 3:55'**
+  String get tsEs200;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Calcola'**
+  String get tsCalcola;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla i tempi (m:ss): il 400 deve essere almeno quasi il doppio del 200.'**
+  String get tsControllaTempi;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Passo critico: {p0}. Salvato.'**
+  String tsPassoSalvato(Object p0);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test nel calendario: {p0}. Prende il posto della seduta di quel giorno.'**
+  String tsTestNelCalendario(Object p0);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Se non lo sai, fai il test qui sotto.'**
+  String get tsSeNonSaiTest;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Fai il test per calcolarlo'**
+  String get tsFaiTestCalcolarlo;
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Le tue uscite dicono {p0} W'**
+  String tsUsciteDicono(Object p0);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Dal test del {p0}.'**
+  String tsDalTest(Object p0);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il {p0} hai tenuto {p1} W per 20 minuti: il tuo FTP è almeno {p2} W.'**
+  String tsHaiTenuto(Object p0, Object p1, Object p2);
+
+  /// screens/obiettivo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Usalo come FTP'**
+  String get tsUsaloComeFtp;
+
+  /// screens/grafici_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il tuo FTP: {p0} W'**
+  String tsTuoFtp(Object p0);
+
+  /// screens/grafici_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'È il 75% del tuo minuto migliore nella rampa ({p0} W).'**
+  String tsComeRampa(Object p0);
+
+  /// screens/grafici_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'È il 95% dei tuoi 20 minuti del test ({p0} W di media).'**
+  String tsComeVenti(Object p0);
+
+  /// screens/grafici_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'È il 95% dei tuoi migliori 20 minuti ({p0} W). Senza un test dice solo che sei almeno a questo livello.'**
+  String tsComeUscita(Object p0);
+
+  /// screens/grafici_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Adesso usi {p0} W.'**
+  String tsAdessoUsi(Object p0);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Dalle tue uscite il tuo FTP in bici è almeno {p0} W. Lo uso per le zone?'**
+  String tsPropostaPrima(Object p0);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Le tue uscite dicono che il tuo FTP in bici è salito: {p0} W (prima {p1}). Lo aggiorno?'**
+  String tsPropostaSalito(Object p0, Object p1);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get tsAggiorna;
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test FTP a rampa sul rullo'**
+  String get tsTestRampaRullo;
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test del passo critico in piscina'**
+  String get tsTestNuotoPiscina;
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} {p1}: {p2}?'**
+  String tsPropostaTest(Object p0, Object p1, Object p2);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} {p1}: {p2}, al posto di {p3}?'**
+  String tsPropostaTestAlPosto(Object p0, Object p1, Object p2, Object p3);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Mettilo'**
+  String get tsMettilo;
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test nel calendario: {p0}.'**
+  String tsTestNelCalendarioBreve(Object p0);
+
+  /// screens/calendar_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Non sono riuscito a metterlo nel calendario.'**
+  String get tsNonRiuscito;
 }
 
 class _AppLocalizationsDelegate

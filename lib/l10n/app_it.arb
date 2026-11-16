@@ -10116,5 +10116,367 @@
   "intervalliFatti": "Intervalli",
   "@intervalliFatti": {
     "description": "workout_screen.dart: titolo degli intervalli registrati di una sessione"
+  },
+  "tsPedalataFacile": "Pedalata facile",
+  "@tsPedalataFacile": {
+    "description": "test_soglia.dart"
+  },
+  "tsPedalaSciolto": "Pedala sciolto. Il test vero comincia dopo.",
+  "@tsPedalaSciolto": {
+    "description": "test_soglia.dart"
+  },
+  "tsGradinoRampa": "Rampa: gradino {p0}",
+  "@tsGradinoRampa": {
+    "description": "test_soglia.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsRampaNota": "Ogni minuto un po' più duro. Vai avanti finché non riesci più a tenere la cadenza: poi tocca Avanti fino al defaticamento.",
+  "@tsRampaNota": {
+    "description": "test_soglia.dart"
+  },
+  "tsRisultatoNeiGrafici": "Il risultato lo trovi nei grafici di questa uscita.",
+  "@tsRisultatoNeiGrafici": {
+    "description": "test_soglia.dart"
+  },
+  "tsMinutiSvelti": "Minuti svelti",
+  "@tsMinutiSvelti": {
+    "description": "test_soglia.dart"
+  },
+  "tsMinutiSveltiNota": "Svelti ma non al massimo: svegliano le gambe.",
+  "@tsMinutiSveltiNota": {
+    "description": "test_soglia.dart"
+  },
+  "tsVentiSenzaFtp": "Il ritmo più forte che riesci a tenere fino alla fine, costante. Parti un po' piano e chiudi in crescendo.",
+  "@tsVentiSenzaFtp": {
+    "description": "test_soglia.dart"
+  },
+  "tsVentiConFtp": "Parti intorno a {p0} W e tienili: se dopo 10 minuti stai bene, alza un po'. Chiudi in crescendo.",
+  "@tsVentiConFtp": {
+    "description": "test_soglia.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsStileSceltaFacile": "Stile a scelta, facile",
+  "@tsStileSceltaFacile": {
+    "description": "test_soglia.dart"
+  },
+  "tsStileLiberoProgressione": "Stile libero in progressione",
+  "@tsStileLiberoProgressione": {
+    "description": "test_soglia.dart"
+  },
+  "tsOgni50Svelto": "Ogni 50 m un po' più svelto.",
+  "@tsOgni50Svelto": {
+    "description": "test_soglia.dart"
+  },
+  "tsTest400": "Test: 400 m al massimo",
+  "@tsTest400": {
+    "description": "test_soglia.dart"
+  },
+  "tsTest400Nota": "Il più veloce che riesci a tenere, costante, senza partire troppo forte. Segnati il tempo.",
+  "@tsTest400Nota": {
+    "description": "test_soglia.dart"
+  },
+  "tsTest200": "Test: 200 m al massimo",
+  "@tsTest200": {
+    "description": "test_soglia.dart"
+  },
+  "tsTest200Nota": "Il più veloce che riesci a tenere. Segnati il tempo, poi scrivi i due tempi in Profilo → Le mie zone.",
+  "@tsTest200Nota": {
+    "description": "test_soglia.dart"
+  },
+  "tsMancaFtp": "Non sappiamo ancora il tuo FTP: senza, le sedute vanno a sensazione.",
+  "@tsMancaFtp": {
+    "description": "test_soglia.dart"
+  },
+  "tsMancaPasso": "Non sappiamo ancora il tuo passo critico: senza, le sedute vanno a sensazione.",
+  "@tsMancaPasso": {
+    "description": "test_soglia.dart"
+  },
+  "tsVecchioFtp": "Il tuo FTP non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.",
+  "@tsVecchioFtp": {
+    "description": "test_soglia.dart"
+  },
+  "tsVecchioPasso": "Il tuo passo critico non si aggiorna da più di 8 settimane: nel frattempo potresti essere migliorato.",
+  "@tsVecchioPasso": {
+    "description": "test_soglia.dart"
+  },
+  "tsTroppoFacile": "Gli ultimi intervalli ti sono sembrati facili: forse l'FTP è più alto.",
+  "@tsTroppoFacile": {
+    "description": "test_soglia.dart"
+  },
+  "tsTroppoDuro": "Gli ultimi intervalli non sei riuscito a finirli: forse l'FTP è troppo alto.",
+  "@tsTroppoDuro": {
+    "description": "test_soglia.dart"
+  },
+  "tsTestFtpBici": "Test FTP in bici",
+  "@tsTestFtpBici": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsRulloSmart": "Rullo smart",
+  "@tsRulloSmart": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsSuStrada": "Su strada",
+  "@tsSuStrada": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsRampaTesto1": "10 minuti facili, poi una rampa: ogni minuto il rullo chiede qualche watt in più, finché non ce la fai più. Circa 25 minuti in tutto.",
+  "@tsRampaTesto1": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsRampaTesto2": "Il rullo in ERG tiene i watt da solo: non serve sapere quanto spingere. L'FTP è il 75% del tuo minuto migliore.",
+  "@tsRampaTesto2": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsVentiTesto1": "Riscaldamento con 3 minuti svelti, poi 20 minuti al massimo che riesci a tenere, poi 10 minuti sciolti. Circa 55 minuti.",
+  "@tsVentiTesto1": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsVentiTesto2Senza": "Senza un FTP si va a sensazione: parti un po' piano e chiudi in crescendo. Serve un sensore di potenza.",
+  "@tsVentiTesto2Senza": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsVentiTesto2Con": "Si parte intorno al tuo FTP di adesso ({p0} W). Serve un sensore di potenza.",
+  "@tsVentiTesto2Con": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsVentiTesto3": "L'FTP è il 95% della media dei 20 minuti.",
+  "@tsVentiTesto3": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsNuotoTesto1": "Riscaldamento, poi 400 m al massimo che riesci a tenere, 5 minuti di pausa e 200 m al massimo. Circa 1300 m in tutto.",
+  "@tsNuotoTesto1": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsNuotoTesto2": "Segnati i due tempi (l'orologio o il cronometro della piscina): il passo critico è la differenza divisa per 2.",
+  "@tsNuotoTesto2": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsHoFattoTest": "Ho fatto il test: scrivi i tempi",
+  "@tsHoFattoTest": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsTempiTest": "I tempi del test",
+  "@tsTempiTest": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsEs400": "m:ss, es. 8:20",
+  "@tsEs400": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsEs200": "m:ss, es. 3:55",
+  "@tsEs200": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsCalcola": "Calcola",
+  "@tsCalcola": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsControllaTempi": "Controlla i tempi (m:ss): il 400 deve essere almeno quasi il doppio del 200.",
+  "@tsControllaTempi": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsPassoSalvato": "Passo critico: {p0}. Salvato.",
+  "@tsPassoSalvato": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsTestNelCalendario": "Test nel calendario: {p0}. Prende il posto della seduta di quel giorno.",
+  "@tsTestNelCalendario": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsSeNonSaiTest": "Se non lo sai, fai il test qui sotto.",
+  "@tsSeNonSaiTest": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsFaiTestCalcolarlo": "Fai il test per calcolarlo",
+  "@tsFaiTestCalcolarlo": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsUsciteDicono": "Le tue uscite dicono {p0} W",
+  "@tsUsciteDicono": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsDalTest": "Dal test del {p0}.",
+  "@tsDalTest": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsHaiTenuto": "Il {p0} hai tenuto {p1} W per 20 minuti: il tuo FTP è almeno {p2} W.",
+  "@tsHaiTenuto": {
+    "description": "screens/obiettivo_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsUsaloComeFtp": "Usalo come FTP",
+  "@tsUsaloComeFtp": {
+    "description": "screens/obiettivo_screen.dart"
+  },
+  "tsTuoFtp": "Il tuo FTP: {p0} W",
+  "@tsTuoFtp": {
+    "description": "screens/grafici_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsComeRampa": "È il 75% del tuo minuto migliore nella rampa ({p0} W).",
+  "@tsComeRampa": {
+    "description": "screens/grafici_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsComeVenti": "È il 95% dei tuoi 20 minuti del test ({p0} W di media).",
+  "@tsComeVenti": {
+    "description": "screens/grafici_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsComeUscita": "È il 95% dei tuoi migliori 20 minuti ({p0} W). Senza un test dice solo che sei almeno a questo livello.",
+  "@tsComeUscita": {
+    "description": "screens/grafici_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsAdessoUsi": "Adesso usi {p0} W.",
+  "@tsAdessoUsi": {
+    "description": "screens/grafici_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsPropostaPrima": "Dalle tue uscite il tuo FTP in bici è almeno {p0} W. Lo uso per le zone?",
+  "@tsPropostaPrima": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsPropostaSalito": "Le tue uscite dicono che il tuo FTP in bici è salito: {p0} W (prima {p1}). Lo aggiorno?",
+  "@tsPropostaSalito": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsAggiorna": "Aggiorna",
+  "@tsAggiorna": {
+    "description": "screens/calendar_screen.dart"
+  },
+  "tsTestRampaRullo": "Test FTP a rampa sul rullo",
+  "@tsTestRampaRullo": {
+    "description": "screens/calendar_screen.dart"
+  },
+  "tsTestNuotoPiscina": "Test del passo critico in piscina",
+  "@tsTestNuotoPiscina": {
+    "description": "screens/calendar_screen.dart"
+  },
+  "tsPropostaTest": "{p0} {p1}: {p2}?",
+  "@tsPropostaTest": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsPropostaTestAlPosto": "{p0} {p1}: {p2}, al posto di {p3}?",
+  "@tsPropostaTestAlPosto": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsMettilo": "Mettilo",
+  "@tsMettilo": {
+    "description": "screens/calendar_screen.dart"
+  },
+  "tsTestNelCalendarioBreve": "Test nel calendario: {p0}.",
+  "@tsTestNelCalendarioBreve": {
+    "description": "screens/calendar_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "tsNonRiuscito": "Non sono riuscito a metterlo nel calendario.",
+  "@tsNonRiuscito": {
+    "description": "screens/calendar_screen.dart"
   }
 }

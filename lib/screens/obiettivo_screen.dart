@@ -5,6 +5,8 @@ import '../app_state.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../potenza.dart';
+import '../pulse.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import 'esecuzione_screen.dart';
 import '../l10n/lingua.dart';
@@ -293,6 +295,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
       return;
     }
     final navigator = Navigator.of(context);
+    // Un FTP o un passo nuovo vale come confermato oggi.
+    final oggi = soloData(DateTime.now());
+    if (fw > 0 && fw != p.ftpManuale) p.ftpData = oggi;
+    if (ps > 0 && ps != p.passoCriticoManuale) p.passoCriticoData = oggi;
     p
       ..fcMaxManuale = mx
       ..fcRiposoManuale = rp
@@ -369,6 +375,227 @@ class _ZoneScreenState extends State<ZoneScreen> {
       );
     },
   );
+
+  /// Il foglio di un test di bici o nuoto: cosa si fa, e farlo ora o in un
+  /// altro giorno. [sopra] è un widget in cima con il suo stato (per la bici,
+  /// dove si pedala); [inizia] e [programma] ricevono quello stato.
+  Future<void> _foglioTest<T>({
+    required String sport,
+    required String titolo,
+    required T scelta,
+    required List<String> Function(T) testi,
+    required void Function(T) inizia,
+    required Future<bool> Function(DateTime, T) programma,
+    Widget Function(T, void Function(T))? sopra,
+    Widget? sotto,
+  }) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (c) {
+      var valore = scelta;
+      final t = Theme.of(c).textTheme;
+      return StatefulBuilder(
+        builder: (c, aggiorna) => SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + spazioInBasso(c)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              Text(titolo, style: t.titleLarge),
+              if (sopra != null)
+                sopra(valore, (v) => aggiorna(() => valore = v)),
+              for (final x in testi(valore)) Text(x),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(c);
+                  inizia(valore);
+                },
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text(l10n.iniziaOra),
+              ),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final navigator = Navigator.of(c);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final oggi = soloData(DateTime.now());
+                  // Proposto il giorno della prossima seduta dura.
+                  final proposta = widget.state.sedutaPerIlTest(sport)?.data;
+                  final data = await showDatePicker(
+                    context: c,
+                    initialDate: proposta ?? oggi,
+                    firstDate: oggi,
+                    lastDate: oggi.add(const Duration(days: 365)),
+                    helpText: l10n.giorno,
+                  );
+                  if (data == null) return;
+                  final ok = await programma(data, valore);
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    avviso(
+                      content: Text(
+                        ok
+                            ? l10n.tsTestNelCalendario(dataLunga(data))
+                            : l10n.scegliOggiOGiorno,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.event_available_rounded),
+                label: Text(l10n.mettiloNelCalendario),
+              ),
+              ?sotto,
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
+  /// Il test per l'FTP della bici: a rampa sul rullo smart, da 20 minuti
+  /// su strada (o sul rullo senza ERG).
+  Future<void> _apriTestBici() => _foglioTest<bool>(
+    sport: 'Bici',
+    titolo: l10n.tsTestFtpBici,
+    scelta: widget.state.usaRullo,
+    sopra: (rampa, cambia) => SegmentedButton<bool>(
+      showSelectedIcon: false,
+      segments: [
+        ButtonSegment(
+          value: true,
+          icon: const Icon(Icons.home_rounded),
+          label: Text(l10n.tsRulloSmart),
+        ),
+        ButtonSegment(
+          value: false,
+          icon: const Icon(Icons.landscape_rounded),
+          label: Text(l10n.tsSuStrada),
+        ),
+      ],
+      selected: {rampa},
+      onSelectionChanged: (v) => cambia(v.first),
+    ),
+    testi: (rampa) {
+      final ftp = widget.state.ftpBici;
+      return rampa
+          ? [l10n.tsRampaTesto1, l10n.tsRampaTesto2]
+          : [
+              l10n.tsVentiTesto1,
+              ftp == null
+                  ? l10n.tsVentiTesto2Senza
+                  : l10n.tsVentiTesto2Con(ftp),
+              l10n.tsVentiTesto3,
+            ];
+    },
+    inizia: (rampa) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Bici',
+      tipo: tipoTestFtp,
+      nome: rampa ? nomeTestFtpBiciRampa : nomeTestFtpBiciVenti,
+      passi: widget.state.passiTestBici('libera', rampa: rampa),
+      libera: true,
+    ),
+    programma: (d, rampa) => widget.state.programmaTestFtpBici(d, rampa: rampa),
+  );
+
+  /// Il test del passo critico in piscina, con i tempi da scrivere dopo.
+  Future<void> _apriTestNuoto() => _foglioTest<bool>(
+    sport: 'Nuoto',
+    titolo: mostra(nomeTestNuoto),
+    scelta: true,
+    testi: (_) => [l10n.tsNuotoTesto1, l10n.tsNuotoTesto2],
+    inizia: (_) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Nuoto',
+      tipo: tipoTestNuoto,
+      nome: nomeTestNuoto,
+      passi: passiTestNuoto('libera'),
+      libera: true,
+    ),
+    programma: (d, _) => widget.state.programmaTestNuoto(d),
+    sotto: Builder(
+      builder: (c) => TextButton.icon(
+        onPressed: () {
+          Navigator.pop(c);
+          _tempiNuoto();
+        },
+        icon: const Icon(Icons.edit_rounded),
+        label: Text(l10n.tsHoFattoTest),
+      ),
+    ),
+  );
+
+  /// I tempi del 400 e del 200: diventano il passo critico.
+  Future<void> _tempiNuoto() async {
+    final t400 = TextEditingController(), t200 = TextEditingController();
+    final pc = await showDialog<int>(
+      context: context,
+      builder: (c) {
+        String? errore;
+        return StatefulBuilder(
+          builder: (c, aggiorna) => AlertDialog(
+            title: Text(l10n.tsTempiTest),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                TextField(
+                  controller: t400,
+                  keyboardType: TextInputType.datetime,
+                  decoration: InputDecoration(
+                    labelText: '400 m',
+                    hintText: l10n.tsEs400,
+                  ),
+                ),
+                TextField(
+                  controller: t200,
+                  keyboardType: TextInputType.datetime,
+                  decoration: InputDecoration(
+                    labelText: '200 m',
+                    hintText: l10n.tsEs200,
+                    errorText: errore,
+                    errorMaxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: Text(l10n.annulla),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final a = _leggiTempo(t400.text), b = _leggiTempo(t200.text);
+                  final v = a == null || b == null
+                      ? null
+                      : passoCriticoDaTest(a, b);
+                  if (v == null) {
+                    aggiorna(() => errore = l10n.tsControllaTempi);
+                    return;
+                  }
+                  Navigator.pop(c, v);
+                },
+                child: Text(l10n.tsCalcola),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    t400.dispose();
+    t200.dispose();
+    if (pc == null || !mounted) return;
+    await widget.state.impostaPassoCritico(pc);
+    passo.text = '${pc ~/ 60}:${two(pc % 60)}';
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(avviso(content: Text(l10n.tsPassoSalvato(fmtPasso100(pc)))));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -454,6 +681,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
               helperMaxLines: 2,
             ),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestNuoto,
+            icon: const Icon(Icons.timer_rounded),
+            label: Text(l10n.tsFaiTestCalcolarlo),
+          ),
           const SizedBox(height: 24),
           Text(l10n.tueZonePotenzaBici, style: t.titleMedium),
           const SizedBox(height: 4),
@@ -483,9 +716,49 @@ class _ZoneScreenState extends State<ZoneScreen> {
               suffixText: 'W',
               helperText: widget.state.ftpIcu > 0
                   ? l10n.vuotoQuelloIntervalsIcu(widget.state.ftpIcu)
-                  : l10n.seNonSaiPedala,
+                  : l10n.tsSeNonSaiTest,
               helperMaxLines: 3,
             ),
+          ),
+          ListenableBuilder(
+            listenable: widget.state,
+            builder: (context, _) {
+              final f = widget.state.ftpProposto;
+              final u = widget.state.uscitaProposta;
+              if (f == null || u == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SuperficiePulse(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Text(l10n.tsUsciteDicono(f), style: t.titleMedium),
+                      Text(
+                        u.test.isNotEmpty
+                            ? l10n.tsDalTest(_dataBreve(u.data))
+                            : l10n.tsHaiTenuto(_dataBreve(u.data), u.w20, f),
+                        style: t.bodySmall,
+                      ),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await widget.state.impostaFtp(f);
+                          ftp.text = '$f';
+                        },
+                        icon: const Icon(Icons.check_rounded),
+                        label: Text(l10n.tsUsaloComeFtp),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestBici,
+            icon: const Icon(Icons.timer_rounded),
+            label: Text(l10n.tsFaiTestCalcolarlo),
           ),
           const SizedBox(height: 24),
           Text(l10n.tueZonePotenzaCorsa, style: t.titleMedium),

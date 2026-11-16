@@ -34,6 +34,10 @@ The app is available in Italian, English and Greek.
 - **Smart trainer** (FTMS, e.g. Tacx Flux S): ERG mode with the watts of each
   block, calibration from the app; heart rate straps and bike sensors via
   Bluetooth.
+- **Threshold tests**: bike FTP test (ramp on the smart trainer or 20
+  minutes on the road) and running FTP test, critical swim speed test in the
+  pool; FTP is also estimated from your rides, and a test is suggested only
+  when needed.
 - **Health Connect** (read-only): sessions from Garmin, Freeletics and other
   apps, heart rate, sleep, HRV, routes.
 - **intervals.icu** (optional, your API key): complete activities from Garmin,

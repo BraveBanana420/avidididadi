@@ -12,6 +12,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../recupero.dart';
 import '../tema.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import '../workout_base.dart';
 import 'altra_attivita_sheet.dart';
@@ -252,6 +253,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       if (!state.primaVolta) const InvitoTour(),
                       PromemoriaPiano(state: state),
                       PromemoriaScheda(state: state),
+                      PromemoriaTest(state: state),
                       KeyedSubtree(
                         key: ChiaviTour.feedback,
                         child: PromemoriaFeedback(state: state),
@@ -1628,6 +1630,124 @@ class PromemoriaPiano extends StatelessWidget {
               tooltip: l10n.piuTardi,
               onPressed: state.chiudiPromemoria,
               icon: Icon(Icons.close_rounded, color: scheme.onPrimaryContainer),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// L'FTP nuovo che dicono le uscite, o un test da fare (FTP della bici,
+/// passo critico del nuoto): una cosa per volta, al posto di una seduta dura.
+class PromemoriaTest extends StatelessWidget {
+  final AppState state;
+  const PromemoriaTest({super.key, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final oggi = soloData(DateTime.now());
+    final rimandatoFtp = state.profilo.testRimandati['FTP'];
+    final ftp = state.ftpProposto;
+    if (ftp != null && (rimandatoFtp == null || !oggi.isBefore(rimandatoFtp))) {
+      final prima = state.ftpBici;
+      return _Promemoria(
+        icona: Icons.bolt_rounded,
+        testo: prima == null
+            ? l10n.tsPropostaPrima(ftp)
+            : l10n.tsPropostaSalito(ftp, prima),
+        azione: l10n.tsAggiorna,
+        onAzione: () => state.impostaFtp(ftp),
+        onChiudi: () => state.rimandaTest('FTP'),
+      );
+    }
+    for (final (sport, motivo) in [
+      ('Bici', state.motivoTestFtpBici),
+      ('Nuoto', state.motivoTestPassoCritico),
+    ]) {
+      if (motivo == null) continue;
+      final seduta = state.sedutaPerIlTest(sport);
+      if (seduta == null) continue;
+      final bici = sport == 'Bici';
+      final rampa = state.usaRullo;
+      final nome = bici
+          ? (rampa ? l10n.tsTestRampaRullo : l10n.tsTestFtpBici)
+          : l10n.tsTestNuotoPiscina;
+      final perche = spiegaMotivo(motivo, sport);
+      final quando = dataLunga(seduta.data);
+      return _Promemoria(
+        icona: Icons.timer_rounded,
+        testo: seduta.tipo.isEmpty
+            ? l10n.tsPropostaTest(perche, nome, quando)
+            : l10n.tsPropostaTestAlPosto(
+                perche,
+                nome,
+                quando,
+                mostra(seduta.tipo),
+              ),
+        azione: l10n.tsMettilo,
+        onAzione: () async {
+          final messenger = ScaffoldMessenger.of(context);
+          final ok = bici
+              ? await state.programmaTestFtpBici(seduta.data, rampa: rampa)
+              : await state.programmaTestNuoto(seduta.data);
+          messenger.showSnackBar(
+            avviso(
+              content: Text(
+                ok ? l10n.tsTestNelCalendarioBreve(quando) : l10n.tsNonRiuscito,
+              ),
+            ),
+          );
+        },
+        onChiudi: () => state.rimandaTest(sport),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+/// Un promemoria in cima a Oggi: testo, un'azione e "più tardi".
+class _Promemoria extends StatelessWidget {
+  final IconData icona;
+  final String testo;
+  final String azione;
+  final VoidCallback onAzione;
+  final VoidCallback onChiudi;
+  const _Promemoria({
+    required this.icona,
+    required this.testo,
+    required this.azione,
+    required this.onAzione,
+    required this.onChiudi,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final colore = TextStyle(color: scheme.onPrimaryContainer);
+    // Il testo è lungo: sopra, a tutta larghezza; i tasti sotto, a destra.
+    return Card(
+      color: scheme.primaryContainer,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 14, 8, 4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(icona, color: scheme.onPrimaryContainer),
+                const SizedBox(width: 12),
+                Expanded(child: Text(testo, style: colore)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(onPressed: onChiudi, child: Text(l10n.piuTardi)),
+                TextButton(onPressed: onAzione, child: Text(azione)),
+              ],
             ),
           ],
         ),
