@@ -4,6 +4,8 @@ import '../app_state.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../potenza.dart';
+import '../pulse.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import 'esecuzione_screen.dart';
 
@@ -293,6 +295,10 @@ class _ZoneScreenState extends State<ZoneScreen> {
       return;
     }
     final navigator = Navigator.of(context);
+    // Un FTP o un passo nuovo vale come confermato oggi.
+    final oggi = soloData(DateTime.now());
+    if (fw > 0 && fw != p.ftpManuale) p.ftpData = oggi;
+    if (ps > 0 && ps != p.passoCriticoManuale) p.passoCriticoData = oggi;
     p
       ..fcMaxManuale = mx
       ..fcRiposoManuale = rp
@@ -303,80 +309,270 @@ class _ZoneScreenState extends State<ZoneScreen> {
     navigator.pop();
   }
 
-  /// Il test per l'FTP di corsa: cosa si fa, e farlo ora o in un altro giorno.
-  Future<void> _apriTest() => showModalBottomSheet<void>(
+  /// Il foglio di un test: cosa si fa, e farlo ora o in un altro giorno.
+  /// [sopra] è un widget in cima (per la bici, dove si pedala), con il suo
+  /// stato; [inizia] e [programma] ricevono quello stato.
+  Future<void> _foglioTest<T>({
+    required String sport,
+    required String titolo,
+    required T scelta,
+    required List<String> Function(T) testi,
+    required void Function(T) inizia,
+    required Future<bool> Function(DateTime, T) programma,
+    Widget Function(T, void Function(T))? sopra,
+    Widget? sotto,
+  }) => showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
     builder: (c) {
+      var valore = scelta;
       final t = Theme.of(c).textTheme;
-      return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          spacing: 12,
-          children: [
-            Text(nomeTestFtpCorsa, style: t.titleLarge),
-            const Text(
-              '15 minuti facili e 3 allunghi, poi 20 minuti al massimo che '
-              'riesci a tenere, poi 10 minuti lentissimi. Circa 50 minuti.',
-            ),
-            const Text(
-              'Il telefono non misura i watt di corsa: registra la corsa anche '
-              'con l\'orologio. Poi apri i grafici di quella corsa: lì trovi '
-              'la tua FTP e il tasto per salvarla.',
-            ),
-            FilledButton.icon(
-              onPressed: () {
-                Navigator.pop(c);
-                avviaAllenamento(
-                  context,
-                  widget.state,
-                  sport: 'Corsa',
-                  tipo: 'Test FTP',
-                  nome: nomeTestFtpCorsa,
-                  passi: passiTestFtpCorsa('libera'),
-                  libera: true,
-                );
-              },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Inizia ora'),
-            ),
-            OutlinedButton.icon(
-              onPressed: () async {
-                final navigator = Navigator.of(c);
-                final messenger = ScaffoldMessenger.of(context);
-                final oggi = soloData(DateTime.now());
-                final data = await showDatePicker(
-                  context: c,
-                  initialDate: oggi,
-                  firstDate: oggi,
-                  lastDate: oggi.add(const Duration(days: 365)),
-                  helpText: 'In che giorno?',
-                );
-                if (data == null) return;
-                final ok = await widget.state.programmaTestFtpCorsa(data);
-                navigator.pop();
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      ok
-                          ? 'Test nel calendario: ${dataLunga(data)}. Prende '
-                                'il posto della corsa di quel giorno.'
-                          : 'Scegli oggi o un giorno dopo.',
+      return StatefulBuilder(
+        builder: (c, aggiorna) => SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              Text(titolo, style: t.titleLarge),
+              if (sopra != null)
+                sopra(valore, (v) => aggiorna(() => valore = v)),
+              for (final x in testi(valore)) Text(x),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(c);
+                  inizia(valore);
+                },
+                icon: const Icon(Icons.play_arrow),
+                label: const Text('Inizia ora'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final navigator = Navigator.of(c);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final oggi = soloData(DateTime.now());
+                  // Proposto il giorno della prossima seduta dura.
+                  final proposta = widget.state.sedutaPerIlTest(sport)?.data;
+                  final data = await showDatePicker(
+                    context: c,
+                    initialDate: proposta ?? oggi,
+                    firstDate: oggi,
+                    lastDate: oggi.add(const Duration(days: 365)),
+                    helpText: 'In che giorno?',
+                  );
+                  if (data == null) return;
+                  final ok = await programma(data, valore);
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        ok
+                            ? 'Test nel calendario: ${dataLunga(data)}. Prende '
+                                  'il posto della seduta di quel giorno.'
+                            : 'Scegli oggi o un giorno dopo.',
+                      ),
                     ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.event_available),
-              label: const Text('Mettilo nel calendario'),
-            ),
-          ],
+                  );
+                },
+                icon: const Icon(Icons.event_available),
+                label: const Text('Mettilo nel calendario'),
+              ),
+              ?sotto,
+            ],
+          ),
         ),
       );
     },
   );
+
+  /// Il test per l'FTP di corsa.
+  Future<void> _apriTest() => _foglioTest<bool>(
+    sport: 'Corsa',
+    titolo: nomeTestFtpCorsa,
+    scelta: true,
+    testi: (_) => const [
+      '15 minuti facili e 3 allunghi, poi 20 minuti al massimo che '
+          'riesci a tenere, poi 10 minuti lentissimi. Circa 50 minuti.',
+      'Il telefono non misura i watt di corsa: registra la corsa anche '
+          'con l\'orologio. Poi apri i grafici di quella corsa: lì trovi '
+          'la tua FTP e il tasto per salvarla.',
+    ],
+    inizia: (_) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Corsa',
+      tipo: tipoTestFtp,
+      nome: nomeTestFtpCorsa,
+      passi: passiTestFtpCorsa('libera'),
+      libera: true,
+    ),
+    programma: (d, _) => widget.state.programmaTestFtpCorsa(d),
+  );
+
+  /// Il test per l'FTP della bici: a rampa sul rullo smart, da 20 minuti
+  /// fuori (o sul rullo senza ERG).
+  Future<void> _apriTestBici() => _foglioTest<bool>(
+    sport: 'Bici',
+    titolo: 'Test FTP in bici',
+    scelta: widget.state.usaRullo,
+    sopra: (rampa, cambia) => SegmentedButton<bool>(
+      showSelectedIcon: false,
+      segments: const [
+        ButtonSegment(
+          value: true,
+          icon: Icon(Icons.home_outlined),
+          label: Text('Rullo smart'),
+        ),
+        ButtonSegment(
+          value: false,
+          icon: Icon(Icons.landscape_outlined),
+          label: Text('Su strada'),
+        ),
+      ],
+      selected: {rampa},
+      onSelectionChanged: (v) => cambia(v.first),
+    ),
+    testi: (rampa) {
+      final ftp = widget.state.ftpBici;
+      return rampa
+          ? [
+              '10 minuti facili, poi una rampa: ogni minuto il rullo chiede '
+                  'qualche watt in più, finché non ce la fai più. Circa 25 '
+                  'minuti in tutto.',
+              'Il rullo in ERG tiene i watt da solo: non serve sapere quanto '
+                  'spingere${ftp == null ? '' : ' (si parte da ${(ftp * 0.5).round()} W circa)'}. '
+                  'L\'FTP è il 75% del tuo minuto migliore.',
+            ]
+          : [
+              'Riscaldamento con 3 minuti svelti, poi 20 minuti al massimo '
+                  'che riesci a tenere, poi 10 minuti sciolti. Circa 55 minuti.',
+              ftp == null
+                  ? 'Senza un FTP si va a sensazione: parti un po\' piano e '
+                        'chiudi in crescendo. Serve un sensore di potenza.'
+                  : 'Si parte intorno al tuo FTP di adesso ($ftp W). Serve un '
+                        'sensore di potenza.',
+              'L\'FTP è il 95% della media dei 20 minuti.',
+            ];
+    },
+    inizia: (rampa) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Bici',
+      tipo: tipoTestFtp,
+      nome: rampa ? nomeTestFtpBiciRampa : nomeTestFtpBiciVenti,
+      passi: widget.state.passiTestBici('libera', rampa: rampa),
+      libera: true,
+    ),
+    programma: (d, rampa) => widget.state.programmaTestFtpBici(d, rampa: rampa),
+  );
+
+  /// Il test del passo critico in piscina, con i tempi da scrivere dopo.
+  Future<void> _apriTestNuoto() => _foglioTest<bool>(
+    sport: 'Nuoto',
+    titolo: nomeTestNuoto,
+    scelta: true,
+    testi: (_) => const [
+      'Riscaldamento, poi 400 m al massimo che riesci a tenere, 5 minuti di '
+          'pausa e 200 m al massimo. Circa 1300 m in tutto.',
+      'Segnati i due tempi (l\'orologio o il cronometro della piscina): il '
+          'passo critico è la differenza divisa per 2.',
+    ],
+    inizia: (_) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Nuoto',
+      tipo: tipoTestNuoto,
+      nome: nomeTestNuoto,
+      passi: passiTestNuoto('libera'),
+      libera: true,
+    ),
+    programma: (d, _) => widget.state.programmaTestNuoto(d),
+    sotto: Builder(
+      builder: (c) => TextButton.icon(
+        onPressed: () {
+          Navigator.pop(c);
+          _tempiNuoto();
+        },
+        icon: const Icon(Icons.edit_outlined),
+        label: const Text('Ho fatto il test: scrivi i tempi'),
+      ),
+    ),
+  );
+
+  /// I tempi del 400 e del 200: diventano il passo critico.
+  Future<void> _tempiNuoto() async {
+    final t400 = TextEditingController(), t200 = TextEditingController();
+    final pc = await showDialog<int>(
+      context: context,
+      builder: (c) {
+        String? errore;
+        return StatefulBuilder(
+          builder: (c, aggiorna) => AlertDialog(
+            title: const Text('I tempi del test'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                TextField(
+                  controller: t400,
+                  keyboardType: TextInputType.datetime,
+                  decoration: const InputDecoration(
+                    labelText: '400 m',
+                    hintText: 'm:ss, es. 8:20',
+                  ),
+                ),
+                TextField(
+                  controller: t200,
+                  keyboardType: TextInputType.datetime,
+                  decoration: InputDecoration(
+                    labelText: '200 m',
+                    hintText: 'm:ss, es. 3:55',
+                    errorText: errore,
+                    errorMaxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: const Text('Annulla'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final a = _leggiTempo(t400.text), b = _leggiTempo(t200.text);
+                  final v = a == null || b == null
+                      ? null
+                      : passoCriticoDaTest(a, b);
+                  if (v == null) {
+                    aggiorna(
+                      () => errore =
+                          'Controlla i tempi (m:ss): il 400 deve essere '
+                          'almeno quasi il doppio del 200.',
+                    );
+                    return;
+                  }
+                  Navigator.pop(c, v);
+                },
+                child: const Text('Calcola'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    t400.dispose();
+    t200.dispose();
+    if (pc == null || !mounted) return;
+    await widget.state.impostaPassoCritico(pc);
+    passo.text = '${pc ~/ 60}:${two(pc % 60)}';
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Passo critico: ${fmtPasso100(pc)}. Salvato.')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -464,6 +660,12 @@ class _ZoneScreenState extends State<ZoneScreen> {
               helperMaxLines: 2,
             ),
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestNuoto,
+            icon: const Icon(Icons.timer_outlined),
+            label: const Text('Fai il test per calcolarlo'),
+          ),
           const SizedBox(height: 24),
           Text('Le tue zone di potenza (bici)', style: t.titleMedium),
           const SizedBox(height: 4),
@@ -497,10 +699,50 @@ class _ZoneScreenState extends State<ZoneScreen> {
               suffixText: 'W',
               helperText: widget.state.ftpIcu > 0
                   ? 'Vuoto = quello di intervals.icu: ${widget.state.ftpIcu} W.'
-                  : 'Se non lo sai: pedala 20 minuti più forte che puoi, '
-                        'l\'FTP è circa il 95% della potenza media.',
+                  : 'Se non lo sai, fai il test qui sotto.',
               helperMaxLines: 3,
             ),
+          ),
+          ListenableBuilder(
+            listenable: widget.state,
+            builder: (context, _) {
+              final f = widget.state.ftpProposto;
+              final u = widget.state.uscitaProposta;
+              if (f == null || u == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SuperficiePulse(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Text('Le tue uscite dicono $f W', style: t.titleMedium),
+                      Text(
+                        u.test.isNotEmpty
+                            ? 'Dal test del ${_dataBreve(u.data)}.'
+                            : 'Il ${_dataBreve(u.data)} hai tenuto ${u.w20} W '
+                                  'per 20 minuti: il tuo FTP è almeno $f W.',
+                        style: t.bodySmall,
+                      ),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await widget.state.impostaFtp(f);
+                          ftp.text = '$f';
+                        },
+                        icon: const Icon(Icons.check),
+                        label: const Text('Usalo come FTP'),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestBici,
+            icon: const Icon(Icons.timer_outlined),
+            label: const Text('Fai il test per calcolarlo'),
           ),
           const SizedBox(height: 24),
           Text('Le tue zone di potenza (corsa)', style: t.titleMedium),

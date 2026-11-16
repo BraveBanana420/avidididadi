@@ -10,6 +10,7 @@ import '../models.dart';
 import '../pulse.dart';
 import '../recupero.dart';
 import '../tema.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import '../workout_base.dart';
 import 'energia.dart';
@@ -208,6 +209,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     if (!state.primaVolta) const InvitoTour(),
                     PromemoriaPiano(state: state),
                     PromemoriaScheda(state: state),
+                    PromemoriaTest(state: state),
                     KeyedSubtree(
                       key: ChiaviTour.feedback,
                       child: PromemoriaFeedback(state: state),
@@ -1574,6 +1576,118 @@ class PromemoriaPiano extends StatelessWidget {
             IconButton(
               tooltip: 'Più tardi',
               onPressed: state.chiudiPromemoria,
+              icon: Icon(Icons.close, color: scheme.onPrimaryContainer),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// L'FTP nuovo che dicono le uscite, o un test da fare (FTP della bici,
+/// passo critico del nuoto): una cosa per volta, al posto di una seduta dura.
+class PromemoriaTest extends StatelessWidget {
+  final AppState state;
+  const PromemoriaTest({super.key, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final oggi = soloData(DateTime.now());
+    final rimandatoFtp = state.profilo.testRimandati['FTP'];
+    final ftp = state.ftpProposto;
+    if (ftp != null && (rimandatoFtp == null || !oggi.isBefore(rimandatoFtp))) {
+      final prima = state.ftpBici;
+      return _Promemoria(
+        icona: Icons.bolt_outlined,
+        testo: prima == null
+            ? 'Dalle tue uscite il tuo FTP in bici è almeno $ftp W. Lo uso '
+                  'per le zone?'
+            : 'Le tue uscite dicono che il tuo FTP in bici è salito: $ftp W '
+                  '(prima $prima). Lo aggiorno?',
+        azione: 'Aggiorna',
+        onAzione: () => state.impostaFtp(ftp),
+        onChiudi: () => state.rimandaTest('FTP'),
+      );
+    }
+    for (final (sport, motivo) in [
+      ('Bici', state.motivoTestFtpBici),
+      ('Nuoto', state.motivoTestPassoCritico),
+    ]) {
+      if (motivo == null) continue;
+      final seduta = state.sedutaPerIlTest(sport);
+      if (seduta == null) continue;
+      final bici = sport == 'Bici';
+      final rampa = state.usaRullo;
+      final nome = bici
+          ? (rampa ? 'Test FTP a rampa sul rullo' : 'Test FTP in bici')
+          : 'Test del passo critico in piscina';
+      final posto = seduta.tipo.isEmpty ? '' : ', al posto di ${seduta.tipo}';
+      return _Promemoria(
+        icona: Icons.timer_outlined,
+        testo:
+            '${spiegaMotivo(motivo, sport)} $nome: ${dataLunga(seduta.data)}'
+            '$posto?',
+        azione: 'Mettilo',
+        onAzione: () async {
+          final messenger = ScaffoldMessenger.of(context);
+          final ok = bici
+              ? await state.programmaTestFtpBici(seduta.data, rampa: rampa)
+              : await state.programmaTestNuoto(seduta.data);
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                ok
+                    ? 'Test nel calendario: ${dataLunga(seduta.data)}.'
+                    : 'Non sono riuscito a metterlo nel calendario.',
+              ),
+            ),
+          );
+        },
+        onChiudi: () => state.rimandaTest(sport),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+}
+
+/// Un promemoria in cima a Oggi: testo, un'azione e "più tardi".
+class _Promemoria extends StatelessWidget {
+  final IconData icona;
+  final String testo;
+  final String azione;
+  final VoidCallback onAzione;
+  final VoidCallback onChiudi;
+  const _Promemoria({
+    required this.icona,
+    required this.testo,
+    required this.azione,
+    required this.onAzione,
+    required this.onChiudi,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Card(
+      color: scheme.primaryContainer,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 4, 8),
+        child: Row(
+          children: [
+            Icon(icona, color: scheme.onPrimaryContainer),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                testo,
+                style: TextStyle(color: scheme.onPrimaryContainer),
+              ),
+            ),
+            TextButton(onPressed: onAzione, child: Text(azione)),
+            IconButton(
+              tooltip: 'Più tardi',
+              onPressed: onChiudi,
               icon: Icon(Icons.close, color: scheme.onPrimaryContainer),
             ),
           ],

@@ -10,6 +10,7 @@ import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
 import '../sincronizzazione.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 
 /// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
@@ -63,6 +64,8 @@ class _GraficiScreenState extends State<GraficiScreen> {
         );
       }
     }
+    // I watt migliori dell'uscita: servono alla stima dell'FTP.
+    await widget.state.registraPotenza(s, serie.potenza);
     return serie;
   }
 
@@ -145,6 +148,11 @@ class _GraficiScreenState extends State<GraficiScreen> {
                     zone: widget.state.zonePotenza,
                   ),
                   const SizedBox(height: 12),
+                  _SogliaDaBici(
+                    state: widget.state,
+                    sessione: s,
+                    serie: serie.potenza,
+                  ),
                 ] else if (stessoSport(s.sport, 'Corsa')) ...[
                   ListenableBuilder(
                     listenable: widget.state,
@@ -480,6 +488,70 @@ class _SogliaDaCorsa extends StatelessWidget {
                   onPressed: () => state.impostaFtpCorsa(soglia),
                   icon: const Icon(Icons.check),
                   label: const Text('Usala come FTP di corsa'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Dopo un test in bici, o un'uscita più forte dell'FTP di adesso: propone
+/// l'FTP nuovo. Dal test vale anche se è più basso.
+class _SogliaDaBici extends StatelessWidget {
+  final AppState state;
+  final Sessione sessione;
+  final List<Campione> serie;
+  const _SogliaDaBici({
+    required this.state,
+    required this.sessione,
+    required this.serie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final test = state.testBiciDel(sessione);
+    final p = potenzaMiglioreDa(sessione.id, sessione.data, serie, test: test);
+    final ftp = p?.ftp;
+    if (ftp == null || ftp < 50 || ftp > 600) return const SizedBox.shrink();
+    return ListenableBuilder(
+      listenable: state,
+      builder: (context, _) {
+        final attuale = state.ftpBici;
+        // Un'uscita normale dice solo "almeno": vale se è più alta del 3%.
+        final mostra = test.isNotEmpty
+            ? ftp != attuale
+            : attuale == null || ftp >= attuale * 1.03;
+        if (!mostra) return const SizedBox.shrink();
+        final come = switch (test) {
+          'rampa' =>
+            'È il 75% del tuo minuto migliore nella rampa (${p!.w1} W).',
+          'venti' =>
+            'È il 95% dei tuoi 20 minuti del test (${p!.w20} W di media).',
+          _ =>
+            'È il 95% dei tuoi migliori 20 minuti (${p!.w20} W). Senza '
+                'un test dice solo che sei almeno a questo livello.',
+        };
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SuperficiePulse(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Il tuo FTP: $ftp W', style: t.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  attuale == null ? come : '$come Adesso usi $attuale W.',
+                  style: t.bodySmall,
+                ),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () => state.impostaFtp(ftp),
+                  icon: const Icon(Icons.check),
+                  label: const Text('Usalo come FTP'),
                 ),
               ],
             ),

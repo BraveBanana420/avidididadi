@@ -15,6 +15,7 @@ import 'backup_auto.dart';
 import 'benvenuto.dart';
 import 'condivisione.dart';
 import 'csv.dart';
+import 'dati_live.dart';
 import 'esercizi.dart';
 import 'esporta.dart';
 import 'feedback.dart';
@@ -41,6 +42,7 @@ import 'sessioni_eliminate.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
+import 'test_soglia.dart';
 import 'workout_base.dart';
 
 /// Sport ignorati dall'app (non mostrati né importati).
@@ -227,6 +229,13 @@ class AppState extends ChangeNotifier {
 
     cartella = await Storage.cartella();
     esercizi = await caricaEsercizi();
+    final tPot = await Storage.readTabella(filePotenzeMigliori);
+    potenzeMigliori = tPot == null
+        ? []
+        : tPot.righe
+              .map((r) => PotenzaMigliore.da(tPot, r))
+              .whereType<PotenzaMigliore>()
+              .toList();
     final tf = await Storage.readTabella('feedback.csv');
     feedback = tf == null
         ? []
@@ -1039,6 +1048,8 @@ class AppState extends ChangeNotifier {
             regolazione: profilo.regolazioneEndurance,
             progressione: profilo.progressione,
             principiante: profilo.livello == 'principiante',
+            ftpBici: ftpBici,
+            rampaBici: usaRullo,
           );
     // Le schede scritte a mano, dove valgono, al posto delle sedute preparate.
     var nuovo = generato;
@@ -1650,6 +1661,279 @@ class AppState extends ChangeNotifier {
       ], da: MessaggioChat(false, '')) >
       0;
 
+  // ---------------------------------------------------------------------
+  // Test delle soglie e stima dell'FTP della bici
+
+  /// I migliori 20 minuti e il miglior minuto delle uscite in bici con i watt.
+  List<PotenzaMigliore> potenzeMigliori = [];
+
+  Future<void> _salvaPotenze() => Storage.write(
+    filePotenzeMigliori,
+    potenzeMiglioriHeader,
+    potenzeMigliori.map((p) => p.toRow()).toList(),
+  );
+
+  /// Il test di bici che c'era quel giorno ("rampa", "venti" o vuoto), dal
+  /// tipo e dal nome della sessione o dalla seduta in programma.
+  String testBiciDel(Sessione s) {
+    final giorno = soloData(s.data);
+    final agente = allenamentiAgente
+        .where((w) => w.id == idAllenamentoAgente(giorno, 'Bici'))
+        .map((w) => w.nome)
+        .firstOrNull;
+    final generato = passiSeduta(
+      giorno,
+      'Bici',
+      tipoDel(giorno, 'Bici'),
+    ).map((w) => w.nome).firstOrNull;
+    for (final t in [
+      '${s.tipo} ${s.note}',
+      agente ?? '',
+      if (eTest(tipoDel(giorno, 'Bici'))) generato ?? tipoTestFtp,
+    ]) {
+      final test = testBiciDa(t);
+      if (test.isNotEmpty) return test;
+    }
+    return '';
+  }
+
+  /// Ricorda le potenze migliori di un'uscita in bici (per la stima dell'FTP).
+  Future<void> registraPotenza(Sessione s, List<Campione> potenza) async {
+    if (!stessoSport(s.sport, 'Bici')) return;
+    final p = potenzaMiglioreDa(s.id, s.data, potenza, test: testBiciDel(s));
+    if (p == null) return;
+    final prima = potenzeMigliori
+        .where((x) => x.idSessione == s.id)
+        .firstOrNull;
+    if (prima != null &&
+        prima.w1 == p.w1 &&
+        prima.w20 == p.w20 &&
+        prima.test == p.test) {
+      return;
+    }
+    potenzeMigliori = [
+      ...potenzeMigliori.where((x) => x.idSessione != s.id),
+      p,
+    ];
+    await _salvaPotenze();
+    notifyListeners();
+  }
+
+  /// Le uscite in bici nuove da intervals.icu con i watt: si scaricano i dati
+  /// per la stima dell'FTP (solo le ultime 6 settimane, al massimo 8 a volta).
+  Future<void> _potenzeDaIcu(
+    ClientIntervals client,
+    List<AttivitaIcu> nuove,
+  ) async {
+    final da = soloData(DateTime.now())
+        .subtract(const Duration(days: giorniStimaFtp));
+    final viste = {for (final p in potenzeMigliori) p.idSessione};
+    final daLeggere = [
+      for (final a in nuove)
+        if (stessoSport(a.sessione.sport, 'Bici') &&
+            a.sessione.potenzaMedia > 0 &&
+            a.sessione.durataMin >= 20 &&
+            a.sessione.inizio != null &&
+            !a.sessione.data.isBefore(da) &&
+            !viste.contains(a.sessione.id))
+          a.sessione,
+    ].take(8);
+    for (final s in daLeggere) {
+      try {
+        final serie = await client.serie(
+          s.id.substring(prefissoIcu.length),
+          s.inizio!,
+        );
+        await registraPotenza(s, serie.potenza);
+      } on ErroreIntervals {
+        return; // ci si riprova alla prossima sincronizzazione
+      }
+    }
+  }
+
+  /// L'FTP della bici di adesso (scritto o di intervals.icu).
+  int? get ftpBici => zonePotenza?.ftp;
+
+  /// L'FTP più alto che dicono le uscite delle ultime 6 settimane, se è
+  /// almeno il 3% sopra quello di adesso.
+  int? get ftpProposto =>
+      ftpDaProporre(potenzeMigliori, ftpBici, DateTime.now());
+
+  /// L'uscita da cui viene la proposta.
+  PotenzaMigliore? get uscitaProposta =>
+      miglioreRecente(potenzeMigliori, DateTime.now());
+
+  /// Scrive l'FTP della bici (a mano, da un test o da una proposta).
+  Future<void> impostaFtp(int watt) async {
+    profilo.ftpManuale = watt;
+    profilo.ftpData = soloData(DateTime.now());
+    profilo.testRimandati.remove('Bici');
+    await salvaProfilo();
+  }
+
+  /// Scrive il passo critico del nuoto, per esempio dal test.
+  Future<void> impostaPassoCritico(int secondi) async {
+    profilo.passoCriticoManuale = secondi;
+    profilo.passoCriticoData = soloData(DateTime.now());
+    profilo.testRimandati.remove('Nuoto');
+    await salvaProfilo();
+  }
+
+  /// C'è un rullo o un sensore di potenza: le uscite hanno i watt.
+  bool get potenzaMisurata =>
+      potenzeMigliori.isNotEmpty ||
+      sessioni.any((s) => stessoSport(s.sport, 'Bici') && s.potenzaMedia > 0);
+
+  /// Si pedala sul rullo: un'uscita al chiuso con i watt negli ultimi 60
+  /// giorni. Allora il test dell'FTP è a rampa, in ERG.
+  bool get usaRullo {
+    final da = soloData(DateTime.now()).subtract(const Duration(days: 60));
+    return sessioni.any(
+      (s) =>
+          stessoSport(s.sport, 'Bici') &&
+          !s.data.isBefore(da) &&
+          s.potenzaMedia > 0 &&
+          (alChiuso(s) || tipoAlChiuso(s.tipo)),
+    );
+  }
+
+  DateTime? _ultimoTestBici() => potenzeMigliori
+      .where((p) => p.test.isNotEmpty)
+      .map((p) => p.data)
+      .fold<DateTime?>(null, (a, b) => a == null || b.isAfter(a) ? b : a);
+
+  /// L'ultima volta che l'FTP è stato confermato: scritto, da un test o da
+  /// un'uscita vicina alla soglia.
+  DateTime? _ultimaProvaBici() {
+    final ftp = ftpBici;
+    DateTime? d = profilo.ftpData;
+    for (final p in potenzeMigliori) {
+      final f = p.ftp;
+      final conta =
+          p.test.isNotEmpty || (f != null && ftp != null && f >= ftp * 0.97);
+      if (conta && (d == null || p.data.isAfter(d))) d = p.data;
+    }
+    return d;
+  }
+
+  /// Fatica e completamento delle ultime sedute dure di bici (dal più recente).
+  List<(int, bool)> _feedbackIntervalliBici() {
+    final da = soloData(DateTime.now()).subtract(const Duration(days: 42));
+    final dopoTest = _ultimoTestBici() ?? profilo.ftpData;
+    return [
+      for (final f in feedback.reversed)
+        if (stessoSport(f.sport, 'Bici') &&
+            !f.data.isBefore(da) &&
+            (dopoTest == null || f.data.isAfter(dopoTest)) &&
+            tipoDel(f.data, 'Bici').toLowerCase().contains('intervall'))
+          (f.fatica, f.completata),
+    ];
+  }
+
+  /// Già un test in calendario per quello sport, da oggi in poi.
+  bool testInCalendario(String sport) {
+    final oggi = soloData(DateTime.now());
+    return piano.any(
+      (r) =>
+          !r.data.isBefore(oggi) &&
+          stessoSport(r.sport, sport) &&
+          eTest(r.tipo),
+    );
+  }
+
+  bool _sportAttivo(String sport) =>
+      profilo.sportGenerati.contains(sport) ||
+      piano.any(
+        (r) =>
+            stessoSport(r.sport, sport) &&
+            !r.data.isBefore(soloData(DateTime.now())),
+      );
+
+  /// Perché proporre il test dell'FTP in bici adesso (null se non serve).
+  MotivoTest? get motivoTestFtpBici {
+    if (!_sportAttivo('Bici') || testInCalendario('Bici')) return null;
+    // Se basta accettare l'FTP dalle uscite, il test non serve.
+    if (ftpProposto != null) return null;
+    return motivoTestBici(
+      ftp: ftpBici,
+      potenzaMisurata: potenzaMisurata,
+      ultimaProva: _ultimaProvaBici(),
+      ultimoTest: _ultimoTestBici(),
+      intervalli: _feedbackIntervalliBici(),
+      oggi: DateTime.now(),
+      rimandatoFino: profilo.testRimandati['Bici'],
+    );
+  }
+
+  /// Perché proporre il test del passo critico (null se non serve).
+  MotivoTest? get motivoTestPassoCritico {
+    if (!_sportAttivo('Nuoto') || testInCalendario('Nuoto')) return null;
+    return motivoTestNuoto(
+      ultimoTest: profilo.passoCriticoData,
+      passoScritto: profilo.passoCriticoManuale > 0,
+      oggi: DateTime.now(),
+      rimandatoFino: profilo.testRimandati['Nuoto'],
+    );
+  }
+
+  /// La seduta che un test di [sport] sostituirebbe (null se non ce n'è una
+  /// nelle prossime 3 settimane).
+  PianoRiga? sedutaPerIlTest(String sport) => sedutaPerTest(
+    piano,
+    sport,
+    DateTime.now(),
+    inizio: profilo.inizioEndurance,
+  );
+
+  /// Non riproporre il test di [sport] per 2 settimane.
+  Future<void> rimandaTest(String sport) async {
+    profilo.testRimandati[sport] = soloData(DateTime.now())
+        .add(const Duration(days: 14));
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    notifyListeners();
+  }
+
+  /// I passi del test dell'FTP in bici: rampa sul rullo, 20 minuti fuori.
+  List<WorkoutStep> passiTestBici(String id, {required bool rampa}) => rampa
+      ? passiTestRampa(id, ftp: ftpBici)
+      : passiTestVenti(id, ftp: ftpBici);
+
+  /// Mette il test dell'FTP in bici nel calendario di quel giorno.
+  Future<bool> programmaTestFtpBici(DateTime data, {required bool rampa}) {
+    final passi = passiTestBici(
+      idAllenamentoAgente(data, 'Bici'),
+      rampa: rampa,
+    );
+    return _programmaTest(data, 'Bici', tipoTestFtp, passi);
+  }
+
+  /// Mette il test del passo critico nel calendario di quel giorno.
+  Future<bool> programmaTestNuoto(DateTime data) => _programmaTest(
+    data,
+    'Nuoto',
+    tipoTestNuoto,
+    passiTestNuoto(idAllenamentoAgente(data, 'Nuoto')),
+  );
+
+  Future<bool> _programmaTest(
+    DateTime data,
+    String sport,
+    String tipo,
+    List<WorkoutStep> passi,
+  ) async =>
+      await applicaAllenamentiAgente([
+        AllenamentoAgente(
+          data: soloData(data),
+          sport: sport,
+          tipo: tipo,
+          nome: passi.first.nome,
+          fascia: '',
+          passi: passi,
+          durataIndicata: passi.first.durataTot,
+        ),
+      ], da: MessaggioChat(false, '')) >
+      0;
+
   /// Passo critico del nuoto in secondi per 100 m (null se non stimabile).
   int? get passoCritico => profilo.passoCriticoManuale > 0
       ? profilo.passoCriticoManuale
@@ -2150,6 +2434,7 @@ class AppState extends ChangeNotifier {
       await _salvaIntervals();
       _ricombina();
       await _aggiornaEndurance();
+      await _potenzeDaIcu(ClientIntervals(chiave), nuove);
       final letto = '${nuove.length} attività lette da intervals.icu.';
       if (!invioIntervals) return letto;
       sincronizzandoIntervals = false;

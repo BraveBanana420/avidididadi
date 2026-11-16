@@ -16,6 +16,7 @@ Funzioni principali:
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX.
 - **Percorsi da seguire**: "I miei percorsi" (GPX di gare o giri), assegnabili alle sedute; durante l'allenamento mappa che gira nella direzione di marcia (due pagine, minimappa o tutto schermo), curve e fuori percorso a voce.
 - **Progressi**: carico, grafici, report per sport.
+- **Test delle soglie**: tipo "Test" per corsa, bici e nuoto. In bici un solo "Test FTP": a rampa sul rullo smart (ERG), da 20 minuti su strada. Nuoto: 400 + 200 m per il passo critico. L'FTP si stima anche dalle uscite (95% dei migliori 20 minuti, solo verso l'alto) e l'app chiede se aggiornarlo; un test lo propone in Oggi solo se serve (FTP mancante o fermo da 8 settimane, intervalli troppo facili o non finiti), al posto di una seduta dura, almeno 4 settimane tra un test e l'altro.
 - **Arrampicata**: vie, blocchi e gradi di ogni seduta; allenamenti scritti a mano o dall'assistente, senza generatore.
 - **Rullo smart**: collegato il rullo la bici passa da sola al chiuso; in ERG l'app manda al rullo (FTMS, es. Tacx Flux S) i watt di ogni blocco; calibrazione dall'app, con promemoria ogni 2 settimane; diagramma dell'allenamento a barre colorate per zona.
 - **Coach (assistente AI)**: Claude, GPT, Gemini con chiave API, Ollama sul PC (anche via Tailscale), oppure l'app dell'assistente dell'utente con un codice di collegamento.
@@ -63,6 +64,7 @@ lib/
   feedback.dart        feedback e regole di carico
   recupero.dart        energia e prontezza dai dati di recupero
   potenza.dart         zone di potenza dall'FTP (bici e corsa, separate), watt nelle sedute di bici, avvisi, test FTP di corsa, serie dei sensori
+  test_soglia.dart     test delle soglie (FTP in bici a rampa o 20 minuti, passo critico del nuoto), stima dell'FTP dalle uscite, quando proporre un test
   riepilogo_condiviso.dart  numeri e testi delle immagini da condividere (sessione, settimana)
   calorie.dart         calorie stimate delle sessioni dell'app (potenza, battito o MET)
   sincronizzazione.dart / health_connect.dart   Health Connect → Sessione
@@ -117,6 +119,7 @@ NOTE_PRIVATE.md        dati personali (indirizzi, percorsi della firma): solo lo
 - `intervals_sessioni.csv`, `intervals.csv`, `intervals_inviati.csv`, `sessioni_inviate.csv`;
 - `sessioni_modificate.csv` (sessioni dell'orologio corrette a mano: valgono sui dati che arrivano);
 - `arrampicata.csv`, `allenamenti_arrampicata.csv` (vie, blocchi e gradi; allenamenti di arrampicata);
+- `potenze_migliori.csv` (migliori 20 minuti e miglior minuto di ogni uscita in bici con i watt, e se era un test);
 - `serie.csv` (ripetizioni e kg della forza); `nuoto.csv` (vasche, tempo medio e stile scritti a mano);
 - `allenamenti_agente.csv` (passi degli allenamenti scritti dall'assistente, id `agente-<data>-<sport>`);
 - `schede.csv`, `schede_esercizi.csv` (schede scritte a mano);

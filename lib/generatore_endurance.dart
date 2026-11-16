@@ -5,6 +5,8 @@ import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
 import 'obiettivo.dart';
+import 'potenza.dart';
+import 'test_soglia.dart';
 
 /// Piani di corsa, nuoto e bici sulle sessioni della settimana tipo, verso la
 /// gara obiettivo (se c'è), con blocchi di 4 settimane e zone personali.
@@ -107,6 +109,7 @@ Set<String> sportDaAttivare(
 /// Ruolo di una seduta dal suo tipo (per quelle decise dall'assistente).
 String _ruoloDi(String sport, String tipo) {
   final t = tipo.toLowerCase();
+  if (eTest(tipo)) return 'test';
   // "Allunghi" contiene "lung", ma non è un lungo.
   if (t.contains('lung') && !t.contains('allungh')) return 'lungo';
   return switch (sport) {
@@ -134,6 +137,8 @@ PianoEndurance generaPianoEndurance({
   Map<String, String> progressione =
       const {}, // per sport: durata, intensità, auto
   bool principiante = false, // si parte da zero: prima solo corse facili
+  int? ftpBici, // per i watt del test in bici
+  bool rampaBici = false, // c'è il rullo smart: test a rampa in ERG
 }) {
   final passi = <WorkoutStep>[];
   final programma = <ProgrammaRiga>[];
@@ -214,27 +219,29 @@ PianoEndurance generaPianoEndurance({
         ))
           (
             s,
-            switch (sp) {
-              'Corsa' => _corsa(
-                s,
-                fase,
-                sb,
-                settimane,
-                obiettivo,
-                s.fissa ? 0 : intensita,
-                principiante,
-              ),
-              'Nuoto' => _nuoto(
-                s,
-                fase,
-                sb,
-                base,
-                fat,
-                passoCritico,
-                s.fissa ? 0 : intensita,
-              ),
-              _ => _bici(s, s.fissa ? 0 : intensita),
-            },
+            s.ruolo == 'test'
+                ? _test(s, ftpBici, rampaBici)
+                : switch (sp) {
+                    'Corsa' => _corsa(
+                      s,
+                      fase,
+                      sb,
+                      settimane,
+                      obiettivo,
+                      s.fissa ? 0 : intensita,
+                      principiante,
+                    ),
+                    'Nuoto' => _nuoto(
+                      s,
+                      fase,
+                      sb,
+                      base,
+                      fat,
+                      passoCritico,
+                      s.fissa ? 0 : intensita,
+                    ),
+                    _ => _bici(s, s.fissa ? 0 : intensita),
+                  },
           ),
       ];
       var settimana = costruisci(fattore);
@@ -748,6 +755,20 @@ WorkoutStep _passo(
       _passo(s, nome, 4, 'defaticamento', 'Dorso facile', metri: '200'),
     ],
   );
+}
+
+/// Un test scelto dall'assistente (o messo nel piano): corsa e bici l'FTP,
+/// nuoto il passo critico.
+(String, List<WorkoutStep>) _test(_Seduta s, int? ftp, bool rampa) {
+  final id = '${prefissoEndurance(s.sport)}${isoData(s.data)}';
+  return switch (s.sport) {
+    'Corsa' => (tipoTestFtp, passiTestFtpCorsa(id)),
+    'Nuoto' => (tipoTestNuoto, passiTestNuoto(id)),
+    _ => (
+      tipoTestFtp,
+      rampa ? passiTestRampa(id, ftp: ftp) : passiTestVenti(id, ftp: ftp),
+    ),
+  };
 }
 
 /// Bici: Z2, intervalli in zona 4, uscita lunga nel fine settimana.
