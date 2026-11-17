@@ -50,6 +50,12 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - Tasto indietro: da Progressi, Coach e Profilo torna a Oggi; da Oggi chiude l'app.
 - Giro guidato: "Avanti" ed "Esci" restano sempre sopra la barra di Android.
 - All'apertura riaccetta l'informativa (posizione per "Altra attività", passi dal telefono).
+- Test delle soglie: nuovo tipo di seduta "Test" per corsa, bici e nuoto; in bici un solo "Test FTP" (a rampa sul rullo smart o da 20 minuti su strada), nel nuoto 400 + 200 m che danno il passo critico.
+- In Oggi un test si propone solo quando serve (FTP mancante o fermo da 8 settimane, intervalli troppo facili), al posto di una seduta dura; "più tardi" lo rimanda di 2 settimane.
+- FTP stimato dalle uscite delle ultime 6 settimane: se sale, l'app chiede se aggiornarlo; FTP e passo critico già scritti restano validi.
+- Le mie zone: "Fai il test per calcolarlo" per bici e nuoto.
+- Nuoto registrato con l'app: metri e passo per 100 m di ogni tratto.
+- Assistente: nel messaggio ci sono anche i blocchi delle sedute (con watt medi e previsti dei test), watt, cadenza, FC max, i tratti dell'orologio con i nomi della seduta prevista e, nel nuoto, vasche, passo medio e stile.
 
 ## 1.12.3
 
