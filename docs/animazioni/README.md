@@ -3,17 +3,17 @@
 **English** · [Italiano](README.it.md)
 
 Every exercise in the app can show a short looping animation: in the exercise
-details and during the guided workout. Today only the push-up has one, all the
-others show two photos. **You can help without writing any code.**
+details and during the guided workout. We are starting **from scratch**: for now
+every exercise shows two photos. **You can help without writing any code.**
 
 The list of exercises, with the ones already done: [EXERCISES.md](EXERCISES.md).
 Start from *Priority 1*: they are the ones almost every plan uses.
 
-## Look at the example first
+## The style in one line
 
-[`push_up.webp`](../../assets/exercises/animated/push_up.webp): this is the style
-every animation should have. Same character, same light grey background, fixed
-camera, one slow repetition that loops without a jump.
+Same character, same light grey background, fixed camera, one slow repetition
+that loops without a jump. The first accepted animations will become the
+examples for the next ones.
 
 ## The two avatars
 
@@ -47,10 +47,12 @@ For the correct technique, follow the exercise instructions in
 [`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
 same ones the app shows.
 
-## How we made the push-up
+## One way to make it
 
 You can use any tool (Blender, Cascadeur, an AI video generator...) as long as the
-result follows the rules above. This is what worked for us.
+result follows the rules above and its terms let you publish it (see
+[License and rights](#license-and-rights-important)). The avatars were made with
+an AI image generator, so this is a way that fits them.
 
 ### 1. Starting image (e.g. Nano Banana / Gemini)
 
@@ -72,7 +74,7 @@ slightly lighter floor, soft studio light. No text, no logo, no other objects
 For the female avatar, replace "he" and the outfit with "she" and "black sports
 bra with red details, black leggings with red stripes, ...".
 
-### 2. Animation (e.g. Dreamina, image to video)
+### 2. Animation (an image-to-video tool, e.g. Dreamina, Kling, Runway, Veo)
 
 Give it the starting image. If the tool lets you choose a **first and last frame**,
 use the same image for both: the loop will be seamless.
@@ -111,7 +113,8 @@ don't have ffmpeg, just send the MP4.
   other apps, websites, videos or games, and never real people.
 - If you use an AI tool, check that its terms let you publish the result in an
   open-source project (some free plans don't, or add a watermark), and **say which
-  tools you used**.
+  tools and which plan you used** (free or paid). If you are not sure, ask in the
+  issue before sending: we would rather wait than publish something we may not use.
 
 ## How to send it
 

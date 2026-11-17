@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 /// Animazioni WebP degli esercizi, al posto dei due fotogrammi alternati.
 /// Per aggiungerne una: copia il file .webp in assets/exercises/animated/ e
-/// aggiungi qui una riga "id dell'esercizio: nome del file".
-const animazioniEsercizi = <String, String>{'Pushups': 'push_up.webp'};
+/// aggiungi qui una riga "id dell'esercizio: nome del file" (regole in
+/// docs/animazioni/README.md). Vuota finché non arrivano quelle nuove, fatte
+/// con gli avatar del progetto e con licenza CC0.
+const animazioniEsercizi = <String, String>{};
 
 /// Cartella delle animazioni negli asset dell'app.
 const cartellaAnimazioni = 'assets/exercises/animated/';

@@ -348,7 +348,8 @@ void main() {
           'muscoli': ['chest'],
           'muscoli_secondari': <String>[],
           'istruzioni': <String>[],
-          'immagini': <String>[],
+          // Le due foto della libreria: senza animazione sono loro il movimento.
+          'immagini': ['Pushups/0.jpg', 'Pushups/1.jpg'],
         }),
       ];
     tester.view.physicalSize = const Size(1080, 2400);

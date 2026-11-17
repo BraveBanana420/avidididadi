@@ -55,6 +55,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - FTP stimato dalle uscite delle ultime 6 settimane: se sale, l'app chiede se aggiornarlo; FTP e passo critico già scritti restano validi.
 - Le mie zone: "Fai il test per calcolarlo" per bici e nuoto.
 - Nuoto registrato con l'app: metri e passo per 100 m di ogni tratto.
+- Piegamenti: tornano le due foto come per gli altri esercizi; le animazioni verranno rifatte da zero per tutto il catalogo.
 - Assistente: nel messaggio ci sono anche i blocchi delle sedute (con watt medi e previsti dei test), watt, cadenza, FC max, i tratti dell'orologio con i nomi della seduta prevista e, nel nuoto, vasche, passo medio e stile.
 
 ## 1.12.3

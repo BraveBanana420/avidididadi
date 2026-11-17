@@ -3,17 +3,17 @@
 [English](README.md) · **Italiano**
 
 Ogni esercizio dell'app può mostrare una breve animazione che si ripete: nel
-dettaglio dell'esercizio e durante l'allenamento guidato. Per ora ce l'ha solo il
-push-up, gli altri mostrano due foto. **Puoi aiutare senza scrivere codice.**
+dettaglio dell'esercizio e durante l'allenamento guidato. Partiamo **da zero**: per
+ora ogni esercizio mostra due foto. **Puoi aiutare senza scrivere codice.**
 
 L'elenco degli esercizi, con quelli già fatti: [EXERCISES.md](EXERCISES.md).
 Parti dalla *Priorità 1*: sono quelli che usa quasi ogni piano.
 
-## Prima guarda l'esempio
+## Lo stile in una riga
 
-[`push_up.webp`](../../assets/exercises/animated/push_up.webp): è lo stile che
-devono avere tutte. Stesso personaggio, stesso fondo grigio chiaro, inquadratura
-ferma, una ripetizione lenta che ricomincia senza scatti.
+Stesso personaggio, stesso fondo grigio chiaro, inquadratura ferma, una
+ripetizione lenta che ricomincia senza scatti. Le prime animazioni accettate
+faranno da esempio per le successive.
 
 ## I due avatar
 
@@ -47,11 +47,13 @@ Per la tecnica giusta segui le istruzioni dell'esercizio in
 [`assets/esercizi.json`](../../assets/esercizi.json) (campo `istruzioni`), le
 stesse che mostra l'app.
 
-## Come abbiamo fatto il push-up
+## Un modo per farla
 
 Puoi usare qualsiasi strumento (Blender, Cascadeur, un generatore video con
-l'intelligenza artificiale...), basta che il risultato rispetti le regole. Questo è
-quello che ha funzionato per noi.
+l'intelligenza artificiale...), basta che il risultato rispetti le regole e che le
+sue condizioni permettano di pubblicarlo (vedi [Licenza e diritti](#licenza-e-diritti-importante)).
+Gli avatar sono stati creati con un generatore di immagini con l'intelligenza
+artificiale, quindi questo è un modo adatto a loro.
 
 ### 1. Immagine di partenza (es. Nano Banana / Gemini)
 
@@ -73,7 +75,7 @@ slightly lighter floor, soft studio light. No text, no logo, no other objects
 Per la donna sostituisci "he" e i vestiti con "she" e "black sports bra with red
 details, black leggings with red stripes, ...".
 
-### 2. Animazione (es. Dreamina, da immagine a video)
+### 2. Animazione (uno strumento da immagine a video, es. Dreamina, Kling, Runway, Veo)
 
 Dagli l'immagine di partenza. Se lo strumento permette di scegliere il **primo e
 l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà continuo.
@@ -112,7 +114,9 @@ ffmpeg, manda direttamente l'MP4.
   altre app, siti, video o giochi, e mai persone vere.
 - Se usi uno strumento di intelligenza artificiale, controlla che le sue condizioni
   permettano di pubblicare il risultato in un progetto open source (alcuni piani
-  gratuiti no, o aggiungono una filigrana) e **scrivi quali strumenti hai usato**.
+  gratuiti no, o aggiungono una filigrana) e **scrivi quali strumenti e quale piano
+  hai usato** (gratuito o a pagamento). Se non sei sicuro, chiedi nella issue prima
+  di mandarla: meglio aspettare che pubblicare qualcosa che non si può usare.
 
 ## Come mandarla
 
