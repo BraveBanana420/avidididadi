@@ -47,12 +47,13 @@ For the correct technique, follow the exercise instructions in
 [`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
 same ones the app shows.
 
-## One way to make it
+## How to make it
 
-You can use any tool (Blender, Cascadeur, an AI video generator...) as long as the
-result follows the rules above and its terms let you publish it (see
-[License and rights](#license-and-rights-important)). The avatars were made with
-an AI image generator, so this is a way that fits them.
+Every animation is a **2D video made from an image**: first a still image of the
+avatar in the starting position, then an image-to-video tool that animates it.
+The avatars were made this way, so the style stays the same. No 3D models are
+needed. Any image or video tool is fine, as long as its terms let you publish the
+result (see [License and rights](#license-and-rights-important)).
 
 ### 1. Starting image (e.g. Nano Banana / Gemini)
 
@@ -115,6 +116,12 @@ don't have ffmpeg, just send the MP4.
   open-source project (some free plans don't, or add a watermark), and **say which
   tools and which plan you used** (free or paid). If you are not sure, ask in the
   issue before sending: we would rather wait than publish something we may not use.
+- **Send the terms too**, for every tool you used (the image one and the video
+  one): the link to its terms of service and, if they are separate, to the plan
+  page, plus a screenshot or PDF of the part about who owns the results and
+  whether you can publish or use them commercially, and the date you made the
+  animation (terms change over time). We read them before accepting the
+  animation; if they don't allow it, we can't publish it, even if it's beautiful.
 
 ## How to send it
 
@@ -122,7 +129,9 @@ don't have ffmpeg, just send the MP4.
    the same exercise.
 2. Open an issue with the **Exercise animation** template, saying which exercise
    you are working on.
-3. When it's ready, drag the WebP or MP4 into the issue (max 10 MB).
+3. When it's ready, drag the WebP or MP4 into the issue (max 10 MB), together with
+   the terms of the tools you used.
+4. We check the animation and the terms, then add it to the app.
 
 Comfortable with Git? Open a pull request against `staging` instead:
 

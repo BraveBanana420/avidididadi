@@ -47,13 +47,13 @@ Per la tecnica giusta segui le istruzioni dell'esercizio in
 [`assets/esercizi.json`](../../assets/esercizi.json) (campo `istruzioni`), le
 stesse che mostra l'app.
 
-## Un modo per farla
+## Come farla
 
-Puoi usare qualsiasi strumento (Blender, Cascadeur, un generatore video con
-l'intelligenza artificiale...), basta che il risultato rispetti le regole e che le
-sue condizioni permettano di pubblicarlo (vedi [Licenza e diritti](#licenza-e-diritti-importante)).
-Gli avatar sono stati creati con un generatore di immagini con l'intelligenza
-artificiale, quindi questo è un modo adatto a loro.
+Ogni animazione è un **video 2D che parte da un'immagine**: prima un'immagine ferma
+dell'avatar nella posizione di partenza, poi uno strumento da immagine a video che
+la anima. Gli avatar sono nati così, e lo stile resta uguale. Non servono modelli
+3D. Va bene qualsiasi strumento per immagini e video, purché le sue condizioni
+permettano di pubblicare il risultato (vedi [Licenza e diritti](#licenza-e-diritti-importante)).
 
 ### 1. Immagine di partenza (es. Nano Banana / Gemini)
 
@@ -117,6 +117,12 @@ ffmpeg, manda direttamente l'MP4.
   gratuiti no, o aggiungono una filigrana) e **scrivi quali strumenti e quale piano
   hai usato** (gratuito o a pagamento). Se non sei sicuro, chiedi nella issue prima
   di mandarla: meglio aspettare che pubblicare qualcosa che non si può usare.
+- **Manda anche le condizioni**, per ogni strumento usato (quello per l'immagine e
+  quello per il video): il link alle condizioni d'uso e, se è separata, alla pagina
+  del piano, più uno screenshot o un PDF della parte che dice di chi sono i
+  risultati e se si possono pubblicare o usare per scopi commerciali, e la data in
+  cui hai fatto l'animazione (le condizioni cambiano nel tempo). Le leggiamo prima
+  di accettarla: se non lo permettono non possiamo pubblicarla, anche se è bellissima.
 
 ## Come mandarla
 
@@ -124,7 +130,9 @@ ffmpeg, manda direttamente l'MP4.
    stesso esercizio.
 2. Apri una issue con il modulo **Exercise animation / Animazione esercizio**,
    scrivendo su quale esercizio stai lavorando.
-3. Quando è pronta, trascina il WebP o l'MP4 nella issue (al massimo 10 MB).
+3. Quando è pronta, trascina il WebP o l'MP4 nella issue (al massimo 10 MB),
+   insieme alle condizioni degli strumenti usati.
+4. Noi controlliamo l'animazione e le condizioni, poi la aggiungiamo all'app.
 
 Sai usare Git? Apri invece una pull request verso `staging`:
 
