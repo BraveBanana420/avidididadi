@@ -436,7 +436,7 @@ void main() {
         }
       }
       expect(find.text('Fuori percorso: torna sulla traccia'), findsWidgets);
-      expect(find.byIcon(Icons.turn_right), findsWidgets);
+      expect(find.byIcon(Icons.turn_right_rounded), findsWidgets);
     });
   });
 }

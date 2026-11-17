@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Un punto GPS: posizione, istante e margine di errore in metri (0 = ignoto).
 class PuntoGps {
@@ -222,7 +223,8 @@ String fmtKm(double km) => '${km.toStringAsFixed(2).replaceAll('.', ',')} km';
 /// Fonte dei riquadri della mappa: OpenFreeMap (gratis, senza chiave).
 const fonteRiquadri = 'https://tiles.openfreemap.org/planet';
 
-/// Stile della mappa con i colori del tema: strade spente, percorso al neon.
+/// Stile della mappa con i colori del tema: strade in grigio (ma leggibili
+/// anche al sole), percorso al neon.
 /// Il percorso sta nella sorgente "percorso", partenza e arrivo in "estremi".
 String stileMappa({
   required bool scuro,
@@ -233,20 +235,20 @@ String stileMappa({
   final c = scuro
       ? (
           sfondo: '#0B0B0D',
-          verde: '#0F1311',
-          acqua: '#12151C',
-          edifici: '#121216',
-          strade: '#1E1E24',
-          principali: '#2A2A32',
+          verde: '#101A14',
+          acqua: '#14263A',
+          edifici: '#17171C',
+          strade: '#3D3D48',
+          principali: '#5C5C6A',
           nucleo: '#FFE3E5',
         )
       : (
           sfondo: '#F6F6FA',
-          verde: '#EEF3F1',
-          acqua: '#E4ECF5',
-          edifici: '#ECECF2',
-          strade: '#E2E2EA',
-          principali: '#D6D6E0',
+          verde: '#E2EFE7',
+          acqua: '#CADDF2',
+          edifici: '#E7E7EE',
+          strade: '#C9C9D6',
+          principali: '#ABABBC',
           nucleo: '#FFFFFF',
         );
   final vuota = {'type': 'FeatureCollection', 'features': <dynamic>[]};
@@ -415,9 +417,7 @@ Percorso percorsoDaGpx(String testo) {
     punti.add(PuntoGps(lat, lon, t));
   }
   if (punti.length < 2) {
-    throw const FormatException(
-      'Nel file non c\'è un percorso: serve un GPX con la traccia dell\'attività.',
-    );
+    throw FormatException(l10n.nelFileNonC2);
   }
   return Percorso(punti);
 }
@@ -482,10 +482,10 @@ List<Map<String, dynamic>> livelliPercorso({
 /// satellite (Esri World Imagery).
 enum TipoMappa { pulse, strade, satellite }
 
-const nomiMappe = {
-  TipoMappa.pulse: 'Pulse',
-  TipoMappa.strade: 'Strade',
-  TipoMappa.satellite: 'Satellite',
+Map<TipoMappa, String> get nomiMappe => {
+  TipoMappa.pulse: l10n.pulse,
+  TipoMappa.strade: l10n.strade,
+  TipoMappa.satellite: l10n.satellite,
 };
 
 /// Stile "Strade" di OpenFreeMap: si scarica e gli si aggiunge il percorso.
@@ -549,4 +549,51 @@ String stileStrade(
     ...livelliPercorso(colore: colore, nucleo: '#FFFFFF', scuro: false),
   ];
   return jsonEncode(stile);
+}
+
+/// Centro e zoom che mettono i limiti (latMin, lonMin, latMax, lonMax) in una
+/// mappa di [larghezza] × [altezza] punti, lasciando i margini dati.
+///
+/// Lo fa a mano invece di `newLatLngBounds` con i margini: quelli restano
+/// nella camera della mappa in pixel veri, e la foto della mappa
+/// (MapSnapshotter, a 1 pixel per punto) li applica tre volte più grandi,
+/// spostando il percorso in alto e tagliandolo. Con centro e zoom senza
+/// margini la foto inquadra come la mappa che si vede.
+({double lat, double lon, double zoom}) inquadratura(
+  (double, double, double, double) limiti, {
+  required double larghezza,
+  required double altezza,
+  double sinistra = 0,
+  double sopra = 0,
+  double destra = 0,
+  double sotto = 0,
+  double zoomMassimo = 17,
+}) {
+  final (a, b, c, d) = limiti;
+  // Web Mercator tra 0 e 1; a zoom z il mondo è largo 512 · 2^z punti.
+  double x(double lon) => (lon + 180) / 360;
+  double y(double lat) {
+    final r = lat.clamp(-85.0, 85.0) * math.pi / 180;
+    return (1 - math.log(math.tan(r) + 1 / math.cos(r)) / math.pi) / 2;
+  }
+
+  final x0 = x(b), x1 = x(d), y0 = y(c), y1 = y(a);
+  final w = math.max(larghezza - sinistra - destra, 1.0);
+  final h = math.max(altezza - sopra - sotto, 1.0);
+  final dx = math.max(x1 - x0, 1e-9), dy = math.max(y1 - y0, 1e-9);
+  final mondo = math.min(w / dx, h / dy);
+  final zoom = math.min(math.log(mondo / 512) / math.ln2, zoomMassimo);
+  final scala = 512 * math.pow(2, zoom);
+  // Il centro del percorso va al centro dello spazio libero: il centro della
+  // mappa si sposta della metà della differenza tra i margini.
+  final cx = (x0 + x1) / 2 + (destra - sinistra) / 2 / scala;
+  final cy = (y0 + y1) / 2 + (sotto - sopra) / 2 / scala;
+  final lat =
+      math.atan(
+        (math.exp(math.pi * (1 - 2 * cy)) - math.exp(-math.pi * (1 - 2 * cy))) /
+            2,
+      ) *
+      180 /
+      math.pi;
+  return (lat: lat, lon: cx * 360 - 180, zoom: zoom);
 }

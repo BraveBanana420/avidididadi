@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../app_state.dart';
 import '../csv.dart';
 import '../models.dart';
+import '../l10n/lingua.dart';
 
 /// Opzione avanzata, chiusa di default: import manuale delle sessioni da CSV per
 /// chi non usa app collegate a Health Connect e vuole tenere tutto in locale.
@@ -26,17 +27,13 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
         fileName: 'modello_sessioni.csv',
         bytes: utf8.encode(modelloCsvSessioni()),
         mimeType: 'text/csv',
-        dialogTitle: 'Salva il modello',
+        dialogTitle: l10n.salvaModello,
       );
       if (uri == null || !mounted) return;
-      setState(
-        () => messaggi = [
-          'Modello salvato. Compilalo (una riga per sessione) e importalo qui.',
-        ],
-      );
+      setState(() => messaggi = [l10n.modelloSalvatoCompilaloRiga]);
     } catch (e) {
       if (mounted) {
-        setState(() => messaggi = ['Impossibile salvare il modello: $e']);
+        setState(() => messaggi = [l10n.impossibileSalvareModello(e)]);
       }
     }
   }
@@ -47,9 +44,7 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
       files = await FilePicker.pickFiles(type: FileType.any);
     } catch (e) {
       if (mounted) {
-        setState(
-          () => messaggi = ['Impossibile aprire la selezione dei file: $e'],
-        );
+        setState(() => messaggi = [l10n.impossibileAprireSelezioneDei(e)]);
       }
       return;
     }
@@ -58,13 +53,13 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
     for (final f in files) {
       try {
         if ((await f.length() ?? 0) > maxByteCsv) {
-          out.add('${f.name}: file troppo grande (massimo 20 MB).');
+          out.add(l10n.fileTroppoGrandeMassimo(f.name));
           continue;
         }
         final testo = utf8.decode(await f.readAsBytes(), allowMalformed: true);
         out.add('${f.name}: ${await widget.state.importaSessioniCsv(testo)}');
       } catch (e) {
-        out.add('${f.name}: impossibile leggere il file ($e).');
+        out.add(l10n.impossibileLeggereFile2(f.name, e));
       }
     }
     if (mounted) setState(() => messaggi = out);
@@ -76,24 +71,15 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: ExpansionTile(
-        leading: const Icon(Icons.tune),
-        title: const Text('Opzioni avanzate'),
-        subtitle: const Text('Import manuale da CSV, senza sincronizzazione'),
+        leading: const Icon(Icons.tune_rounded),
+        title: Text(l10n.opzioniAvanzate),
+        subtitle: Text(l10n.importManualeCsvSenza),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         expandedCrossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Se non usi app collegate a Health Connect puoi inserire le sessioni a '
-            'mano: scarica il modello, compilalo con un foglio di calcolo (una riga '
-            'per sessione) e importalo. I dati restano solo sul telefono.',
-          ),
+          Text(l10n.seNonUsiApp),
           const SizedBox(height: 8),
-          Text(
-            'Colonne: data (AAAA-MM-GG), sport (Corsa, Bici, Nuoto, Forza), '
-            'tipo_sessione, durata_min, distanza_km, fc_media, rpe, fonte, note. '
-            'Servono almeno data e sport.',
-            style: t.bodySmall,
-          ),
+          Text(l10n.colonneDataAaaaMm, style: t.bodySmall),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -101,13 +87,13 @@ class _ImportCsvAvanzatoState extends State<ImportCsvAvanzato> {
             children: [
               OutlinedButton.icon(
                 onPressed: _scaricaModello,
-                icon: const Icon(Icons.download),
-                label: const Text('Scarica modello CSV'),
+                icon: const Icon(Icons.download_rounded),
+                label: Text(l10n.scaricaModelloCsv),
               ),
               FilledButton.tonalIcon(
                 onPressed: _importa,
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Importa CSV'),
+                icon: const Icon(Icons.upload_file_rounded),
+                label: Text(l10n.importaCsv),
               ),
             ],
           ),

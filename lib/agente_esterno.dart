@@ -4,6 +4,7 @@ import 'dart:math';
 import 'assistente.dart';
 import 'carico.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Coach nell'app del proprio assistente (Claude, ChatGPT, Gemini…), senza
 /// chiave API: l'app prepara il messaggio da mandare e legge il blocco con le
@@ -13,19 +14,11 @@ import 'models.dart';
 const appAgente = ['Claude', 'ChatGPT', 'Gemini', 'Altro'];
 
 /// Come evitare che la chat venga usata per addestrare il modello.
-const privacyAgente = {
-  'Claude':
-      'In Claude: Impostazioni → Privacy → disattiva "Aiuta a migliorare '
-      'Claude".',
-  'ChatGPT':
-      'In ChatGPT: Impostazioni → Controlli dati → disattiva "Migliora il '
-      'modello per tutti".',
-  'Gemini':
-      'In Gemini: disattiva "Attività nelle app Gemini" (o "Mantieni '
-      'attività") dal tuo account Google.',
-  'Altro':
-      "Controlla nelle impostazioni dell'app se le chat servono ad addestrare "
-      'il modello e, se vuoi, disattivalo.',
+Map<String, String> get privacyAgente => {
+  'Claude': l10n.claudeImpostazioniPrivacyDisattiva,
+  'ChatGPT': l10n.chatgptImpostazioniControlliDati,
+  'Gemini': l10n.geminiDisattivaAttivitaNelle,
+  'Altro': l10n.controllaNelleImpostazioniDell,
 };
 
 const _lettere = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -55,7 +48,7 @@ ${datiAgente(codice: codice, contesto: contesto, oggi: oggi)}''';
 /// Solo le istruzioni fisse (per un Progetto di Claude, un GPT o un Gem).
 String istruzioniAgente(String codice) =>
     '''Da adesso sei il mio allenatore personale. Io seguo gli allenamenti nell'app Avidididadi (corsa, nuoto, bici, forza, mobilità); tu mi aiuti a capire come vanno e prepari o cambi il piano.
-Rispondi in italiano, in modo breve e concreto, basandoti sui miei dati più recenti. Non fare diagnosi mediche: se segnalo un dolore che continua, consigliami di fermarmi e sentire un medico.
+Rispondi in $linguaRisposta, in modo breve e concreto, basandoti sui miei dati più recenti. Non fare diagnosi mediche: se segnalo un dolore che continua, consigliami di fermarmi e sentire un medico.
 
 ${_formato(codice)}''';
 
@@ -78,19 +71,13 @@ final _blocco = RegExp(
 RispostaAgente leggiRispostaAgente(String testo, String codice) {
   final blocchi = _blocco.allMatches(testo).toList();
   if (blocchi.isEmpty) {
-    throw const FormatException(
-      "Nella risposta non c'è il blocco per l'app. Chiedi all'assistente di "
-      'scrivere le modifiche nel formato <avidididadi>.',
-    );
+    throw FormatException(l10n.nellaRispostaNonC);
   }
   final validi = blocchi
       .where((m) => m[1]!.toUpperCase() == codice.toUpperCase())
       .toList();
   if (codice.isEmpty || validi.isEmpty) {
-    throw const FormatException(
-      'Il codice nella risposta non è quello di questo telefono: forse è di '
-      'un collegamento vecchio. Manda di nuovo i dati e riprova.',
-    );
+    throw FormatException(l10n.codiceNellaRispostaNon);
   }
   final interno = validi.last[2]!
       .replaceAll(RegExp(r'```[a-zA-Z]*'), '')
@@ -99,14 +86,10 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
   try {
     j = jsonDecode(interno);
   } on FormatException {
-    throw const FormatException(
-      "Il blocco non è leggibile. Chiedi all'assistente di riscriverlo.",
-    );
+    throw FormatException(l10n.bloccoNonLeggibileChiedi);
   }
   if (j is! Map) {
-    throw const FormatException(
-      "Il blocco non è leggibile. Chiedi all'assistente di riscriverlo.",
-    );
+    throw FormatException(l10n.bloccoNonLeggibileChiedi);
   }
   return rispostaDaJson(j);
 }
@@ -136,7 +119,7 @@ EsitoPiano valutaPianoAgente({
   final fine = da.add(const Duration(days: 7 * settimaneMaxPiano));
   final problemi = <String>[];
   final sedute = <PianoRiga>[];
-  if (da.isBefore(o)) problemi.add("La data di inizio è già passata.");
+  if (da.isBefore(o)) problemi.add(l10n.dataInizioGiaPassata);
   for (final s in proposta.sedute) {
     final data = parseData('${s['data'] ?? ''}');
     final sport = normSport('${s['sport'] ?? ''}');
@@ -146,17 +129,17 @@ EsitoPiano valutaPianoAgente({
     final nome = '${data == null ? '?' : _breve(data)} $sport';
     String? errore;
     if (data == null) {
-      errore = 'data mancante';
+      errore = l10n.dataMancante;
     } else if (data.isBefore(da) || data.isBefore(o)) {
-      errore = 'prima dell\'inizio del piano';
+      errore = l10n.primaDellInizioPiano;
     } else if (!data.isBefore(fine)) {
-      errore = 'oltre le $settimaneMaxPiano settimane';
+      errore = l10n.oltreSettimane(settimaneMaxPiano);
     } else if (!_sport.contains(sport)) {
-      errore = 'sport non previsto';
+      errore = l10n.sportNonPrevisto;
     } else if (durata == null || durata < 10 || durata > 300) {
-      errore = 'durata non sensata';
+      errore = l10n.durataNonSensata;
     } else if (sedute.any((r) => r.data == data && r.sport == sport)) {
-      errore = 'due sedute di $sport lo stesso giorno';
+      errore = l10n.dueSeduteStessoGiorno(sport);
     }
     if (errore != null) {
       problemi.add('$nome: $errore.');
@@ -197,15 +180,12 @@ EsitoPiano valutaPianoAgente({
   var massimo = max(120, (fatti / 4).round());
   for (final w in settimane.keys.toList()..sort()) {
     if ((giorni[w]?.length ?? 0) >= 7) {
-      problemi.add('Settimana del ${_breve(w)}: manca un giorno di riposo.');
+      problemi.add(l10n.settimanaMancaGiornoRiposo(_breve(w)));
     }
     final limite = (massimo * 1.1).round();
     final m = settimane[w]!;
     if (m > limite) {
-      problemi.add(
-        'Settimana del ${_breve(w)}: $m minuti, troppi rispetto alle '
-        'settimane prima (al massimo $limite).',
-      );
+      problemi.add(l10n.settimanaMinutiTroppiRispetto(_breve(w), m, limite));
     }
     massimo = max(massimo, m);
   }
@@ -222,6 +202,4 @@ EsitoPiano valutaPianoAgente({
 
 /// Messaggio da rimandare all'agente quando il piano non va bene.
 String correzioneAgente(List<String> problemi, String codice) =>
-    "L'app non ha accettato il piano per questi motivi:\n"
-    '${problemi.map((p) => '- $p').join('\n')}\n'
-    'Correggilo e rimandalo nel blocco <avidididadi> con il codice $codice.';
+    l10n.appNonHaAccettato(problemi.map((p) => '- $p').join('\n'), codice);

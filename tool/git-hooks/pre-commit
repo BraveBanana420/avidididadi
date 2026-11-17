@@ -6,7 +6,7 @@ blocca=0
 
 # File che non devono mai finire nel repository.
 vietati=$(git diff --cached --name-only --diff-filter=ACMR |
-  grep -E '(\.jks|\.keystore|\.p12|\.gz|\.apk|\.aab|\.env)$|(^|/)key\.properties$|(^|/)NOTE_PRIVATE\.md$|(^|/)backup/')
+  grep -E '(\.jks|\.keystore|\.p12|\.pem|\.gz|\.apk|\.aab|\.env|\.csv|\.gpx|\.fit|\.tcx)$|(^|/)key\.properties$|(^|/)NOTE_PRIVATE\.md$|(^|/)backup/')
 if [ -n "$vietati" ]; then
   echo "BLOCCATO: file da non caricare:"
   echo "$vietati"

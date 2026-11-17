@@ -1,8 +1,13 @@
+import 'fit.dart';
+import 'intervalli.dart';
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'attivita.dart';
@@ -10,6 +15,7 @@ import 'models.dart';
 import 'percorso.dart';
 import 'potenza.dart';
 import 'serie_sessione.dart';
+import 'l10n/lingua.dart';
 
 /// Collegamento a intervals.icu, che riceve le attività da Garmin, Polar,
 /// Suunto, Coros, Wahoo, Zwift…: nome vero, rulli, percorso, altitudine,
@@ -250,32 +256,72 @@ class ClientIntervals {
         case >= 200 && < 300:
           return corpo.isEmpty ? null : jsonDecode(corpo);
         case 401 || 403:
-          throw const ErroreIntervals(
-            'Chiave API non valida: ricopiala da intervals.icu → Impostazioni '
-            '→ Developer settings.',
-          );
+          throw ErroreIntervals(l10n.chiaveApiNonValida);
         case 404:
           return null;
         case 429:
-          throw const ErroreIntervals(
-            'intervals.icu ha ricevuto troppe richieste: riprova tra qualche '
-            'minuto.',
-          );
+          throw ErroreIntervals(l10n.intervalsIcuHaRicevuto);
         default:
-          throw ErroreIntervals(
-            'intervals.icu ha risposto con un errore (${res.statusCode}).',
-          );
+          throw ErroreIntervals(l10n.intervalsIcuHaRisposto(res.statusCode));
       }
     } on SocketException {
-      throw const ErroreIntervals('Nessuna connessione a internet.');
+      throw ErroreIntervals(l10n.nessunaConnessioneInternet);
     } on TimeoutException {
-      throw const ErroreIntervals('intervals.icu non risponde: riprova.');
+      throw ErroreIntervals(l10n.intervalsIcuNonRisponde);
     } on FormatException {
-      throw const ErroreIntervals('Risposta di intervals.icu non leggibile.');
+      throw ErroreIntervals(l10n.rispostaIntervalsIcuNon);
     } finally {
       client.close();
     }
   }
+
+  /// Il file originale dell'attività (il FIT dell'orologio), al massimo
+  /// 10 MB; null se intervals.icu non ce l'ha.
+  Future<List<int>?> fileOriginale(String id) async {
+    const massimo = 10 * 1024 * 1024;
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 15);
+    try {
+      final req = await client.getUrl(
+        Uri.parse('$baseIntervals/api/v1/activity/$id/file'),
+      );
+      req.headers
+        ..set(
+          HttpHeaders.authorizationHeader,
+          'Basic ${base64Encode(utf8.encode('API_KEY:$chiave'))}',
+        )
+        ..set(HttpHeaders.userAgentHeader, 'Avidididadi');
+      final res = await req.close().timeout(const Duration(seconds: 40));
+      if (res.statusCode == 401 || res.statusCode == 403) {
+        throw ErroreIntervals(l10n.chiaveApiNonValida2);
+      }
+      if (res.statusCode != 200) {
+        debugPrint(
+          'intervals.icu: file originale non disponibile (${res.statusCode})',
+        );
+        await res.drain<void>();
+        return null;
+      }
+      final dati = BytesBuilder(copy: false);
+      await for (final pezzo in res.timeout(const Duration(seconds: 40))) {
+        dati.add(pezzo);
+        if (dati.length > massimo) return null;
+      }
+      return dati.takeBytes();
+    } on SocketException {
+      throw ErroreIntervals(l10n.nessunaConnessioneInternet);
+    } on TimeoutException {
+      throw ErroreIntervals(l10n.intervalsIcuNonRisponde);
+    } finally {
+      client.close();
+    }
+  }
+
+  /// I giri veri dell'orologio, dal file originale: per corsa e bici
+  /// intervals.icu calcola gli intervalli a modo suo e possono scavalcare la
+  /// fine di un passo. Vuoti se il file non c'è o non è un FIT.
+  Future<List<IntervalloFatto>> giriOrologio(String id) async =>
+      intervalliDaGiri(giriDaFit(await fileOriginale(id) ?? const []));
 
   /// Carica un file GPX come attività; restituisce l'id su intervals.icu.
   Future<String?> caricaGpx(
@@ -318,7 +364,7 @@ class ClientIntervals {
   /// Prova la chiave: restituisce il nome dell'atleta (o una stringa vuota).
   Future<String> verifica() async {
     final j = await _get('/api/v1/athlete/0');
-    if (j is! Map) throw const ErroreIntervals('Chiave API non valida.');
+    if (j is! Map) throw ErroreIntervals(l10n.chiaveApiNonValida2);
     return '${j['name'] ?? ''}'.trim();
   }
 
@@ -348,6 +394,11 @@ class ClientIntervals {
     final j = await _get('/api/v1/activity/$id/streams.json');
     return j is List ? serieDaIcu(j, inizio) : const SerieSessione();
   }
+
+  /// Gli intervalli dell'attività: lavoro e recuperi con metri, tempo e
+  /// battito (nel nuoto quelli segnati sull'orologio).
+  Future<List<IntervalloFatto>> intervalli(String id) async =>
+      intervalliDaIcu(await _get('/api/v1/activity/$id/intervals'));
 
   /// Crea gli allenamenti nel calendario; restituisce external_id e id di
   /// quelli creati. Con upsert, uno con lo stesso external_id si aggiorna.

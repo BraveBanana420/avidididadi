@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:maplibre_gl/maplibre_gl.dart';
 
@@ -6,15 +8,18 @@ import '../navigazione.dart';
 import '../percorso.dart';
 import '../widgets.dart';
 import 'mappa_percorso.dart';
+import '../l10n/lingua.dart';
 
 /// L'icona della curva, come nei navigatori.
 IconData iconaCurva(Curva c) => switch (c.tipo) {
   TipoCurva.leggera =>
-    c.destra ? Icons.turn_slight_right : Icons.turn_slight_left,
-  TipoCurva.normale => c.destra ? Icons.turn_right : Icons.turn_left,
+    c.destra ? Icons.turn_slight_right_rounded : Icons.turn_slight_left_rounded,
+  TipoCurva.normale =>
+    c.destra ? Icons.turn_right_rounded : Icons.turn_left_rounded,
   TipoCurva.stretta =>
-    c.destra ? Icons.turn_sharp_right : Icons.turn_sharp_left,
-  TipoCurva.inversione => c.destra ? Icons.u_turn_right : Icons.u_turn_left,
+    c.destra ? Icons.turn_sharp_right_rounded : Icons.turn_sharp_left_rounded,
+  TipoCurva.inversione =>
+    c.destra ? Icons.u_turn_right_rounded : Icons.u_turn_left_rounded,
 };
 
 /// La mappa durante l'allenamento: segue la posizione e gira nella direzione
@@ -167,9 +172,11 @@ class _MappaLiveState extends State<MappaLive> {
                   zoomGesturesEnabled: false,
                   doubleClickZoomEnabled: false,
                   logoEnabled: false,
+                  // La "i" dei crediti va fuori dallo schermo: al suo posto
+                  // c'è il tasto dei livelli, e i crediti sono nel suo foglio.
                   attributionButtonPosition:
                       AttributionButtonPosition.bottomRight,
-                  attributionButtonColor: scheme.onSurfaceVariant,
+                  attributionButtonMargins: const math.Point(-200, -200),
                 ),
               ),
               // La posizione: sempre al centro, la freccia punta avanti.
@@ -182,8 +189,12 @@ class _MappaLiveState extends State<MappaLive> {
                   ),
                 ),
               ),
-              if (!widget.compatta)
-                const Positioned(top: 8, right: 8, child: PulsanteLivelli()),
+              // I livelli, dove prima c'era la "i": anche nella minimappa.
+              Positioned(
+                right: 6,
+                bottom: 6,
+                child: PulsanteLivelli(piccolo: widget.compatta),
+              ),
             ],
           );
         },
@@ -214,7 +225,7 @@ class _Freccia extends StatelessWidget {
       ],
     ),
     child: Icon(
-      ferma ? Icons.gps_not_fixed : Icons.navigation,
+      ferma ? Icons.gps_not_fixed_rounded : Icons.navigation_rounded,
       color: colore,
       size: 26,
     ),
@@ -240,23 +251,23 @@ class BannerGuida extends StatelessWidget {
       bool allarme,
     ) = switch (g) {
       _ when g.arrivato => (
-        Icons.sports_score,
-        'Arrivo',
-        'Percorso completato',
+        Icons.sports_score_rounded,
+        l10n.arrivo,
+        l10n.percorsoCompletato,
         false,
       ),
       _ when g.progresso == null => (
-        Icons.near_me_outlined,
+        Icons.near_me_rounded,
         g.distanza == null ? '…' : fmtMetri(g.distanza!),
         g.distanza == null
-            ? 'Cerco la posizione'
-            : 'Il percorso è da questa parte: raggiungilo',
+            ? l10n.cercoPosizione
+            : l10n.percorsoQuestaParteRaggiungilo,
         false,
       ),
       _ when g.fuori => (
-        Icons.wrong_location_outlined,
+        Icons.wrong_location_rounded,
         fmtMetri(g.distanza ?? 0),
-        'Fuori percorso: torna sulla traccia',
+        l10n.fuoriPercorsoTornaSulla,
         true,
       ),
       _ => switch (g.prossimaCurva) {
@@ -267,9 +278,9 @@ class BannerGuida extends StatelessWidget {
           false,
         ),
         null => (
-          Icons.straight,
+          Icons.straight_rounded,
           fmtMetri(g.metriMancanti ?? 0),
-          "Dritto fino all'arrivo",
+          l10n.drittoFinoAllArrivo,
           false,
         ),
       },
@@ -333,7 +344,7 @@ class BannerGuida extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    'mancano ${fmtMetri(mancano)}',
+                    l10n.mancanoAncora(fmtMetri(mancano)),
                     style: t.labelMedium?.copyWith(color: testo),
                   ),
                 ],
@@ -349,12 +360,12 @@ class BannerGuida extends StatelessWidget {
 /// La riga della notifica con la guida: "↱ 150 m · gira a destra".
 String? testoGuida(Guida? g) {
   if (g == null) return null;
-  if (g.arrivato) return 'Percorso completato';
+  if (g.arrivato) return l10n.percorsoCompletato;
   if (g.progresso == null) {
-    return g.distanza == null ? null : 'Percorso a ${fmtMetri(g.distanza!)}';
+    return g.distanza == null ? null : l10n.percorso(fmtMetri(g.distanza!));
   }
-  if (g.fuori) return 'Fuori percorso (${fmtMetri(g.distanza ?? 0)})';
+  if (g.fuori) return l10n.fuoriPercorso(fmtMetri(g.distanza ?? 0));
   final p = g.prossimaCurva;
-  if (p == null) return 'Arrivo tra ${fmtMetri(g.metriMancanti ?? 0)}';
+  if (p == null) return l10n.arrivoTra(fmtMetri(g.metriMancanti ?? 0));
   return '${fmtMetri(p.$2)}: ${p.$1.frase}';
 }

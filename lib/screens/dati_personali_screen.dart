@@ -4,6 +4,8 @@ import '../app_state.dart';
 import '../models.dart';
 import '../profilo.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Modifica di tutti i dati personali insieme, aperta dalla matita del Profilo.
 class DatiPersonaliScreen extends StatefulWidget {
@@ -52,7 +54,7 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
       initialDate: nascita ?? DateTime(oggi.year - 30),
       firstDate: DateTime(1920),
       lastDate: oggi,
-      helpText: 'Data di nascita',
+      helpText: l10n.dataNascita,
     );
     if (d != null) setState(() => nascita = soloData(d));
   }
@@ -61,8 +63,8 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
     final a = _numero(altezza, 50, 250);
     final kg = _numero(peso, 20, 300);
     setState(() {
-      erroreAltezza = a == null ? 'Altezza in cm, tra 50 e 250' : null;
-      errorePeso = kg == null ? 'Peso in kg, tra 20 e 300' : null;
+      erroreAltezza = a == null ? l10n.altezzaCmTra50 : null;
+      errorePeso = kg == null ? l10n.pesoKgTra20 : null;
     });
     if (a == null || kg == null) return;
     final navigator = Navigator.of(context);
@@ -85,8 +87,8 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: const Text('Dati personali'),
-        actions: [TextButton(onPressed: _salva, child: const Text('Salva'))],
+        title: Text(l10n.datiPersonali),
+        actions: [TextButton(onPressed: _salva, child: Text(l10n.salva))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -94,25 +96,25 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
           TextField(
             controller: nome,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(labelText: 'Nome'),
+            decoration: InputDecoration(labelText: l10n.nome),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: cognome,
             textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(labelText: 'Cognome'),
+            decoration: InputDecoration(labelText: l10n.cognome),
           ),
           const SizedBox(height: 12),
           InkWell(
             onTap: _scegliNascita,
             child: InputDecorator(
-              decoration: const InputDecoration(
-                labelText: 'Data di nascita',
-                suffixIcon: Icon(Icons.calendar_today_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.dataNascita,
+                suffixIcon: Icon(Icons.calendar_today_rounded),
               ),
               child: Text(
                 nascita == null
-                    ? 'Tocca per sceglierla'
+                    ? l10n.toccaSceglierla
                     : '${two(nascita!.day)}/${two(nascita!.month)}/${nascita!.year}',
               ),
             ),
@@ -120,7 +122,8 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
           const SizedBox(height: 16),
           SegmentedButton<String>(
             segments: [
-              for (final s in sessi) ButtonSegment(value: s, label: Text(s)),
+              for (final s in sessi)
+                ButtonSegment(value: s, label: Text(mostra(s))),
             ],
             selected: {if (sesso.isNotEmpty) sesso},
             emptySelectionAllowed: true,
@@ -132,7 +135,7 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
             controller: altezza,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Altezza',
+              labelText: l10n.altezza,
               suffixText: 'cm',
               errorText: erroreAltezza,
             ),
@@ -142,9 +145,9 @@ class _DatiPersonaliScreenState extends State<DatiPersonaliScreen> {
             controller: peso,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Peso',
+              labelText: l10n.peso,
               suffixText: 'kg',
-              helperText: 'Un peso nuovo si registra con la data di oggi.',
+              helperText: l10n.pesoNuovoSiRegistra,
               errorText: errorePeso,
             ),
           ),

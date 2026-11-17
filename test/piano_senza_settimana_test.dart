@@ -178,8 +178,21 @@ void main() {
 
     testWidgets('nessuna seduta: non c\'è niente da preparare', (tester) async {
       await apri(tester, const []);
-      final corsa = riga(tester, 'Corsa · nessuna seduta');
+      final corsa = tester.widget<CheckboxListTile>(
+        find.ancestor(
+          of: find.text('Corsa'),
+          matching: find.byType(CheckboxListTile),
+        ),
+      );
       expect(corsa.onChanged, isNull);
+      // Titolo corto: il resto sta nel sottotitolo.
+      expect(
+        find.descendant(
+          of: find.byWidget(corsa),
+          matching: find.text('nessuna seduta in calendario'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 }

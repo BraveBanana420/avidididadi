@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../app_state.dart';
+import '../assi.dart';
 import '../charts.dart';
-import '../health_connect.dart';
+import '../intervalli.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../percorso.dart';
 import '../potenza.dart';
 import '../pulse.dart';
 import '../serie_sessione.dart';
-import '../sincronizzazione.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// I grafici di un'attività: battito, tempo nelle zone, velocità o passo.
 class GraficiScreen extends StatefulWidget {
@@ -23,48 +25,9 @@ class GraficiScreen extends StatefulWidget {
 }
 
 class _GraficiScreenState extends State<GraficiScreen> {
-  late final Future<SerieSessione> _serie = _carica();
-
-  Future<SerieSessione> _carica() async {
-    final s = widget.sessione;
-    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
-    final icu = await widget.state.serieIcu(s);
-    if (icu != null && !icu.vuota) return icu;
-    var serie = const SerieSessione();
-    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
-      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
-      serie = await widget.state.hc.serie(
-        s.inizio!,
-        s.fine!,
-        origine: daFreeletics(s) ? '' : s.origine,
-        conPassi: siCammina(s.sport),
-      );
-    }
-    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
-    // (rulli, misuratore di potenza, fascia cardio).
-    final app = await widget.state.serieApp(s);
-    if (!app.vuota) {
-      serie = SerieSessione(
-        fc: serie.fc.isEmpty ? app.fc : serie.fc,
-        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
-        potenza: app.potenza,
-        // Quella di Health Connect resta, se i sensori non ne hanno una.
-        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
-      );
-    }
-    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
-      final r = await widget.state.percorsoDi(s);
-      if (r.stato == StatoPercorso.dati && r.percorso != null) {
-        serie = SerieSessione(
-          fc: serie.fc,
-          velocita: velocitaDaPercorso(r.percorso!),
-          potenza: serie.potenza,
-          cadenza: serie.cadenza,
-        );
-      }
-    }
-    return serie;
-  }
+  late final Future<SerieSessione> _serie = widget.state.serieDi(
+    widget.sessione,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +35,7 @@ class _GraficiScreenState extends State<GraficiScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: Text('Grafici · ${titoloSessione(s.sport, s.tipo)}'),
+        title: Text(l10n.grafici(titoloSessione(s.sport, s.tipo))),
       ),
       body: FutureBuilder<SerieSessione>(
         future: _serie,
@@ -81,13 +44,19 @@ class _GraficiScreenState extends State<GraficiScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final serie = snap.data!;
-          if (serie.vuota) {
-            return const Padding(
+          // Nuoto con i tratti corretti a mano: il passo si rifà da quelli,
+          // senza gli errori dell'orologio (una vasca segnata in 11").
+          final aMano = stessoSport(s.sport, 'Nuoto')
+              ? widget.state.intervalliModificati[s.id]
+              : null;
+          final inizio = s.inizio ?? (serie.vuota ? s.data : _inizio(serie));
+          final velocita = aMano == null
+              ? serie.velocita
+              : velocitaDaTratti(aMano, inizio);
+          if (serie.vuota && velocita.isEmpty) {
+            return Padding(
               padding: EdgeInsets.all(24),
-              child: Text(
-                'Per questa attività non ci sono dati nel tempo: servono il '
-                'battito o la velocità registrati dall\'orologio.',
-              ),
+              child: Text(l10n.questaAttivitaNonCi),
             );
           }
           return ListView(
@@ -99,38 +68,37 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 _Zone(fc: serie.fc, zone: widget.state.zone),
                 const SizedBox(height: 12),
               ],
-              if (serie.velocita.isNotEmpty) ...[
-                _Velocita(
-                  serie: serie.velocita,
-                  inizio: _inizio(serie),
-                  sport: s.sport,
-                ),
+              if (velocita.isNotEmpty) ...[
+                _Velocita(serie: velocita, inizio: inizio, sport: s.sport),
                 const SizedBox(height: 12),
               ],
               if (serie.altitudine.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Altitudine',
+                  titolo: l10n.altitudine,
                   serie: serie.altitudine,
                   inizio: _inizio(serie),
                   unita: 'm',
                   colore: const Color(0xFF8E8E96),
                   numeri: [
-                    ('Minima', '${_min(serie.altitudine).round()} m'),
-                    ('Massima', '${massimo(serie.altitudine).round()} m'),
+                    (l10n.minima, '${_min(serie.altitudine).round()} m'),
+                    (l10n.massima, '${massimo(serie.altitudine).round()} m'),
                   ],
                 ),
                 const SizedBox(height: 12),
               ],
               if (serie.pendenza.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Pendenza',
+                  titolo: l10n.pendenza,
                   serie: serie.pendenza,
                   inizio: _inizio(serie),
                   unita: '%',
                   colore: const Color(0xFFFFC233),
                   numeri: [
-                    ('Salita massima', '${massimo(serie.pendenza).round()} %'),
-                    ('Discesa massima', '${_min(serie.pendenza).round()} %'),
+                    (
+                      l10n.salitaMassima,
+                      '${massimo(serie.pendenza).round()} %',
+                    ),
+                    (l10n.discesaMassima, '${_min(serie.pendenza).round()} %'),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -145,6 +113,11 @@ class _GraficiScreenState extends State<GraficiScreen> {
                     zone: widget.state.zonePotenza,
                   ),
                   const SizedBox(height: 12),
+                  _SogliaDaBici(
+                    state: widget.state,
+                    sessione: s,
+                    serie: serie.potenza,
+                  ),
                 ] else if (stessoSport(s.sport, 'Corsa')) ...[
                   ListenableBuilder(
                     listenable: widget.state,
@@ -152,12 +125,9 @@ class _GraficiScreenState extends State<GraficiScreen> {
                       serie: serie.potenza,
                       zone: widget.state.zonePotenzaCorsa,
                       nota: widget.state.ftpCorsaStimata
-                          ? 'FTP di corsa stimata da età e peso: per averla '
-                                'precisa fai il test in Profilo → Le mie zone.'
+                          ? l10n.ftpCorsaStimataEta
                           : null,
-                      aiuto:
-                          'Per le zone serve il tuo peso (Profilo), oppure '
-                          'l\'FTP di corsa in Profilo → Le mie zone.',
+                      aiuto: l10n.zoneServeTuoPeso,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -173,14 +143,14 @@ class _GraficiScreenState extends State<GraficiScreen> {
                 if (passiAlMinuto(serie.cadenza, s.sport) case final p
                     when p.isNotEmpty) ...[
                   _Semplice(
-                    titolo: 'Passi al minuto',
+                    titolo: l10n.passiAlMinuto,
                     serie: p,
                     inizio: _inizio(serie),
                     unita: 'ppm',
                     colore: const Color(0xFF2EA8FF),
                     numeri: [
-                      ('Media', '${media(p).round()} ppm'),
-                      ('Massima', '${massimo(p).round()} ppm'),
+                      (l10n.media, '${media(p).round()} ppm'),
+                      (l10n.massima, '${massimo(p).round()} ppm'),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -188,17 +158,19 @@ class _GraficiScreenState extends State<GraficiScreen> {
                   const SizedBox.shrink()
               else if (serie.cadenza.isNotEmpty) ...[
                 _Semplice(
-                  titolo: 'Cadenza',
+                  titolo: stessoSport(s.sport, 'Nuoto')
+                      ? l10n.bracciateAlMinuto
+                      : l10n.cadenza,
                   serie: serie.cadenza,
                   inizio: _inizio(serie),
-                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : 'al minuto',
+                  unita: stessoSport(s.sport, 'Bici') ? 'rpm' : l10n.alMinuto,
                   colore: const Color(0xFF2EA8FF),
                   numeri: [
                     (
-                      'Media',
+                      l10n.media,
                       '${media(serie.cadenza.where((c) => c.v > 0).toList()).round()}',
                     ),
-                    ('Massima', '${massimo(serie.cadenza).round()}'),
+                    (l10n.massima, '${massimo(serie.cadenza).round()}'),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -261,7 +233,7 @@ class _Riquadro extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(valore, style: t.titleLarge),
+                      Text(valore, style: t.titleLarge?.cifreFisse),
                       Text(nome, style: t.bodySmall),
                     ],
                   ),
@@ -285,10 +257,10 @@ class _Battito extends StatelessWidget {
   Widget build(BuildContext context) {
     final r = ricampiona(serie);
     return _Riquadro(
-      titolo: 'Frequenza cardiaca',
+      titolo: l10n.frequenzaCardiaca,
       numeri: [
-        ('Media', '${media(serie).round()} bpm'),
-        ('Massima', '${massimo(serie).round()} bpm'),
+        (l10n.media, '${media(serie).round()} bpm'),
+        (l10n.massima, '${massimo(serie).round()} bpm'),
       ],
       grafico: GraficoLinea(
         ys: [for (final c in r) c.v],
@@ -319,7 +291,7 @@ class _Zone extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tempo nelle zone', style: t.titleMedium),
+          Text(l10n.tempoNelleZone, style: t.titleMedium),
           const SizedBox(height: 10),
           for (var n = 5; n >= 1; n--)
             Padding(
@@ -354,10 +326,7 @@ class _Zone extends StatelessWidget {
                 ],
               ),
             ),
-          Text(
-            'Zone calcolate sulla tua FC massima (${zone.fcMax} bpm).',
-            style: t.bodySmall,
-          ),
+          Text(l10n.zoneCalcolateSullaTua(zone.fcMax), style: t.bodySmall),
         ],
       ),
     );
@@ -377,15 +346,17 @@ class _Velocita extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bici = stessoSport(sport, 'Bici');
-    final inMoto = serie.where((c) => c.v >= 0.5).toList();
+    final nuoto = stessoSport(sport, 'Nuoto');
+    // In acqua si va piano: gli esercizi di tecnica stanno sotto 0,5 m/s.
+    final inMoto = serie.where((c) => c.v >= (nuoto ? 0.2 : 0.5)).toList();
     final r = ricampiona(inMoto.isEmpty ? serie : inMoto);
     final colore = coloreSport(sport);
     if (bici) {
       return _Riquadro(
-        titolo: 'Velocità',
+        titolo: l10n.velocita,
         numeri: [
-          ('Media', '${(media(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
-          ('Massima', '${(massimo(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+          (l10n.media, '${(media(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
+          (l10n.massima, '${(massimo(inMoto) * 3.6).toStringAsFixed(1)} km/h'),
         ],
         grafico: GraficoLinea(
           ys: [for (final c in r) c.v * 3.6],
@@ -399,18 +370,43 @@ class _Velocita extends StatelessWidget {
         ),
       );
     }
+    if (nuoto) {
+      // Passo ogni 100 m: più in alto = più veloce.
+      double passo(double v) => v < 0.2 ? 0 : 100 / v;
+      return _Riquadro(
+        titolo: l10n.passo,
+        numeri: [
+          (l10n.medio, '${fmtMinSec(passo(media(inMoto)))} /100 m'),
+          (l10n.migliore, '${fmtMinSec(passo(massimo(inMoto)))} /100 m'),
+        ],
+        grafico: GraficoLinea(
+          ys: [for (final c in r) -passo(c.v).clamp(0, 600).toDouble()],
+          etichette: [for (final c in r) _dal(inizio, c.t)],
+          fmt: (v) => fmtMinSec(-v),
+          colore: colore,
+          dettagli: [
+            for (final c in r)
+              '${fmtMinSec(passo(c.v))} /100 m\n${_dal(inizio, c.t)}',
+          ],
+        ),
+      );
+    }
     // Passo: più in alto = più veloce, come su Garmin.
+    final passi = [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()];
     return _Riquadro(
-      titolo: 'Passo',
+      titolo: l10n.passo,
       numeri: [
-        ('Medio', '${fmtMinSec(passoDa(media(inMoto)))} /km'),
-        ('Migliore', '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
+        (l10n.medio, '${fmtMinSec(passoDa(media(inMoto)))} /km'),
+        (l10n.migliore, '${fmtMinSec(passoDa(massimo(inMoto)))} /km'),
       ],
       grafico: GraficoLinea(
-        ys: [for (final c in r) -passoDa(c.v).clamp(0, 900).toDouble()],
+        ys: passi,
         etichette: [for (final c in r) _dal(inizio, c.t)],
         fmt: (v) => fmtMinSec(-v),
         colore: colore,
+        // I tratti più lenti (soste, recuperi camminati) restano sul bordo.
+        minimoAsse: percentile(passi, 0.05),
+        passiAsse: passiTempo,
         dettagli: [
           for (final c in r)
             '${fmtMinSec(passoDa(c.v))} /km\n${_dal(inizio, c.t)}',
@@ -468,18 +464,76 @@ class _SogliaDaCorsa extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('La tua FTP di corsa: $soglia W', style: t.titleMedium),
+                Text(l10n.tuaFtpCorsaW(soglia), style: t.titleMedium),
+                const SizedBox(height: 4),
+                Text(l10n.n95DeiTuoiMigliori, style: t.bodySmall),
+                const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () => state.impostaFtpCorsa(soglia),
+                  icon: const Icon(Icons.check_rounded),
+                  label: Text(l10n.usalaComeFtpCorsa),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Dopo un test in bici, o un'uscita più forte dell'FTP di adesso: propone
+/// l'FTP nuovo. Dal test vale anche se è più basso.
+class _SogliaDaBici extends StatelessWidget {
+  final AppState state;
+  final Sessione sessione;
+  final List<Campione> serie;
+  const _SogliaDaBici({
+    required this.state,
+    required this.sessione,
+    required this.serie,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final test = state.testBiciDel(sessione);
+    final p = potenzaMiglioreDa(sessione.id, sessione.data, serie, test: test);
+    final ftp = p?.ftp;
+    if (p == null || ftp == null || ftp < 50 || ftp > 600) {
+      return const SizedBox.shrink();
+    }
+    return ListenableBuilder(
+      listenable: state,
+      builder: (context, _) {
+        final attuale = state.ftpBici;
+        // Un'uscita normale dice solo "almeno": vale se è più alta del 3%.
+        final mostra = test.isNotEmpty
+            ? ftp != attuale
+            : attuale == null || ftp >= attuale * 1.03;
+        if (!mostra) return const SizedBox.shrink();
+        final come = switch (test) {
+          'rampa' => l10n.tsComeRampa(p.w1),
+          'venti' => l10n.tsComeVenti(p.w20),
+          _ => l10n.tsComeUscita(p.w20),
+        };
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: SuperficiePulse(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.tsTuoFtp(ftp), style: t.titleMedium),
                 const SizedBox(height: 4),
                 Text(
-                  'È il 95% dei tuoi migliori 20 minuti. Vale se in quei 20 '
-                  'minuti hai corso al massimo.',
+                  attuale == null ? come : '$come ${l10n.tsAdessoUsi(attuale)}',
                   style: t.bodySmall,
                 ),
                 const SizedBox(height: 8),
                 FilledButton.icon(
-                  onPressed: () => state.impostaFtpCorsa(soglia),
-                  icon: const Icon(Icons.check),
-                  label: const Text('Usala come FTP di corsa'),
+                  onPressed: () => state.impostaFtp(ftp),
+                  icon: const Icon(Icons.check_rounded),
+                  label: Text(l10n.tsUsaloComeFtp),
                 ),
               ],
             ),
@@ -501,11 +555,11 @@ class GraficoPotenza extends StatelessWidget {
     final r = ricampiona(serie);
     final np = potenzaNormalizzata(serie);
     return _Riquadro(
-      titolo: 'Potenza',
+      titolo: l10n.potenza,
       numeri: [
-        ('Media', '${media(serie).round()} W'),
-        if (np != null) ('Normalizzata', '$np W'),
-        ('Massima', '${massimo(serie).round()} W'),
+        (l10n.media, '${media(serie).round()} W'),
+        if (np != null) (l10n.normalizzata, '$np W'),
+        (l10n.massima, '${massimo(serie).round()} W'),
       ],
       grafico: GraficoLinea(
         ys: [for (final c in r) c.v],
@@ -524,15 +578,13 @@ class ZonePotenzaCard extends StatelessWidget {
   final List<Campione> serie;
   final ZonePotenza? zone;
   final String? nota; // da dove viene la soglia, se è solo una stima
-  final String aiuto; // cosa fare se non c'è la soglia
+  final String? aiuto; // cosa fare se non c'è la soglia
   const ZonePotenzaCard({
     super.key,
     required this.serie,
     required this.zone,
     this.nota,
-    this.aiuto =
-        'Per le zone di potenza serve l\'FTP: scrivilo in Profilo → '
-        'Zone, oppure impostalo su intervals.icu.',
+    this.aiuto,
   });
 
   @override
@@ -540,7 +592,9 @@ class ZonePotenzaCard extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final z = zone;
     if (z == null) {
-      return SuperficiePulse(child: Text(aiuto, style: t.bodySmall));
+      return SuperficiePulse(
+        child: Text(aiuto ?? l10n.zonePotenzaServeFtp, style: t.bodySmall),
+      );
     }
     final tempi = tempoNelleZonePotenza(serie, z);
     final totale = tempi.values.fold(Duration.zero, (a, b) => a + b);
@@ -549,7 +603,7 @@ class ZonePotenzaCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Tempo nelle zone di potenza', style: t.titleMedium),
+          Text(l10n.tempoNelleZonePotenza, style: t.titleMedium),
           const SizedBox(height: 10),
           for (var n = z.numero; n >= 1; n--)
             Padding(
@@ -584,10 +638,7 @@ class ZonePotenzaCard extends StatelessWidget {
                 ],
               ),
             ),
-          Text(
-            nota ?? 'Zone calcolate sul tuo FTP (${z.ftp} W).',
-            style: t.bodySmall,
-          ),
+          Text(nota ?? l10n.zoneCalcolateSulTuo(z.ftp), style: t.bodySmall),
         ],
       ),
     );

@@ -164,6 +164,45 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('dal riepilogo: nome, indoor, dati e cestino in una pagina', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1080, 3400);
+      tester.view.devicePixelRatio = 2.625;
+      addTearDown(tester.view.reset);
+      final corsa = Sessione(
+        id: 'icu-1',
+        data: DateTime(2026, 11, 6),
+        sport: 'Corsa',
+        tipo: 'Lungo',
+        durataMin: 60,
+        distanzaKm: 10,
+        fonte: 'intervals.icu',
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ModificaSessioneScreen(
+            state: AppState(),
+            sessione: corsa,
+            completa: true,
+          ),
+        ),
+      );
+      expect(campo("Nome dell'allenamento"), findsOneWidget);
+      expect(find.text('Indoor (tapis roulant)'), findsOneWidget);
+      expect(campo('Durata'), findsOneWidget);
+      expect(find.byTooltip('Elimina la sessione'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('scritta a mano e nuoto: niente cestino né indoor', (
+      tester,
+    ) async {
+      await apri(tester, fermata);
+      expect(find.byTooltip('Elimina la sessione'), findsNothing);
+      expect(find.byType(SwitchListTile), findsNothing);
+    });
+
     testWidgets('senza durata non si salva', (tester) async {
       await apri(tester, fermata);
       await tester.enterText(campo('Durata'), '');

@@ -12,6 +12,53 @@ import 'tema.dart';
 double spazioBarra(BuildContext context) =>
     MediaQuery.paddingOf(context).bottom + 16;
 
+/// Fa entrare il contenuto con una dissolvenza e un piccolo scorrimento.
+/// Riparte ogni volta che cambia la [key]: si usa con `ValueKey(valore)` sui
+/// numeri che cambiano e sul passaggio da un esercizio all'altro. Entra solo
+/// il contenuto nuovo (quello vecchio sparisce subito), così non si vedono mai
+/// due testi insieme. Fermo se nel telefono le animazioni sono spente.
+class EntrataMorbida extends StatelessWidget {
+  final Widget child;
+
+  /// Da dove arriva, in punti: dal basso i numeri, da destra gli esercizi.
+  final Offset da;
+  final int ms;
+  const EntrataMorbida({
+    super.key,
+    required this.child,
+    this.da = const Offset(0, 10),
+    this.ms = 280,
+  });
+
+  @override
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: durataMovimento(context, ms),
+    curve: Curves.easeOutCubic,
+    builder: (_, v, figlio) => Opacity(
+      opacity: v,
+      // Anche a metà entrata resta leggibile dai lettori di schermo.
+      alwaysIncludeSemantics: true,
+      child: Transform.translate(offset: da * (1 - v), child: figlio),
+    ),
+    child: child,
+  );
+}
+
+/// Cifre tutte larghe uguali, per i numeri che cambiano: così un "1" al posto
+/// di un "8" non sposta il resto della riga.
+extension CifreFisse on TextStyle {
+  TextStyle get cifreFisse =>
+      copyWith(fontFeatures: const [FontFeature.tabularFigures()]);
+}
+
+/// Durata di un movimento dell'interfaccia: zero se nel telefono sono spente
+/// le animazioni (Impostazioni → Accessibilità).
+Duration durataMovimento(BuildContext context, [int ms = 500]) =>
+    MediaQuery.disableAnimationsOf(context)
+    ? Duration.zero
+    : Duration(milliseconds: ms);
+
 /// Riquadro in rilievo: sfumatura e ombra del tema. Con [gradiente] e [ombra]
 /// diventa per esempio il riquadro della seduta di oggi.
 class SuperficiePulse extends StatelessWidget {
@@ -152,16 +199,23 @@ class AnelloPulse extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = Pulse.di(context);
     final scheme = Theme.of(context).colorScheme;
+    // Si riempie da zero quando compare, e scorre a ogni cambio di valore.
     return SizedBox(
       width: dimensione,
       height: dimensione,
-      child: CustomPaint(
-        painter: _Anello(
-          valore: valore.clamp(0, 1).toDouble(),
-          spessore: spessore,
-          colori: p.anello,
-          traccia: scheme.surfaceContainerHigh,
-          bagliore: alone ? p.bagliore : null,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: valore.clamp(0, 1).toDouble()),
+        duration: durataMovimento(context),
+        curve: Curves.easeOutCubic,
+        builder: (context, v, child) => CustomPaint(
+          painter: _Anello(
+            valore: v,
+            spessore: spessore,
+            colori: p.anello,
+            traccia: scheme.surfaceContainerHigh,
+            bagliore: alone ? p.bagliore : null,
+          ),
+          child: child,
         ),
         child: Center(child: child),
       ),
@@ -451,7 +505,7 @@ class RigaPulse extends StatelessWidget {
             if (fine != null)
               fine!
             else if (onTap != null)
-              Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+              Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
           ],
         ),
       ),
@@ -525,8 +579,12 @@ class BarraAvanzamento extends StatelessWidget {
         borderRadius: BorderRadius.circular(altezza),
       ),
       alignment: Alignment.centerLeft,
-      child: FractionallySizedBox(
-        widthFactor: valore.clamp(0, 1).toDouble(),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween(begin: 0, end: valore.clamp(0, 1).toDouble()),
+        duration: durataMovimento(context),
+        curve: Curves.easeOutCubic,
+        builder: (context, v, child) =>
+            FractionallySizedBox(widthFactor: v, child: child),
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: p.anello),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../allenamento_arrampicata.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
@@ -7,17 +8,19 @@ import '../models.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'esecuzione_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 // La raccolta degli allenamenti di arrampicata: elenco, dettaglio (inizia
 // ora, aggiungi al piano) e builder per crearli o cambiarli a mano.
 
 IconData iconaTipoArrampicata(String tipo) => switch (tipo) {
-  'trave' => Icons.horizontal_rule,
-  'boulder' => Icons.landscape_outlined,
-  'circuito' => Icons.loop,
-  'campus' => Icons.stairs_outlined,
-  'vie' => Icons.terrain,
-  _ => Icons.more_horiz,
+  'trave' => Icons.horizontal_rule_rounded,
+  'boulder' => Icons.landscape_rounded,
+  'circuito' => Icons.loop_rounded,
+  'campus' => Icons.stairs_rounded,
+  'vie' => Icons.terrain_rounded,
+  _ => Icons.more_horiz_rounded,
 };
 
 /// Elenco degli allenamenti, come schede da riusare.
@@ -30,15 +33,15 @@ class AllenamentiArrampicataScreen extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Allenamenti di arrampicata')),
+      appBar: AppBar(title: Text(l10n.allenamentiArrampicata)),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => ModificaArrampicataScreen(state: state),
           ),
         ),
-        icon: const Icon(Icons.add),
-        label: const Text('Nuovo'),
+        icon: const Icon(Icons.add_rounded),
+        label: Text(l10n.nuovo),
       ),
       body: ListenableBuilder(
         listenable: state,
@@ -51,21 +54,17 @@ class AllenamentiArrampicataScreen extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Text('Ancora nessun allenamento', style: t.titleMedium),
+                Text(l10n.ancoraNessunAllenamento, style: t.titleMedium),
                 const SizedBox(height: 8),
-                const Text(
-                  'Crealo con "Nuovo", oppure chiedilo al tuo assistente (per '
-                  "esempio mandandogli lo screenshot di un'altra app): nella sua "
-                  'risposta condividi il blocco con l\'app e qui trovi '
-                  'l\'allenamento, pronto da mettere nel calendario.',
-                ),
+                Text(l10n.crealoNuovoOppureChiedilo),
               ],
             );
           }
           // Raggruppati per categoria.
           final perCategoria = <String, List<AllenamentoArrampicata>>{};
           for (final a in lista) {
-            (perCategoria[a.categoria.isEmpty ? 'Altri' : a.categoria] ??= [])
+            (perCategoria[a.categoria.isEmpty ? l10n.altri : a.categoria] ??=
+                    [])
                 .add(a);
           }
           return ListView(
@@ -156,7 +155,7 @@ class _Scheda extends StatelessWidget {
                           ),
                         const Spacer(),
                         Icon(
-                          Icons.schedule,
+                          Icons.schedule_rounded,
                           size: 16,
                           color: scheme.onSurfaceVariant,
                         ),
@@ -192,17 +191,17 @@ class DettaglioArrampicataScreen extends StatelessWidget {
       initialDate: oggi,
       firstDate: oggi,
       lastDate: oggi.add(const Duration(days: 365)),
-      helpText: 'In che giorno?',
+      helpText: l10n.giorno,
     );
     if (data == null || !context.mounted) return;
     final messenger = ScaffoldMessenger.of(context);
     final ok = await state.programmaArrampicata(a, data);
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           ok
-              ? '${a.nome} è nel calendario: ${dataLunga(data)}.'
-              : 'Non è stato possibile: scegli oggi o un giorno dopo.',
+              ? l10n.nelCalendario(a.nome, dataLunga(data))
+              : l10n.nonStatoPossibileScegli,
         ),
       ),
     );
@@ -212,18 +211,16 @@ class DettaglioArrampicataScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Eliminare "${a.nome}"?'),
-        content: const Text(
-          'Sparisce dalla raccolta. Le sedute già nel calendario restano.',
-        ),
+        title: Text(l10n.eliminare(a.nome)),
+        content: Text(l10n.sparisceDallaRaccoltaSedute),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Elimina'),
+            child: Text(l10n.elimina),
           ),
         ],
       ),
@@ -247,7 +244,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
         if (a == null) {
           return Scaffold(
             appBar: AppBar(),
-            body: const Center(child: Text('Allenamento non trovato.')),
+            body: Center(child: Text(l10n.allenamentoNonTrovato)),
           );
         }
         return Scaffold(
@@ -256,19 +253,19 @@ class DettaglioArrampicataScreen extends StatelessWidget {
             title: Text(a.nome),
             actions: [
               IconButton(
-                tooltip: 'Modifica',
+                tooltip: l10n.modifica,
                 onPressed: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) =>
                         ModificaArrampicataScreen(state: state, allenamento: a),
                   ),
                 ),
-                icon: const Icon(Icons.edit_outlined),
+                icon: const Icon(Icons.edit_rounded),
               ),
               IconButton(
-                tooltip: 'Elimina',
+                tooltip: l10n.elimina,
                 onPressed: () => _elimina(context, a),
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline_rounded),
               ),
             ],
           ),
@@ -288,7 +285,7 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                       visualDensity: VisualDensity.compact,
                     ),
                   Chip(
-                    avatar: const Icon(Icons.schedule, size: 16),
+                    avatar: const Icon(Icons.schedule_rounded, size: 16),
                     label: Text('${a.minuti} min'),
                     visualDensity: VisualDensity.compact,
                   ),
@@ -312,8 +309,8 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                         passi: a.passi('libera'),
                         libera: true,
                       ),
-                      icona: Icons.play_arrow,
-                      testo: 'Inizia ora',
+                      icona: Icons.play_arrow_rounded,
+                      testo: l10n.iniziaOra,
                     ),
                   ),
                 ],
@@ -321,11 +318,11 @@ class DettaglioArrampicataScreen extends StatelessWidget {
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _aggiungi(context, a),
-                icon: const Icon(Icons.event_available),
-                label: const Text('Aggiungi al piano'),
+                icon: const Icon(Icons.event_available_rounded),
+                label: Text(l10n.aggiungiAlPiano),
               ),
               const SizedBox(height: 20),
-              Text('Esercizi', style: t.titleMedium),
+              Text(l10n.esercizi, style: t.titleMedium),
               const SizedBox(height: 4),
               SuperficiePulse(
                 padding: const EdgeInsets.symmetric(
@@ -351,11 +348,11 @@ class DettaglioArrampicataScreen extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.edit_note, color: scheme.primary),
+                    Icon(Icons.edit_note_rounded, color: scheme.primary),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Alla fine segna: ${a.daSegnare}',
+                        l10n.allaFineSegna(a.daSegnare),
                         style: t.bodyMedium,
                       ),
                     ),
@@ -410,11 +407,11 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
     final nome = _nome.text.trim();
     final durata = int.tryParse(_durata.text.trim()) ?? 0;
     if (nome.isEmpty || _esercizi.isEmpty) {
-      setState(() => _errore = 'Servono il nome e almeno un esercizio.');
+      setState(() => _errore = l10n.servonoNomeAlmenoEsercizio);
       return;
     }
     if (durata < 0 || durata > 300) {
-      setState(() => _errore = 'La durata va da 0 a 300 minuti.');
+      setState(() => _errore = l10n.durataVa0300);
       return;
     }
     final navigator = Navigator.of(context);
@@ -458,8 +455,8 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: Text(a == null ? 'Nuovo allenamento' : 'Modifica'),
-        actions: [TextButton(onPressed: _salva, child: const Text('Salva'))],
+        title: Text(a == null ? l10n.nuovoAllenamento : l10n.modifica),
+        actions: [TextButton(onPressed: _salva, child: Text(l10n.salva))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -467,16 +464,16 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
           TextField(
             controller: _nome,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'Nome',
-              hintText: 'es. 50-50, 7:3s 40%',
+            decoration: InputDecoration(
+              labelText: l10n.nome,
+              hintText: l10n.es50507,
             ),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: _categoria,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(labelText: 'Categoria'),
+            decoration: InputDecoration(labelText: l10n.categoria),
           ),
           const SizedBox(height: 6),
           Wrap(
@@ -485,13 +482,13 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
             children: [
               for (final c in categorieArrampicata)
                 ActionChip(
-                  label: Text(c),
+                  label: Text(mostra(c)),
                   onPressed: () => setState(() => _categoria.text = c),
                 ),
             ],
           ),
           const SizedBox(height: 14),
-          Text('Dove', style: t.titleSmall),
+          Text(l10n.dove, style: t.titleSmall),
           const SizedBox(height: 6),
           Wrap(
             spacing: 6,
@@ -514,10 +511,10 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
           TextField(
             controller: _durata,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Durata',
+            decoration: InputDecoration(
+              labelText: l10n.durata,
               suffixText: 'min',
-              helperText: 'Vuoto = la calcolo dagli esercizi.',
+              helperText: l10n.vuotoCalcoloDagliEsercizi,
             ),
           ),
           const SizedBox(height: 14),
@@ -526,19 +523,19 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
             minLines: 2,
             maxLines: 6,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(labelText: 'Descrizione'),
+            decoration: InputDecoration(labelText: l10n.descrizione),
           ),
           const SizedBox(height: 14),
           TextField(
             controller: _daSegnare,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              labelText: 'Cosa segnare alla fine',
-              hintText: 'es. il grado medio delle due parti',
+            decoration: InputDecoration(
+              labelText: l10n.cosaSegnareAllaFine,
+              hintText: l10n.esGradoMedioDelle,
             ),
           ),
           const SizedBox(height: 20),
-          Text('Esercizi', style: t.titleMedium),
+          Text(l10n.esercizi, style: t.titleMedium),
           const SizedBox(height: 4),
           for (final (k, e) in _esercizi.indexed)
             Card(
@@ -551,20 +548,20 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
                   children: [
                     if (k > 0)
                       IconButton(
-                        tooltip: 'Sposta su',
+                        tooltip: l10n.spostaSu,
                         onPressed: () => setState(() {
                           _esercizi = [..._esercizi];
                           final x = _esercizi.removeAt(k);
                           _esercizi.insert(k - 1, x);
                         }),
-                        icon: const Icon(Icons.arrow_upward),
+                        icon: const Icon(Icons.arrow_upward_rounded),
                       ),
                     IconButton(
-                      tooltip: 'Togli',
+                      tooltip: l10n.togli,
                       onPressed: () => setState(
                         () => _esercizi = [..._esercizi]..removeAt(k),
                       ),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(Icons.close_rounded),
                     ),
                   ],
                 ),
@@ -572,8 +569,8 @@ class _ModificaArrampicataScreenState extends State<ModificaArrampicataScreen> {
             ),
           OutlinedButton.icon(
             onPressed: () => _esercizio(),
-            icon: const Icon(Icons.add),
-            label: const Text('Aggiungi un esercizio'),
+            icon: const Icon(Icons.add_rounded),
+            label: Text(l10n.aggiungiEsercizio),
           ),
           if (_errore != null) ...[
             const SizedBox(height: 12),
@@ -652,10 +649,7 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
         lavoro == null ||
         pausa == null ||
         recupero == null) {
-      setState(
-        () => _errore =
-            'Controlla: nome, serie 1-20, ripetizioni 1-100, secondi 0-3600.',
-      );
+      setState(() => _errore = l10n.controllaNomeSerie1);
       return;
     }
     Navigator.pop(
@@ -687,12 +681,7 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
           ),
         );
     return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        0,
-        16,
-        16 + MediaQuery.viewInsetsOf(context).bottom,
-      ),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + spazioInBasso(context)),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -702,33 +691,35 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
               controller: _nome,
               autofocus: e == null,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Esercizio',
-                hintText: 'es. Sospensioni, Vie, Blocchi',
+              decoration: InputDecoration(
+                labelText: l10n.esercizio3,
+                hintText: l10n.esSospensioniVieBlocchi,
               ),
             ),
             Row(
               spacing: 12,
-              children: [numero(_serie, 'Serie'), numero(_rip, 'Ripetizioni')],
+              children: [
+                numero(_serie, l10n.serie2),
+                numero(_rip, l10n.ripetizioni),
+              ],
             ),
             Row(
               spacing: 12,
               children: [
-                numero(_lavoro, 'Lavoro', unita: 's'),
-                numero(_pausa, 'Pausa', unita: 's'),
-                numero(_recupero, 'Tra le serie', unita: 's'),
+                numero(_lavoro, l10n.lavoro, unita: 's'),
+                numero(_pausa, l10n.pausa2, unita: 's'),
+                numero(_recupero, l10n.traSerie, unita: 's'),
               ],
             ),
             Text(
-              'Lavoro vuoto = finché non hai finito (una via, un blocco): '
-              'tocchi "Fatto". Pausa: tra una ripetizione e l\'altra.',
+              l10n.lavoroVuotoFincheNon,
               style: Theme.of(context).textTheme.bodySmall,
             ),
             TextField(
               controller: _intensita,
-              decoration: const InputDecoration(
-                labelText: 'Intensità o grado',
-                hintText: 'es. 40%, 6b+, facile',
+              decoration: InputDecoration(
+                labelText: l10n.intensitaOGrado,
+                hintText: l10n.es406bFacile,
               ),
             ),
             TextField(
@@ -736,14 +727,14 @@ class _FoglioEsercizioState extends State<_FoglioEsercizio> {
               minLines: 1,
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: InputDecoration(labelText: l10n.note),
             ),
             if (_errore != null)
               Text(
                 _errore!,
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
-            FilledButton(onPressed: _ok, child: const Text('OK')),
+            FilledButton(onPressed: _ok, child: Text(l10n.ok)),
           ],
         ),
       ),

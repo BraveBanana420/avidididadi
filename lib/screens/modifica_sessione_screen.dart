@@ -4,19 +4,30 @@ import '../app_state.dart';
 import '../arrampicata.dart';
 import '../modifica_sessione.dart';
 import '../models.dart';
+import '../percorso.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'arrampicata_sheet.dart';
+import 'serie_a_mano_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
-/// Tutti i dati di una seduta registrata con l'app, da scrivere o correggere
-/// dopo: durata, distanza, battito… e per il nuoto vasche e tempo medio.
+/// Tutto quello che si corregge di una seduta, in una pagina sola: nome,
+/// indoor o outdoor, durata, distanza, battito… e per il nuoto vasche e
+/// tempo medio.
 class ModificaSessioneScreen extends StatefulWidget {
   final AppState state;
   final Sessione sessione;
+
+  /// Dal riepilogo di una sessione già nello storico: ci sono anche il
+  /// cestino, gli esercizi della forza e "Torna ai dati originali". Chi
+  /// chiede di eliminare esce con 'elimina'.
+  final bool completa;
   const ModificaSessioneScreen({
     super.key,
     required this.state,
     required this.sessione,
+    this.completa = false,
   });
 
   @override
@@ -55,6 +66,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
   late final note = TextEditingController(
     text: s.note == s.sport ? '' : s.note,
   );
+  late bool chiuso = widget.state.ritocchi[s.id]?.alChiuso ?? false;
   late DateTime inizio = s.inizio ?? s.data.add(const Duration(hours: 12));
   String? erroreDurata;
 
@@ -107,7 +119,7 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
   Future<void> _salva() async {
     final minuti = numeroScritto(durata.text, 2880).round();
     if (minuti <= 0) {
-      setState(() => erroreDurata = 'Scrivi quanti minuti è durata');
+      setState(() => erroreDurata = l10n.scriviQuantiMinutiDurata);
       return;
     }
     final navigator = Navigator.of(context);
@@ -144,9 +156,9 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
     );
     final prima = state.ritocchi[s.id];
     final testo = nome.text.trim();
-    if (testo != (prima?.nome ?? '')) {
+    if (testo != (prima?.nome ?? '') || chiuso != (prima?.alChiuso ?? false)) {
       await state.ritoccaSessione(
-        RitoccoSessione(s.id, nome: testo, alChiuso: prima?.alChiuso ?? false),
+        RitoccoSessione(s.id, nome: testo, alChiuso: chiuso),
       );
     }
     navigator.pop();
@@ -187,12 +199,12 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
   List<Widget> _nuoto() {
     final t = Theme.of(context).textTheme;
     return [
-      Text('In vasca', style: t.titleMedium),
+      Text(l10n.vasca, style: t.titleMedium),
       _coppia(
-        _campo(vasche, 'Vasche', cambia: (_) => _ricalcolaMetri()),
+        _campo(vasche, l10n.vasche, cambia: (_) => _ricalcolaMetri()),
         _campo(
           lunghezza,
-          'Lunghezza vasca',
+          l10n.lunghezzaVasca,
           suffisso: 'm',
           cambia: (_) => _ricalcolaMetri(),
         ),
@@ -212,22 +224,22 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
         ],
       ),
       _coppia(
-        _campo(metri, 'Metri totali', suffisso: 'm'),
+        _campo(metri, l10n.metriTotali, suffisso: 'm'),
         _campo(
           passo,
-          'Tempo medio',
+          l10n.tempoMedio,
           suffisso: '/100 m',
-          aiuto: 'es. 1:55',
+          aiuto: l10n.es155,
           tempo: true,
         ),
       ),
-      Text('Stile', style: t.titleSmall),
+      Text(l10n.stile, style: t.titleSmall),
       Wrap(
         spacing: 8,
         children: [
           for (final x in stiliNuoto)
             ChoiceChip(
-              label: Text(x),
+              label: Text(mostra(x)),
               selected: stile == x,
               onSelected: (si) => setState(() => stile = si ? x : ''),
             ),
@@ -241,7 +253,20 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
     final t = Theme.of(context).textTheme;
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Modifica i dati')),
+      appBar: AppBar(
+        title: Text(l10n.modificaSessione),
+        actions: [
+          // Nel colore degli errori e lontano da "Salva": non si tocca
+          // per sbaglio, e prima di eliminare si chiede conferma.
+          if (widget.completa)
+            IconButton(
+              tooltip: l10n.eliminaSessione,
+              color: Theme.of(context).colorScheme.error,
+              onPressed: () => Navigator.pop(context, 'elimina'),
+              icon: const Icon(Icons.delete_outline_rounded),
+            ),
+        ],
+      ),
       body: ListView(
         padding: EdgeInsets.fromLTRB(
           16,
@@ -254,19 +279,35 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 14,
             children: [
-              Text('${s.sport} · ${dataLunga(s.data)}', style: t.titleMedium),
+              Text(
+                '${mostra(s.sport)} · ${dataLunga(s.data)}',
+                style: t.titleMedium,
+              ),
               TextField(
                 controller: nome,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: "Nome dell'allenamento",
-                  helperText: 'Facoltativo',
+                decoration: InputDecoration(
+                  labelText: l10n.nomeDellAllenamento,
+                  helperText: l10n.facoltativo,
                 ),
               ),
+              // Dove è stata fatta: l'orologio non lo manda.
+              if (sportConPercorso(s.sport, s.tipo))
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    stessoSport(s.sport, 'Bici')
+                        ? l10n.indoorRulliTacx
+                        : l10n.indoorTapisRoulant,
+                  ),
+                  subtitle: Text(l10n.nienteMappaNeGpx),
+                  value: chiuso,
+                  onChanged: (v) => setState(() => chiuso = v),
+                ),
               _coppia(
                 _campo(
                   durata,
-                  'Durata',
+                  l10n.durata,
                   suffisso: 'min',
                   errore: erroreDurata,
                   cambia: (_) {
@@ -277,15 +318,15 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                 ),
                 OutlinedButton.icon(
                   onPressed: _scegliOra,
-                  icon: const Icon(Icons.schedule),
+                  icon: const Icon(Icons.schedule_rounded),
                   label: Text(
-                    'Inizio ${two(inizio.hour)}:${two(inizio.minute)}',
+                    l10n.inizio(two(inizio.hour), two(inizio.minute)),
                   ),
                 ),
               ),
               if (nuoto) ..._nuoto(),
               if (conDistanza && !nuoto)
-                _campo(km, 'Distanza', suffisso: 'km', decimali: true),
+                _campo(km, l10n.distanza, suffisso: 'km', decimali: true),
               if (arrampicata)
                 OutlinedButton.icon(
                   onPressed: () => apriArrampicata(
@@ -294,33 +335,57 @@ class _ModificaSessioneScreenState extends State<ModificaSessioneScreen> {
                     idSessione: s.id,
                     data: s.data,
                   ),
-                  icon: const Icon(Icons.terrain),
-                  label: const Text('Vie, blocchi e gradi'),
+                  icon: const Icon(Icons.terrain_rounded),
+                  label: Text(l10n.vieBlocchiGradi),
                 ),
-              Text('Come è andata', style: t.titleMedium),
+              // Forza: esercizi, serie e kg scritti a mano.
+              if (widget.completa && stessoSport(s.sport, 'Forza'))
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          SerieAManoScreen(state: widget.state, giorno: s.data),
+                    ),
+                  ),
+                  icon: const Icon(Icons.fitness_center_rounded),
+                  label: Text(l10n.eserciziSerieKg),
+                ),
+              Text(l10n.comeAndata, style: t.titleMedium),
               _coppia(
-                _campo(fcMedia, 'Battito medio', suffisso: 'bpm'),
-                _campo(fcMax, 'Battito massimo', suffisso: 'bpm'),
+                _campo(fcMedia, l10n.battitoMedio, suffisso: 'bpm'),
+                _campo(fcMax, l10n.battitoMassimo, suffisso: 'bpm'),
               ),
               _coppia(
-                _campo(calorie, 'Calorie', suffisso: 'kcal'),
-                _campo(rpe, 'Fatica', suffisso: 'su 10', decimali: true),
+                _campo(calorie, l10n.calorie, suffisso: 'kcal'),
+                _campo(rpe, l10n.fatica, suffisso: l10n.su10, decimali: true),
               ),
               TextField(
                 controller: note,
                 minLines: 2,
                 maxLines: 6,
                 textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Note',
-                  hintText: 'Tutto quello che ti ricordi',
+                decoration: InputDecoration(
+                  labelText: l10n.note,
+                  hintText: l10n.tuttoQuelloTiRicordi,
                 ),
               ),
               PulsantePrincipale(
                 onPressed: _salva,
-                icona: Icons.check,
-                testo: 'Salva',
+                icona: Icons.check_rounded,
+                testo: l10n.salva,
               ),
+              // Quanto scritto a mano si toglie: tornano i dati dell'orologio.
+              if (widget.completa &&
+                  widget.state.sessioniModificate.containsKey(s.id))
+                TextButton.icon(
+                  onPressed: () async {
+                    final navigator = Navigator.of(context);
+                    await widget.state.annullaCorrezioni(s.id);
+                    navigator.pop();
+                  },
+                  icon: const Icon(Icons.undo_rounded),
+                  label: Text(l10n.tornaAiDatiOriginali),
+                ),
             ],
           ),
         ],

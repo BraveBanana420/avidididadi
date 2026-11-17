@@ -119,6 +119,29 @@ void main() {
     }
   });
 
+  testWidgets('il riquadro del battito compare solo se il battito arriva', (
+    t,
+  ) async {
+    await disegna(t, completa(), samsung);
+    expect(find.textContaining('BATTITO'), findsOneWidget);
+
+    // Senza fascia: niente riquadro vuoto, la potenza prende tutta la riga.
+    final senza = DatiVistaBici(
+      watt: 152,
+      zonePotenza: zp,
+      zone: fc,
+      titolo: 'Riscaldamento',
+      sensoriRicordati: true,
+    );
+    await disegna(t, senza, samsung);
+    expect(find.textContaining('BATTITO'), findsNothing);
+    expect(
+      t.getSize(find.textContaining('POTENZA')).width,
+      lessThan(samsung.width),
+    );
+    expect(t.takeException(), isNull);
+  });
+
   testWidgets('nelle 4 combinazioni di tema nessun errore', (t) async {
     for (final b in Brightness.values) {
       for (final neon in [false, true]) {

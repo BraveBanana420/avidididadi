@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../avviso.dart';
 import '../agente_esterno.dart';
 import '../app_state.dart';
 import '../condivisione.dart';
@@ -10,6 +11,7 @@ import '../widgets.dart';
 import 'assistente_screen.dart';
 import 'privacy_screen.dart';
 import 'schede_proposte.dart';
+import '../l10n/lingua.dart';
 
 /// Collegamento dell'assistente nell'app dell'utente: quale app, cosa viene
 /// inviato e consenso.
@@ -24,6 +26,12 @@ class CollegaAgenteScreen extends StatefulWidget {
 class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
   String app = appAgente.first;
   bool consenso = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.state.preparaContestoAssistente();
+  }
 
   Future<void> _collega() async {
     final navigator = Navigator.of(context);
@@ -49,29 +57,17 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
     );
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Usa il tuo assistente')),
+      appBar: AppBar(title: Text(l10n.usaTuoAssistente)),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            "Parli con il coach nell'app del tuo assistente, con il tuo "
-            'abbonamento (anche gratuito): nessuna chiave API.',
-            style: t.bodyLarge,
-          ),
+          Text(l10n.parliCoachNellApp, style: t.bodyLarge),
           const SizedBox(height: 16),
-          passo(
-            '1',
-            "Avidididadi prepara un messaggio con i tuoi dati: lo "
-                "mandi all'assistente con Condividi.",
-          ),
-          passo('2', "Parli con l'assistente nella sua app, quanto vuoi."),
-          passo(
-            '3',
-            'Quando propone modifiche o un piano nuovo, condividi la '
-                'risposta con Avidididadi: vedi l\'anteprima e decidi tu.',
-          ),
+          passo('1', l10n.avidididadiPreparaMessaggioTuoi),
+          passo('2', l10n.parliAssistenteNellaSua),
+          passo('3', l10n.quandoProponeModificheO),
           const SizedBox(height: 12),
-          Text('Quale app usi?', style: t.titleMedium),
+          Text(l10n.qualeAppUsi, style: t.titleMedium),
           Wrap(
             spacing: 8,
             children: [
@@ -90,17 +86,13 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.privacy_tip_outlined),
+                    const Icon(Icons.privacy_tip_rounded),
                     const SizedBox(width: 8),
-                    Text('Prima di iniziare', style: t.titleSmall),
+                    Text(l10n.primaIniziare, style: t.titleSmall),
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'Con un abbonamento normale le chat possono servire ad '
-                  'addestrare il modello, secondo le impostazioni del tuo '
-                  'account. Nome, foto e percorsi GPS non vengono mai inviati.',
-                ),
+                Text(l10n.abbonamentoNormaleChatPossono),
                 const SizedBox(height: 6),
                 Text(privacyAgente[app]!, style: t.bodySmall),
               ],
@@ -108,18 +100,21 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('Includi età, sesso, altezza e peso'),
+            title: Text(l10n.includiEtaSessoAltezza),
             value: c.datiPersonali,
             onChanged: (v) => setState(() => c.datiPersonali = v),
           ),
           Card(
             child: ExpansionTile(
-              title: const Text('Vedi esattamente cosa viene inviato'),
+              title: Text(l10n.vediEsattamenteCosaViene),
               childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: [
-                SelectableText(
-                  widget.state.contestoAssistente,
-                  style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                ListenableBuilder(
+                  listenable: widget.state,
+                  builder: (context, _) => SelectableText(
+                    widget.state.contestoAssistente,
+                    style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                  ),
                 ),
               ],
             ),
@@ -128,21 +123,18 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
             contentPadding: EdgeInsets.zero,
             value: consenso,
             onChanged: (v) => setState(() => consenso = v ?? false),
-            title: Text(
-              'Acconsento a inviare questi dati a $app quando tocco Condividi '
-              'o Copia',
-            ),
+            title: Text(l10n.acconsentoInviareQuestiDati(app)),
           ),
           const SizedBox(height: 8),
           PulsantePrincipale(
             onPressed: consenso ? _collega : null,
-            icona: Icons.link,
-            testo: 'Collega $app',
+            icona: Icons.link_rounded,
+            testo: l10n.collega(app),
           ),
           TextButton(
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute(builder: (_) => const PrivacyScreen())),
-            child: const Text('Privacy e uso dei dati'),
+            child: Text(l10n.privacyUsoDeiDati),
           ),
         ],
       ),
@@ -157,12 +149,12 @@ class PannelloAgente extends StatelessWidget {
   const PannelloAgente({super.key, required this.state});
 
   String get _app => state.assistente.appEsterna.isEmpty
-      ? "l'assistente"
+      ? l10n.assistente
       : state.assistente.appEsterna;
 
   Future<void> _manda(BuildContext context, {required bool completo}) async {
     final testo = await state.messaggioAgente(completo: completo);
-    await Condivisione.condividi(testo, 'Manda a $_app');
+    await Condivisione.condividi(testo, l10n.manda(_app));
   }
 
   Future<void> _copiaMessaggio(BuildContext context, bool completo) async {
@@ -170,14 +162,14 @@ class PannelloAgente extends StatelessWidget {
     final testo = await state.messaggioAgente(completo: completo);
     await Clipboard.setData(ClipboardData(text: testo));
     messenger.showSnackBar(
-      SnackBar(content: Text('Messaggio copiato: incollalo in $_app.')),
+      avviso(content: Text(l10n.messaggioCopiatoIncollalo(_app))),
     );
   }
 
   Future<void> _copia(BuildContext context, String testo, String fatto) async {
     final messenger = ScaffoldMessenger.of(context);
     await Clipboard.setData(ClipboardData(text: testo));
-    messenger.showSnackBar(SnackBar(content: Text(fatto)));
+    messenger.showSnackBar(avviso(content: Text(fatto)));
   }
 
   Future<void> _incolla(BuildContext context) async {
@@ -186,11 +178,7 @@ class PannelloAgente extends StatelessWidget {
     final testo = d?.text ?? '';
     if (testo.trim().isEmpty) {
       messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            'Gli appunti sono vuoti: copia prima la risposta di $_app.',
-          ),
-        ),
+        avviso(content: Text(l10n.appuntiSonoVuotiCopia(_app))),
       );
       return;
     }
@@ -201,20 +189,16 @@ class PannelloAgente extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: Text('Scollegare $_app?'),
-        content: const Text(
-          'Torni al coach dentro l\'app (per esempio Ollama sul tuo PC). Le '
-          'risposte della conversazione attuale non verranno più accettate: '
-          'se ricolleghi, manda di nuovo i dati.',
-        ),
+        title: Text(l10n.scollegare(_app)),
+        content: Text(l10n.torniAlCoachDentro),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Scollega'),
+            child: Text(l10n.scollega),
           ),
         ],
       ),
@@ -235,8 +219,8 @@ class PannelloAgente extends StatelessWidget {
         if (state.erroreAgente != null)
           Card(
             child: ListTile(
-              leading: const Icon(Icons.error_outline),
-              title: const Text('Risposta non usabile'),
+              leading: const Icon(Icons.error_outline_rounded),
+              title: Text(l10n.rispostaNonUsabile),
               subtitle: Text(state.erroreAgente!),
             ),
           ),
@@ -256,21 +240,22 @@ class PannelloAgente extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('1 · Parla con $_app', style: t.titleMedium),
+              Text(l10n.n1Parla(_app), style: t.titleMedium),
               const SizedBox(height: 4),
               Text(
                 iniziato
-                    ? 'Hai fatto allenamenti nuovi? Manda i dati aggiornati '
-                          'nella stessa conversazione.'
-                    : 'Manda il primo messaggio: istruzioni da coach e i tuoi '
-                          'dati. Scegli $_app dal menu Condividi.',
+                    ? l10n.haiFattoAllenamentiNuovi
+                    : l10n.mandaPrimoMessaggioIstruzioni(_app),
               ),
               if (ultimo != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
-                    'Ultimo invio: ${dataLunga(ultimo)}, '
-                    '${two(ultimo.hour)}:${two(ultimo.minute)}',
+                    l10n.ultimoInvio(
+                      dataLunga(ultimo),
+                      two(ultimo.hour),
+                      two(ultimo.minute),
+                    ),
                     style: t.bodySmall,
                   ),
                 ),
@@ -278,8 +263,8 @@ class PannelloAgente extends StatelessWidget {
               PulsantePrincipale(
                 altezza: 52,
                 onPressed: () => _manda(context, completo: !iniziato),
-                icona: Icons.ios_share,
-                testo: iniziato ? 'Manda dati aggiornati' : 'Inizia con $_app',
+                icona: Icons.ios_share_rounded,
+                testo: iniziato ? l10n.mandaDatiAggiornati : l10n.inizia(_app),
               ),
               Wrap(
                 spacing: 4,
@@ -287,11 +272,11 @@ class PannelloAgente extends StatelessWidget {
                   if (iniziato)
                     TextButton(
                       onPressed: () => _manda(context, completo: true),
-                      child: const Text('Nuova conversazione'),
+                      child: Text(l10n.nuovaConversazione),
                     ),
                   TextButton(
                     onPressed: () => _copiaMessaggio(context, !iniziato),
-                    child: const Text('Copia invece'),
+                    child: Text(l10n.copiaInvece),
                   ),
                 ],
               ),
@@ -303,18 +288,14 @@ class PannelloAgente extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('2 · Porta qui le modifiche', style: t.titleMedium),
+              Text(l10n.n2PortaQuiModifiche, style: t.titleMedium),
               const SizedBox(height: 4),
-              Text(
-                'Quando $_app propone di cambiare il piano, nella sua '
-                'risposta tocca Condividi e scegli Avidididadi. Oppure '
-                'copiala e tocca qui sotto.',
-              ),
+              Text(l10n.quandoProponeCambiarePiano(_app)),
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: () => _incolla(context),
-                icon: const Icon(Icons.content_paste),
-                label: const Text('Incolla la risposta'),
+                icon: const Icon(Icons.content_paste_rounded),
+                label: Text(l10n.incollaRisposta),
               ),
             ],
           ),
@@ -322,24 +303,20 @@ class PannelloAgente extends StatelessWidget {
         const SizedBox(height: 12),
         Card(
           child: ExpansionTile(
-            leading: const Icon(Icons.lightbulb_outline),
-            title: const Text('Consiglio: le istruzioni una volta sola'),
+            leading: const Icon(Icons.lightbulb_outline_rounded),
+            title: Text(l10n.consiglioIstruzioniVoltaSola),
             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Incolla le istruzioni da coach in un Progetto di Claude, in '
-                'un GPT personalizzato o in un Gem di Gemini. Poi ti basta '
-                'mandare i dati aggiornati.',
-              ),
+              Text(l10n.incollaIstruzioniCoachProgetto),
               TextButton.icon(
                 onPressed: () => _copia(
                   context,
                   istruzioniAgente(c.codiceEsterno),
-                  'Istruzioni copiate.',
+                  l10n.istruzioniCopiate,
                 ),
-                icon: const Icon(Icons.copy),
-                label: const Text('Copia solo le istruzioni'),
+                icon: const Icon(Icons.copy_rounded),
+                label: Text(l10n.copiaSoloIstruzioni),
               ),
             ],
           ),
@@ -348,8 +325,8 @@ class PannelloAgente extends StatelessWidget {
         Center(
           child: TextButton.icon(
             onPressed: () => _scollega(context),
-            icon: const Icon(Icons.link_off),
-            label: Text('Scollega $_app'),
+            icon: const Icon(Icons.link_off_rounded),
+            label: Text(l10n.scollega2(_app)),
           ),
         ),
       ],

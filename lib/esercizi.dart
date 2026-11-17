@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 /// Un attrezzo che si può avere a disposizione.
 class Attrezzo {
@@ -25,123 +27,128 @@ class Attrezzo {
   });
 }
 
-const attrezzi = [
+List<Attrezzo> get attrezzi => [
   Attrezzo(
     'manubri',
-    'Manubri',
-    Icons.fitness_center,
+    l10n.manubri,
+    Icons.fitness_center_rounded,
     conPeso: true,
-    aiutoPeso: 'Il peso di ogni manubrio, es. 4, 8, 12. Se sono regolabili scrivi l\'intervallo, es. 2-20.',
+    aiutoPeso: l10n.pesoOgniManubrioEs,
   ),
   Attrezzo(
     'kettlebell',
-    'Kettlebell',
-    Icons.fitness_center,
+    l10n.kettlebell,
+    Icons.fitness_center_rounded,
     conPeso: true,
-    aiutoPeso: 'Il peso di ogni kettlebell che hai.',
+    aiutoPeso: l10n.pesoOgniKettlebellHai,
   ),
   Attrezzo(
     'bilanciere',
-    'Bilanciere',
-    Icons.fitness_center,
+    l10n.bilanciere,
+    Icons.fitness_center_rounded,
     conPeso: true,
-    aiutoPeso: 'Il peso della sola barra (di solito 20 kg).',
+    aiutoPeso: l10n.pesoSolaBarraSolito,
   ),
   Attrezzo(
     'dischi',
-    'Dischi',
-    Icons.album_outlined,
+    l10n.dischi,
+    Icons.album_rounded,
     conPeso: true,
-    aiutoPeso: 'Il peso dei dischi che hai. Si usano anche senza bilanciere.',
+    aiutoPeso: l10n.pesoDeiDischiHai,
   ),
   Attrezzo(
     'palla_medica',
-    'Palla medica',
-    Icons.sports_volleyball_outlined,
+    l10n.pallaMedica,
+    Icons.sports_volleyball_rounded,
     conPeso: true,
-    aiutoPeso: 'Il peso della palla.',
+    aiutoPeso: l10n.pesoPalla,
   ),
-  Attrezzo('elastici', 'Elastici', Icons.gesture),
-  Attrezzo('sbarra', 'Sbarra per trazioni', Icons.horizontal_rule),
-  Attrezzo('parallele', 'Parallele per dip', Icons.drag_handle),
-  Attrezzo('trx', 'Anelli o TRX', Icons.link),
-  Attrezzo('panca', 'Panca', Icons.weekend_outlined),
-  Attrezzo('rialzo', 'Step o box', Icons.crop_square),
-  Attrezzo('fitball', 'Fitball', Icons.circle_outlined),
-  Attrezzo('rullo', 'Rullo (foam roller)', Icons.view_week_outlined),
+  Attrezzo('elastici', l10n.elastici, Icons.gesture_rounded),
+  Attrezzo('sbarra', l10n.sbarraTrazioni, Icons.horizontal_rule_rounded),
+  Attrezzo('parallele', l10n.paralleleDip, Icons.drag_handle_rounded),
+  Attrezzo('trx', l10n.anelliOTrx, Icons.link_rounded),
+  Attrezzo('panca', l10n.panca, Icons.weekend_rounded),
+  Attrezzo('rialzo', l10n.stepOBox, Icons.crop_square_rounded),
+  Attrezzo('fitball', l10n.fitball, Icons.circle_outlined),
+  Attrezzo('rullo', l10n.rulloFoamRoller, Icons.view_week_rounded),
   // In palestra: macchine e cavi.
   Attrezzo(
     'lat_machine',
-    'Lat machine',
-    Icons.vertical_align_bottom,
+    l10n.latMachine,
+    Icons.vertical_align_bottom_rounded,
     palestra: true,
   ),
-  Attrezzo('pulley', 'Pulley basso', Icons.rowing, palestra: true),
+  Attrezzo('pulley', l10n.pulleyBasso, Icons.rowing_rounded, palestra: true),
   Attrezzo(
     'cavi',
-    'Cavi regolabili (croce ai cavi)',
-    Icons.cable,
+    l10n.caviRegolabiliCroceAi,
+    Icons.cable_rounded,
     palestra: true,
   ),
-  Attrezzo('chest_press', 'Chest press', Icons.fitness_center, palestra: true),
+  Attrezzo(
+    'chest_press',
+    l10n.chestPress,
+    Icons.fitness_center_rounded,
+    palestra: true,
+  ),
   Attrezzo(
     'pectoral',
-    'Pectoral machine',
-    Icons.fitness_center,
+    l10n.pectoralMachine,
+    Icons.fitness_center_rounded,
     palestra: true,
   ),
   Attrezzo(
     'shoulder_press',
-    'Shoulder press',
-    Icons.fitness_center,
+    l10n.shoulderPress,
+    Icons.fitness_center_rounded,
     palestra: true,
   ),
   Attrezzo(
     'rematore_macchina',
-    'Rematore alla macchina',
-    Icons.rowing,
+    l10n.rematoreAllaMacchina,
+    Icons.rowing_rounded,
     palestra: true,
   ),
   Attrezzo(
     'multipower',
-    'Multipower (Smith machine)',
-    Icons.fitness_center,
+    l10n.multipowerSmithMachine,
+    Icons.fitness_center_rounded,
     palestra: true,
   ),
   Attrezzo(
     'leg_press',
-    'Leg press',
-    Icons.airline_seat_legroom_extra,
+    l10n.legPress,
+    Icons.airline_seat_legroom_extra_rounded,
     palestra: true,
   ),
   Attrezzo(
     'hack_squat',
-    'Hack squat',
-    Icons.airline_seat_legroom_extra,
+    l10n.hackSquat,
+    Icons.airline_seat_legroom_extra_rounded,
     palestra: true,
   ),
   Attrezzo(
     'leg_extension',
-    'Leg extension',
-    Icons.airline_seat_legroom_normal,
+    l10n.legExtension,
+    Icons.airline_seat_legroom_normal_rounded,
     palestra: true,
   ),
   Attrezzo(
     'leg_curl',
-    'Leg curl',
-    Icons.airline_seat_legroom_normal,
+    l10n.legCurl,
+    Icons.airline_seat_legroom_normal_rounded,
     palestra: true,
   ),
   Attrezzo(
     'adduttori',
-    'Adduttori e abduttori',
-    Icons.airline_seat_legroom_reduced,
+    l10n.adduttoriAbduttori,
+    Icons.airline_seat_legroom_reduced_rounded,
     palestra: true,
   ),
   Attrezzo(
     'calf_machine',
-    'Calf machine (polpacci)',
-    Icons.directions_walk,
+    l10n.calfMachinePolpacci,
+    Icons.directions_walk_rounded,
     palestra: true,
   ),
 ];
@@ -203,49 +210,50 @@ String scriviPesi(List<double> pesi) =>
     pesi.isEmpty ? '' : '${pesi.map(fmtNum).join(', ')} kg';
 
 /// Muscoli della mappa (lib/muscoli_dati.dart) in italiano.
-const nomiMuscoli = {
-  'abs': 'Addominali',
-  'obliques': 'Obliqui',
-  'adductors': 'Adduttori',
-  'biceps': 'Bicipiti',
-  'calves': 'Polpacci',
-  'chest': 'Petto',
-  'forearm': 'Avambracci',
-  'gluteal': 'Glutei',
-  'hamstring': 'Femorali',
-  'upper-back': 'Dorsali',
-  'lower-back': 'Lombari',
-  'neck': 'Collo',
-  'quadriceps': 'Quadricipiti',
-  'deltoids': 'Spalle',
-  'trapezius': 'Trapezio',
-  'triceps': 'Tricipiti',
+Map<String, String> get nomiMuscoli => {
+  'abs': l10n.addominali,
+  'obliques': l10n.obliqui,
+  'adductors': l10n.adduttori,
+  'biceps': l10n.bicipiti,
+  'calves': l10n.polpacci,
+  'chest': l10n.petto,
+  'forearm': l10n.avambracci,
+  'gluteal': l10n.glutei,
+  'hamstring': l10n.femorali,
+  'upper-back': l10n.dorsali,
+  'lower-back': l10n.lombari,
+  'neck': l10n.collo,
+  'quadriceps': l10n.quadricipiti,
+  'deltoids': l10n.spalle,
+  'trapezius': l10n.trapezio,
+  'triceps': l10n.tricipiti,
 };
 
-const nomiSchemi = {
-  'spinta_orizzontale': 'Spinta orizzontale (petto)',
-  'spinta_verticale': 'Spinta verticale (spalle)',
-  'trazione_orizzontale': 'Trazione orizzontale (rematori)',
-  'trazione_verticale': 'Trazione verticale (trazioni)',
-  'squat': 'Squat',
-  'affondo': 'Affondi e step',
-  'cerniera': 'Cerniera d\'anca (stacchi e ponti)',
-  'core': 'Core',
-  'spalle': 'Spalle e postura',
-  'braccia': 'Braccia',
-  'polpacci': 'Polpacci',
-  'isolamento_gambe': 'Gambe alle macchine',
-  'pliometria': 'Pliometria',
-  'total_body': 'Total body',
+Map<String, String> get nomiSchemi => {
+  'spinta_orizzontale': l10n.spintaOrizzontalePetto,
+  'spinta_verticale': l10n.spintaVerticaleSpalle,
+  'trazione_orizzontale': l10n.trazioneOrizzontaleRematori,
+  'trazione_verticale': l10n.trazioneVerticaleTrazioni,
+  'squat': l10n.squat,
+  'affondo': l10n.affondiStep,
+  'cerniera': l10n.cernieraAncaStacchiPonti,
+  'core': l10n.core,
+  'spalle': l10n.spallePostura,
+  'braccia': l10n.braccia,
+  'polpacci': l10n.polpacci,
+  'isolamento_gambe': l10n.gambeAlleMacchine,
+  'pliometria': l10n.pliometria,
+  'total_body': l10n.totalBody,
   'mobilita': 'Mobilità e stretching',
-  'rullo': 'Rullo (automassaggio)',
+  'rullo': l10n.rulloAutomassaggio,
 };
 
 /// Un esercizio del catalogo (selezione in italiano di free-exercise-db).
 class Esercizio {
   final String id;
-  final String nome;
+  final String nomeIt;
   final String nomeEn;
+  final String nomeEl;
   final String tipo; // forza | mobilita
   final String schema;
   final String livello;
@@ -253,13 +261,28 @@ class Esercizio {
   attrezzi; // basta uno dei gruppi; vuoto = corpo libero
   final List<String> muscoli;
   final List<String> muscoliSecondari;
-  final List<String> istruzioni;
+  final List<String> istruzioniIt;
+  final List<String> istruzioniEn;
+  final List<String> istruzioniEl;
   final List<String> immagini;
+
+  /// Nome e istruzioni nella lingua in uso (in italiano se mancano).
+  String get nome => switch (codiceLingua) {
+    'en' => nomeEn,
+    'el' when nomeEl.isNotEmpty => nomeEl,
+    _ => nomeIt,
+  };
+  List<String> get istruzioni => switch (codiceLingua) {
+    'en' when istruzioniEn.isNotEmpty => istruzioniEn,
+    'el' when istruzioniEl.isNotEmpty => istruzioniEl,
+    _ => istruzioniIt,
+  };
 
   Esercizio.da(Map<String, dynamic> j)
     : id = j['id'],
-      nome = j['nome'],
+      nomeIt = j['nome'],
       nomeEn = j['nome_en'],
+      nomeEl = j['nome_el'] ?? '',
       tipo = j['tipo'],
       schema = j['schema'],
       livello = j['livello'],
@@ -269,7 +292,9 @@ class Esercizio {
       ],
       muscoli = List<String>.from(j['muscoli']),
       muscoliSecondari = List<String>.from(j['muscoli_secondari']),
-      istruzioni = List<String>.from(j['istruzioni']),
+      istruzioniIt = List<String>.from(j['istruzioni']),
+      istruzioniEn = List<String>.from(j['istruzioni_en'] ?? const []),
+      istruzioniEl = List<String>.from(j['istruzioni_el'] ?? const []),
       immagini = List<String>.from(j['immagini']);
 
   bool get corpoLibero => attrezzi.isEmpty;
@@ -280,16 +305,25 @@ class Esercizio {
 
   /// "Corpo libero", oppure le alternative: "Kettlebell o Manubri".
   String get descrizioneAttrezzi => attrezzi.isEmpty
-      ? 'Corpo libero'
+      ? mostra('Corpo libero')
       : attrezzi
             .map((g) => g.map((k) => attrezzoDa(k)?.nome ?? k).join(' + '))
-            .join(' o ');
+            .join(l10n.oppure);
 }
 
 Future<List<Esercizio>> caricaEsercizi() async {
   final testo = await rootBundle.loadString('assets/esercizi.json');
-  return [
+  final lista = [
     for (final j in jsonDecode(testo) as List)
       Esercizio.da(j as Map<String, dynamic>),
   ];
+  // I passi salvano il nome in italiano: così si vedono nella lingua scelta.
+  for (final e in lista) {
+    registraNomeEsercizio(e.nomeIt, {'en': e.nomeEn, 'el': e.nomeEl});
+  }
+  return lista;
 }
+
+/// Il conteggio scritto bene: "1 esercizio", "6 esercizi".
+String quantiEsercizi(int n) =>
+    n == 1 ? l10n.n1Esercizio : l10n.quantiEsercizi(n);

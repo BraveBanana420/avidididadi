@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../models.dart';
 import '../obiettivo.dart';
 import '../potenza.dart';
+import '../pulse.dart';
+import '../test_soglia.dart';
 import '../widgets.dart';
 import 'esecuzione_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 String _dataBreve(DateTime d) => '${two(d.day)}/${two(d.month)}/${d.year}';
 
@@ -54,7 +59,7 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
       initialDate: data ?? oggi.add(const Duration(days: 84)),
       firstDate: oggi,
       lastDate: DateTime(oggi.year + 3),
-      helpText: 'Data della gara',
+      helpText: l10n.dataGara,
     );
     if (d != null) setState(() => data = soloData(d));
   }
@@ -62,14 +67,13 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
   Future<void> _salva() async {
     final min = _leggiTempo(tempo.text);
     if (min == null) {
-      setState(() => erroreTempo = 'Scrivi ore:minuti, es. 1:45');
+      setState(() => erroreTempo = l10n.scriviOreMinutiEs);
       return;
     }
     if (data == null) {
       setState(() => erroreTempo = null);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Scegli la data della gara.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text(l10n.scegliDataGara)));
       return;
     }
     final navigator = Navigator.of(context);
@@ -102,8 +106,8 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: const Text('Obiettivo'),
-        actions: [TextButton(onPressed: _salva, child: const Text('Salva'))],
+        title: Text(l10n.obiettivo),
+        actions: [TextButton(onPressed: _salva, child: Text(l10n.salva))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -128,7 +132,11 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
             }),
           ),
           const SizedBox(height: 8),
-          Text(sport, style: t.titleMedium, textAlign: TextAlign.center),
+          Text(
+            mostra(sport),
+            style: t.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
           Card(
             child: RadioGroup<String>(
@@ -146,12 +154,12 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
           InkWell(
             onTap: _scegliData,
             child: InputDecorator(
-              decoration: const InputDecoration(
-                labelText: 'Data della gara',
-                suffixIcon: Icon(Icons.calendar_today_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.dataGara,
+                suffixIcon: Icon(Icons.calendar_today_rounded),
               ),
               child: Text(
-                data == null ? 'Tocca per sceglierla' : _dataBreve(data!),
+                data == null ? l10n.toccaSceglierla : _dataBreve(data!),
               ),
             ),
           ),
@@ -160,35 +168,33 @@ class _ObiettivoScreenState extends State<ObiettivoScreen> {
             controller: tempo,
             keyboardType: TextInputType.datetime,
             decoration: InputDecoration(
-              labelText: 'Tempo obiettivo (facoltativo)',
-              hintText: 'ore:minuti, es. 1:45',
+              labelText: l10n.tempoObiettivoFacoltativo,
+              hintText: l10n.oreMinutiEs1,
               errorText: erroreTempo,
             ),
           ),
           if (anteprima != null) ...[
             const SizedBox(height: 20),
             Text(
-              'Tra ${anteprima.settimaneMancanti(DateTime.now())} settimane',
+              l10n.traSettimane(anteprima.settimaneMancanti(DateTime.now())),
               style: t.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              'Fase attuale: ${nomiFasi[anteprima.fase(DateTime.now())]}. '
-              '${spiegazioniFasi[anteprima.fase(DateTime.now())]}',
+              l10n.faseAttuale(
+                nomiFasi[anteprima.fase(DateTime.now())]!,
+                spiegazioniFasi[anteprima.fase(DateTime.now())]!,
+              ),
             ),
             const SizedBox(height: 4),
-            Text(
-              'Le fasi avanzano da sole verso la gara: base, sviluppo, '
-              'rifinitura e scarico.',
-              style: t.bodySmall,
-            ),
+            Text(l10n.fasiAvanzanoSoleVerso, style: t.bodySmall),
           ],
           if (p.obiettivoGara != null) ...[
             const SizedBox(height: 24),
             OutlinedButton.icon(
               onPressed: _rimuovi,
-              icon: const Icon(Icons.delete_outline),
-              label: const Text('Rimuovi obiettivo'),
+              icon: const Icon(Icons.delete_outline_rounded),
+              label: Text(l10n.rimuoviObiettivo),
             ),
           ],
         ],
@@ -212,15 +218,15 @@ class IconaTriathlon extends StatelessWidget {
         children: [
           Align(
             alignment: Alignment.topCenter,
-            child: Icon(Icons.pool, size: piccola),
+            child: Icon(Icons.pool_rounded, size: piccola),
           ),
           Align(
             alignment: Alignment.bottomLeft,
-            child: Icon(Icons.directions_bike, size: piccola),
+            child: Icon(Icons.directions_bike_rounded, size: piccola),
           ),
           Align(
             alignment: Alignment.bottomRight,
-            child: Icon(Icons.directions_run, size: piccola),
+            child: Icon(Icons.directions_run_rounded, size: piccola),
           ),
         ],
       ),
@@ -285,14 +291,14 @@ class _ZoneScreenState extends State<ZoneScreen> {
         (ps > 0 && ps < 50) ||
         fw == null ||
         fc == null) {
-      setState(
-        () => errore =
-            'Controlla i valori: FC max 120-230, FC riposo 30-100, passo m:ss, '
-            'FTP 50-600 W.',
-      );
+      setState(() => errore = l10n.controllaValoriFcMax);
       return;
     }
     final navigator = Navigator.of(context);
+    // Un FTP o un passo nuovo vale come confermato oggi.
+    final oggi = soloData(DateTime.now());
+    if (fw > 0 && fw != p.ftpManuale) p.ftpData = oggi;
+    if (ps > 0 && ps != p.passoCriticoManuale) p.passoCriticoData = oggi;
     p
       ..fcMaxManuale = mx
       ..fcRiposoManuale = rp
@@ -311,22 +317,15 @@ class _ZoneScreenState extends State<ZoneScreen> {
     builder: (c) {
       final t = Theme.of(c).textTheme;
       return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + spazioInBasso(c)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           spacing: 12,
           children: [
             Text(nomeTestFtpCorsa, style: t.titleLarge),
-            const Text(
-              '15 minuti facili e 3 allunghi, poi 20 minuti al massimo che '
-              'riesci a tenere, poi 10 minuti lentissimi. Circa 50 minuti.',
-            ),
-            const Text(
-              'Il telefono non misura i watt di corsa: registra la corsa anche '
-              'con l\'orologio. Poi apri i grafici di quella corsa: lì trovi '
-              'la tua FTP e il tasto per salvarla.',
-            ),
+            Text(l10n.n15MinutiFacili3),
+            Text(l10n.telefonoNonMisuraWatt),
             FilledButton.icon(
               onPressed: () {
                 Navigator.pop(c);
@@ -340,8 +339,8 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   libera: true,
                 );
               },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Inizia ora'),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: Text(l10n.iniziaOra),
             ),
             OutlinedButton.icon(
               onPressed: () async {
@@ -353,30 +352,250 @@ class _ZoneScreenState extends State<ZoneScreen> {
                   initialDate: oggi,
                   firstDate: oggi,
                   lastDate: oggi.add(const Duration(days: 365)),
-                  helpText: 'In che giorno?',
+                  helpText: l10n.giorno,
                 );
                 if (data == null) return;
                 final ok = await widget.state.programmaTestFtpCorsa(data);
                 navigator.pop();
                 messenger.showSnackBar(
-                  SnackBar(
+                  avviso(
                     content: Text(
                       ok
-                          ? 'Test nel calendario: ${dataLunga(data)}. Prende '
-                                'il posto della corsa di quel giorno.'
-                          : 'Scegli oggi o un giorno dopo.',
+                          ? l10n.testNelCalendarioPrende(dataLunga(data))
+                          : l10n.scegliOggiOGiorno,
                     ),
                   ),
                 );
               },
-              icon: const Icon(Icons.event_available),
-              label: const Text('Mettilo nel calendario'),
+              icon: const Icon(Icons.event_available_rounded),
+              label: Text(l10n.mettiloNelCalendario),
             ),
           ],
         ),
       );
     },
   );
+
+  /// Il foglio di un test di bici o nuoto: cosa si fa, e farlo ora o in un
+  /// altro giorno. [sopra] è un widget in cima con il suo stato (per la bici,
+  /// dove si pedala); [inizia] e [programma] ricevono quello stato.
+  Future<void> _foglioTest<T>({
+    required String sport,
+    required String titolo,
+    required T scelta,
+    required List<String> Function(T) testi,
+    required void Function(T) inizia,
+    required Future<bool> Function(DateTime, T) programma,
+    Widget Function(T, void Function(T))? sopra,
+    Widget? sotto,
+  }) => showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (c) {
+      var valore = scelta;
+      final t = Theme.of(c).textTheme;
+      return StatefulBuilder(
+        builder: (c, aggiorna) => SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 24 + spazioInBasso(c)),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            spacing: 12,
+            children: [
+              Text(titolo, style: t.titleLarge),
+              if (sopra != null)
+                sopra(valore, (v) => aggiorna(() => valore = v)),
+              for (final x in testi(valore)) Text(x),
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.pop(c);
+                  inizia(valore);
+                },
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text(l10n.iniziaOra),
+              ),
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final navigator = Navigator.of(c);
+                  final messenger = ScaffoldMessenger.of(context);
+                  final oggi = soloData(DateTime.now());
+                  // Proposto il giorno della prossima seduta dura.
+                  final proposta = widget.state.sedutaPerIlTest(sport)?.data;
+                  final data = await showDatePicker(
+                    context: c,
+                    initialDate: proposta ?? oggi,
+                    firstDate: oggi,
+                    lastDate: oggi.add(const Duration(days: 365)),
+                    helpText: l10n.giorno,
+                  );
+                  if (data == null) return;
+                  final ok = await programma(data, valore);
+                  navigator.pop();
+                  messenger.showSnackBar(
+                    avviso(
+                      content: Text(
+                        ok
+                            ? l10n.tsTestNelCalendario(dataLunga(data))
+                            : l10n.scegliOggiOGiorno,
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.event_available_rounded),
+                label: Text(l10n.mettiloNelCalendario),
+              ),
+              ?sotto,
+            ],
+          ),
+        ),
+      );
+    },
+  );
+
+  /// Il test per l'FTP della bici: a rampa sul rullo smart, da 20 minuti
+  /// su strada (o sul rullo senza ERG).
+  Future<void> _apriTestBici() => _foglioTest<bool>(
+    sport: 'Bici',
+    titolo: l10n.tsTestFtpBici,
+    scelta: widget.state.usaRullo,
+    sopra: (rampa, cambia) => SegmentedButton<bool>(
+      showSelectedIcon: false,
+      segments: [
+        ButtonSegment(
+          value: true,
+          icon: const Icon(Icons.home_rounded),
+          label: Text(l10n.tsRulloSmart),
+        ),
+        ButtonSegment(
+          value: false,
+          icon: const Icon(Icons.landscape_rounded),
+          label: Text(l10n.tsSuStrada),
+        ),
+      ],
+      selected: {rampa},
+      onSelectionChanged: (v) => cambia(v.first),
+    ),
+    testi: (rampa) {
+      final ftp = widget.state.ftpBici;
+      return rampa
+          ? [l10n.tsRampaTesto1, l10n.tsRampaTesto2]
+          : [
+              l10n.tsVentiTesto1,
+              ftp == null
+                  ? l10n.tsVentiTesto2Senza
+                  : l10n.tsVentiTesto2Con(ftp),
+              l10n.tsVentiTesto3,
+            ];
+    },
+    inizia: (rampa) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Bici',
+      tipo: tipoTestFtp,
+      nome: rampa ? nomeTestFtpBiciRampa : nomeTestFtpBiciVenti,
+      passi: widget.state.passiTestBici('libera', rampa: rampa),
+      libera: true,
+    ),
+    programma: (d, rampa) => widget.state.programmaTestFtpBici(d, rampa: rampa),
+  );
+
+  /// Il test del passo critico in piscina, con i tempi da scrivere dopo.
+  Future<void> _apriTestNuoto() => _foglioTest<bool>(
+    sport: 'Nuoto',
+    titolo: mostra(nomeTestNuoto),
+    scelta: true,
+    testi: (_) => [l10n.tsNuotoTesto1, l10n.tsNuotoTesto2],
+    inizia: (_) => avviaAllenamento(
+      context,
+      widget.state,
+      sport: 'Nuoto',
+      tipo: tipoTestNuoto,
+      nome: nomeTestNuoto,
+      passi: passiTestNuoto('libera'),
+      libera: true,
+    ),
+    programma: (d, _) => widget.state.programmaTestNuoto(d),
+    sotto: Builder(
+      builder: (c) => TextButton.icon(
+        onPressed: () {
+          Navigator.pop(c);
+          _tempiNuoto();
+        },
+        icon: const Icon(Icons.edit_rounded),
+        label: Text(l10n.tsHoFattoTest),
+      ),
+    ),
+  );
+
+  /// I tempi del 400 e del 200: diventano il passo critico.
+  Future<void> _tempiNuoto() async {
+    final t400 = TextEditingController(), t200 = TextEditingController();
+    final pc = await showDialog<int>(
+      context: context,
+      builder: (c) {
+        String? errore;
+        return StatefulBuilder(
+          builder: (c, aggiorna) => AlertDialog(
+            title: Text(l10n.tsTempiTest),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 12,
+              children: [
+                TextField(
+                  controller: t400,
+                  keyboardType: TextInputType.datetime,
+                  decoration: InputDecoration(
+                    labelText: '400 m',
+                    hintText: l10n.tsEs400,
+                  ),
+                ),
+                TextField(
+                  controller: t200,
+                  keyboardType: TextInputType.datetime,
+                  decoration: InputDecoration(
+                    labelText: '200 m',
+                    hintText: l10n.tsEs200,
+                    errorText: errore,
+                    errorMaxLines: 3,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(c),
+                child: Text(l10n.annulla),
+              ),
+              FilledButton(
+                onPressed: () {
+                  final a = _leggiTempo(t400.text), b = _leggiTempo(t200.text);
+                  final v = a == null || b == null
+                      ? null
+                      : passoCriticoDaTest(a, b);
+                  if (v == null) {
+                    aggiorna(() => errore = l10n.tsControllaTempi);
+                    return;
+                  }
+                  Navigator.pop(c, v);
+                },
+                child: Text(l10n.tsCalcola),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+    t400.dispose();
+    t200.dispose();
+    if (pc == null || !mounted) return;
+    await widget.state.impostaPassoCritico(pc);
+    passo.text = '${pc ~/ 60}:${two(pc % 60)}';
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(avviso(content: Text(l10n.tsPassoSalvato(fmtPasso100(pc)))));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -394,19 +613,18 @@ class _ZoneScreenState extends State<ZoneScreen> {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
       appBar: AppBar(
-        title: const Text('Zone'),
-        actions: [TextButton(onPressed: _salva, child: const Text('Salva'))],
+        title: Text(l10n.zone),
+        actions: [TextButton(onPressed: _salva, child: Text(l10n.salva))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Le tue zone di frequenza cardiaca', style: t.titleMedium),
+          Text(l10n.tueZoneFrequenzaCardiaca, style: t.titleMedium),
           const SizedBox(height: 4),
           Text(
             z.fcRiposo > 0
-                ? 'Calcolate con la riserva cardiaca (FC max ${z.fcMax}, a riposo ${z.fcRiposo}).'
-                : 'Calcolate come percentuale della FC max (${z.fcMax}). '
-                      'Con la FC a riposo diventano più precise.',
+                ? l10n.calcolateRiservaCardiacaFc(z.fcMax, z.fcRiposo)
+                : l10n.calcolateComePercentualeFc(z.fcMax),
             style: t.bodySmall,
           ),
           const SizedBox(height: 8),
@@ -419,7 +637,7 @@ class _ZoneScreenState extends State<ZoneScreen> {
                     leading: CircleAvatar(radius: 14, child: Text('$n')),
                     title: Text(Zone.nomi[n - 1]),
                     trailing: Text(
-                      '${z.zona(n).$1}-${z.zona(n).$2} bpm',
+                      l10n.bpm2(z.zona(n).$1, z.zona(n).$2),
                       style: t.titleSmall,
                     ),
                   ),
@@ -431,10 +649,9 @@ class _ZoneScreenState extends State<ZoneScreen> {
             controller: fcMax,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'FC massima',
+              labelText: l10n.fcMassima,
               suffixText: 'bpm',
-              helperText:
-                  'Vuoto = stima dai tuoi dati: $stimata bpm (la più alta dell\'ultimo anno, o dall\'età).',
+              helperText: l10n.vuotoStimaDaiTuoi(stimata),
               helperMaxLines: 2,
             ),
           ),
@@ -443,11 +660,11 @@ class _ZoneScreenState extends State<ZoneScreen> {
             controller: fcRiposo,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'FC a riposo',
+              labelText: l10n.fcRiposo,
               suffixText: 'bpm',
               helperText: widget.state.fcRiposoMisurata > 0
-                  ? 'Vuoto = quella misurata: ${widget.state.fcRiposoMisurata} bpm.'
-                  : 'Misurala appena sveglio, o lascia vuoto.',
+                  ? l10n.vuotoQuellaMisurataBpm(widget.state.fcRiposoMisurata)
+                  : l10n.misuralaAppenaSveglioO,
             ),
           ),
           const SizedBox(height: 12),
@@ -455,23 +672,25 @@ class _ZoneScreenState extends State<ZoneScreen> {
             controller: passo,
             keyboardType: TextInputType.datetime,
             decoration: InputDecoration(
-              labelText: 'Passo critico del nuoto',
+              labelText: l10n.passoCriticoNuoto,
               suffixText: 'min/100 m',
-              hintText: 'm:ss, es. 2:05',
+              hintText: l10n.mSsEs2,
               helperText: passoStimato == null
-                  ? 'Vuoto = stima dalle sessioni in piscina (non ancora disponibile).'
-                  : 'Vuoto = stima dalle sessioni in piscina: ${fmtPasso100(passoStimato)}.',
+                  ? l10n.vuotoStimaDalleSessioni
+                  : l10n.vuotoStimaDalleSessioni2(fmtPasso100(passoStimato)),
               helperMaxLines: 2,
             ),
           ),
-          const SizedBox(height: 24),
-          Text('Le tue zone di potenza (bici)', style: t.titleMedium),
-          const SizedBox(height: 4),
-          Text(
-            'Partono dall\'FTP, la potenza che riesci a tenere per circa '
-            'un\'ora. Le sedute di bici ti danno il range di watt da tenere.',
-            style: t.bodySmall,
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestNuoto,
+            icon: const Icon(Icons.timer_rounded),
+            label: Text(l10n.tsFaiTestCalcolarlo),
           ),
+          const SizedBox(height: 24),
+          Text(l10n.tueZonePotenzaBici, style: t.titleMedium),
+          const SizedBox(height: 4),
+          Text(l10n.partonoDallFtpPotenza, style: t.bodySmall),
           if (widget.state.zonePotenza case final zp?) ...[
             const SizedBox(height: 8),
             Card(
@@ -493,23 +712,58 @@ class _ZoneScreenState extends State<ZoneScreen> {
             controller: ftp,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'FTP',
+              labelText: l10n.ftp,
               suffixText: 'W',
               helperText: widget.state.ftpIcu > 0
-                  ? 'Vuoto = quello di intervals.icu: ${widget.state.ftpIcu} W.'
-                  : 'Se non lo sai: pedala 20 minuti più forte che puoi, '
-                        'l\'FTP è circa il 95% della potenza media.',
+                  ? l10n.vuotoQuelloIntervalsIcu(widget.state.ftpIcu)
+                  : l10n.tsSeNonSaiTest,
               helperMaxLines: 3,
             ),
           ),
-          const SizedBox(height: 24),
-          Text('Le tue zone di potenza (corsa)', style: t.titleMedium),
-          const SizedBox(height: 4),
-          Text(
-            'L\'FTP della bici non vale correndo: la corsa ha la sua. Serve ai '
-            'grafici delle corse registrate con un orologio che misura i watt.',
-            style: t.bodySmall,
+          ListenableBuilder(
+            listenable: widget.state,
+            builder: (context, _) {
+              final f = widget.state.ftpProposto;
+              final u = widget.state.uscitaProposta;
+              if (f == null || u == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: SuperficiePulse(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8,
+                    children: [
+                      Text(l10n.tsUsciteDicono(f), style: t.titleMedium),
+                      Text(
+                        u.test.isNotEmpty
+                            ? l10n.tsDalTest(_dataBreve(u.data))
+                            : l10n.tsHaiTenuto(_dataBreve(u.data), u.w20, f),
+                        style: t.bodySmall,
+                      ),
+                      FilledButton.icon(
+                        onPressed: () async {
+                          await widget.state.impostaFtp(f);
+                          ftp.text = '$f';
+                        },
+                        icon: const Icon(Icons.check_rounded),
+                        label: Text(l10n.tsUsaloComeFtp),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: _apriTestBici,
+            icon: const Icon(Icons.timer_rounded),
+            label: Text(l10n.tsFaiTestCalcolarlo),
+          ),
+          const SizedBox(height: 24),
+          Text(l10n.tueZonePotenzaCorsa, style: t.titleMedium),
+          const SizedBox(height: 4),
+          Text(l10n.ftpBiciNonVale, style: t.bodySmall),
           if (widget.state.zonePotenzaCorsa case final zc?) ...[
             const SizedBox(height: 8),
             Card(
@@ -531,24 +785,21 @@ class _ZoneScreenState extends State<ZoneScreen> {
             controller: ftpCorsa,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'FTP di corsa',
+              labelText: l10n.ftpCorsa,
               suffixText: 'W',
               helperText: widget.state.ftpCorsaIcu > 0
-                  ? 'Vuoto = quello di intervals.icu: '
-                        '${widget.state.ftpCorsaIcu} W.'
+                  ? l10n.vuotoQuelloIntervalsIcu(widget.state.ftpCorsaIcu)
                   : widget.state.stimaFtpDiCorsa != null
-                  ? 'Vuoto = stima da età e peso: '
-                        '${widget.state.stimaFtpDiCorsa} W. È solo un punto di '
-                        'partenza.'
-                  : 'Vuoto = stima da età e peso: scrivi il peso nel Profilo.',
+                  ? l10n.vuotoStimaEtaPeso(widget.state.stimaFtpDiCorsa!)
+                  : l10n.vuotoStimaEtaPeso2,
               helperMaxLines: 3,
             ),
           ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _apriTest,
-            icon: const Icon(Icons.timer_outlined),
-            label: const Text('Fai il test per calcolarla'),
+            icon: const Icon(Icons.timer_rounded),
+            label: Text(l10n.faiTestCalcolarla),
           ),
           if (errore != null) ...[
             const SizedBox(height: 12),

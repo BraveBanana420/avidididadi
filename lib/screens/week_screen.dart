@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 class WeekScreen extends StatelessWidget {
   final AppState state;
@@ -35,20 +38,16 @@ class WeekScreen extends StatelessWidget {
     final ok = await showDialog<bool>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text('Riportare la settimana nel calendario?'),
-        content: const Text(
-          'I giorni da oggi in poi diventano uguali alla settimana tipo: le '
-          'modifiche fatte a mano su quei giorni vengono sostituite. I giorni '
-          'già fatti restano.',
-        ),
+        title: Text(l10n.riportareSettimanaNelCalendario),
+        content: Text(l10n.giorniOggiPoiDiventano),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Riporta'),
+            child: Text(l10n.riporta),
           ),
         ],
       ),
@@ -62,14 +61,17 @@ class WeekScreen extends StatelessWidget {
     final n = await state.salvaSettimana(prima: prima);
     final fine = state.ultimoGiornoPiano;
     messenger.showSnackBar(
-      SnackBar(
+      avviso(
         content: Text(
           fine == null || fine.isBefore(soloData(DateTime.now()))
-              ? 'Settimana salvata. Il calendario è vuoto: allungalo da Oggi.'
+              ? l10n.settimanaSalvataCalendarioVuoto
               : n == 0
-              ? 'Settimana salvata.'
-              : 'Calendario aggiornato: $n ${n == 1 ? 'giorno' : 'giorni'} '
-                    'da oggi al ${dataLunga(fine).toLowerCase()}.',
+              ? l10n.settimanaSalvata
+              : l10n.calendarioAggiornatoOggiAl(
+                  n,
+                  n == 1 ? l10n.parolaGiorno : l10n.parolaGiorni,
+                  dataLunga(fine).toLowerCase(),
+                ),
         ),
       ),
     );
@@ -86,31 +88,24 @@ class WeekScreen extends StatelessWidget {
     // Pagina aperta dal Calendario (non più una scheda della barra in basso).
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Settimana tipo')),
+      appBar: AppBar(title: Text(l10n.settimanaTipo2)),
       body: ListenableBuilder(
         listenable: state,
         builder: (context, _) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            const Text(
-              'Scegli cosa fai e in quale giorno. I cambi valgono subito nel '
-              'calendario, da oggi in poi; i giorni già fatti non cambiano.',
-            ),
+            Text(l10n.scegliCosaFaiQuale),
             const SizedBox(height: 12),
             for (var g = 1; g <= 7; g++) _giorno(context, g, t),
             const SizedBox(height: 12),
             OutlinedButton.icon(
               onPressed: () => _riporta(context),
-              icon: const Icon(Icons.sync),
-              label: const Text('Porta tutta la settimana nel calendario'),
+              icon: const Icon(Icons.sync_rounded),
+              label: Text(l10n.portaTuttaSettimanaNel),
             ),
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Rifà i giorni da oggi in poi uguali alla settimana tipo. Utile '
-                'se il calendario non corrisponde più.',
-                style: t.bodySmall,
-              ),
+              child: Text(l10n.rifaGiorniOggiPoi, style: t.bodySmall),
             ),
           ],
         ),
@@ -136,27 +131,27 @@ class WeekScreen extends StatelessWidget {
                   child: Text(giorniSettimana[g - 1], style: t.titleMedium),
                 ),
                 IconButton(
-                  tooltip: 'Aggiungi sessione',
-                  icon: const Icon(Icons.add),
+                  tooltip: l10n.aggiungiSessione,
+                  icon: const Icon(Icons.add_rounded),
                   onPressed: () => _aggiungi(context, g),
                 ),
               ],
             ),
             if (slots.isEmpty)
-              const Padding(
+              Padding(
                 padding: EdgeInsets.only(bottom: 8),
-                child: Text('Nessuna sessione'),
+                child: Text(l10n.nessunaSessione),
               ),
             for (final s in slots)
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: Icon(iconaSport(s.sport), color: coloreSport(s.sport)),
                 title: Text(titoloSessione(s.sport, s.tipo)),
-                subtitle: Text('${s.fascia}, ${s.durataMin} min'),
+                subtitle: Text(l10n.min3(s.fascia, s.durataMin)),
                 onTap: () => _modificaEsistente(context, s),
                 trailing: IconButton(
-                  tooltip: 'Elimina',
-                  icon: const Icon(Icons.delete_outline),
+                  tooltip: l10n.elimina,
+                  icon: const Icon(Icons.delete_outline_rounded),
                   onPressed: () async {
                     final prima = [...state.settimana];
                     state.settimana.remove(s);
@@ -225,36 +220,38 @@ class _SlotDialogState extends State<SlotDialog> {
           children: [
             DropdownButtonFormField<String>(
               initialValue: sport,
-              decoration: const InputDecoration(labelText: 'Sport'),
-              items: _con(
-                widget.sport,
-                sport,
-              ).map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              decoration: InputDecoration(labelText: l10n.sport),
+              items: _con(widget.sport, sport)
+                  .map(
+                    (s) => DropdownMenuItem(value: s, child: Text(mostra(s))),
+                  )
+                  .toList(),
               onChanged: (v) => setState(() => sport = v ?? sport),
             ),
             DropdownButtonFormField<String>(
               initialValue: fascia,
-              decoration: const InputDecoration(labelText: 'Fascia'),
-              items: _con(
-                fasce,
-                fascia,
-              ).map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              decoration: InputDecoration(labelText: l10n.fascia),
+              items: _con(fasce, fascia)
+                  .map(
+                    (s) => DropdownMenuItem(value: s, child: Text(mostra(s))),
+                  )
+                  .toList(),
               onChanged: (v) => setState(() => fascia = v ?? fascia),
             ),
             TextField(
               controller: tipo,
-              decoration: const InputDecoration(
-                labelText: 'Tipo di sessione (facoltativo)',
+              decoration: InputDecoration(
+                labelText: l10n.tipoSessioneFacoltativo,
               ),
             ),
             TextField(
               controller: durata,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Durata (minuti)'),
+              decoration: InputDecoration(labelText: l10n.durataMinuti),
             ),
             TextField(
               controller: note,
-              decoration: const InputDecoration(labelText: 'Note'),
+              decoration: InputDecoration(labelText: l10n.note),
             ),
           ],
         ),
@@ -262,7 +259,7 @@ class _SlotDialogState extends State<SlotDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text(l10n.annulla),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(
@@ -276,7 +273,7 @@ class _SlotDialogState extends State<SlotDialog> {
               note: note.text.trim(),
             ),
           ),
-          child: const Text('Salva'),
+          child: Text(l10n.salva),
         ),
       ],
     );

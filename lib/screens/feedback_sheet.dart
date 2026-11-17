@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../avviso.dart';
 import '../adattamento.dart';
 import '../app_state.dart';
 import '../feedback.dart';
 import '../generatore_forza.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 /// Apre il feedback rapido di fine sessione per il giorno [data].
 Future<void> apriFeedback(
@@ -32,12 +35,12 @@ Future<void> apriFeedback(
 );
 
 String _descrizioneFatica(int f) => switch (f) {
-  <= 2 => 'molto leggera',
-  <= 4 => 'leggera',
-  <= 6 => 'moderata',
-  <= 8 => 'impegnativa',
-  9 => 'molto dura',
-  _ => 'al massimo',
+  <= 2 => l10n.moltoLeggera,
+  <= 4 => l10n.parolaLeggera,
+  <= 6 => l10n.parolaModerata,
+  <= 8 => l10n.parolaImpegnativa,
+  9 => l10n.moltoDura,
+  _ => l10n.alMassimo,
 };
 
 class _FeedbackSheet extends StatefulWidget {
@@ -132,21 +135,19 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
       await showDialog<void>(
         context: navigator.context,
         builder: (c) => AlertDialog(
-          title: const Text('Feedback salvato'),
+          title: Text(l10n.feedbackSalvato2),
           content: Text(messaggio),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(c),
-              child: const Text('Ok'),
+              child: Text(l10n.ok2),
             ),
           ],
         ),
       );
       return;
     }
-    messenger.showSnackBar(
-      SnackBar(content: Text(messaggio), duration: const Duration(seconds: 6)),
-    );
+    messenger.showSnackBar(avviso(content: Text(messaggio)));
   }
 
   @override
@@ -159,11 +160,11 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Com\'è andata?', style: t.titleLarge),
-            Text('${widget.sport} · ${dataLunga(widget.data)}'),
+            Text(l10n.comAndata, style: t.titleLarge),
+            Text('${mostra(widget.sport)} · ${dataLunga(widget.data)}'),
             const SizedBox(height: 16),
             Text(
-              'Fatica: $fatica/10, ${_descrizioneFatica(fatica)}',
+              l10n.fatica102(fatica, _descrizioneFatica(fatica)),
               style: t.titleMedium,
             ),
             Slider(
@@ -176,18 +177,18 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             ),
             Text(
               forza
-                  ? 'Per il tuo obiettivo la fatica giusta è circa $obiettivo/10.'
-                  : 'Per una seduta ${tipo.isEmpty ? 'come questa' : tipo.toLowerCase()} '
-                        'la fatica prevista è circa $obiettivo/10.',
+                  ? l10n.tuoObiettivoFaticaGiusta(obiettivo)
+                  : l10n.sedutaFaticaPrevistaCirca(
+                      tipo.isEmpty ? l10n.comeQuesta : tipo.toLowerCase(),
+                      obiettivo,
+                    ),
               style: t.bodySmall,
             ),
             const SizedBox(height: 8),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(
-                forza
-                    ? 'Ho completato tutte le serie'
-                    : 'Ho fatto tutta la seduta',
+                forza ? l10n.hoCompletatoTutteSerie : l10n.hoFattoTuttaSeduta,
               ),
               value: completata,
               onChanged: (v) => setState(() => completata = v),
@@ -195,8 +196,10 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
             if (target != null) ...[
               const SizedBox(height: 8),
               Text(
-                'Il passo nella parte principale '
-                '(obiettivo ${target! ~/ 60}:${two(target! % 60)}/100 m)',
+                l10n.passoNellaPartePrincipale(
+                  target! ~/ 60,
+                  two(target! % 60),
+                ),
                 style: t.titleSmall,
               ),
               const SizedBox(height: 6),
@@ -215,30 +218,28 @@ class _FeedbackSheetState extends State<_FeedbackSheet> {
               TextField(
                 controller: passo,
                 keyboardType: TextInputType.datetime,
-                decoration: const InputDecoration(
-                  labelText: 'Oppure il passo che hai tenuto (es. 2:45)',
+                decoration: InputDecoration(
+                  labelText: l10n.oppurePassoHaiTenuto,
                   suffixText: '/100 m',
                 ),
               ),
             ],
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Ho sentito dolore o fastidio'),
+              title: Text(l10n.hoSentitoDoloreO),
               value: dolore,
               onChanged: (v) => setState(() => dolore = v),
             ),
             TextField(
               controller: note,
-              decoration: const InputDecoration(
-                labelText: 'Note (facoltative)',
-              ),
+              decoration: InputDecoration(labelText: l10n.noteFacoltative),
             ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: FilledButton(
                 onPressed: inCorso ? null : _salva,
-                child: const Text('Salva'),
+                child: Text(l10n.salva),
               ),
             ),
           ],

@@ -662,6 +662,21 @@ def muscoli(lista):
     return out
 
 
+# Istruzioni in inglese scritte a mano dove free-exercise-db non le ha.
+A_MANO = {
+    'Side_Bridge': [
+        'On your side, resting on your forearm with the elbow under the shoulder.',
+        'Lift your hips until your body is straight from head to feet.',
+        'Hold the position, then switch sides.',
+    ],
+    'One-Arm_Kettlebell_Swings': [
+        'Kettlebell between your feet, feet a little wider than your shoulders.',
+        'Push your hips back, bring the kettlebell between your legs, then extend your hips forcefully.',
+        'The kettlebell rises to chest height thanks to the drive of the hips, not the arms.',
+    ],
+}
+
+
 def main():
     db = {e['id']: e for e in json.load(open(sys.argv[1], encoding='utf-8'))}
     out = []
@@ -683,6 +698,9 @@ def main():
             'muscoli': primari,
             'muscoli_secondari': [m for m in muscoli(e['secondaryMuscles']) if m not in primari],
             'istruzioni': istruzioni,
+            # Istruzioni originali di free-exercise-db, per l'app in inglese
+            # (A_MANO dove la fonte non le ha).
+            'istruzioni_en': A_MANO.get(id_) or [x.strip() for x in e['instructions'] if x.strip()],
             'immagini': e['images'],
         })
     json.dump(out, open('assets/esercizi.json', 'w', encoding='utf-8'),

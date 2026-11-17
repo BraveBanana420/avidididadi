@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest an idea / Proponi un'idea
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: English or Italian are both fine. Please check the existing issues first.
+  - type: textarea
+    id: problema
+    attributes:
+      label: What problem does it solve? / Quale problema risolve?
+      description: Describe the situation, e.g. "When I train on the trainer I can't...".
+    validations:
+      required: true
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Your idea / La tua idea
+      description: How you'd like it to work.
+    validations:
+      required: true
+  - type: textarea
+    id: alternative
+    attributes:
+      label: Alternatives / Alternative
+      description: Other ways you've considered, or apps that do it well.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy
+      options:
+        - label: The idea keeps all data on the phone, or explains clearly what would leave it and why.
+          required: true

@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'csv.dart';
 import 'models.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
+import 'l10n/app_localizations.dart';
 
 // Seguire un percorso già fatto da qualcuno (un GPX di una gara, un giro
 // famoso): dove sei sulla traccia, quanto manca, la prossima curva e se sei
@@ -227,9 +229,7 @@ Traccia tracciaDaGpx(String testo, {String nomeFile = 'Percorso'}) {
     punti.add(PuntoTraccia(lat, lon, q));
   }
   if (punti.length < 2) {
-    throw const FormatException(
-      'Nel file non c\'è un percorso: serve un GPX con una traccia.',
-    );
+    throw FormatException(l10n.nelFileNonC);
   }
   // Il nome della traccia, o quello generale del file, prima dei punti.
   final prima = testo.substring(0, inizi.first);
@@ -310,22 +310,29 @@ class Curva {
     return TipoCurva.leggera;
   }
 
-  /// "gira a destra", "tornante a sinistra", "torna indietro".
-  String get frase {
-    final lato = destra ? 'a destra' : 'a sinistra';
+  /// "gira a destra", "tornante a sinistra", "torna indietro", per lo
+  /// schermo (lingua dell'app).
+  String get frase => fraseIn(l10n);
+
+  /// La curva nei testi [t]: quelli dell'app o quelli della voce.
+  String fraseIn(AppLocalizations t) {
+    final lato = destra ? t.destra : t.sinistra;
     return switch (tipo) {
-      TipoCurva.leggera => destra ? 'tieni la destra' : 'tieni la sinistra',
-      TipoCurva.normale => 'gira $lato',
-      TipoCurva.stretta => 'curva stretta $lato',
-      TipoCurva.inversione => 'torna indietro',
+      TipoCurva.leggera => destra ? t.tieniDestra : t.tieniSinistra,
+      TipoCurva.normale => t.giraVerso(lato),
+      TipoCurva.stretta => t.curvaStretta(lato),
+      TipoCurva.inversione => t.tornaIndietro,
     };
   }
 
   /// La stessa curva detta subito dopo un'altra: "poi subito a sinistra",
   /// "poi tieni la destra".
-  String get fraseDopo => tipo == TipoCurva.normale
-      ? 'poi subito ${destra ? 'a destra' : 'a sinistra'}'
-      : 'poi $frase';
+  String get fraseDopo => fraseDopoIn(l10n);
+
+  /// Come [fraseDopo], nei testi [t].
+  String fraseDopoIn(AppLocalizations t) => tipo == TipoCurva.normale
+      ? t.poiSubito(destra ? t.destra : t.sinistra)
+      : t.poiCurva(fraseIn(t));
 }
 
 /// Curve sotto questo angolo non si annunciano: sono la strada che piega.
@@ -393,12 +400,13 @@ class AvvisoGuida {
 
 /// "250 metri", "1,2 chilometri".
 String parlaMetri(double m) {
-  if (m < 1000) return '${m.round()} metri';
+  final t = l10nVoce;
+  if (m < 1000) return t.quantiMetri(m.round());
   final km = (m / 100).round() / 10;
   final testo = km == km.roundToDouble()
       ? '${km.round()}'
-      : km.toStringAsFixed(1).replaceAll('.', ',');
-  return '$testo ${km == 1 ? 'chilometro' : 'chilometri'}';
+      : decimaleVoce(km, 1);
+  return '$testo ${km == 1 ? t.parolaChilometro : t.parolaChilometri}';
 }
 
 /// "250 m", "1,2 km" per lo schermo.
@@ -549,7 +557,7 @@ class Guida {
       if (fuori && ora.difference(_vicinoDa!) >= _attesaRientro) {
         fuori = false;
         avvisi.add(
-          const AvvisoGuida(TipoAvvisoGuida.rientro, 'Di nuovo sul percorso.'),
+          AvvisoGuida(TipoAvvisoGuida.rientro, l10nVoce.nuovoSulPercorso),
         );
       }
     } else {
@@ -562,7 +570,7 @@ class Guida {
         avvisi.add(
           AvvisoGuida(
             TipoAvvisoGuida.fuori,
-            'Sei fuori percorso, a ${parlaMetri(_arrotonda(d))} dalla traccia.',
+            l10nVoce.seiFuoriPercorsoDalla(parlaMetri(_arrotonda(d))),
           ),
         );
       }
@@ -585,9 +593,9 @@ class Guida {
         if (ora.difference(_contrarioDa!) >= _attesaContrario && ripetibile) {
           _ultimoContrario = ora;
           avvisi.add(
-            const AvvisoGuida(
+            AvvisoGuida(
               TipoAvvisoGuida.contrario,
-              'Stai andando nel senso contrario al percorso.',
+              l10nVoce.staiAndandoNelSenso,
             ),
           );
         }
@@ -600,10 +608,7 @@ class Guida {
     if (!arrivato && traccia.metri - p < 30 && p > traccia.metri * 0.8) {
       arrivato = true;
       avvisi.add(
-        const AvvisoGuida(
-          TipoAvvisoGuida.arrivo,
-          'Arrivo! Percorso completato.',
-        ),
+        AvvisoGuida(TipoAvvisoGuida.arrivo, l10nVoce.arrivoPercorsoCompletato),
       );
       return avvisi;
     }
@@ -617,6 +622,8 @@ class Guida {
       m < 1000 ? (m / 10).round() * 10.0 : (m / 100).round() * 100.0;
 
   AvvisoGuida? _avvisoCurva(double p) {
+    // Le frasi degli avvisi sono per la voce.
+    final t = l10nVoce;
     final preavviso = preavvisoA(_velocita);
     final adesso = adessoA(_velocita);
     // Due curve più vicine di così (circa 8 secondi) si dicono insieme.
@@ -628,7 +635,7 @@ class Guida {
       if (manca > preavviso) return null;
       final fatto = _annunci[i] ?? 0;
       final dopo = i + 1 < curve.length && curve[i + 1].metri - c.metri < legate
-          ? ', ${curve[i + 1].fraseDopo}'
+          ? ', ${curve[i + 1].fraseDopoIn(t)}'
           : '';
       if (manca <= adesso) {
         if (fatto >= 2) return null;
@@ -637,7 +644,7 @@ class Guida {
         if (dopo.isNotEmpty) _annunci[i + 1] = 2;
         return AvvisoGuida(
           TipoAvvisoGuida.curva,
-          '${_maiuscola(c.frase)}$dopo.',
+          '${_maiuscola(c.fraseIn(t))}$dopo.',
         );
       }
       if (fatto >= 1) return null;
@@ -647,7 +654,7 @@ class Guida {
       final tra = (manca / passo).round() * passo;
       return AvvisoGuida(
         TipoAvvisoGuida.curva,
-        'Tra ${parlaMetri(tra)}, ${c.frase}$dopo.',
+        t.tra(parlaMetri(tra), c.fraseIn(t), dopo),
         preavviso: true,
       );
     }

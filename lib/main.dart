@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'avviso.dart';
 import 'app_state.dart';
 import 'condivisione.dart';
 import 'health_connect.dart';
 import 'in_corso.dart';
 import 'models.dart';
 import 'pulse.dart';
+import 'sincronizzazione.dart';
 import 'screens/esecuzione_screen.dart';
 import 'widget_home.dart';
 import 'screens/assistente_screen.dart';
@@ -20,10 +21,14 @@ import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
+import 'l10n/lingua.dart';
+import 'l10n/app_localizations.dart';
+import 'screens/lingua_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await caricaTema();
+  await caricaLingua();
   await caricaTour();
   runApp(const AllenamentiApp());
 }
@@ -34,17 +39,18 @@ class AllenamentiApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([tema, neon]),
+      listenable: Listenable.merge([tema, neon, lingua]),
       builder: (context, _) => MaterialApp(
         title: 'Avidididadi',
         debugShowCheckedModeBanner: false,
         theme: creaTema(Brightness.light, neon: neon.value),
         darkTheme: creaTema(Brightness.dark, neon: neon.value),
         themeMode: tema.value,
-        // Tutta l'app in italiano: calendari in GG/MM/AAAA e settimana da lunedì.
-        locale: const Locale('it'),
-        supportedLocales: const [Locale('it')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
+        // Italiano o inglese, scelta nell'app (non quella del telefono):
+        // anche i calendari e i pulsanti di sistema la seguono.
+        locale: Locale(codiceLingua),
+        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         // I colori degli sport seguono il tema in uso.
         builder: (context, child) {
           temaScuroAttivo = Theme.of(context).brightness == Brightness.dark;
@@ -64,14 +70,34 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   final state = AppState();
+
+  /// Ultima sincronizzazione (avvio o ritorno nell'app); null finché l'avvio
+  /// non ha finito.
+  DateTime? _sincronizzataIl;
+
+  /// Tornando nell'app dopo un allenamento con l'orologio le sessioni nuove
+  /// arrivano da sole, senza doverla chiudere e riaprire.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState stato) {
+    if (stato != AppLifecycleState.resumed) return;
+    final ora = DateTime.now();
+    if (!daRisincronizzare(_sincronizzataIl, ora)) return;
+    _sincronizzataIl = ora;
+    () async {
+      await state.sincronizzaHc();
+      await state.sincronizzaIntervals();
+    }();
+  }
+
   final pagine = PageController();
   int tab = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Il giro guidato passa da una sezione all'altra.
     vaiAllaSezione = (i) {
       if (!mounted) return;
@@ -93,6 +119,15 @@ class _HomePageState extends State<HomePage> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _apriPrivacy());
     }
     await state.load();
+    // Primo avvio: prima di tutto la lingua.
+    if (lingua.value == null && mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          fullscreenDialog: true,
+          builder: (_) => const LinguaScreen(primoAvvio: true),
+        ),
+      );
+    }
     // Prima di usare l'app si accettano termini e informativa (di nuovo se
     // sono cambiati).
     if (state.profilo.terminiAccettati != versioneTermini && mounted) {
@@ -103,10 +138,12 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     }
-    // Il widget della schermata home segue piano, sedute fatte e tema.
+    // Il widget della schermata home segue piano, sedute fatte, tema e
+    // lingua.
     state.addListener(_aggiornaWidget);
     tema.addListener(_aggiornaWidget);
     neon.addListener(_aggiornaWidget);
+    lingua.addListener(_aggiornaWidget);
     _aggiornaWidget();
     if (azione == azioneAvviaWidget) _avviaOggi();
     // Avidididadi nel menu Condividi solo con l'assistente esterno collegato
@@ -128,6 +165,7 @@ class _HomePageState extends State<HomePage> {
     // nessuna richiesta di permessi senza che l'utente lo chieda.
     await state.sincronizzaHc();
     await state.sincronizzaIntervals();
+    _sincronizzataIl = DateTime.now();
     // Dopo la sincronizzazione, così il backup ha anche le sessioni nuove.
     await state.backupAutomatico();
   }
@@ -138,20 +176,17 @@ class _HomePageState extends State<HomePage> {
       context: context,
       barrierDismissible: false,
       builder: (c) => AlertDialog(
-        icon: const Icon(Icons.restore),
-        title: const Text('Allenamento interrotto'),
-        content: Text(
-          "L'app si era chiusa durante l'allenamento: ${r.riassunto}. "
-          'Riprendi da dove eri? Riparte in pausa.',
-        ),
+        icon: const Icon(Icons.restore_rounded),
+        title: Text(l10n.allenamentoInterrotto),
+        content: Text(l10n.appSiEraChiusa(r.riassunto)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, false),
-            child: const Text('Scarta'),
+            child: Text(l10n.scarta),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c, true),
-            child: const Text('Riprendi'),
+            child: Text(l10n.riprendi),
           ),
         ],
       ),
@@ -207,9 +242,8 @@ class _HomePageState extends State<HomePage> {
     setState(() => tab = 2);
     // Se è aperta un'altra pagina (es. un allenamento) non si chiude: avviso.
     if (Navigator.of(context).canPop()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Risposta ricevuta: la trovi in Coach.')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(avviso(content: Text(l10n.rispostaRicevutaTroviCoach)));
     }
   }
 
@@ -221,59 +255,91 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _attesaWidget?.cancel();
     state.removeListener(_aggiornaWidget);
     tema.removeListener(_aggiornaWidget);
     neon.removeListener(_aggiornaWidget);
+    lingua.removeListener(_aggiornaWidget);
     pagine.dispose();
     super.dispose();
   }
 
+  /// Passa a una sezione: animazione solo verso quella accanto, altrimenti
+  /// salto diretto.
+  void _vaiA(int i) {
+    if ((i - tab).abs() == 1) {
+      pagine.animateToPage(
+        i,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    } else {
+      pagine.jumpToPage(i);
+    }
+    setState(() => tab = i);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // La barra fluttua sopra le schede; dietro, il fondo con i bagliori.
-      extendBody: true,
-      backgroundColor: Colors.transparent,
-      // Si cambia sezione scorrendo di lato o dalla barra in basso.
-      body: SfondoPulse(
-        child: PageView(
-          controller: pagine,
-          onPageChanged: (i) => setState(() => tab = i),
-          children: [
-            _TieniViva(child: CalendarScreen(state: state)),
-            _TieniViva(child: ProgressScreen(state: state)),
-            _TieniViva(child: AssistenteScreen(state: state)),
-            _TieniViva(child: ProfileScreen(state: state)),
-          ],
+    return IndietroAOggi(
+      sezione: tab,
+      tornaAOggi: () => _vaiA(0),
+      child: Scaffold(
+        // La barra fluttua sopra le schede; dietro, il fondo con i bagliori.
+        extendBody: true,
+        backgroundColor: Colors.transparent,
+        // Si cambia sezione scorrendo di lato o dalla barra in basso.
+        body: SfondoPulse(
+          child: PageView(
+            controller: pagine,
+            onPageChanged: (i) => setState(() => tab = i),
+            children: [
+              _TieniViva(child: CalendarScreen(state: state)),
+              _TieniViva(child: ProgressScreen(state: state)),
+              _TieniViva(child: AssistenteScreen(state: state)),
+              _TieniViva(child: ProfileScreen(state: state)),
+            ],
+          ),
         ),
-      ),
-      bottomNavigationBar: BarraPulse(
-        key: ChiaviTour.barra,
-        chiavi: ChiaviTour.voci,
-        attiva: tab,
-        voci: const [
-          VoceBarra(Icons.today_outlined, 'Oggi'),
-          VoceBarra(Icons.insights_outlined, 'Progressi'),
-          VoceBarra(Icons.forum_outlined, 'Coach'),
-          VoceBarra(Icons.person_outline, 'Profilo'),
-        ],
-        onTocca: (i) {
-          // Animazione solo verso la sezione accanto, altrimenti salto diretto.
-          if ((i - tab).abs() == 1) {
-            pagine.animateToPage(
-              i,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          } else {
-            pagine.jumpToPage(i);
-          }
-          setState(() => tab = i);
-        },
+        bottomNavigationBar: BarraPulse(
+          key: ChiaviTour.barra,
+          chiavi: ChiaviTour.voci,
+          attiva: tab,
+          voci: [
+            VoceBarra(Icons.today_rounded, l10n.oggi),
+            VoceBarra(Icons.insights_rounded, l10n.progressi),
+            VoceBarra(Icons.forum_rounded, l10n.coach),
+            VoceBarra(Icons.person_outline_rounded, l10n.profilo),
+          ],
+          onTocca: _vaiA,
+        ),
       ),
     );
   }
+}
+
+/// Il tasto indietro nelle sezioni principali: dalle altre si torna a Oggi,
+/// da Oggi si esce dall'app (come nelle altre app Android).
+class IndietroAOggi extends StatelessWidget {
+  final int sezione;
+  final VoidCallback tornaAOggi;
+  final Widget child;
+  const IndietroAOggi({
+    super.key,
+    required this.sezione,
+    required this.tornaAOggi,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) => PopScope(
+    canPop: sezione == 0,
+    onPopInvokedWithResult: (uscita, _) {
+      if (!uscita) tornaAOggi();
+    },
+    child: child,
+  );
 }
 
 /// Mantiene lo stato di una sezione (periodo, mese, scroll) quando esce dallo schermo.

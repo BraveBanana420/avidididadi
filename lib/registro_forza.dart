@@ -1,13 +1,23 @@
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Registro della forza: ripetizioni e kg di ogni serie fatta con la modalità
 // allenamento. Serve a vedere lo storico di un esercizio e a proporre il peso
 // della volta dopo partendo da quello vero, non solo dalle sensazioni.
 
-const serieHeader = ['data', 'esercizio', 'nome', 'serie', 'ripetizioni', 'kg'];
+const serieHeader = [
+  'data',
+  'esercizio',
+  'nome',
+  'serie',
+  'ripetizioni',
+  'kg',
+  'secondi',
+];
 
-/// Una serie fatta: quante ripetizioni e con quanti kg (0 = corpo libero).
+/// Una serie fatta: quante ripetizioni e con quanti kg (0 = corpo libero),
+/// oppure quanti secondi se è a tempo (plank, isometrie).
 class SerieFatta {
   final DateTime data;
   final String esercizio; // id nel catalogo (vuoto se non c'è)
@@ -15,6 +25,7 @@ class SerieFatta {
   final int serie; // 1, 2, 3…
   final int ripetizioni;
   final double kg;
+  final int secondi; // > 0: serie a tempo (le ripetizioni allora sono 0)
   const SerieFatta({
     required this.data,
     required this.esercizio,
@@ -22,7 +33,10 @@ class SerieFatta {
     required this.serie,
     required this.ripetizioni,
     this.kg = 0,
+    this.secondi = 0,
   });
+
+  bool get aTempo => secondi > 0;
 
   /// Chiave dell'esercizio: l'id del catalogo, altrimenti il nome.
   String get chiave => esercizio.isEmpty ? nome : esercizio;
@@ -34,12 +48,14 @@ class SerieFatta {
     '$serie',
     '$ripetizioni',
     kg > 0 ? fmtKg(kg) : '',
+    secondi > 0 ? '$secondi' : '',
   ];
 
   static SerieFatta? da(Tabella t, List<String> r) {
     final d = parseData(t.v(r, 'data'));
     final rip = int.tryParse(t.v(r, 'ripetizioni')) ?? 0;
-    if (d == null || rip <= 0) return null;
+    final sec = int.tryParse(t.v(r, 'secondi')) ?? 0;
+    if (d == null || (rip <= 0 && sec <= 0)) return null;
     return SerieFatta(
       data: d,
       esercizio: t.v(r, 'esercizio'),
@@ -47,8 +63,23 @@ class SerieFatta {
       serie: int.tryParse(t.v(r, 'serie')) ?? 1,
       ripetizioni: rip,
       kg: double.tryParse(t.v(r, 'kg').replaceAll(',', '.')) ?? 0,
+      secondi: sec > 0 ? sec : 0,
     );
   }
+}
+
+/// "45 s", "1:30" (minuti e secondi).
+String fmtSecondi(int s) => s < 60 ? '$s s' : '${s ~/ 60}:${two(s % 60)}';
+
+/// Secondi scritti a mano: "45", "45 s", "1:30" o "1'30". Null se non si
+/// capisce o è 0.
+int? parseSecondi(String testo) {
+  final t = testo.trim().toLowerCase().replaceAll(RegExp(r'\s*(s|sec)$'), '');
+  final m = RegExp(r"^(\d+)\s*[:'.]\s*(\d{1,2})$").firstMatch(t);
+  final v = m != null
+      ? int.parse(m.group(1)!) * 60 + int.parse(m.group(2)!)
+      : int.tryParse(t);
+  return v == null || v <= 0 ? null : v;
 }
 
 /// "12.5" → "12,5"; "40.0" → "40".
@@ -95,10 +126,15 @@ List<SerieFatta> ultimaVolta(
     ..sort((a, b) => a.serie.compareTo(b.serie));
 }
 
-/// La serie migliore: più kg, a pari kg più ripetizioni.
+/// La serie migliore: più kg, a pari kg più ripetizioni; a tempo, la più
+/// lunga.
 SerieFatta? recordDi(List<SerieFatta> tutte, String chiave) {
   SerieFatta? r;
   for (final s in tutte.where((s) => s.chiave == chiave)) {
+    if (r != null && (r.aTempo || s.aTempo)) {
+      if (s.secondi > r.secondi) r = s;
+      continue;
+    }
     if (r == null ||
         s.kg > r.kg ||
         (s.kg == r.kg && s.ripetizioni > r.ripetizioni)) {
@@ -111,18 +147,25 @@ SerieFatta? recordDi(List<SerieFatta> tutte, String chiave) {
 /// "3 × 8 a 40 kg", "8, 8, 7 a 40 kg" o "10, 9, 8" a corpo libero.
 String fmtSerie(List<SerieFatta> serie) {
   if (serie.isEmpty) return '';
+  // A tempo: "3 × 45 s" o "45 s, 40 s, 30 s".
+  if (serie.every((s) => s.aTempo)) {
+    final sec = serie.map((s) => s.secondi).toList();
+    return sec.toSet().length == 1
+        ? '${sec.length} × ${fmtSecondi(sec.first)}'
+        : sec.map(fmtSecondi).join(', ');
+  }
   final rip = serie.map((s) => s.ripetizioni).toList();
   final kg = serie.map((s) => s.kg).toSet();
   final quante = rip.toSet().length == 1
       ? '${rip.length} × ${rip.first}'
       : rip.join(', ');
   if (kg.length == 1) {
-    return kg.first > 0 ? '$quante a ${fmtKg(kg.first)} kg' : quante;
+    return kg.first > 0 ? l10n.kg(quante, fmtKg(kg.first)) : quante;
   }
   return serie
       .map(
         (s) => s.kg > 0
-            ? '${s.ripetizioni} × ${fmtKg(s.kg)} kg'
+            ? l10n.kg2(s.ripetizioni, fmtKg(s.kg))
             : '${s.ripetizioni}',
       )
       .join(', ');
@@ -152,4 +195,59 @@ bool prontoPerAumentare(List<SerieFatta> ultima, int massimo) =>
       ultima.where((s) => s.serie == serie).firstOrNull ?? ultima.lastOrNull;
   if (stessa != null) return (previste.$1, stessa.kg);
   return (previste.$1, kgPiano ?? 0);
+}
+
+/// Un esercizio scritto a mano dopo l'allenamento: le sue serie in ordine,
+/// ognuna con ripetizioni e kg (0 = corpo libero) oppure, se [aTempo], con
+/// i secondi al posto delle ripetizioni (i kg allora non contano).
+typedef EsercizioFatto = ({
+  String esercizio,
+  String nome,
+  bool aTempo,
+  List<(int, double)> serie,
+});
+
+/// Gli esercizi scritti a mano diventano serie numerate da 1; le serie
+/// senza ripetizioni non contano.
+List<SerieFatta> serieDaEsercizi(DateTime giorno, List<EsercizioFatto> lista) {
+  final d = soloData(giorno);
+  return [
+    for (final e in lista)
+      ...() {
+        var n = 0;
+        return [
+          for (final (v, kg) in e.serie)
+            if (v > 0)
+              SerieFatta(
+                data: d,
+                esercizio: e.esercizio,
+                nome: e.nome,
+                serie: ++n,
+                ripetizioni: e.aTempo ? 0 : v,
+                kg: e.aTempo || kg < 0 ? 0 : kg,
+                secondi: e.aTempo ? v : 0,
+              ),
+        ];
+      }(),
+  ];
+}
+
+/// Le serie di un giorno raggruppate per esercizio, per riscriverle.
+List<EsercizioFatto> eserciziDaSerie(List<SerieFatta> serie) {
+  final per = <String, List<SerieFatta>>{};
+  for (final s in serie) {
+    (per[s.chiave] ??= []).add(s);
+  }
+  return [
+    for (final l in per.values)
+      (
+        esercizio: l.first.esercizio,
+        nome: l.first.nome,
+        aTempo: l.every((s) => s.aTempo),
+        serie: [
+          for (final s in l..sort((a, b) => a.serie.compareTo(b.serie)))
+            s.aTempo ? (s.secondi, 0.0) : (s.ripetizioni, s.kg),
+        ],
+      ),
+  ];
 }

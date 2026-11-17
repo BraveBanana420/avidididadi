@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'csv.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Backup di tutti i dati in un unico file: i CSV e la foto del profilo, in un
 /// JSON compresso. La chiave dell'assistente non c'è (sta nell'archivio cifrato)
@@ -41,12 +42,14 @@ class DatiBackup {
 
   /// Riassunto per la conferma prima del ripristino.
   String get riassunto => [
-    'Creato il ${dataLunga(creato)}',
-    '${_righe('sessioni.csv') + _righe('health_connect_sessioni.csv')} sessioni',
-    '${_righe('piano.csv')} giorni di piano',
-    '${_righe('misure.csv')} misure',
-    '${_righe('feedback.csv')} feedback',
-    if (foto != null) 'foto del profilo',
+    l10n.creato(dataLunga(creato)),
+    l10n.backupSessioni(
+      _righe('sessioni.csv') + _righe('health_connect_sessioni.csv'),
+    ),
+    l10n.giorniPiano(_righe('piano.csv')),
+    l10n.backupMisure(_righe('misure.csv')),
+    l10n.backupFeedback(_righe('feedback.csv')),
+    if (foto != null) l10n.fotoProfilo,
   ].join(' · ');
 }
 
@@ -73,23 +76,21 @@ Uint8List creaBackup(
 /// Legge un file di backup; FormatException se non è un backup dell'app.
 DatiBackup leggiBackup(List<int> bytes) {
   if (bytes.length > maxByteBackup) {
-    throw const FormatException('File troppo grande per essere un backup.');
+    throw FormatException(l10n.fileTroppoGrandeEssere);
   }
   final Object? j;
   try {
     j = jsonDecode(utf8.decode(_apri(bytes)));
   } on _TroppoGrande {
-    throw const FormatException('File troppo grande per essere un backup.');
+    throw FormatException(l10n.fileTroppoGrandeEssere);
   } catch (_) {
-    throw const FormatException('Il file non è un backup di Avidididadi.');
+    throw FormatException(l10n.fileNonBackupAvidididadi);
   }
   if (j is! Map || j['formato'] != _formato) {
-    throw const FormatException('Il file non è un backup di Avidididadi.');
+    throw FormatException(l10n.fileNonBackupAvidididadi);
   }
   if ((j['versione'] as num? ?? 0) > _versione) {
-    throw const FormatException(
-      'Backup creato da una versione più recente dell\'app: aggiornala.',
-    );
+    throw FormatException(l10n.backupCreatoVersionePiu);
   }
   final file = j['file'];
   final csv = <String, String>{
@@ -99,7 +100,7 @@ DatiBackup leggiBackup(List<int> bytes) {
         if (e.key is String && fileDaSalvare(e.key) && e.value is String)
           e.key as String: e.value as String,
   };
-  if (csv.isEmpty) throw const FormatException('Il backup è vuoto.');
+  if (csv.isEmpty) throw FormatException(l10n.backupVuoto);
   final f = j['foto'];
   String? nomeFoto;
   Uint8List? foto;

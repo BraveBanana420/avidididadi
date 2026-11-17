@@ -1,5 +1,6 @@
 import 'models.dart';
 import 'obiettivo.dart';
+import 'l10n/lingua.dart';
 
 /// Carico di allenamento unico per tutti gli sport (metodo sRPE):
 /// carico = durata in minuti × fatica da 1 a 10.
@@ -23,6 +24,7 @@ double faticaStimata(Sessione s, Zone z, {int? rpe}) {
   if (stessoSport(s.sport, 'Camminata')) return 3;
   if (stessoSport(s.sport, 'Arrampicata')) return 6;
   final t = s.tipo.toLowerCase();
+  if (t.contains('test') || t.contains('ftp')) return 9;
   if (t.contains('ripetute') || t.contains('hiit')) return 8;
   if (t.contains('fartlek') || t.contains('tempo')) return 7;
   if (t.contains('lento') || t.contains('lungo') || t.contains('recupero')) {
@@ -83,11 +85,11 @@ StatoCarico statoCarico(double rapporto) => rapporto < 0.8
     ? StatoCarico.attenzione
     : StatoCarico.rischio;
 
-const descrizioniCarico = {
-  StatoCarico.inCalo: 'In calo: stai facendo meno del solito.',
-  StatoCarico.equilibrato: 'Equilibrato: aumento sostenibile.',
-  StatoCarico.attenzione: 'Attenzione: stai aumentando in fretta.',
-  StatoCarico.rischio: 'Rischio: troppo carico rispetto alle ultime settimane.',
+Map<StatoCarico, String> get descrizioniCarico => {
+  StatoCarico.inCalo: l10n.caloStaiFacendoMeno,
+  StatoCarico.equilibrato: l10n.equilibratoAumentoSostenibile,
+  StatoCarico.attenzione: l10n.attenzioneStaiAumentandoFretta,
+  StatoCarico.rischio: l10n.rischioTroppoCaricoRispetto,
 };
 
 /// Confronto tra quello che era in programma e quello che è stato fatto.

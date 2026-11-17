@@ -10,6 +10,7 @@ import 'percorso.dart';
 import 'recupero.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
+import 'l10n/lingua.dart';
 
 enum DisponibilitaHc { disponibile, daAggiornare, nonInstallata, nonSupportata }
 
@@ -47,17 +48,17 @@ class HealthConnectService {
   ];
 
   /// Tutti i dati letti, con il nome da mostrare nella pagina dei permessi.
-  static const tipi = {
-    HealthDataType.WORKOUT: 'Sessioni di allenamento',
-    HealthDataType.HEART_RATE: 'Frequenza cardiaca',
-    HealthDataType.DISTANCE_DELTA: 'Distanza',
-    HealthDataType.ACTIVE_ENERGY_BURNED: 'Calorie attive',
-    HealthDataType.TOTAL_CALORIES_BURNED: 'Calorie totali',
-    HealthDataType.STEPS: 'Passi',
-    HealthDataType.SPEED: 'Velocità',
-    HealthDataType.RESTING_HEART_RATE: 'FC a riposo',
-    HealthDataType.HEART_RATE_VARIABILITY_RMSSD: 'Variabilità cardiaca (HRV)',
-    HealthDataType.SLEEP_SESSION: 'Sonno',
+  static Map<HealthDataType, String> get tipi => {
+    HealthDataType.WORKOUT: l10n.sessioniAllenamento,
+    HealthDataType.HEART_RATE: l10n.frequenzaCardiaca,
+    HealthDataType.DISTANCE_DELTA: l10n.distanza,
+    HealthDataType.ACTIVE_ENERGY_BURNED: l10n.calorieAttive,
+    HealthDataType.TOTAL_CALORIES_BURNED: l10n.calorieTotali,
+    HealthDataType.STEPS: l10n.passi,
+    HealthDataType.SPEED: l10n.velocita,
+    HealthDataType.RESTING_HEART_RATE: l10n.fcRiposo,
+    HealthDataType.HEART_RATE_VARIABILITY_RMSSD: l10n.variabilitaCardiacaHrv,
+    HealthDataType.SLEEP_SESSION: l10n.sonno,
   };
 
   static const tipiRecupero = [

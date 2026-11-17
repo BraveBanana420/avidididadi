@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'models.dart';
 import 'tema.dart';
+import 'l10n/lingua.dart';
+import 'l10n/vocabolario.dart';
 
 /// Riserva in fondo alla pagina lo spazio della barra di navigazione del telefono,
 /// così l'ultimo contenuto non resta coperto. Si usa come bottomNavigationBar.
@@ -26,25 +28,25 @@ IconData iconaSport(String sport) {
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return Icons.fitness_center;
+      return Icons.fitness_center_rounded;
     case 'corsa':
-      return Icons.directions_run;
+      return Icons.directions_run_rounded;
     case 'nuoto':
-      return Icons.pool;
+      return Icons.pool_rounded;
     case 'bici':
-      return Icons.directions_bike;
+      return Icons.directions_bike_rounded;
     case 'mobilità':
-      return Icons.self_improvement;
+      return Icons.self_improvement_rounded;
     case 'camminata':
-      return Icons.directions_walk;
+      return Icons.directions_walk_rounded;
     case 'arrampicata':
-      return Icons.terrain;
+      return Icons.terrain_rounded;
     case 'attività libera':
-      return Icons.bolt;
+      return Icons.bolt_rounded;
     case 'riposo':
-      return Icons.bedtime_outlined;
+      return Icons.bedtime_rounded;
     default:
-      return Icons.sports;
+      return Icons.sports_rounded;
   }
 }
 
@@ -98,8 +100,9 @@ class TestoUnaRiga extends StatelessWidget {
 }
 
 // Colori degli sport: standard nei toni del rosso (ben distinti per tinta e
-// luminosità) oppure neon, uguali nel tema chiaro e nello scuro. Fa eccezione
-// la camminata: i suoi colori chiari sul fondo chiaro non si vedrebbero.
+// luminosità) oppure neon. La tinta è la stessa nel tema chiaro e nello scuro,
+// ma dove serve cambia la luminosità: ogni colore deve staccare dal fondo
+// (contrasto di almeno 3), altrimenti icone e pallini non si vedono.
 const _palette = [
   Color(0xFFE57373),
   Color(0xFFFFA270),
@@ -108,29 +111,40 @@ const _palette = [
   Color(0xFFBDBDBD),
 ];
 
+/// Il colore per il fondo in uso: [scuro] sul grafite, [chiaro] sul bianco.
+Color _sulFondo(int scuro, int chiaro) =>
+    Color(temaScuroAttivo ? scuro : chiaro);
+
 Color coloreSport(String sport) {
   final n = neonAttivo;
   switch (sport.toLowerCase()) {
     case 'freeletics':
     case 'forza':
-      return n ? const Color(0xFF9D4DFF) : const Color(0xFF8E8E96);
+      return n ? const Color(0xFF9D4DFF) : _sulFondo(0xFF8E8E96, 0xFF7B7B85);
     case 'corsa':
       return n ? const Color(0xFFFF2E93) : const Color(0xFFFF3B47);
     case 'nuoto':
-      return n ? const Color(0xFF00B2FF) : const Color(0xFFFF8A3D);
+      return n
+          ? _sulFondo(0xFF00B2FF, 0xFF0090DB)
+          : _sulFondo(0xFFFF8A3D, 0xFFE0660A);
     case 'bici':
-      return n ? const Color(0xFF00E0B8) : const Color(0xFFB3123A);
+      return n
+          ? _sulFondo(0xFF00E0B8, 0xFF009C82)
+          : _sulFondo(0xFFCF2450, 0xFFB3123A);
     case 'mobilità':
-      return n ? const Color(0xFFFF7A00) : const Color(0xFFF48FB1);
+      return n
+          ? _sulFondo(0xFFFF7A00, 0xFFE66400)
+          : _sulFondo(0xFFF48FB1, 0xFFDB5C8E);
     case 'camminata':
-      if (!temaScuroAttivo) {
-        return n ? const Color(0xFF5F9400) : const Color(0xFFB87A0F);
-      }
-      return n ? const Color(0xFFC6FF3D) : const Color(0xFFE0A33A);
+      return n
+          ? _sulFondo(0xFFC6FF3D, 0xFF5F9400)
+          : _sulFondo(0xFFE0A33A, 0xFFB87A0F);
     case 'arrampicata':
-      return n ? const Color(0xFFFFE600) : const Color(0xFF4FA3A5);
+      return n
+          ? _sulFondo(0xFFFFE600, 0xFFA38500)
+          : _sulFondo(0xFF4FA3A5, 0xFF3A8C8E);
     case 'attività libera':
-      return const Color(0xFF7C83FD);
+      return _sulFondo(0xFF7C83FD, 0xFF6C73F5);
     case 'riposo':
       return temaScuroAttivo
           ? const Color(0xFF6E6E6E)
@@ -160,10 +174,12 @@ class SessioneCard extends StatelessWidget {
         title: Text(titoloSessione(riga.sport, riga.tipo)),
         subtitle: Text(
           riga.durataMin > 0
-              ? '${riga.fascia}, ${riga.durataMin} min'
-              : riga.fascia,
+              ? l10n.min3(mostra(riga.fascia), riga.durataMin)
+              : mostra(riga.fascia),
         ),
-        trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+        trailing: onTap == null
+            ? null
+            : const Icon(Icons.chevron_right_rounded),
       ),
     );
   }
@@ -180,7 +196,7 @@ class SessioneSvoltaTile extends StatelessWidget {
     final s = sessione;
     final c = coloreSport(s.sport);
     final parti = <String>[
-      // Nome dato dall'app (es. "Pistoia - Fartlek FC") per le sessioni di Health Connect.
+      // Nome dato dall'app (es. "Milano - Fartlek FC") per le sessioni di Health Connect.
       if (s.id.startsWith('hc-') && s.note.isNotEmpty) s.note,
       if (s.durataMin > 0) '${s.durataMin} min',
       if (s.distanzaKm > 0) '${fmtNum(s.distanzaKm)} km',
@@ -194,7 +210,7 @@ class SessioneSvoltaTile extends StatelessWidget {
           backgroundColor: c,
           // La spunta ha il colore del fondo del tema, su ogni sport.
           child: Icon(
-            Icons.check,
+            Icons.check_rounded,
             color: Theme.of(context).colorScheme.surface,
           ),
         ),

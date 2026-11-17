@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 const _mappa = Key('mappa');
 const _testo = Key('testo');
+const _figura = Key('figura');
 
 /// Una colonna alta [h] con pezzi di altezza nota.
 Future<void> _apri(
@@ -12,6 +13,7 @@ Future<void> _apri(
   double numeri = 160,
   double testo = 60,
   bool conMappa = true,
+  bool conFigura = false,
 }) async {
   tester.view.physicalSize = const Size(800, 1000);
   tester.view.devicePixelRatio = 1;
@@ -36,6 +38,9 @@ Future<void> _apri(
                 padding: EdgeInsets.zero,
                 children: [SizedBox(height: testo)],
               ),
+              figura: conFigura
+                  ? const ColoredBox(key: _figura, color: Colors.blue)
+                  : null,
             ),
           ),
         ),
@@ -84,5 +89,29 @@ void main() {
     await _apri(tester, conMappa: false);
     expect(_altezza(tester, _testo), 700 - 20 - 160);
     expect(tester.takeException(), isNull);
+  });
+  testWidgets('senza mappa la figura riempie lo spazio sotto il testo', (
+    tester,
+  ) async {
+    await _apri(tester, conMappa: false, conFigura: true);
+    expect(_altezza(tester, _testo), 60);
+    expect(_altezza(tester, _figura), 700 - 20 - 160 - 60);
+    expect(tester.getTopLeft(find.byKey(_figura)).dy, 20 + 160 + 60);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('con un testo lungo la figura resta visibile e il testo scorre', (
+    tester,
+  ) async {
+    await _apri(tester, conMappa: false, conFigura: true, testo: 2000);
+    expect(_altezza(tester, _figura), altezzaMinimaFigura);
+    expect(tester.getBottomLeft(find.byKey(_figura)).dy, 700);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets("con la mappa la figura non c'è", (tester) async {
+    await _apri(tester, conFigura: true);
+    expect(find.byKey(_figura), findsNothing);
+    expect(_altezza(tester, _mappa), 700 - 20 - 160 - 60);
   });
 }

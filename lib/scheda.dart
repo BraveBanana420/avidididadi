@@ -4,6 +4,7 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'models.dart';
 import 'registro_forza.dart';
+import 'l10n/lingua.dart';
 
 // Scheda scritta a mano, per esempio quella del personal trainer o
 // dell'allenatore: uno o più giorni (Busto, Gambe, Ripetute…) legati ai giorni
@@ -88,7 +89,7 @@ class EsercizioScheda {
         serie > 1 ? '$serie × $quanto' : quanto,
         if (intensita.isNotEmpty) intensita,
         if (obiettivo2.isNotEmpty) obiettivo2,
-        if (recuperoS > 0) 'recupero $recuperoS s',
+        if (recuperoS > 0) l10n.recuperoS(recuperoS),
       ].join(' · ');
     }
     return [

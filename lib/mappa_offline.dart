@@ -6,6 +6,7 @@ import 'package:maplibre_gl/maplibre_gl.dart';
 
 import 'navigazione.dart';
 import 'percorso.dart';
+import 'l10n/lingua.dart';
 
 // La mappa di un percorso da usare senza rete: si scarica una fascia attorno
 // alla traccia (a pezzi, non un rettangolo enorme) nella cache di MapLibre.
@@ -79,7 +80,7 @@ Set<(int, int, int)> riquadriDi(List<Zona> zone, {int min = 10, int max = 14}) {
 String pesoStimato(Traccia t) {
   final n = riquadriDi(zoneDaScaricare(t)).length;
   final mb = (n * byteRiquadro / (1024 * 1024)).ceil();
-  return 'circa ${math.max(1, mb)} MB';
+  return l10n.circaMb(math.max(1, mb));
 }
 
 /// Le mappe offline dei percorsi: cosa c'è già, cosa si sta scaricando.
@@ -167,7 +168,7 @@ class MappeOffline extends ChangeNotifier {
       scaricati = {...scaricati, id};
     } catch (e) {
       debugPrint('Mappa offline di $id: $e');
-      errori[id] = 'Download non riuscito: serve la rete. Riprova più tardi.';
+      errori[id] = l10n.downloadNonRiuscitoServe;
     } finally {
       avanzamento.remove(id);
       notifyListeners();

@@ -1,3 +1,4 @@
+import 'package:allenamenti_app/attivita.dart';
 import 'package:allenamenti_app/attivita_libera.dart';
 import 'package:allenamenti_app/carico.dart';
 import 'package:allenamenti_app/esecuzione.dart';
@@ -61,5 +62,46 @@ void main() {
     expect(combina([app(19, conOrario: false)], [garmin]).map((s) => s.id), [
       'hc-1',
     ]);
+  });
+
+  group('altra attività', () {
+    Sessione libera(String tipo, DateTime data, {String sport = ''}) =>
+        Sessione(
+          id: 'app-$tipo-${data.day}',
+          data: data,
+          sport: sport.isEmpty ? sportAttivitaLibera : sport,
+          tipo: tipo,
+          durataMin: 60,
+        );
+
+    test('i nomi già usati, dal più recente e senza doppioni', () {
+      final nomi = nomiAltreAttivita([
+        libera('Kayak', DateTime(2026, 10, 1)),
+        libera('Padel', DateTime(2026, 10, 20)),
+        libera('kayak', DateTime(2026, 11, 2)),
+        libera(tipoAltraAttivita, DateTime(2026, 11, 3)),
+        libera('Lento', DateTime(2026, 11, 4), sport: 'Corsa'),
+      ]);
+      expect(nomi, ['kayak', 'Padel']);
+    });
+
+    test('il nome scritto si ripulisce', () {
+      expect(pulisciNomeAttivita('  kayak   di mare '), 'Kayak di mare');
+      expect(pulisciNomeAttivita('   '), '');
+    });
+
+    test('forza: nome chiaro, non "Allenamento libero"', () {
+      final forza = attivitaLibere.firstWhere((a) => a.$1 == 'Forza');
+      expect(forza.$2, tipoForzaLibera);
+      expect(forza.$3, 'Forza');
+    });
+
+    test('arrampicata penultima, prima di altra attività', () {
+      final sport = attivitaLibere.map((a) => a.$1).toList();
+      expect(sport.sublist(sport.length - 2), [
+        'Arrampicata',
+        sportAttivitaLibera,
+      ]);
+    });
   });
 }

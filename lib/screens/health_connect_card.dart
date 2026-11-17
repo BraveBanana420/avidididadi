@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:health/health.dart' show HealthDataType;
 
+import '../avviso.dart';
 import '../app_state.dart';
 import '../health_connect.dart';
 import '../sincronizzazione.dart';
 import 'privacy_screen.dart';
+import '../l10n/lingua.dart';
 
 /// Stato di Health Connect letto dal telefono.
 class _Stato {
@@ -43,7 +45,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
     final msg = await widget.state.sincronizzaHc(interattiva: true);
     if (!mounted) return;
     _aggiorna();
-    messenger.showSnackBar(SnackBar(content: Text(msg)));
+    messenger.showSnackBar(avviso(content: Text(msg)));
   }
 
   Future<void> _rivediPermessi(_Stato s) async {
@@ -59,7 +61,13 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
 
   String _quando(DateTime d) {
     String due(int n) => n.toString().padLeft(2, '0');
-    return '${due(d.day)}/${due(d.month)}/${d.year} alle ${due(d.hour)}:${due(d.minute)}';
+    return l10n.alle(
+      due(d.day),
+      due(d.month),
+      d.year,
+      due(d.hour),
+      due(d.minute),
+    );
   }
 
   @override
@@ -88,16 +96,14 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
             const SizedBox(height: 8),
           ];
           if (s == null) {
-            children.add(const Text('Controllo Health Connect…'));
+            children.add(Text(l10n.controlloHealthConnect));
           } else if (s.disponibilita != DisponibilitaHc.disponibile) {
             children.addAll([
               Text(switch (s.disponibilita) {
-                DisponibilitaHc.daAggiornare =>
-                  'Health Connect è installato ma va aggiornato.',
+                DisponibilitaHc.daAggiornare => l10n.healthConnectInstallatoMa,
                 DisponibilitaHc.nonInstallata =>
-                  'Health Connect non è installato. Serve per leggere gli '
-                      'allenamenti di Garmin e Freeletics.',
-                _ => 'Health Connect è disponibile solo su Android.',
+                  l10n.healthConnectNonInstallato2,
+                _ => l10n.healthConnectDisponibileSolo,
               }),
               if (s.disponibilita != DisponibilitaHc.nonSupportata) ...[
                 const SizedBox(height: 8),
@@ -106,11 +112,11 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
                     await state.hc.installa();
                     _aggiorna();
                   },
-                  icon: const Icon(Icons.download),
+                  icon: const Icon(Icons.download_rounded),
                   label: Text(
                     s.disponibilita == DisponibilitaHc.daAggiornare
-                        ? 'Aggiorna Health Connect'
-                        : 'Installa Health Connect',
+                        ? l10n.aggiornaHealthConnect
+                        : l10n.installaHealthConnect,
                   ),
                 ),
               ],
@@ -119,32 +125,30 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
             final collegato = s.permessi[HealthDataType.WORKOUT] == true;
             final fonti = fontiDi(state.sessioniHc);
             children.addAll([
-              Text(
-                collegato
-                    ? 'Collegato'
-                    : 'Non collegato: manca il permesso per le sessioni.',
-              ),
+              Text(collegato ? l10n.collegato : l10n.nonCollegatoMancaPermesso),
               const SizedBox(height: 8),
-              Text('Permessi', style: t.titleSmall),
+              Text(l10n.permessi, style: t.titleSmall),
               for (final e in HealthConnectService.tipi.entries)
                 _riga(e.value, s.permessi[e.key] == true, scheme),
-              _riga('Dati più vecchi di 30 giorni', s.storico, scheme),
+              _riga(l10n.datiPiuVecchi30, s.storico, scheme),
               const SizedBox(height: 8),
               Text(
                 state.infoSync.ultima == null
-                    ? 'Mai sincronizzato.'
-                    : 'Ultima sincronizzazione: ${_quando(state.infoSync.ultima!)}',
+                    ? l10n.maiSincronizzato
+                    : l10n.ultimaSincronizzazione(
+                        _quando(state.infoSync.ultima!),
+                      ),
               ),
-              Text('Sessioni da Health Connect: ${state.sessioniHc.length}'),
+              Text(l10n.sessioniHealthConnect(state.sessioniHc.length)),
               if (fonti.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('Fonti trovate', style: t.titleSmall),
+                Text(l10n.fontiTrovate, style: t.titleSmall),
                 for (final e in fonti.entries)
-                  Text('${e.value.$1}: ${e.value.$2} sessioni  (${e.key})'),
+                  Text(l10n.sessioni(e.value.$1, e.value.$2, e.key)),
               ],
               if (state.infoSync.ignorati.isNotEmpty) ...[
                 const SizedBox(height: 8),
-                Text('Tipi di attività ignorati', style: t.titleSmall),
+                Text(l10n.tipiAttivitaIgnorati, style: t.titleSmall),
                 Text(
                   state.infoSync.ignorati.entries
                       .map((e) => '${e.key} (${e.value})')
@@ -158,13 +162,13 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
                 children: [
                   FilledButton.icon(
                     onPressed: state.sincronizzando ? null : _sincronizza,
-                    icon: const Icon(Icons.sync),
-                    label: const Text('Sincronizza ora'),
+                    icon: const Icon(Icons.sync_rounded),
+                    label: Text(l10n.sincronizzaOra),
                   ),
                   OutlinedButton.icon(
                     onPressed: () => _rivediPermessi(s),
-                    icon: const Icon(Icons.lock_open_outlined),
-                    label: const Text('Rivedi permessi'),
+                    icon: const Icon(Icons.lock_open_rounded),
+                    label: Text(l10n.rivediPermessi),
                   ),
                 ],
               ),
@@ -175,7 +179,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
               onPressed: () => Navigator.of(
                 context,
               ).push(MaterialPageRoute(builder: (_) => const PrivacyScreen())),
-              child: const Text('Privacy e uso dei dati'),
+              child: Text(l10n.privacyUsoDeiDati),
             ),
           );
           return Card(
@@ -195,7 +199,7 @@ class _SezioneHealthConnectState extends State<SezioneHealthConnect> {
   Widget _riga(String nome, bool ok, ColorScheme scheme) => Row(
     children: [
       Icon(
-        ok ? Icons.check_circle : Icons.cancel_outlined,
+        ok ? Icons.check_circle_rounded : Icons.cancel_rounded,
         size: 18,
         color: ok ? scheme.primary : scheme.onSurfaceVariant,
       ),
@@ -212,5 +216,5 @@ Future<void> sincronizzaConMessaggio(
 ) async {
   final messenger = ScaffoldMessenger.of(context);
   final msg = await state.sincronizzaHc();
-  messenger.showSnackBar(SnackBar(content: Text(msg)));
+  messenger.showSnackBar(avviso(content: Text(msg)));
 }

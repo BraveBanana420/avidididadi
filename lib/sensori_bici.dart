@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 import 'sensore_ble.dart';
+import 'l10n/lingua.dart';
 
 // Sensori della bici via Bluetooth, nei tre tipi standard:
 // - velocità e cadenza (CSC), con la circonferenza della ruota;
@@ -215,7 +216,7 @@ class SensoreBici extends SensoreBle {
   SensoreBici()
     : super(
         nomeFile: 'sensore_bici.txt',
-        nomeDiBase: 'Sensore bici',
+        nomeDiBase: l10n.sensoreBici,
         servizi: [servizioRulli, servizioPotenza, servizioCsc],
       );
 

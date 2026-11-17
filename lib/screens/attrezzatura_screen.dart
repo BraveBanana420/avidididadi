@@ -4,6 +4,7 @@ import '../app_state.dart';
 import '../esercizi.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// Scelta dell'attrezzatura disponibile, con i pesi per gli attrezzi che li hanno.
 class AttrezzaturaScreen extends StatelessWidget {
@@ -24,7 +25,7 @@ class AttrezzaturaScreen extends StatelessWidget {
           void salva() {
             final pesi = leggiPesi(c.text);
             if (pesi.isEmpty) {
-              aggiorna(() => errore = 'Scrivi almeno un peso');
+              aggiorna(() => errore = l10n.scriviAlmenoPeso);
               return;
             }
             Navigator.pop(ctx, pesi);
@@ -42,7 +43,7 @@ class AttrezzaturaScreen extends StatelessWidget {
                   autofocus: true,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Pesi disponibili',
+                    labelText: l10n.pesiDisponibili,
                     suffixText: 'kg',
                     helperText: a.aiutoPeso,
                     helperMaxLines: 3,
@@ -54,16 +55,18 @@ class AttrezzaturaScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 // Come sono stati letti i pesi, per accorgersi subito di un errore.
                 Text(
-                  letti.isEmpty ? 'Nessun peso' : 'Letti: ${scriviPesi(letti)}',
+                  letti.isEmpty
+                      ? l10n.nessunPeso
+                      : l10n.letti(scriviPesi(letti)),
                 ),
               ],
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Annulla'),
+                child: Text(l10n.annulla),
               ),
-              FilledButton(onPressed: salva, child: const Text('Salva')),
+              FilledButton(onPressed: salva, child: Text(l10n.salva)),
             ],
           );
         },
@@ -107,7 +110,7 @@ class AttrezzaturaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('La mia attrezzatura')),
+      appBar: AppBar(title: Text(l10n.miaAttrezzatura)),
       body: ListenableBuilder(
         listenable: state,
         builder: (context, _) {
@@ -120,8 +123,10 @@ class AttrezzaturaScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
                 child: Text(
-                  'Il corpo libero è sempre incluso. Con questa attrezzatura puoi fare '
-                  '${fattibili.length} esercizi su ${state.esercizi.length}.',
+                  l10n.corpoLiberoSempreIncluso(
+                    fattibili.length,
+                    state.esercizi.length,
+                  ),
                 ),
               ),
               for (final a in attrezzi) ...[
@@ -132,13 +137,13 @@ class AttrezzaturaScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'In palestra',
+                            l10n.palestra2,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
                         TextButton(
                           onPressed: () => _tutteLeMacchine(context),
-                          child: const Text('Seleziona tutte'),
+                          child: Text(l10n.selezionaTutte),
                         ),
                       ],
                     ),
@@ -161,7 +166,7 @@ class AttrezzaturaScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.edit_outlined, size: 16),
+                              const Icon(Icons.edit_rounded, size: 16),
                             ],
                           ),
                         )

@@ -35,6 +35,59 @@ void main() {
     );
   });
 
+  group('proposta in Oggi', () {
+    test('spento e mai rimandato: si propone subito', () {
+      expect(
+        avvisoBackup(const ImpostazioniBackup(), lunedi),
+        AvvisoBackup.proponi,
+      );
+    });
+
+    test('dopo il primo "Non ora" torna dopo 14 giorni', () {
+      final b = ImpostazioniBackup(rimandato: lunedi, rimandi: 1);
+      expect(
+        avvisoBackup(b, lunedi.add(const Duration(days: 13))),
+        AvvisoBackup.nessuno,
+      );
+      expect(
+        avvisoBackup(b, lunedi.add(const Duration(days: 14))),
+        AvvisoBackup.proponi,
+      );
+    });
+
+    test('dal secondo "Non ora" torna dopo 30 giorni', () {
+      final b = ImpostazioniBackup(rimandato: lunedi, rimandi: 2);
+      expect(
+        avvisoBackup(b, lunedi.add(const Duration(days: 29))),
+        AvvisoBackup.nessuno,
+      );
+      expect(
+        avvisoBackup(b, lunedi.add(const Duration(days: 30))),
+        AvvisoBackup.proponi,
+      );
+    });
+
+    test('acceso: zitto se va, avvisa se non è riuscito', () {
+      final b = ImpostazioniBackup(cartella: 'content://x', ultimo: lunedi);
+      expect(avvisoBackup(b, lunedi), AvvisoBackup.nessuno);
+      expect(
+        avvisoBackup(b.copyWith(errore: 'Non riesco a scrivere'), lunedi),
+        AvvisoBackup.errore,
+      );
+    });
+
+    test('il "Non ora" resta salvato', () {
+      final b = ImpostazioniBackup(rimandato: lunedi, rimandi: 2);
+      final r = ImpostazioniBackup.da(b.toText());
+      expect(r.rimandato, lunedi);
+      expect(r.rimandi, 2);
+      // File vecchi, senza queste righe: mai rimandato.
+      final vecchio = ImpostazioniBackup.da('cartella=\nfrequenza=giorno\n');
+      expect(vecchio.rimandato, isNull);
+      expect(vecchio.rimandi, 0);
+    });
+  });
+
   test('nome del file come il backup a mano', () {
     expect(nomeBackup(lunedi), 'avidididadi_backup_2026-11-02.gz');
   });

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:path_drawing/path_drawing.dart';
 
 import 'muscoli_dati.dart';
+import 'l10n/lingua.dart';
 
 /// Parti del corpo che non sono muscoli: disegnate in grigio.
 const _neutre = {'head', 'hair', 'hands', 'feet'};
@@ -145,12 +146,12 @@ class _Punto {
   const _Punto(this.nome, this.sinistra, this.muscolo, this.frazione);
 }
 
-const _punti = <String, _Punto>{
-  'braccio_cm': _Punto('Braccio', false, 'biceps', Offset(0.5, 0.5)),
-  'petto_cm': _Punto('Petto', true, 'chest', Offset(0.5, 0.45)),
-  'vita_cm': _Punto('Vita', false, 'obliques', Offset(0.5, 0.45)),
-  'fianchi_cm': _Punto('Fianchi', true, 'quadriceps', Offset(0.25, 0.05)),
-  'coscia_cm': _Punto('Coscia', false, 'quadriceps', Offset(0.5, 0.4)),
+Map<String, _Punto> get _punti => <String, _Punto>{
+  'braccio_cm': _Punto(l10n.braccio, false, 'biceps', Offset(0.5, 0.5)),
+  'petto_cm': _Punto(l10n.petto, true, 'chest', Offset(0.5, 0.45)),
+  'vita_cm': _Punto(l10n.vita, false, 'obliques', Offset(0.5, 0.45)),
+  'fianchi_cm': _Punto(l10n.fianchi, true, 'quadriceps', Offset(0.25, 0.05)),
+  'coscia_cm': _Punto(l10n.coscia, false, 'quadriceps', Offset(0.5, 0.4)),
 };
 
 /// Riquadro (in coordinate SVG) della parte di un muscolo che sta

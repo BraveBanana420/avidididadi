@@ -9,6 +9,7 @@ import '../attivita_libera.dart';
 import '../avvisi.dart';
 import '../navigazione.dart';
 import '../calorie.dart';
+import '../contapassi.dart';
 import '../battito.dart';
 import '../animazioni_esercizi.dart';
 import '../dati_live.dart';
@@ -17,6 +18,7 @@ import '../esercizi.dart';
 import '../glossario.dart';
 import '../immagini.dart';
 import '../in_corso.dart';
+import '../intervalli.dart';
 import '../gps.dart';
 import '../models.dart';
 import '../notifica_allenamento.dart';
@@ -34,6 +36,7 @@ import '../sincronizzazione.dart';
 import '../widgets.dart';
 import 'arrampicata_sheet.dart';
 import 'battito_sheet.dart';
+import 'serie_a_mano_screen.dart';
 import 'colonna_dati.dart';
 import 'feedback_sheet.dart';
 import 'grafici_screen.dart';
@@ -44,6 +47,8 @@ import 'percorsi_screen.dart';
 import 'profilo_allenamento.dart';
 import 'vista_bici.dart';
 import 'opzioni_allenamento_screen.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 const _canale = MethodChannel('avidididadi/avvio');
 
@@ -63,6 +68,7 @@ void avviaAllenamento(
   required String nome,
   required List<WorkoutStep> passi,
   bool libera = false,
+  bool conGps = false,
 }) {
   Navigator.of(context).push(
     MaterialPageRoute<void>(
@@ -74,6 +80,7 @@ void avviaAllenamento(
         nome: nome,
         passi: passi,
         libera: libera,
+        conGps: conGps,
       ),
     ),
   );
@@ -95,6 +102,7 @@ void riprendiAllenamento(
         nome: r.nome,
         passi: r.passi,
         libera: r.libera,
+        conGps: r.conGps,
         ripresa: r,
       ),
     ),
@@ -111,6 +119,10 @@ class EsecuzioneScreen extends StatefulWidget {
   final String nome;
   final List<WorkoutStep> passi;
   final bool libera; // fuori dal piano: si aggiunge a quello che c'è
+
+  /// GPS scelto a mano (altra attività, es. kayak): corsa, camminata e bici
+  /// ce l'hanno già.
+  final bool conGps;
   final AllenamentoInCorso? ripresa; // seduta interrotta da riprendere
   const EsecuzioneScreen({
     super.key,
@@ -120,6 +132,7 @@ class EsecuzioneScreen extends StatefulWidget {
     required this.nome,
     required this.passi,
     this.libera = false,
+    this.conGps = false,
     this.ripresa,
   });
 
@@ -183,6 +196,33 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     sesso: widget.state.profilo.sesso,
   );
   final tempi = <int, Duration>{}; // tempo impiegato per ogni blocco
+
+  /// I blocchi com'è andata davvero, in ordine: per il riepilogo diviso in
+  /// sezioni. Dopo una ripresa quelli di prima non ci sono più, e un elenco a
+  /// metà non si salva.
+  final _tratti = <TrattoApp>[];
+  DateTime? _inizioTratto;
+  double _metriInizio = 0;
+  late final bool _trattiCompleti = widget.ripresa == null;
+
+  /// Metri fatti finora: GPS all'aperto, sensore di velocità sui rulli.
+  double get _metriOra =>
+      gps != null && !gps!.percorso.vuoto ? gps!.km * 1000 : _metriSensore;
+
+  /// Chiude il blocco in corso: va chiamata prima di cambiare blocco.
+  void _chiudiTratto() {
+    final inizio = _inizioTratto;
+    if (inizio == null || preparati) return;
+    _tratti.add((
+      blocco: i,
+      inizio: inizio,
+      fine: DateTime.now(),
+      secondi: _tempoBlocco.inSeconds,
+      metri: (_metriOra - _metriInizio).clamp(0, double.infinity).toDouble(),
+    ));
+    _inizioTratto = null;
+  }
+
   Timer? _tic;
   int i = 0;
   bool preparati = true; // conto alla rovescia iniziale
@@ -210,7 +250,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   /// Corsa e bici: il percorso GPS, raccolto mentre l'allenamento è in corso.
   /// Corsa, camminata e bici al chiuso (tapis roulant, rulli): niente GPS,
   /// i km si scrivono alla fine.
-  late final bool _conPercorso = sportConPercorso(widget.sport, widget.tipo);
+  late final bool _conPercorso =
+      sportConPercorso(widget.sport, widget.tipo) || widget.conGps;
+
+  /// Sport con tapis roulant o rulli: solo lì c'è l'interruttore "Al chiuso".
+  late final bool _conAttrezzo = sportConPercorso(widget.sport, widget.tipo);
   late bool _alChiuso = _conPercorso && tipoAlChiuso(widget.tipo);
 
   /// Corsa, bici e camminata si preparano con calma (rullo, percorso, GPS):
@@ -261,11 +305,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   final _serieCadenza = <Campione>[];
   final _serieVelocita = <Campione>[];
 
+  /// Corsa e camminata: i passi dal sensore del telefono, a cronometro acceso.
+  late final bool _siCammina = siCammina(widget.sport);
+  final contaPassi = ContaPassi();
+  late final sensorePassi = SensorePassi(
+    contaPassi,
+    attivo: () => !preparati && !finito && !_inPausa,
+  );
+
   /// Voce: esercizio che inizia, km, ritmo o zona sbagliati.
   final voce = Voce();
   final ritmo = ControlloRitmo();
   final _ritmoCadenza = ControlloRitmo();
   StreamSubscription<int>? _battiti;
+  bool _battitoArrivato = false; // almeno un battito in questa seduta
 
   /// Percorso da seguire (GPX): mappa, curve e fuori percorso a voce.
   PercorsoSalvato? _percorso;
@@ -282,29 +335,45 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     super.initState();
     _schermoAcceso(true);
     caricaAvvisi();
-    permessoNotifiche();
+    final notifiche = permessoNotifiche();
+    Future<void>? gpsAcceso;
     pausaDaNotifica = _pausaDaNotifica;
     sensoreBattito.avvia();
     if (_bici) sensoreBici.avvia();
     _battiti = sensoreBattito.valori.stream.listen((v) {
+      _battitoArrivato = true;
       if (!preparati && !pausa && !finito) fc.aggiungi(v);
     });
     final r = widget.ripresa;
     if (r != null) {
       _ripristina(r);
-      if (gps != null && !finito) _accendiGps();
+      if (gps != null && !finito) gpsAcceso = _accendiGps();
       _notifica();
     } else if (gps == null) {
       blocco.start();
     } else {
       // Il conto alla rovescia parte dopo l'eventuale richiesta del permesso.
-      _accendiGps();
+      gpsAcceso = _accendiGps();
     }
+    if (_siCammina && !finito) _accendiPassi([notifiche, ?gpsAcceso]);
     _caricaPercorso();
     _tic = Timer.periodic(
       const Duration(milliseconds: 200),
       (_) => _aggiorna(),
     );
+  }
+
+  /// Accende il contapassi dopo le altre richieste: Android mostra un
+  /// permesso alla volta.
+  Future<void> _accendiPassi(List<Future<void>> prima) async {
+    for (final f in prima) {
+      try {
+        await f;
+      } catch (_) {}
+    }
+    if (!mounted) return;
+    await sensorePassi.avvia();
+    if (mounted) setState(() {});
   }
 
   /// Il percorso assegnato alla seduta di oggi, o quello che si seguiva
@@ -378,7 +447,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final g = _guida;
     final m = g?.metriMancanti;
     if (g == null || m == null || g.fuori || g.arrivato || m < 300) return '';
-    return ' Mancano ${parlaMetri(m)}.';
+    return l10nVoce.mancano(parlaMetri(m));
   }
 
   /// Prima di partire: al chiuso il GPS si spegne, all'aperto si riaccende.
@@ -441,6 +510,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     potenza.ripristina(r.potenza[0], r.potenza[1], r.potenza[2]);
     cadenza.ripristina(r.cadenza[0], r.cadenza[1], r.cadenza[2]);
     _metriSensore = r.metriSensore;
+    contaPassi.passi = r.passiContati;
     if (gps != null) {
       gps!.filtro.punti.addAll(r.punti);
       gps!.filtro.metri = r.metri;
@@ -459,6 +529,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         tipo: widget.tipo,
         nome: widget.nome,
         libera: widget.libera,
+        conGps: widget.conGps,
         passi: widget.passi,
         indice: i,
         finito: finito,
@@ -481,6 +552,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         potenza: potenza.comeLista,
         cadenza: cadenza.comeLista,
         metriSensore: _metriSensore,
+        passiContati: contaPassi.passi,
         idPercorso: _percorso?.id ?? '',
         progressoPercorso: _guida?.progresso,
       ),
@@ -518,6 +590,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           bpm: bpm,
           zona: bpm == null ? 0 : _zone.zonaDi(bpm),
           watt: _bici ? sensoreBici.potenza : null,
+          passi: contaPassi.passi,
         ),
         ?testoGuida(_guida),
       ].where((x) => x.isNotEmpty).join(' · '),
@@ -578,6 +651,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       _bici &&
       sensoreBici.stato == StatoSensore.collegato &&
       (sensoreBici.cadenza != null || _serieCadenza.isNotEmpty);
+
+  /// Il battito si vede solo con la fascia collegata e dopo il primo valore:
+  /// un sensore ricordato ma spento non lascia un riquadro vuoto.
+  bool get _conBattito =>
+      sensoreBattito.stato == StatoSensore.collegato &&
+      (sensoreBattito.bpm != null || _battitoArrivato);
 
   /// La potenza degli ultimi 3 secondi: quella istantanea salta troppo.
   int? get _watt =>
@@ -652,6 +731,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (pausaDaNotifica == _pausaDaNotifica) pausaDaNotifica = null;
     togliNotifica();
     sensoreBattito.ferma();
+    sensorePassi.ferma();
     if (_bici) sensoreBici.libera().whenComplete(sensoreBici.ferma);
     _schermoAcceso(false);
     gps?.dispose();
@@ -735,7 +815,148 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     setState(() {});
   }
 
+  /// I numeri della seduta. [grande]: corsa e camminata uno per riga,
+  /// con i numeri grandi (solo se ci stanno: vedi [GrandeSeCiSta]).
+  Widget _numeri(BuildContext context, {required bool grande}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ListenableBuilder(
+            listenable: Listenable.merge([sensoreBattito, sensoreBici]),
+            builder: (_, _) {
+              final bici = _bici && sensoreBici.ricordato;
+              return Column(
+                spacing: 8,
+                children: [
+                  const SizedBox.shrink(),
+                  if (gps != null)
+                    _GrigliaLive(
+                      sport: widget.sport,
+                      gps: gps!,
+                      tempo: _tempoMedia,
+                      ultimo: giri!.giri.lastOrNull,
+                      zone: _zone,
+                      // Pagina dei soli dati: numeri grandi, da leggere con un colpo
+                      // d'occhio, se ci stanno.
+                      grande: grande,
+                    )
+                  else if (bici)
+                    // Rulli: velocità e km dal sensore.
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.velocita,
+                            valore: fmtVelocita(
+                              widget.sport,
+                              sensoreBici.velocita,
+                            ),
+                            unita: 'km/h',
+                          ),
+                        ),
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.distanza,
+                            valore: (_metriSensore / 1000)
+                                .toStringAsFixed(2)
+                                .replaceAll('.', ','),
+                            unita: 'km',
+                          ),
+                        ),
+                      ],
+                    ),
+                  // Solo i dati che arrivano davvero: un
+                  // rullo ricordato ma lontano non conta.
+                  if (_conWatt || _conCadenza)
+                    Row(
+                      spacing: 8,
+                      children: [
+                        if (_conWatt)
+                          Expanded(
+                            child: _DatoPotenza(
+                              watt: _watt,
+                              zone: _zonePotenza,
+                              obiettivo: _rangeBlocco,
+                              onTap: () => mostraSensoreBici(context),
+                            ),
+                          ),
+                        if (_conCadenza)
+                          Expanded(
+                            child: _Dato(
+                              etichetta: l10n.cadenza,
+                              valore:
+                                  sensoreBici.cadenza?.round().toString() ??
+                                  '–',
+                              unita: 'rpm',
+                              onTap: () => mostraSensoreBici(context),
+                            ),
+                          ),
+                      ],
+                    ),
+                  if (sensorePassi.disponibile)
+                    Row(
+                      spacing: 8,
+                      children: [
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.passi,
+                            valore: fmtPassi(contaPassi.passi),
+                            unita: '',
+                          ),
+                        ),
+                        Expanded(
+                          child: _Dato(
+                            etichetta: l10n.passiAlMinuto,
+                            valore:
+                                contaPassi
+                                    .cadenza(DateTime.now())
+                                    ?.toString() ??
+                                '–',
+                            unita: '',
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (gps == null && _conBattito) _DatoBattito(zone: _zone),
+                  if (bici && sensoreBici.comandabile)
+                    ControlloErg(
+                      acceso: _ergAcceso,
+                      watt: _ergAcceso ? _wattErg : null,
+                      scala: _ergScala,
+                      cambia: (acceso) => setState(() {
+                        _ergAcceso = acceso;
+                        _comandaRullo();
+                      }),
+                      scalaCambia: (s) => setState(() {
+                        _ergScala = s;
+                        _comandaRullo();
+                      }),
+                    ),
+                ],
+              );
+            },
+          ),
+          if (_barre case final barre?) ...[
+            const SizedBox(height: 8),
+            DiagrammaInCorso(
+              barre: barre,
+              zone: _zonePotenza!,
+              corrente: i,
+              trascorso: _tempoBlocco.inSeconds,
+              durata: _durata,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   void _nuovoBlocco({required bool aMano}) {
+    _inizioTratto = DateTime.now();
+    _metriInizio = _metriOra;
     blocco
       ..reset()
       ..start();
@@ -817,6 +1038,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
       return;
     }
     tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+    _chiudiTratto();
     if (i >= blocchi.length - 1) {
       _fine(aMano: !daTimer);
       return;
@@ -841,7 +1063,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         );
       }
     }
-    final zona = zonaObiettivo(b.intensita);
+    // In bici senza watt (all'aperto senza misuratore) i passi in % dell'FTP
+    // o in watt si seguono col battito della zona che gli corrisponde.
+    final zonaScritta = zonaObiettivo(b.intensita);
+    final zona =
+        zonaScritta ??
+        (_bici ? zonaBattitoDi(b.intensita, _zonePotenza) : null);
     final r = _rangeBlocco;
     final w = _watt;
     if (r != null && w != null && _zonePotenza != null) {
@@ -859,7 +1086,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final bpm = sensoreBattito.bpm;
     if (zona != null && bpm != null) {
       final n = _zone.zonaDi(bpm);
-      final verso = versoZona(n, zona);
+      var verso = versoZona(n, zona);
+      // Zona ricavata dai watt: all'inizio del passo il battito deve ancora
+      // salire, non è il momento di dire "spingi di più".
+      if (zonaScritta == null && verso < 0 && _tempoBlocco < ritardoBattito) {
+        verso = 0;
+      }
       if (ritmo.controlla(verso, ora)) {
         voce.di(fraseZona(n, verso), valida: const Duration(seconds: 20));
       }
@@ -890,6 +1122,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
 
   void _indietro() {
     if (preparati || i == 0) return;
+    _chiudiTratto();
     setState(() {
       i--;
       _nuovoBlocco(aMano: true);
@@ -921,11 +1154,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     if (_pausaAuto) {
       totale.stop();
       blocco.stop();
-      voce.di('In pausa.', valida: const Duration(seconds: 10));
+      voce.di(l10nVoce.pausa3, valida: const Duration(seconds: 10));
     } else {
       totale.start();
       blocco.start();
-      voce.di('Si riparte.', valida: const Duration(seconds: 10));
+      voce.di(l10nVoce.siRiparte, valida: const Duration(seconds: 10));
     }
     avviso();
     _salvaInCorso();
@@ -979,6 +1212,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   void _fine({bool aMano = true}) {
     totale.stop();
     blocco.stop();
+    sensorePassi.ferma();
     if (_bici) sensoreBici.libera();
     // Spento il GPS se ne va anche la sua notifica; poi si toglie la nostra.
     (gps?.ferma() ?? Future<void>.value()).then((_) => togliNotifica());
@@ -991,8 +1225,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           .replaceAll('.', ',');
     }
     voce.di(
-      'Allenamento completato. ${parlaDurata(_tempoTotale)}'
-      '${gps == null || gps!.km < 0.05 ? '' : ', ${gps!.km.toStringAsFixed(1).replaceAll('.', ',')} chilometri'}.',
+      l10nVoce.allenamentoCompletato(
+        parlaDurata(_tempoTotale),
+        gps == null || gps!.km < 0.05
+            ? ''
+            : l10nVoce.chilometri(decimaleVoce(gps!.km, 1)),
+      ),
       urgente: aMano,
     );
     setState(() => finito = true);
@@ -1004,28 +1242,27 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
     final r = await showDialog<String>(
       context: context,
       builder: (c) => AlertDialog(
-        title: const Text("Interrompere l'allenamento?"),
-        content: const Text(
-          'Puoi terminarlo qui e vedere il riepilogo, oppure uscire senza salvare.',
-        ),
+        title: Text(l10n.interrompereAllenamento),
+        content: Text(l10n.puoiTerminarloQuiVedere),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(c, 'esci'),
-            child: const Text('Esci'),
+            child: Text(l10n.esci),
           ),
           TextButton(
             onPressed: () => Navigator.pop(c, 'termina'),
-            child: const Text('Termina qui'),
+            child: Text(l10n.terminaQui),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(c),
-            child: const Text('Continua'),
+            child: Text(l10n.continua),
           ),
         ],
       ),
     );
     if (r == 'termina') {
       tempi[i] = (tempi[i] ?? Duration.zero) + _tempoBlocco;
+      _chiudiTratto();
       _fine();
     }
     if (r == 'esci') await cancellaInCorso();
@@ -1101,10 +1338,30 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         fcMax: fc.massimo,
         potenzaMedia: potenza.media,
         cadenzaMedia: cadenza.media,
+        passi: contaPassi.passi,
         fonte: fonteApp,
         note: widget.nome,
       );
       await widget.state.registraSvolta(fatta);
+      // I blocchi uno per uno: nel riepilogo, divisi in sezioni come la seduta
+      // prevista. L'attività libera ha un blocco solo: non servono.
+      if (_trattiCompleti && !widget.libera) {
+        await widget.state.salvaIntervalliApp(
+          id,
+          intervalliDaTratti(
+            blocchi,
+            _tratti,
+            fc: _serieFc,
+            potenza: _seriePotenza,
+            // Bici: i watt da tenere di ogni blocco, per il riepilogo.
+            zone: _bici ? _zonePotenza : null,
+          ),
+        );
+      }
+      // I watt migliori servono alla stima dell'FTP (e al risultato dei test).
+      if (_seriePotenza.isNotEmpty) {
+        await widget.state.registraPotenza(fatta, _seriePotenza);
+      }
       if (_alChiuso) {
         await widget.state.ritoccaSessione(RitoccoSessione(id, alChiuso: true));
       }
@@ -1118,6 +1375,16 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           MaterialPageRoute<void>(
             builder: (_) =>
                 ModificaSessioneScreen(state: widget.state, sessione: fatta),
+          ),
+        );
+      }
+      // Forza libera: un passo solo, senza esercizi da segnare durante. Alla
+      // fine si scrivono quelli fatti, con serie e kg.
+      if (widget.libera && stessoSport(widget.sport, 'Forza') && mounted) {
+        await cancellaInCorso();
+        await navigator.push(
+          MaterialPageRoute<void>(
+            builder: (_) => SerieAManoScreen(state: widget.state, giorno: oggi),
           ),
         );
       }
@@ -1146,7 +1413,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         body: SfondoPulse(
           child: SafeArea(
             child: blocchi.isEmpty
-                ? const Center(child: Text('Questo allenamento non ha passi.'))
+                ? Center(child: Text(l10n.questoAllenamentoNonHa))
                 : finito
                 ? _riepilogo(context)
                 : _esecuzione(context),
@@ -1208,6 +1475,17 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
   }) {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
+    // Senza dati dei sensori sotto resterebbe solo spazio vuoto: il movimento
+    // lo riempie, in grande. Con un sensore torna piccolo accanto al nome.
+    final figuraGrande =
+        !_senzaTesto &&
+        _conAnteprima(esercizio) &&
+        gps == null &&
+        !_conBattito &&
+        !(_bici && sensoreBici.ricordato) &&
+        !_conWatt &&
+        !_conCadenza &&
+        _barre == null;
     return Column(
       children: [
         // In alto: chiudi, tempo totale, pausa.
@@ -1216,12 +1494,12 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           child: Row(
             children: [
               IconButton(
-                tooltip: 'Chiudi',
+                tooltip: l10n.chiudi,
                 onPressed: () async {
                   final navigator = Navigator.of(context);
                   if (await _confermaUscita()) navigator.pop();
                 },
-                icon: const Icon(Icons.close),
+                icon: const Icon(Icons.close_rounded),
               ),
               Expanded(
                 child: Column(
@@ -1232,49 +1510,58 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
-                    Text('tempo totale', style: t.labelSmall),
+                    Text(l10n.tempoTotale, style: t.labelSmall),
                   ],
                 ),
               ),
-              if (_bici)
+              // In modo semplice i sensori restano nascosti (Profilo →
+              // Funzioni avanzate), a meno che uno sia già collegato.
+              if (_bici &&
+                  (widget.state.profilo.modoAvanzato ||
+                      sensoreBici.stato == StatoSensore.collegato))
                 ListenableBuilder(
                   listenable: sensoreBici,
                   builder: (_, _) => IconButton(
-                    tooltip: 'Sensori della bici',
+                    tooltip: l10n.sensoriBici,
                     onPressed: () => mostraSensoreBici(context),
                     icon: Icon(
                       sensoreBici.stato == StatoSensore.collegato
-                          ? Icons.pedal_bike
+                          ? Icons.pedal_bike_rounded
                           : Icons.pedal_bike_outlined,
                     ),
                   ),
                 ),
-              ListenableBuilder(
-                listenable: sensoreBattito,
-                builder: (_, _) => IconButton(
-                  tooltip: 'Battito dal sensore',
-                  onPressed: () => mostraBattito(context),
-                  icon: Icon(
-                    sensoreBattito.stato == StatoSensore.collegato
-                        ? Icons.favorite
-                        : Icons.favorite_border,
+              if (widget.state.profilo.modoAvanzato ||
+                  sensoreBattito.stato == StatoSensore.collegato)
+                ListenableBuilder(
+                  listenable: sensoreBattito,
+                  builder: (_, _) => IconButton(
+                    tooltip: l10n.battitoDalSensore,
+                    onPressed: () => mostraBattito(context),
+                    icon: Icon(
+                      sensoreBattito.stato == StatoSensore.collegato
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                    ),
                   ),
                 ),
-              ),
               IconButton(
-                tooltip: 'Bip e vibrazione',
+                tooltip: l10n.bipVibrazione,
                 onPressed: _apriOpzioni,
                 icon: ValueListenableBuilder(
                   valueListenable: bipAttivo,
-                  builder: (_, bip, _) =>
-                      Icon(bip ? Icons.volume_up : Icons.volume_off),
+                  builder: (_, bip, _) => Icon(
+                    bip ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                  ),
                 ),
               ),
               if (!_aspettaIlVia)
                 IconButton(
-                  tooltip: pausa ? 'Riprendi' : 'Pausa',
+                  tooltip: pausa ? l10n.riprendi : l10n.pausa2,
                   onPressed: _pausa,
-                  icon: Icon(pausa ? Icons.play_arrow : Icons.pause),
+                  icon: Icon(
+                    pausa ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                  ),
                 ),
             ],
           ),
@@ -1347,123 +1634,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             ),
                           )
                         : null,
-                    numeri: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListenableBuilder(
-                              listenable: Listenable.merge([
-                                sensoreBattito,
-                                sensoreBici,
-                              ]),
-                              builder: (_, _) {
-                                final bici = _bici && sensoreBici.ricordato;
-                                return Column(
-                                  spacing: 8,
-                                  children: [
-                                    const SizedBox.shrink(),
-                                    if (gps != null)
-                                      _GrigliaLive(
-                                        sport: widget.sport,
-                                        gps: gps!,
-                                        tempo: _tempoMedia,
-                                        ultimo: giri!.giri.lastOrNull,
-                                        zone: _zone,
-                                      )
-                                    else if (bici)
-                                      // Rulli: velocità e km dal sensore.
-                                      Row(
-                                        spacing: 8,
-                                        children: [
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: 'Velocità',
-                                              valore: fmtVelocita(
-                                                widget.sport,
-                                                sensoreBici.velocita,
-                                              ),
-                                              unita: 'km/h',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: _Dato(
-                                              etichetta: 'Distanza',
-                                              valore: (_metriSensore / 1000)
-                                                  .toStringAsFixed(2)
-                                                  .replaceAll('.', ','),
-                                              unita: 'km',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    // Solo i dati che arrivano davvero: un
-                                    // rullo ricordato ma lontano non conta.
-                                    if (_conWatt || _conCadenza)
-                                      Row(
-                                        spacing: 8,
-                                        children: [
-                                          if (_conWatt)
-                                            Expanded(
-                                              child: _DatoPotenza(
-                                                watt: _watt,
-                                                zone: _zonePotenza,
-                                                obiettivo: _rangeBlocco,
-                                                onTap: () =>
-                                                    mostraSensoreBici(context),
-                                              ),
-                                            ),
-                                          if (_conCadenza)
-                                            Expanded(
-                                              child: _Dato(
-                                                etichetta: 'Cadenza',
-                                                valore:
-                                                    sensoreBici.cadenza
-                                                        ?.round()
-                                                        .toString() ??
-                                                    '–',
-                                                unita: 'rpm',
-                                                onTap: () =>
-                                                    mostraSensoreBici(context),
-                                              ),
-                                            ),
-                                        ],
-                                      ),
-                                    if (gps == null && sensoreBattito.ricordato)
-                                      _DatoBattito(zone: _zone),
-                                    if (bici && sensoreBici.comandabile)
-                                      ControlloErg(
-                                        acceso: _ergAcceso,
-                                        watt: _ergAcceso ? _wattErg : null,
-                                        scala: _ergScala,
-                                        cambia: (acceso) => setState(() {
-                                          _ergAcceso = acceso;
-                                          _comandaRullo();
-                                        }),
-                                        scalaCambia: (s) => setState(() {
-                                          _ergScala = s;
-                                          _comandaRullo();
-                                        }),
-                                      ),
-                                  ],
-                                );
-                              },
+                    // Attività libera all'aperto con le pagine: numeri
+                    // grandi finché ci stanno, poi la griglia.
+                    numeri:
+                        gps != null &&
+                            _senzaTesto &&
+                            vistaMappa.value == VistaMappa.pagine
+                        ? GrandeSeCiSta(
+                            grande: _numeri(context, grande: true),
+                            compatto: SingleChildScrollView(
+                              child: _numeri(context, grande: false),
                             ),
-                            if (_barre case final barre?) ...[
-                              const SizedBox(height: 8),
-                              DiagrammaInCorso(
-                                barre: barre,
-                                zone: _zonePotenza!,
-                                corrente: i,
-                                trascorso: _tempoBlocco.inSeconds,
-                                durata: _durata,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
+                          )
+                        : SingleChildScrollView(
+                            child: _numeri(context, grande: false),
+                          ),
                     testo: ListView(
                       shrinkWrap: true,
                       padding: _senzaTesto && _tempoPiatto
@@ -1472,65 +1657,96 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                       children: [
                         if (_senzaTesto)
                           const SizedBox.shrink()
-                        else if (recupero) ...[
-                          Text('Recupero', style: t.titleMedium),
-                          if (b.note.isNotEmpty)
-                            Text(b.note, style: t.bodySmall),
-                        ] else ...[
-                          // A sinistra l'anteprima del movimento, se c'è.
-                          Row(
-                            children: [
-                              if (_conAnteprima(esercizio)) ...[
-                                _AnteprimaEsercizio(
-                                  esercizio: esercizio!,
-                                  larghezza: 112,
-                                ),
-                                const SizedBox(width: 14),
+                        else if (recupero)
+                          EntrataMorbida(
+                            key: ValueKey(i),
+                            da: const Offset(24, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(l10n.parolaRecupero, style: t.titleMedium),
+                                if (b.note.isNotEmpty)
+                                  Text(mostraTesto(b.note), style: t.bodySmall),
                               ],
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          )
+                        else ...[
+                          // Passando da un esercizio all'altro il testo nuovo
+                          // entra da destra, senza scatti.
+                          EntrataMorbida(
+                            key: ValueKey(i),
+                            da: const Offset(24, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // A sinistra l'anteprima del movimento, se c'è.
+                                Row(
                                   children: [
-                                    // Solo il nome, piccolo: titolo e durata
-                                    // della seduta sono già stati scelti.
-                                    TestoUnaRiga(b.titolo, style: t.titleSmall),
-                                    if (dettaglioBreve(b).isNotEmpty)
-                                      Text(
-                                        dettaglioBreve(b),
-                                        style: t.bodySmall,
+                                    if (_conAnteprima(esercizio) &&
+                                        !figuraGrande) ...[
+                                      _AnteprimaEsercizio(
+                                        esercizio: esercizio!,
+                                        larghezza: 112,
                                       ),
+                                      const SizedBox(width: 14),
+                                    ],
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Solo il nome, piccolo: titolo e durata
+                                          // della seduta sono già stati scelti.
+                                          TestoUnaRiga(
+                                            mostra(b.titolo),
+                                            style: t.titleSmall,
+                                          ),
+                                          if (dettaglioBreve(b).isNotEmpty)
+                                            Text(
+                                              dettaglioBreve(b),
+                                              style: t.bodySmall,
+                                            ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ],
+                                if (b.intensita.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      intensitaCon(
+                                        mostraTesto(b.intensita),
+                                        widget.sport,
+                                        _zonePotenza,
+                                        _zone,
+                                      ),
+                                      style: t.bodyMedium,
+                                    ),
+                                  ),
+                                if (b.obiettivo2.isNotEmpty)
+                                  Text(
+                                    mostraTesto(b.obiettivo2),
+                                    style: t.bodyMedium,
+                                  ),
+                                if (sensazioneDi(b.intensita) != null)
+                                  Text(
+                                    sensazioneDi(b.intensita)!,
+                                    style: t.bodySmall?.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                if (b.note.isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      mostraTesto(b.note),
+                                      style: t.bodySmall,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                          if (b.intensita.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                intensitaCon(
-                                  b.intensita,
-                                  widget.sport,
-                                  _zonePotenza,
-                                  _zone,
-                                ),
-                                style: t.bodyMedium,
-                              ),
-                            ),
-                          if (b.obiettivo2.isNotEmpty)
-                            Text(b.obiettivo2, style: t.bodyMedium),
-                          if (sensazioneDi(b.intensita) != null)
-                            Text(
-                              sensazioneDi(b.intensita)!,
-                              style: t.bodySmall?.copyWith(
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          if (b.note.isNotEmpty)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(b.note, style: t.bodySmall),
-                            ),
                           if (_daRegistrare(i)) ...[
                             const SizedBox(height: 16),
                             RegistroSerie(
@@ -1575,7 +1791,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                   )
                                 else
                                   const IconaQuadrata(
-                                    Icons.skip_next,
+                                    Icons.skip_next_rounded,
                                     evidenza: true,
                                   ),
                                 const SizedBox(width: 14),
@@ -1584,9 +1800,9 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('Poi', style: t.bodySmall),
+                                      Text(l10n.poi, style: t.bodySmall),
                                       TestoUnaRiga(
-                                        prossimo.titolo,
+                                        mostra(prossimo.titolo),
                                         style: t.titleMedium,
                                       ),
                                       if (prossimo.dettaglio.isNotEmpty)
@@ -1603,6 +1819,22 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                         ],
                       ],
                     ),
+                    figura: figuraGrande
+                        ? Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
+                            // L'immagine tiene le sue proporzioni e si allarga
+                            // fin dove c'è posto.
+                            child: Center(
+                              child: EntrataMorbida(
+                                key: ValueKey(i),
+                                da: const Offset(24, 0),
+                                child: _AnteprimaEsercizio(
+                                  esercizio: esercizio!,
+                                ),
+                              ),
+                            ),
+                          )
+                        : null,
                   ),
                 ),
         ),
@@ -1627,10 +1859,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             children: [
               if (!_aspettaIlVia) ...[
                 IconButton.filledTonal(
-                  tooltip: 'Esercizio precedente',
+                  tooltip: l10n.esercizioPrecedente,
                   iconSize: 28,
                   onPressed: preparati || i == 0 ? null : _indietro,
-                  icon: const Icon(Icons.skip_previous),
+                  icon: const Icon(Icons.skip_previous_rounded),
                 ),
                 const SizedBox(width: 12),
               ],
@@ -1639,27 +1871,27 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   altezza: 64,
                   onPressed: pausa ? null : _avanti,
                   icona: preparati
-                      ? Icons.play_arrow
+                      ? Icons.play_arrow_rounded
                       : recupero
-                      ? Icons.fast_forward
+                      ? Icons.fast_forward_rounded
                       : b.aTempo
-                      ? Icons.skip_next
-                      : Icons.check,
+                      ? Icons.skip_next_rounded
+                      : Icons.check_rounded,
                   testo: _aspettaIlVia
-                      ? 'Inizia'
+                      ? l10n.inizia2
                       : preparati
-                      ? 'Inizia subito'
+                      ? l10n.iniziaSubito
                       : recupero
-                      ? 'Salta recupero'
+                      ? l10n.saltaRecupero
                       : b.aTempo
-                      ? 'Avanti'
-                      : 'Fatto',
+                      ? l10n.avanti
+                      : l10n.fatto,
                 ),
               ),
               if (!_aspettaIlVia) ...[
                 const SizedBox(width: 12),
                 IconButton.filledTonal(
-                  tooltip: recupero ? '15 secondi in più' : 'Salta',
+                  tooltip: recupero ? l10n.n15SecondiPiu : l10n.salta,
                   iconSize: 28,
                   onPressed: pausa
                       ? null
@@ -1674,7 +1906,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             color: scheme.onSecondaryContainer,
                           ),
                         )
-                      : const Icon(Icons.skip_next),
+                      : const Icon(Icons.skip_next_rounded),
                 ),
               ],
             ],
@@ -1698,20 +1930,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                _aspettaIlVia ? 'Parti quando vuoi' : 'Preparati',
+                _aspettaIlVia ? l10n.partiQuandoVuoi : l10n.preparati,
                 style: t.headlineMedium,
               ),
               const SizedBox(height: 4),
               TestoUnaRiga(
                 widget.libera
-                    ? widget.nome
-                    : '${widget.nome} · $nPassi esercizi',
+                    ? mostra(widget.nome)
+                    : l10n.esercizi2(mostra(widget.nome), nPassi),
                 style: t.bodySmall,
                 textAlign: TextAlign.center,
               ),
               if (prossimo != null)
                 TestoUnaRiga(
-                  'Si parte con: ${prossimo.titolo}',
+                  l10n.siParte(mostra(prossimo.titolo)),
                   style: t.titleMedium,
                   textAlign: TextAlign.center,
                 ),
@@ -1741,23 +1973,21 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ),
               ],
               const SizedBox(height: 24),
-              if (_conPercorso)
+              if (_conAttrezzo)
                 Material(
                   type: MaterialType.transparency,
                   child: SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     secondary: Icon(
                       stessoSport(widget.sport, 'Bici')
-                          ? Icons.pedal_bike
-                          : Icons.directions_run,
+                          ? Icons.pedal_bike_rounded
+                          : Icons.directions_run_rounded,
                     ),
-                    title: Text(
-                      'Al chiuso (${attrezzoAlChiuso(widget.sport)})',
-                    ),
+                    title: Text(l10n.indoor2(attrezzoAlChiuso(widget.sport))),
                     subtitle: Text(
                       _bici && sensoreBici.rulloInUso
-                          ? 'Senza GPS: velocità e km arrivano dal rullo.'
-                          : 'Senza GPS: alla fine scrivi i km del display.',
+                          ? l10n.senzaGpsVelocitaKm
+                          : l10n.senzaGpsAllaFine,
                     ),
                     value: _alChiuso,
                     onChanged: (chiuso) {
@@ -1771,20 +2001,19 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                   type: MaterialType.transparency,
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.route),
-                    title: Text(_percorso?.nome ?? 'Segui un percorso'),
+                    leading: const Icon(Icons.route_rounded),
+                    title: Text(_percorso?.nome ?? l10n.seguiPercorso),
                     subtitle: Text(
                       _percorso == null
-                          ? 'Facoltativo: un GPX con mappa e indicazioni '
-                                'a voce'
+                          ? l10n.facoltativoGpxMappaIndicazioni
                           : descriviPercorso(_percorso!),
                     ),
                     trailing: _percorso == null
-                        ? const Icon(Icons.chevron_right)
+                        ? const Icon(Icons.chevron_right_rounded)
                         : IconButton(
-                            tooltip: 'Togli il percorso',
+                            tooltip: l10n.togliPercorso,
                             onPressed: () => _usaPercorso(null),
-                            icon: const Icon(Icons.close),
+                            icon: const Icon(Icons.close_rounded),
                           ),
                     onTap: _scegliPercorso,
                   ),
@@ -1815,25 +2044,33 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: Icon(
-                    rullo ? Icons.pedal_bike : Icons.pedal_bike_outlined,
+                    rullo
+                        ? Icons.pedal_bike_rounded
+                        : Icons.pedal_bike_outlined,
                   ),
-                  title: Text(_alChiuso ? 'Rullo e sensori' : 'Sensori bici'),
+                  title: Text(
+                    _alChiuso ? l10n.rulloSensori : l10n.sensoriBici2,
+                  ),
                   subtitle: Text(
                     sensoreBici.daCalibrare
-                        ? 'Collegato · è ora di calibrarlo'
+                        ? l10n.collegatoOraCalibrarlo
                         : rullo
-                        ? 'Collegato'
-                        : 'Tocca per collegare',
+                        ? l10n.collegato
+                        : l10n.toccaCollegare,
                   ),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => mostraSensoreBici(context),
                 ),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(battito ? Icons.favorite : Icons.favorite_border),
-                title: const Text('Battito'),
-                subtitle: Text(battito ? 'Collegato' : 'Tocca per collegare'),
-                trailing: const Icon(Icons.chevron_right),
+                leading: Icon(
+                  battito
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                ),
+                title: Text(l10n.battito),
+                subtitle: Text(battito ? l10n.collegato : l10n.toccaCollegare),
+                trailing: const Icon(Icons.chevron_right_rounded),
                 onTap: () => mostraBattito(context),
               ),
             ],
@@ -1860,7 +2097,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           velocita: fmtVelocita(widget.sport, sensoreBici.velocita),
           km: (_metriSensore / 1000).toStringAsFixed(2).replaceAll('.', ','),
           sensoriRicordati: sensoreBici.ricordato,
-          titolo: recupero ? 'Recupero' : b.titolo,
+          titolo: recupero ? l10n.parolaRecupero : mostra(b.titolo),
           dettaglio: dettaglioBreve(b),
           intensita: intensitaCon(
             b.intensita,
@@ -1868,7 +2105,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             _zonePotenza,
             _zone,
           ),
-          note: b.note,
+          note: mostraTesto(b.note),
           range: _rangeBlocco,
           obiettivo2: recupero ? '' : b.obiettivo2,
           versoSecondario: recupero ? 0 : _versoCadenza,
@@ -1998,7 +2235,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     children: [
                       Expanded(
                         child: TestoUnaRiga(
-                          recupero ? 'Recupero' : b.titolo,
+                          recupero ? l10n.parolaRecupero : mostra(b.titolo),
                           style: t.titleSmall,
                         ),
                       ),
@@ -2063,7 +2300,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             dimensione: 120,
             spessore: 10,
             child: Icon(
-              Icons.emoji_events_outlined,
+              Icons.emoji_events_rounded,
               size: 52,
               color: scheme.onSurface,
             ),
@@ -2071,7 +2308,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ),
         const SizedBox(height: 16),
         Text(
-          'Allenamento completato!',
+          l10n.allenamentoCompletato2,
           style: t.headlineMedium,
           textAlign: TextAlign.center,
         ),
@@ -2079,7 +2316,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         Text(
           widget.libera
               ? fmtTimer(_tempoTotale)
-              : '${fmtTimer(_tempoTotale)} · ${perPasso.length} esercizi',
+              : '${fmtTimer(_tempoTotale)} · ${quantiEsercizi(perPasso.length)}',
           style: t.titleLarge,
           textAlign: TextAlign.center,
         ),
@@ -2106,8 +2343,10 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           // Tutti e due i tempi, qualunque media si sia scelta.
           if (_soste + _fermo > const Duration(seconds: 30))
             Text(
-              'In movimento ${fmtTimer(_tempoTotale - _fermo)} · '
-              'totale ${fmtTimer(_tempoTotale + _soste)}',
+              l10n.movimentoTotale(
+                fmtTimer(_tempoTotale - _fermo),
+                fmtTimer(_tempoTotale + _soste),
+              ),
               style: t.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -2115,7 +2354,20 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         if (fc.massimo > 0) ...[
           const SizedBox(height: 8),
           Text(
-            'Battito medio ${fc.media} bpm · massimo ${fc.massimo}',
+            l10n.battitoMedioBpmMassimo(fc.media, fc.massimo),
+            style: t.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+        ],
+        if (contaPassi.passi > 0) ...[
+          const SizedBox(height: 8),
+          Text(
+            [
+              l10n.quantiPassi(fmtPassi(contaPassi.passi)),
+              if (mediaPassiAlMinuto(contaPassi.passi, _tempoTotale)
+                  case final c?)
+                '$c ${l10n.alMinuto}',
+            ].join(' · '),
             style: t.titleMedium,
             textAlign: TextAlign.center,
           ),
@@ -2123,8 +2375,8 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         if (potenza.n > 0 && _seriePotenza.length < 60)
           Text(
             [
-              'Potenza media ${potenza.media} W',
-              if (cadenza.n > 0) 'cadenza ${cadenza.media} rpm',
+              l10n.potenzaMediaW(potenza.media),
+              if (cadenza.n > 0) l10n.cadenzaRpm(cadenza.media),
             ].join(' · '),
             style: t.bodyMedium,
             textAlign: TextAlign.center,
@@ -2139,7 +2391,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
-                'Cadenza media ${cadenza.media} rpm',
+                l10n.cadenzaMediaRpm(cadenza.media),
                 style: t.bodyMedium,
                 textAlign: TextAlign.center,
               ),
@@ -2147,7 +2399,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
         ],
         if (_calorie case final c? when c.attive >= 1)
           Text(
-            'Circa ${c.attive.round()} kcal',
+            l10n.circaKcal(c.attive.round()),
             style: t.bodyMedium,
             textAlign: TextAlign.center,
           ),
@@ -2159,7 +2411,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               children: [
                 for (final (k, g) in giri!.giri.indexed)
                   RigaPulse(
-                    titolo: 'Km ${g.numero * g.metri ~/ 1000}',
+                    titolo: l10n.km(g.numero * g.metri ~/ 1000),
                     sottotitolo: fmtTimer(g.tempo),
                     linea: k < giri!.giri.length - 1,
                     fine: Text(ritmoGiro(widget.sport, g), style: t.titleSmall),
@@ -2194,11 +2446,11 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
               labelText: _alChiuso
-                  ? 'Km del ${attrezzoAlChiuso(widget.sport)}'
-                  : 'Km percorsi',
+                  ? l10n.km2(attrezzoAlChiuso(widget.sport))
+                  : l10n.kmPercorsi,
               suffixText: 'km',
               helperText: kmScritti(_kmScritti.text) == null
-                  ? 'Facoltativo: senza, la sessione resta senza distanza.'
+                  ? l10n.facoltativoSenzaSessioneResta
                   : ritmoMedio(
                       widget.sport,
                       kmScritti(_kmScritti.text)!,
@@ -2227,27 +2479,25 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
             contentPadding: EdgeInsets.zero,
             value: registra,
             onChanged: (v) => setState(() => registra = v ?? false),
-            title: const Text('Segna come fatto'),
-            subtitle: const Text(
-              "Se l'orologio registra lo stesso allenamento, vale il suo.",
-            ),
+            title: Text(l10n.segnaComeFatto),
+            subtitle: Text(l10n.seOrologioRegistraStesso),
           ),
         ),
         const SizedBox(height: 8),
         // Per chi non ha niente che misuri la seduta: durata, metri, battito…
         OutlinedButton.icon(
           onPressed: () => _salvaEChiudi(aMano: true),
-          icon: const Icon(Icons.edit_note),
-          label: const Text('Inserisci i dati a mano'),
+          icon: const Icon(Icons.edit_note_rounded),
+          label: Text(l10n.inserisciDatiMano),
         ),
         const SizedBox(height: 8),
         PulsantePrincipale(
           onPressed: () => _salvaEChiudi(feedback: true),
-          icona: Icons.rate_review_outlined,
-          testo: "Com'è andata?",
+          icona: Icons.rate_review_rounded,
+          testo: l10n.comAndata,
         ),
         const SizedBox(height: 8),
-        TextButton(onPressed: _salvaEChiudi, child: const Text('Chiudi')),
+        TextButton(onPressed: _salvaEChiudi, child: Text(l10n.chiudi)),
       ],
     );
   }
@@ -2265,24 +2515,24 @@ class _StatoGps extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final (icona, colore, testo) = switch (gps.stato) {
       StatoGps.pronto => (
-        Icons.gps_fixed,
+        Icons.gps_fixed_rounded,
         const Color(0xFF22E07A),
-        'Segnale GPS buono · ±${gps.precisione.round()} m',
+        l10n.segnaleGpsBuonoM(gps.precisione.round()),
       ),
       StatoGps.cerca || StatoGps.spento => (
-        Icons.gps_not_fixed,
+        Icons.gps_not_fixed_rounded,
         const Color(0xFFFFC233),
-        "Cerco il segnale GPS… meglio all'aperto",
+        l10n.cercoSegnaleGpsMeglio,
       ),
       StatoGps.permessoNegato => (
-        Icons.gps_off,
+        Icons.gps_off_rounded,
         scheme.error,
-        'GPS non permesso: tocca per attivarlo',
+        l10n.gpsNonPermessoTocca,
       ),
       StatoGps.disattivato => (
-        Icons.gps_off,
+        Icons.gps_off_rounded,
         scheme.error,
-        'Posizione spenta: tocca per accenderla',
+        l10n.posizioneSpentaToccaAccenderla,
       ),
     };
     final spento =
@@ -2335,8 +2585,8 @@ class _SceltaPagina extends StatelessWidget {
         spacing: 8,
         children: [
           for (final (k, icona, nome) in [
-            (0, Icons.speed, 'Dati'),
-            (1, Icons.map_outlined, 'Mappa'),
+            (0, Icons.speed_rounded, l10n.dati),
+            (1, Icons.map_rounded, l10n.mappa),
           ])
             Material(
               color: k == pagina
@@ -2393,14 +2643,14 @@ class _DueDati extends StatelessWidget {
       children: [
         Expanded(
           child: _Dato(
-            etichetta: 'Distanza',
+            etichetta: l10n.distanza,
             valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
             unita: 'km',
           ),
         ),
         Expanded(
           child: _Dato(
-            etichetta: stessoSport(sport, 'Bici') ? 'Velocità' : 'Passo',
+            etichetta: stessoSport(sport, 'Bici') ? l10n.velocita : l10n.passo,
             valore: fmtVelocita(sport, adesso),
             unita: unitaRitmo(sport),
           ),
@@ -2419,12 +2669,17 @@ class _GrigliaLive extends StatelessWidget {
   final Duration tempo;
   final Giro? ultimo;
   final Zone zone;
+
+  /// Un dato per riga, con i numeri grandi: riempie la pagina quando sotto
+  /// non c'è altro.
+  final bool grande;
   const _GrigliaLive({
     required this.sport,
     required this.gps,
     required this.tempo,
     required this.ultimo,
     required this.zone,
+    this.grande = false,
   });
 
   @override
@@ -2441,9 +2696,9 @@ class _GrigliaLive extends StatelessWidget {
     final giro = metriGiro(sport) ~/ 1000;
     final ultimo = this.ultimo;
     final quarto = sensoreBattito.ricordato
-        ? _DatoBattito(zone: zone)
+        ? _DatoBattito(zone: zone, grande: grande)
         : _Dato(
-            etichetta: giro == 1 ? 'Ultimo km' : 'Ultimi $giro km',
+            etichetta: giro == 1 ? l10n.ultimoKm : l10n.ultimiKm(giro),
             valore: ultimo == null
                 ? '–'
                 : fmtVelocita(
@@ -2451,39 +2706,47 @@ class _GrigliaLive extends StatelessWidget {
                     ultimo.metri / (ultimo.tempo.inMilliseconds / 1000),
                   ),
             unita: unita,
+            grande: grande,
           );
+    final distanza = _Dato(
+      etichetta: l10n.distanza,
+      valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
+      unita: 'km',
+      grande: grande,
+    );
+    final adessoDato = _Dato(
+      etichetta: bici ? l10n.velocita : l10n.passo,
+      valore: fmtVelocita(sport, adesso),
+      unita: unita,
+      grande: grande,
+    );
+    final mediaDato = _Dato(
+      etichetta: bici ? l10n.velocitaMedia : l10n.passoMedio,
+      valore: fmtVelocita(sport, media),
+      unita: unita,
+      grande: grande,
+    );
+    if (grande) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 8,
+        children: [distanza, adessoDato, mediaDato, quarto],
+      );
+    }
     return Column(
       spacing: 8,
       children: [
         Row(
           spacing: 8,
           children: [
-            Expanded(
-              child: _Dato(
-                etichetta: 'Distanza',
-                valore: gps.km.toStringAsFixed(2).replaceAll('.', ','),
-                unita: 'km',
-              ),
-            ),
-            Expanded(
-              child: _Dato(
-                etichetta: bici ? 'Velocità' : 'Passo',
-                valore: fmtVelocita(sport, adesso),
-                unita: unita,
-              ),
-            ),
+            Expanded(child: distanza),
+            Expanded(child: adessoDato),
           ],
         ),
         Row(
           spacing: 8,
           children: [
-            Expanded(
-              child: _Dato(
-                etichetta: bici ? 'Velocità media' : 'Passo medio',
-                valore: fmtVelocita(sport, media),
-                unita: unita,
-              ),
-            ),
+            Expanded(child: mediaDato),
             Expanded(child: quarto),
           ],
         ),
@@ -2501,6 +2764,7 @@ class _Dato extends StatelessWidget {
   final VoidCallback? onTap;
   final String? nota; // sotto il valore, es. il range da tenere
   final bool notaFuori; // fuori dal range: la nota si colora
+  final bool grande; // numero grande, per la pagina dei soli dati
   const _Dato({
     required this.etichetta,
     required this.valore,
@@ -2509,6 +2773,7 @@ class _Dato extends StatelessWidget {
     this.onTap,
     this.nota,
     this.notaFuori = false,
+    this.grande = false,
   });
 
   @override
@@ -2522,7 +2787,9 @@ class _Dato extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+          padding: grande
+              ? const EdgeInsets.fromLTRB(18, 12, 18, 12)
+              : const EdgeInsets.fromLTRB(14, 10, 14, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -2534,7 +2801,7 @@ class _Dato extends StatelessWidget {
                   ],
                   Expanded(
                     child: Text(
-                      etichetta.toUpperCase(),
+                      maiuscole(etichetta),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: t.labelSmall?.copyWith(
@@ -2554,17 +2821,19 @@ class _Dato extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: valore,
-                        style: t.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontFeatures: const [FontFeature.tabularFigures()],
-                        ),
+                        style: (grande ? t.displayMedium : t.headlineMedium)
+                            ?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
                       ),
                       if (unita.isNotEmpty)
                         TextSpan(
                           text: ' $unita',
-                          style: t.bodySmall?.copyWith(
-                            color: scheme.onSurfaceVariant,
-                          ),
+                          style: (grande ? t.titleMedium : t.bodySmall)
+                              ?.copyWith(color: scheme.onSurfaceVariant),
                         ),
                     ],
                   ),
@@ -2612,8 +2881,8 @@ class _DatoPotenza extends StatelessWidget {
         : versoRange(w, o, z);
     final zo = z == null || o == null ? 0 : z.zonaDi((o.$1 + o.$2) ~/ 2);
     return _Dato(
-      icona: Icons.bolt,
-      etichetta: n > 0 ? 'Potenza · Z$n' : 'Potenza',
+      icona: Icons.bolt_rounded,
+      etichetta: n > 0 ? l10n.potenzaZ(n) : l10n.potenza,
       valore: w?.toString() ?? '–',
       unita: 'W',
       nota: o == null
@@ -2632,23 +2901,25 @@ class _DatoPotenza extends StatelessWidget {
 /// Il battito di adesso con la zona; un tocco apre il foglio del sensore.
 class _DatoBattito extends StatelessWidget {
   final Zone zone;
-  const _DatoBattito({required this.zone});
+  final bool grande;
+  const _DatoBattito({required this.zone, this.grande = false});
 
   @override
   Widget build(BuildContext context) {
     final bpm = sensoreBattito.bpm;
     final n = bpm == null ? 0 : zone.zonaDi(bpm);
     return _Dato(
-      icona: Icons.favorite,
+      icona: Icons.favorite_rounded,
       etichetta: switch (sensoreBattito.stato) {
-        StatoSensore.collegato when n > 0 => 'Battito · Z$n',
-        StatoSensore.collegato => 'Battito',
-        StatoSensore.collega => 'Mi collego…',
-        _ => 'Battito',
+        StatoSensore.collegato when n > 0 => l10n.battitoZ(n),
+        StatoSensore.collegato => l10n.battito,
+        StatoSensore.collega => l10n.miCollego,
+        _ => l10n.battito,
       },
       valore: bpm?.toString() ?? '–',
       unita: 'bpm',
       onTap: () => mostraBattito(context),
+      grande: grande,
     );
   }
 }
@@ -2677,15 +2948,18 @@ class _AvvisoGiro extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.flag, size: 18, color: colore),
+                Icon(Icons.flag_rounded, size: 18, color: colore),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     // A piedi il tempo del km è già il passo; in bici no.
                     giro.metri == 1000
-                        ? 'Km $km'
-                        : 'Km $km · ultimi ${giro.metri ~/ 1000} in '
-                              '${fmtTimer(giro.tempo)}',
+                        ? l10n.km(km)
+                        : l10n.kmUltimi(
+                            km,
+                            giro.metri ~/ 1000,
+                            fmtTimer(giro.tempo),
+                          ),
                     style: t.titleMedium?.copyWith(color: colore),
                   ),
                 ),
@@ -2741,7 +3015,7 @@ class _Orologio extends StatelessWidget {
       fontFeatures: const [FontFeature.tabularFigures()],
     );
     return Semantics(
-      label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
+      label: aTempo ? l10n.mancanoSecondi(restano) : l10n.tempoTrascorso,
       child: AnelloPulse(
         valore: aTempo && totale > 0 ? restano / totale : 0,
         dimensione: piccolo ? 190 : 240,
@@ -2766,10 +3040,10 @@ class _Orologio extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               pausa
-                  ? 'in pausa'
+                  ? l10n.pausa4
                   : aTempo
-                  ? (recupero ? 'mancano' : 'poi passa da solo')
-                  : 'tocca Fatto quando hai finito',
+                  ? (recupero ? l10n.parolaMancano : l10n.poiPassaSolo)
+                  : l10n.toccaFattoQuandoHai2,
               style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -2805,12 +3079,12 @@ class _TempoPiatto extends StatelessWidget {
     final t = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
     final etichetta = pausa
-        ? 'in pausa'
+        ? l10n.pausa4
         : aTempo
-        ? (recupero ? 'mancano' : 'poi passa da solo')
-        : 'tocca Fatto quando hai finito';
+        ? (recupero ? l10n.parolaMancano : l10n.poiPassaSolo)
+        : l10n.toccaFattoQuandoHai2;
     return Semantics(
-      label: aTempo ? 'Mancano $restano secondi' : 'Tempo trascorso',
+      label: aTempo ? l10n.mancanoSecondi(restano) : l10n.tempoTrascorso,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -2856,17 +3130,18 @@ bool _conAnteprima(Esercizio? e) =>
     e != null && (animazioneDi(e.id) != null || e.immagini.isNotEmpty);
 
 /// Il movimento dell'esercizio in piccolo; un tocco lo apre in grande.
+/// Senza [larghezza] occupa tutto lo spazio che ha.
 class _AnteprimaEsercizio extends StatelessWidget {
   final Esercizio esercizio;
-  final double larghezza;
-  const _AnteprimaEsercizio({required this.esercizio, required this.larghezza});
+  final double? larghezza;
+  const _AnteprimaEsercizio({required this.esercizio, this.larghezza});
 
   @override
   Widget build(BuildContext context) {
     final e = esercizio;
     return Semantics(
       button: true,
-      label: 'Guarda il movimento di ${e.nome}',
+      label: l10n.guardaMovimento(e.nome),
       child: GestureDetector(
         onTap: () => showDialog<void>(
           context: context,
@@ -2879,7 +3154,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(d),
-                child: const Text('Chiudi'),
+                child: Text(l10n.chiudi),
               ),
             ],
           ),
@@ -2889,7 +3164,7 @@ class _AnteprimaEsercizio extends StatelessWidget {
           child: AnimazioneEsercizio(
             id: e.id,
             immagini: e.immagini,
-            mini: true,
+            mini: larghezza != null,
           ),
         ),
       ),
@@ -2920,13 +3195,13 @@ class RegistroSerie extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Cosa hai fatto', style: t.titleSmall),
+          Text(l10n.cosaHaiFatto, style: t.titleSmall),
           const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
                 child: _Contatore(
-                  etichetta: 'Ripetizioni',
+                  etichetta: l10n.ripetizioni,
                   testo: '$rip',
                   meno: rip > 1 ? () => cambia((rip - 1, kg)) : null,
                   piu: () => cambia((rip + 1, kg)),
@@ -2940,7 +3215,7 @@ class RegistroSerie extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _Contatore(
-                    etichetta: 'Kg',
+                    etichetta: l10n.kg3,
                     testo: fmtKg(kg),
                     meno: kg > 0
                         ? () => cambia((rip, (kg - 1).clamp(0, 999).toDouble()))
@@ -2957,10 +3232,10 @@ class RegistroSerie extends StatelessWidget {
           ),
           if (ultima.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text('Ultima volta: ${fmtSerie(ultima)}', style: t.bodySmall),
+            Text(l10n.ultimaVolta(fmtSerie(ultima)), style: t.bodySmall),
             if (conKg && prontoPerAumentare(ultima, massimo))
               Text(
-                'Avevi fatto tutte le ripetizioni: prova un peso in più.',
+                l10n.aveviFattoTutteRipetizioni,
                 style: t.bodySmall?.copyWith(fontWeight: FontWeight.w700),
               ),
           ],
@@ -3000,11 +3275,11 @@ class _Contatore extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(d),
-            child: const Text('Annulla'),
+            child: Text(l10n.annulla),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(d, c.text),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -3023,9 +3298,9 @@ class _Contatore extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton.filledTonal(
-              tooltip: '$etichetta: meno',
+              tooltip: l10n.meno2(etichetta),
               onPressed: meno,
-              icon: const Icon(Icons.remove),
+              icon: const Icon(Icons.remove_rounded),
             ),
             Expanded(
               child: InkWell(
@@ -3044,9 +3319,9 @@ class _Contatore extends StatelessWidget {
               ),
             ),
             IconButton.filledTonal(
-              tooltip: '$etichetta: più',
+              tooltip: l10n.piu2(etichetta),
               onPressed: piu,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add_rounded),
             ),
           ],
         ),
@@ -3085,20 +3360,20 @@ class _PesiSchedaState extends State<_PesiScheda> {
     final cambi = pesiCambiati(g, widget.fatte);
     if (cambi.isEmpty) return const SizedBox.shrink();
     String kg(List<double> l) =>
-        l.isEmpty ? 'nessun peso' : '${l.map(fmtKg).join(', ')} kg';
+        l.isEmpty ? l10n.nessunPeso2 : '${l.map(fmtKg).join(', ')} kg';
     return Padding(
       padding: const EdgeInsets.only(top: 12),
       child: SuperficiePulse(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pesi diversi dalla scheda', style: t.titleSmall),
+            Text(l10n.pesiDiversiDallaScheda, style: t.titleSmall),
             const SizedBox(height: 4),
             for (final (nome, prima, dopo) in cambi)
               Text('• $nome: ${kg(prima)} → ${kg(dopo)}', style: t.bodySmall),
             const SizedBox(height: 8),
             _salvati
-                ? Text('Scritti nella scheda.', style: t.bodyMedium)
+                ? Text(l10n.scrittiNellaScheda, style: t.bodyMedium)
                 : FilledButton.tonalIcon(
                     onPressed: () async {
                       await widget.state.aggiornaPesiScheda(s.id, {
@@ -3106,8 +3381,8 @@ class _PesiSchedaState extends State<_PesiScheda> {
                       });
                       if (mounted) setState(() => _salvati = true);
                     },
-                    icon: const Icon(Icons.save_outlined),
-                    label: const Text('Aggiorna la scheda'),
+                    icon: const Icon(Icons.save_rounded),
+                    label: Text(l10n.aggiornaScheda),
                   ),
           ],
         ),
@@ -3142,8 +3417,8 @@ class _RiepilogoArrampicata extends StatelessWidget {
     if (a == null) {
       return FilledButton.tonalIcon(
         onPressed: apri,
-        icon: const Icon(Icons.terrain),
-        label: const Text('Segna vie, blocchi e gradi'),
+        icon: const Icon(Icons.terrain_rounded),
+        label: Text(l10n.segnaVieBlocchiGradi),
       );
     }
     return SuperficiePulse(
@@ -3158,9 +3433,9 @@ class _RiepilogoArrampicata extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Modifica',
+            tooltip: l10n.modifica,
             onPressed: apri,
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.edit_rounded),
           ),
         ],
       ),

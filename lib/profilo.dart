@@ -28,6 +28,15 @@ class Profilo {
   Map<String, int> regolazioneEndurance = {}; // per sport, dai feedback
   Map<String, String> progressione = {}; // per sport: durata, intensita, auto
   bool benvenuto = false; // configurazione guidata già fatta (o saltata)
+  // Funzioni avanzate (zone, watt, sensori, intervals.icu): 'si', 'no', o
+  // vuoto per chi usava l'app prima di questa scelta, che le vede tutte.
+  String avanzata = '';
+
+  /// In modo semplice le funzioni avanzate restano nascoste.
+  bool get modoAvanzato => avanzata != 'no';
+
+  // Niente seduta lunga di corsa e bici: durano tutte quanto scelto.
+  bool senzaLungo = false;
   String terminiAccettati = ''; // versione di termini e informativa accettata
   // Gara obiettivo (vuota = nessuna).
   String garaSport = '';
@@ -40,6 +49,12 @@ class Profilo {
   int passoCriticoManuale = 0; // secondi per 100 m
   int ftpManuale = 0; // watt; 0 = quello di intervals.icu, se c'è
   int ftpCorsaManuale = 0; // watt; 0 = intervals.icu, altrimenti la stima
+  // Quando l'FTP della bici e il passo critico sono stati confermati (scritti,
+  // da un test o da una proposta accettata): servono a proporre un test.
+  DateTime? ftpData;
+  DateTime? passoCriticoData;
+  // Test proposti e rimandati: sport -> fino a quando non riproporli.
+  final Map<String, DateTime> testRimandati = {};
 
   Obiettivo? get obiettivoGara => garaSport.isEmpty || garaData == null
       ? null
@@ -105,6 +120,19 @@ class Profilo {
     ['ftp', ftpManuale == 0 ? '' : '$ftpManuale'],
     ['ftp_corsa', ftpCorsaManuale == 0 ? '' : '$ftpCorsaManuale'],
     ['attivita', attivita.join(',')],
+    ['senza_lungo', senzaLungo ? 'si' : ''],
+    ['avanzata', avanzata],
+    ['ftp_data', ftpData == null ? '' : isoData(ftpData!)],
+    [
+      'passo_critico_data',
+      passoCriticoData == null ? '' : isoData(passoCriticoData!),
+    ],
+    [
+      'test_rimandati',
+      testRimandati.entries
+          .map((e) => '${e.key}:${isoData(e.value)}')
+          .join(','),
+    ],
   ];
 
   static Profilo da(Tabella? t) {
@@ -134,6 +162,8 @@ class Profilo {
         .toSet();
     p.inizioEndurance = parseData(m['inizio_endurance'] ?? '');
     p.benvenuto = m['benvenuto'] == 'si';
+    p.senzaLungo = m['senza_lungo'] == 'si';
+    p.avanzata = m['avanzata'] ?? '';
     p.terminiAccettati = m['termini'] ?? '';
     for (final x in (m['regolazione_endurance'] ?? '').split(',')) {
       final kv = x.split(':');
@@ -155,8 +185,30 @@ class Profilo {
     p.passoCriticoManuale = int.tryParse(m['passo_critico_s'] ?? '') ?? 0;
     p.ftpManuale = int.tryParse(m['ftp'] ?? '') ?? 0;
     p.ftpCorsaManuale = int.tryParse(m['ftp_corsa'] ?? '') ?? 0;
+    p.ftpData = parseData(m['ftp_data'] ?? '');
+    p.passoCriticoData = parseData(m['passo_critico_data'] ?? '');
+    for (final x in (m['test_rimandati'] ?? '').split(',')) {
+      final kv = x.split(':');
+      final d = kv.length == 2 ? parseData(kv[1].trim()) : null;
+      if (d != null) p.testRimandati[kv[0].trim()] = d;
+    }
     return p;
   }
+}
+
+/// Dà una data all'FTP e al passo critico scritti prima che l'app salvasse
+/// quando sono stati confermati. Vero se ha cambiato qualcosa.
+bool datePerSoglieVecchie(Profilo p, DateTime oggi) {
+  var cambiato = false;
+  if (p.ftpManuale > 0 && p.ftpData == null) {
+    p.ftpData = oggi;
+    cambiato = true;
+  }
+  if (p.passoCriticoManuale > 0 && p.passoCriticoData == null) {
+    p.passoCriticoData = oggi;
+    cambiato = true;
+  }
+  return cambiato;
 }
 
 /// Campi delle misure corporee, nell'ordine delle colonne di misure.csv.

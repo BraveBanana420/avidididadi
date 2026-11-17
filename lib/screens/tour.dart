@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../tema.dart';
+import '../l10n/lingua.dart';
 
 // Giro guidato: una maschera scura con un buco trasparente sul tasto da
 // conoscere e una scheda che spiega a cosa serve. Toccando il buco (o
@@ -47,90 +49,64 @@ class PassoTour {
 /// Le 10 funzioni principali, nell'ordine in cui si visitano.
 final passiTour = [
   PassoTour(
-    titolo: 'La barra in basso',
-    testo:
-        'Quattro sezioni: Oggi, Progressi, Coach e Profilo. Puoi anche '
-        'scorrere di lato per passare dall\'una all\'altra.',
+    titolo: l10n.barraBasso,
+    testo: l10n.quattroSezioniOggiProgressi,
     sezione: 0,
     chiave: ChiaviTour.barra,
   ),
   PassoTour(
-    titolo: 'La seduta del giorno',
-    testo:
-        'Qui trovi cosa fare oggi. Tocca la seduta per vedere i dettagli e ▶ '
-        'per l\'allenamento guidato passo passo, con timer, bip e GPS.',
+    titolo: l10n.sedutaGiorno,
+    testo: l10n.quiTroviCosaFare,
     sezione: 0,
     chiave: ChiaviTour.giorno,
   ),
   PassoTour(
-    titolo: 'L\'energia',
-    testo:
-        'Com\'è il tuo recupero oggi, da sonno, battito a riposo e HRV. '
-        'Toccala per i dettagli: se è bassa, meglio una seduta leggera.',
+    titolo: l10n.energia2,
+    testo: l10n.comTuoRecuperoOggi,
     sezione: 0,
     chiave: ChiaviTour.energia,
-    senzaTasto:
-        'Comparirà in alto a destra quando l\'orologio manda sonno e battito '
-        'a riposo (Profilo → Dati e collegamenti).',
+    senzaTasto: l10n.compariraAltoDestraQuando,
   ),
   PassoTour(
-    titolo: 'La tua settimana',
-    testo:
-        'Un cerchio per giorno: pieno se fatto, col bordo se da fare. Tocca '
-        'un giorno per vederlo sopra; scorri di lato sui cerchi per la '
-        'settimana prima o dopo.',
+    titolo: l10n.tuaSettimana,
+    testo: l10n.cerchioGiornoPienoSe,
     sezione: 0,
     chiave: ChiaviTour.settimana,
   ),
   PassoTour(
-    titolo: 'La settimana tipo',
-    testo:
-        'Quali giorni ti alleni, quale sport e per quanto tempo. Da qui '
-        'nasce tutto il calendario: cambiala quando cambiano i tuoi impegni.',
+    titolo: l10n.settimanaTipo,
+    testo: l10n.qualiGiorniTiAlleni2,
     sezione: 0,
     chiave: ChiaviTour.settimanaTipo,
     ancora: ChiaviTour.settimana,
   ),
   PassoTour(
-    titolo: 'Com\'è andata?',
-    testo:
-        'Dopo ogni allenamento dai un voto alla fatica: le sedute dopo si '
-        'adattano, più facili o più impegnative.',
+    titolo: l10n.comAndata,
+    testo: l10n.dopoOgniAllenamentoDai,
     sezione: 0,
     chiave: ChiaviTour.feedback,
-    senzaTasto:
-        'Quando un allenamento fatto non ha ancora un voto, qui in Oggi '
-        'compare "Com\'è andata?". Puoi darlo anche toccando la seduta fatta.',
+    senzaTasto: l10n.quandoAllenamentoFattoNon,
   ),
   PassoTour(
-    titolo: 'Progressi',
-    testo:
-        'Il carico di allenamento, i grafici e i resoconti di ogni sport: '
-        'tocca uno sport per i dettagli.',
+    titolo: l10n.progressi,
+    testo: l10n.caricoAllenamentoGraficiResoconti,
     sezione: 1,
     chiave: null, // la voce della barra, scelta sotto
   ),
   PassoTour(
-    titolo: 'Coach',
-    testo:
-        'L\'assistente: chiedigli consigli sul piano o su come ti senti. '
-        'Lo colleghi dalle impostazioni in alto (sul tuo PC o con la tua app).',
+    titolo: l10n.coach,
+    testo: l10n.assistenteChiedigliConsigliSul,
     sezione: 2,
   ),
   PassoTour(
-    titolo: 'Sedute e schede',
-    testo:
-        '"Prepara le sedute": l\'app scrive gli allenamenti per te. "Le mie '
-        'schede": scrivi quelli del tuo personal trainer o allenatore.',
+    titolo: l10n.seduteSchede,
+    testo: l10n.preparaSeduteAppScrive,
     sezione: 3,
     chiave: ChiaviTour.prepara,
   ),
   PassoTour(
-    titolo: 'Dati e collegamenti',
-    testo:
-        'Collega l\'orologio (Health Connect o intervals.icu) e fai il backup '
-        'dei tuoi dati. Il giro lo ritrovi sempre qui sotto, in "Giro '
-        "guidato dell'app\".",
+    titolo: l10n.datiCollegamenti,
+    testo: l10n.collegaOrologioHealthConnect,
     sezione: 3,
     chiave: ChiaviTour.collegamenti,
     ancora: ChiaviTour.prepara,
@@ -176,6 +152,42 @@ void avviaTour(BuildContext context, {int da = 3}) {
         _Maschera(passi: passiTour, da: da, chiudi: () => voce.remove()),
   );
   Overlay.of(context, rootOverlay: true).insert(voce);
+}
+
+/// Altezza che serve di solito alla scheda del giro guidato.
+const altezzaSchedaTour = 260.0;
+
+/// Dove mettere la scheda del giro: [alto] e [basso] sono le distanze dai
+/// bordi dello schermo del riquadro in cui sta (dentro i [margini] di sistema),
+/// [sotto] se si appoggia in alto (sotto il buco) o in basso (sopra il buco).
+/// Se da nessuna delle due parti c'è abbastanza spazio, si appoggia in basso
+/// sopra il buco: lo copre in parte, ma i tasti restano raggiungibili.
+({bool sotto, double alto, double basso}) posizioneSchedaTour({
+  required Size schermo,
+  required Rect? buco,
+  required EdgeInsets margini,
+}) {
+  final minAlto = margini.top + 16;
+  final minBasso = margini.bottom + 16;
+  if (buco == null) {
+    return (
+      sotto: true,
+      alto: math.max(minAlto, schermo.height * 0.3),
+      basso: minBasso,
+    );
+  }
+  final spazioSotto = schermo.height - minBasso - (buco.bottom + 20);
+  final spazioSopra = buco.top - 20 - minAlto;
+  final sottoBasta = spazioSotto >= altezzaSchedaTour;
+  final sopraBasta = spazioSopra >= altezzaSchedaTour;
+  if (sottoBasta && (!sopraBasta || spazioSotto >= spazioSopra)) {
+    return (sotto: true, alto: buco.bottom + 20, basso: minBasso);
+  }
+  if (sopraBasta) {
+    return (sotto: false, alto: minAlto, basso: schermo.height - buco.top + 20);
+  }
+  // Buco troppo grande: la scheda sta in basso, sopra il buco.
+  return (sotto: false, alto: minAlto, basso: minBasso);
 }
 
 class _Maschera extends StatefulWidget {
@@ -316,8 +328,14 @@ class _MascheraState extends State<_Maschera>
     final testo = b == null && p.senzaTasto.isNotEmpty
         ? '${p.testo}\n\n${p.senzaTasto}'
         : p.testo;
-    // La scheda va dove c'è più spazio: sotto il buco o sopra.
-    final sotto = b == null || b.center.dy < schermo.height * 0.5;
+    // La scheda va dove c'è più spazio, sotto il buco o sopra, e sempre
+    // dentro l'area sicura: mai sotto la barra di Android o quella di stato,
+    // altrimenti Avanti ed Esci non si possono toccare.
+    final (:sotto, :alto, :basso) = posizioneSchedaTour(
+      schermo: schermo,
+      buco: b,
+      margini: MediaQuery.viewPaddingOf(context),
+    );
     final scheda = Material(
       color: scheme.surfaceContainerHigh,
       elevation: 8,
@@ -329,7 +347,7 @@ class _MascheraState extends State<_Maschera>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${i + 1} di ${widget.passi.length}',
+              l10n.passoDiTour(i + 1, widget.passi.length),
               style: t.labelMedium?.copyWith(color: scheme.primary),
             ),
             const SizedBox(height: 4),
@@ -339,24 +357,26 @@ class _MascheraState extends State<_Maschera>
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(
-                'Tocca Avanti per continuare.',
+                l10n.toccaAvantiContinuare,
                 style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
               ),
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                TextButton(onPressed: _fine, child: const Text('Esci')),
+                TextButton(onPressed: _fine, child: Text(l10n.esci)),
                 const Spacer(),
                 if (i > 0)
                   IconButton(
-                    tooltip: 'Indietro',
+                    tooltip: l10n.indietro,
                     onPressed: _indietro,
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_rounded),
                   ),
                 FilledButton(
                   onPressed: _avanti,
-                  child: Text(i == widget.passi.length - 1 ? 'Fine' : 'Avanti'),
+                  child: Text(
+                    i == widget.passi.length - 1 ? l10n.fine : l10n.avanti,
+                  ),
                 ),
               ],
             ),
@@ -395,11 +415,13 @@ class _MascheraState extends State<_Maschera>
             Positioned(
               left: 16,
               right: 16,
-              top: sotto
-                  ? (b == null ? schermo.height * 0.3 : b.bottom + 20)
-                  : null,
-              bottom: sotto ? null : schermo.height - b.top + 20,
-              child: SafeArea(top: false, bottom: false, child: scheda),
+              top: alto,
+              bottom: basso,
+              // Se lo spazio non basta, la scheda scorre invece di uscire.
+              child: Align(
+                alignment: sotto ? Alignment.topCenter : Alignment.bottomCenter,
+                child: SingleChildScrollView(child: scheda),
+              ),
             ),
         ],
       ),
@@ -478,7 +500,7 @@ class InvitoTour extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Vuoi un giro guidato dell'app? Dieci passi, un minuto.",
+                l10n.vuoiGiroGuidatoDell,
                 style: TextStyle(color: scheme.onPrimaryContainer),
               ),
               Row(
@@ -486,11 +508,11 @@ class InvitoTour extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: segnaTourProposto,
-                    child: const Text('No, grazie'),
+                    child: Text(l10n.noGrazie),
                   ),
                   FilledButton(
                     onPressed: () => avviaTour(context, da: 0),
-                    child: const Text('Sì'),
+                    child: Text(l10n.si),
                   ),
                 ],
               ),

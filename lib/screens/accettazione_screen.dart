@@ -5,6 +5,7 @@ import '../app_state.dart';
 import '../pulse.dart';
 import '../widgets.dart';
 import 'privacy_screen.dart';
+import '../l10n/lingua.dart';
 
 /// Prima di entrare nell'app: cosa fa con i dati, in breve, e la spunta
 /// obbligatoria per accettare termini e informativa. Non si può saltare.
@@ -70,54 +71,47 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                     children: [
                       Text(
                         aggiornati
-                            ? 'Abbiamo aggiornato le regole'
-                            : 'Benvenuto in Avidididadi',
+                            ? l10n.abbiamoAggiornatoRegole
+                            : l10n.benvenutoAvidididadi,
                         style: t.headlineMedium,
                       ),
                       const SizedBox(height: 6),
                       Text(
                         aggiornati
-                            ? 'Termini e informativa sono cambiati. Leggili e accettali per '
-                                  'continuare.'
-                            : 'Prima di iniziare, ecco in breve come funziona '
-                                  "l'app con i tuoi dati.",
+                            ? l10n.terminiInformativaSonoCambiati
+                            : l10n.primaIniziareEccoBreve,
                         style: t.bodyMedium,
                       ),
                       const SizedBox(height: 24),
                       punto(
-                        Icons.phone_android,
-                        'I dati restano sul telefono',
-                        "Nessun account, nessun server, nessuna pubblicità.",
+                        Icons.phone_android_rounded,
+                        l10n.datiRestanoSulTelefono,
+                        l10n.nessunAccountNessunServer,
                       ),
                       punto(
-                        Icons.favorite_outline,
-                        'Health Connect solo in lettura',
-                        'Allenamenti, battito, sonno e percorsi delle tue app '
-                            '(es. Garmin), solo se lo permetti.',
+                        Icons.favorite_outline_rounded,
+                        l10n.healthConnectSoloLettura,
+                        l10n.allenamentiBattitoSonnoPercorsi,
                       ),
                       punto(
-                        Icons.gps_fixed,
-                        'GPS solo durante corsa e bici',
-                        "Mentre ti alleni con l'app, con una notifica fissa. "
-                            'Mai in altri momenti.',
+                        Icons.gps_fixed_rounded,
+                        l10n.gpsSoloDuranteCorsa,
+                        l10n.mentreTiAlleniApp,
                       ),
                       punto(
-                        Icons.map_outlined,
-                        'Mappe e immagini da internet',
-                        'Da OpenFreeMap, Esri (satellite) e GitHub: il percorso non '
-                            'viene inviato.',
+                        Icons.map_rounded,
+                        l10n.mappeImmaginiInternet,
+                        l10n.openfreemapEsriSatelliteGithub,
                       ),
                       punto(
-                        Icons.forum_outlined,
-                        'Assistente facoltativo',
-                        'Invia un riassunto degli allenamenti al servizio che '
-                            'scegli, solo se lo attivi tu.',
+                        Icons.forum_rounded,
+                        l10n.assistenteFacoltativo,
+                        l10n.inviaRiassuntoDegliAllenamenti,
                       ),
                       punto(
-                        Icons.health_and_safety_outlined,
-                        'Non è un consiglio medico',
-                        'Piani e consigli sono stime: in caso di dubbi o '
-                            'problemi di salute, chiedi al medico.',
+                        Icons.health_and_safety_rounded,
+                        l10n.nonConsiglioMedico,
+                        l10n.pianiConsigliSonoStime,
                       ),
                       const SizedBox(height: 4),
                       Wrap(
@@ -125,13 +119,13 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                         children: [
                           OutlinedButton.icon(
                             onPressed: () => _apri(const TerminiScreen()),
-                            icon: const Icon(Icons.gavel_outlined),
-                            label: const Text('Termini e condizioni'),
+                            icon: const Icon(Icons.gavel_rounded),
+                            label: Text(l10n.terminiCondizioni),
                           ),
                           OutlinedButton.icon(
                             onPressed: () => _apri(const PrivacyScreen()),
-                            icon: const Icon(Icons.privacy_tip_outlined),
-                            label: const Text('Informativa privacy'),
+                            icon: const Icon(Icons.privacy_tip_rounded),
+                            label: Text(l10n.informativaPrivacy),
                           ),
                         ],
                       ),
@@ -152,8 +146,7 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                           controlAffinity: ListTileControlAffinity.leading,
                           contentPadding: EdgeInsets.zero,
                           title: Text(
-                            'Ho letto e accetto i Termini e condizioni e '
-                            "l'Informativa sulla privacy",
+                            l10n.hoLettoAccettoTermini,
                             style: t.bodyMedium,
                           ),
                         ),
@@ -163,8 +156,8 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                         padding: const EdgeInsets.only(left: 8),
                         child: PulsantePrincipale(
                           onPressed: accetto ? _entra : null,
-                          icona: Icons.arrow_forward,
-                          testo: 'Entra',
+                          icona: Icons.arrow_forward_rounded,
+                          testo: l10n.entra,
                         ),
                       ),
                       TextButton(
@@ -172,7 +165,7 @@ class _AccettazioneScreenState extends State<AccettazioneScreen> {
                         style: TextButton.styleFrom(
                           foregroundColor: scheme.onSurfaceVariant,
                         ),
-                        child: const Text('Non accetto, esci'),
+                        child: Text(l10n.nonAccettoEsci),
                       ),
                     ],
                   ),

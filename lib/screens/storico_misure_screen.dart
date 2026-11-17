@@ -6,15 +6,16 @@ import '../app_state.dart';
 import '../charts.dart';
 import '../models.dart';
 import '../widgets.dart';
+import '../l10n/lingua.dart';
 
 /// Peso e misure del profilo: nome da mostrare e unità.
-const campiStorico = {
-  'peso_kg': ('Peso', 'kg'),
-  'braccio_cm': ('Braccio', 'cm'),
-  'petto_cm': ('Petto', 'cm'),
-  'vita_cm': ('Vita', 'cm'),
-  'fianchi_cm': ('Fianchi', 'cm'),
-  'coscia_cm': ('Coscia', 'cm'),
+Map<String, (String, String)> get campiStorico => {
+  'peso_kg': (l10n.peso, 'kg'),
+  'braccio_cm': (l10n.braccio, 'cm'),
+  'petto_cm': (l10n.petto, 'cm'),
+  'vita_cm': (l10n.vita, 'cm'),
+  'fianchi_cm': (l10n.fianchi, 'cm'),
+  'coscia_cm': (l10n.coscia, 'cm'),
 };
 
 /// Valori registrati di un campo, in ordine di data.
@@ -34,7 +35,7 @@ class PulsanteStorico extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final pesi = [for (final (_, v) in storicoDi(state, 'peso_kg')) v];
     return Tooltip(
-      message: 'Storico di peso e misure',
+      message: l10n.storicoPesoMisure,
       child: Material(
         color: scheme.surfaceContainerHighest,
         shape: const CircleBorder(),
@@ -49,7 +50,11 @@ class PulsanteStorico extends StatelessWidget {
             width: 40,
             height: 40,
             child: pesi.length < 2
-                ? Icon(Icons.show_chart, size: 22, color: scheme.primary)
+                ? Icon(
+                    Icons.show_chart_rounded,
+                    size: 22,
+                    color: scheme.primary,
+                  )
                 : Padding(
                     padding: const EdgeInsets.all(10),
                     child: CustomPaint(
@@ -119,7 +124,7 @@ class _StoricoMisureScreenState extends State<StoricoMisureScreen> {
     final valori = storicoDi(widget.state, campo);
     return Scaffold(
       bottomNavigationBar: const MargineBarraSistema(),
-      appBar: AppBar(title: const Text('Storico misure')),
+      appBar: AppBar(title: Text(l10n.storicoMisure)),
       body: GruppoGrafici(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -140,7 +145,7 @@ class _StoricoMisureScreenState extends State<StoricoMisureScreen> {
             Text('$nome ($unita)', style: t.titleLarge),
             const SizedBox(height: 8),
             if (valori.isEmpty)
-              Text('Nessun valore di ${nome.toLowerCase()} ancora inserito.')
+              Text(l10n.nessunValoreAncoraInserito(nome.toLowerCase()))
             else ...[
               if (valori.length >= 2)
                 GraficoLinea(
@@ -156,20 +161,20 @@ class _StoricoMisureScreenState extends State<StoricoMisureScreen> {
                   ],
                 )
               else
-                const Text('Con almeno due valori comparirà il grafico.'),
+                Text(l10n.almenoDueValoriComparira),
               if (valori.length >= 2) ...[
                 const SizedBox(height: 8),
                 Text(() {
                   final diff = double.parse(
                     (valori.last.$2 - valori.first.$2).toStringAsFixed(1),
                   );
-                  final dal = 'Dal ${_data(valori.first.$1)}';
-                  if (diff == 0) return '$dal: invariato';
+                  final dal = l10n.dal(_data(valori.first.$1));
+                  if (diff == 0) return l10n.invariato(dal);
                   return '$dal: ${diff > 0 ? '+' : ''}${fmtNum(diff)} $unita';
                 }(), style: t.bodySmall),
               ],
               const SizedBox(height: 16),
-              Text('Valori inseriti', style: t.titleMedium),
+              Text(l10n.valoriInseriti, style: t.titleMedium),
               Card(
                 child: Column(
                   children: [

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:allenamenti_app/backup.dart';
 import 'package:allenamenti_app/models.dart';
@@ -94,18 +95,18 @@ void main() {
   test('GPX di Garmin Connect', () {
     const gpx = """<?xml version="1.0" encoding="UTF-8"?>
 <gpx creator="Garmin Connect" version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
-  <trk><name>Pistoia Corsa</name><trkseg>
-    <trkpt lat="43.9300" lon="10.9100"><ele>70.2</ele><time>2026-10-20T07:12:03.000Z</time>
+  <trk><name>Milano Corsa</name><trkseg>
+    <trkpt lat="45.4600" lon="9.1900"><ele>70.2</ele><time>2026-10-20T07:12:03.000Z</time>
       <extensions><ns3:TrackPointExtension><ns3:hr>120</ns3:hr></ns3:TrackPointExtension></extensions>
     </trkpt>
-    <trkpt lon="10.9105" lat="43.9310"><time>2026-10-20T07:12:13.000Z</time></trkpt>
-    <trkpt lat='43.9320' lon='10.9110'/>
+    <trkpt lon="9.1905" lat="45.4610"><time>2026-10-20T07:12:13.000Z</time></trkpt>
+    <trkpt lat='45.4620' lon='9.1910'/>
   </trkseg></trk>
 </gpx>""";
     final r = percorsoDaGpx(gpx);
     expect(r.punti.length, 3);
-    expect(r.punti[1].lat, 43.931);
-    expect(r.punti[1].lon, 10.9105);
+    expect(r.punti[1].lat, 45.461);
+    expect(r.punti[1].lon, 9.1905);
     expect(r.punti[1].t.difference(r.punti[0].t).inSeconds, 10);
     expect(giornoDi(r), DateTime(2026, 10, 20));
     expect(r.distanzaKm, greaterThan(0.2));
@@ -154,5 +155,40 @@ void main() {
       '<trkpt lat="43.91" lon="10.91"/>',
     );
     expect(r.punti.length, 2);
+  });
+
+  test('inquadratura: il percorso sta nello spazio libero sopra i numeri', () {
+    // Firenze, giro di 4 km a cavallo dell'Arno.
+    const limiti = (43.762, 11.245, 43.775, 11.262);
+    final q = inquadratura(
+      limiti,
+      larghezza: 360,
+      altezza: 450,
+      sinistra: 40,
+      sopra: 70,
+      destra: 40,
+      sotto: 170,
+    );
+    double x(double lon) => (lon + 180) / 360;
+    double y(double lat) {
+      final r = lat * math.pi / 180;
+      return (1 - math.log(math.tan(r) + 1 / math.cos(r)) / math.pi) / 2;
+    }
+
+    final scala = 512 * math.pow(2, q.zoom);
+    // Posizione in punti dentro la mappa 360 × 450.
+    double px(double lon) => 180 + (x(lon) - x(q.lon)) * scala;
+    double py(double lat) => 225 + (y(lat) - y(q.lat)) * scala;
+    final (a, b, c, d) = limiti;
+    expect(px(b), greaterThanOrEqualTo(40 - 0.01));
+    expect(px(d), lessThanOrEqualTo(320 + 0.01));
+    expect(py(c), greaterThanOrEqualTo(70 - 0.01));
+    expect(py(a), lessThanOrEqualTo(280 + 0.01));
+    // Almeno un lato tocca il margine: lo zoom è il più grande possibile.
+    final tocca = (px(b) - 40).abs() < 0.01 || (py(c) - 70).abs() < 0.01;
+    expect(tocca, isTrue);
+    // Centrato nello spazio libero.
+    expect((px(b) + px(d)) / 2, closeTo(180, 0.01));
+    expect((py(c) + py(a)) / 2, closeTo(175, 0.01));
   });
 }

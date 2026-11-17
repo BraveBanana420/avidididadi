@@ -7,6 +7,8 @@ import '../pulse.dart';
 import '../serie_sessione.dart';
 import '../widgets.dart';
 import 'profilo_allenamento.dart';
+import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 // La schermata della bici al chiuso durante l'allenamento: tutti i dati in
 // una pagina, senza scorrere. In alto potenza e battito, poi il blocco in
@@ -211,8 +213,8 @@ class _Principali extends StatelessWidget {
         children: [
           Expanded(
             child: _Grande(
-              icona: Icons.bolt,
-              etichetta: zw > 0 ? 'Potenza · Z$zw' : 'Potenza',
+              icona: Icons.bolt_rounded,
+              etichetta: zw > 0 ? l10n.potenzaZ(zw) : l10n.potenza,
               valore: d.watt?.toString() ?? '–',
               unita: 'W',
               colori: d.zonePotenza == null ? null : coloriZonePotenza,
@@ -220,17 +222,21 @@ class _Principali extends StatelessWidget {
               onTap: apriSensori,
             ),
           ),
-          Expanded(
-            child: _Grande(
-              icona: Icons.favorite,
-              etichetta: zb > 0 ? 'Battito · Z$zb' : 'Battito',
-              valore: d.bpm?.toString() ?? '–',
-              unita: 'bpm',
-              colori: coloriZoneBattito,
-              zona: zb,
-              onTap: apriBattito,
+          // Il battito compare solo se arriva davvero: senza fascia la
+          // potenza prende tutta la riga (la fascia si collega dal cuore
+          // in alto).
+          if (d.bpm != null)
+            Expanded(
+              child: _Grande(
+                icona: Icons.favorite_rounded,
+                etichetta: zb > 0 ? l10n.battitoZ(zb) : l10n.battito,
+                valore: d.bpm?.toString() ?? '–',
+                unita: 'bpm',
+                colori: coloriZoneBattito,
+                zona: zb,
+                onTap: apriBattito,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -270,7 +276,7 @@ class _Grande extends StatelessWidget {
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
-                  etichetta.toUpperCase(),
+                  maiuscole(etichetta),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: t.labelSmall?.copyWith(
@@ -359,10 +365,10 @@ class _Piccoli extends StatelessWidget {
     return Row(
       spacing: 6,
       children: [
-        uno('Calorie', d.calorie?.toString() ?? '–', 'kcal'),
-        uno('Cadenza', d.cadenza, 'rpm'),
-        uno('Velocità', d.velocita, 'km/h'),
-        uno('Distanza', d.km, 'km'),
+        uno(l10n.calorie, d.calorie?.toString() ?? '–', 'kcal'),
+        uno(l10n.cadenza, d.cadenza, 'rpm'),
+        uno(l10n.velocita, d.velocita, 'km/h'),
+        uno(l10n.distanza, d.km, 'km'),
       ],
     );
   }
@@ -388,22 +394,29 @@ class _Piccolo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: piano,
         ),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: valore,
-                  style: t.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+        // Altezza fissa: un valore largo si stringe, ma l'etichetta sopra
+        // resta alla stessa altezza di quelle accanto.
+        SizedBox(
+          height: MediaQuery.textScalerOf(context).scale(
+            (t.titleLarge?.fontSize ?? 22) * (t.titleLarge?.height ?? 1.3),
+          ),
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: valore,
+                    style: t.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
                   ),
-                ),
-                TextSpan(text: ' $unita', style: piano),
-              ],
+                  TextSpan(text: ' $unita', style: piano),
+                ],
+              ),
+              maxLines: 1,
             ),
-            maxLines: 1,
           ),
         ),
       ],
@@ -421,8 +434,8 @@ class _BloccoInCorso extends StatelessWidget {
     final zp = dati.zonePotenza;
     if (barre == null || zp == null) return null;
     final k = dati.corrente + 1;
-    if (k >= barre.length) return 'Ultimo blocco';
-    return 'Poi: ${descriviBarra(barre[k], zp)}';
+    if (k >= barre.length) return l10n.ultimoBlocco;
+    return l10n.poi2(descriviBarra(barre[k], zp));
   }
 
   @override
@@ -500,7 +513,7 @@ class _BloccoInCorso extends StatelessWidget {
                       ),
                     if (principale.isEmpty && d.intensita.isNotEmpty)
                       Text(
-                        d.intensita,
+                        mostraTesto(d.intensita),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: t.bodyMedium,
@@ -534,12 +547,12 @@ class _BloccoInCorso extends StatelessWidget {
                   ),
                   Text(
                     d.pausa
-                        ? 'in pausa'
+                        ? l10n.pausa4
                         : d.restano == null
-                        ? 'passati'
+                        ? l10n.parolaPassati
                         : d.recupero
-                        ? 'di recupero'
-                        : 'a fine blocco',
+                        ? l10n.recupero2
+                        : l10n.fineBlocco,
                     style: t.labelSmall?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
@@ -590,16 +603,12 @@ class _CollegaSensori extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          Icon(Icons.pedal_bike, size: 20, color: scheme.primary),
+          Icon(Icons.pedal_bike_rounded, size: 20, color: scheme.primary),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(
-              'Collega il rullo o il misuratore: vedrai potenza, cadenza e '
-              'velocità.',
-              style: t.bodySmall,
-            ),
+            child: Text(l10n.collegaRulloOMisuratore, style: t.bodySmall),
           ),
-          Icon(Icons.chevron_right, color: scheme.onSurfaceVariant),
+          Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
         ],
       ),
     );
@@ -626,7 +635,7 @@ class GraficoPotenzaLive extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Media ${d.wattMedia} W · Massimo ${d.wattMassimo} W',
+            l10n.mediaWMassimoW(d.wattMedia, d.wattMassimo),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: t.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
@@ -770,10 +779,10 @@ class DiagrammaInCorso extends StatelessWidget {
             Expanded(
               child: Text(
                 !conPoi
-                    ? 'Blocco ${corrente + 1} di ${barre.length}'
+                    ? l10n.blocco(corrente + 1, barre.length)
                     : poi == null
-                    ? 'Ultimo blocco'
-                    : '${corrente < 0 ? 'Si parte' : 'Poi'}: '
+                    ? l10n.ultimoBlocco
+                    : '${corrente < 0 ? l10n.siParte2 : l10n.poi}: '
                           '${descriviBarra(poi, zone)}',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -781,7 +790,7 @@ class DiagrammaInCorso extends StatelessWidget {
               ),
             ),
             Text(
-              'Fine tra ${fmtTimer(Duration(seconds: restoBlocco + dopo))}',
+              l10n.fineTra(fmtTimer(Duration(seconds: restoBlocco + dopo))),
               style: t.labelMedium?.copyWith(color: scheme.onSurfaceVariant),
             ),
           ],
@@ -819,7 +828,7 @@ class ControlloErg extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(14, 4, 6, 4),
         child: Row(
           children: [
-            Icon(Icons.tune, size: 18, color: scheme.primary),
+            Icon(Icons.tune_rounded, size: 18, color: scheme.primary),
             const SizedBox(width: 8),
             Expanded(
               child: Column(
@@ -827,17 +836,19 @@ class ControlloErg extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    acceso ? 'Rullo in ERG' : 'Rullo libero',
+                    acceso ? l10n.rulloErg : l10n.rulloLibero,
                     style: t.labelLarge,
                   ),
                   Text(
                     acceso
                         ? [
-                            watt == null ? 'senza obiettivo' : 'tiene $watt W',
+                            watt == null
+                                ? l10n.senzaObiettivo2
+                                : l10n.tieneW(watt!),
                             if (percento != 0)
                               '${percento > 0 ? '+' : ''}$percento%',
                           ].join(' · ')
-                        : 'i watt li decidi tu',
+                        : l10n.wattLiDecidiTu,
                     style: t.bodySmall,
                   ),
                 ],
@@ -845,18 +856,18 @@ class ControlloErg extends StatelessWidget {
             ),
             if (acceso) ...[
               IconButton(
-                tooltip: '5% in meno',
+                tooltip: l10n.n5Meno,
                 onPressed: scala > 0.71
                     ? () => scalaCambia(((scala - 0.05) * 100).round() / 100)
                     : null,
-                icon: const Icon(Icons.remove),
+                icon: const Icon(Icons.remove_rounded),
               ),
               IconButton(
-                tooltip: '5% in più',
+                tooltip: l10n.n5Piu,
                 onPressed: scala < 1.29
                     ? () => scalaCambia(((scala + 0.05) * 100).round() / 100)
                     : null,
-                icon: const Icon(Icons.add),
+                icon: const Icon(Icons.add_rounded),
               ),
             ],
             Switch(value: acceso, onChanged: cambia),

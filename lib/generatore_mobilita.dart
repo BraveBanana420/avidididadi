@@ -1,5 +1,6 @@
 import 'esercizi.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Mobilità e stretching: sedute di movimenti lenti e allungamenti, quasi tutti
 // a tempo, che si seguono bene nella modalità allenamento. Ogni seduta insiste
@@ -28,7 +29,7 @@ String _durata(Esercizio e) => e.schema == 'rullo'
     ? '60 s'
     : e.nome.startsWith('Circonduzioni')
     ? '30 s'
-    : '30 s per lato';
+    : l10n.n30SLato;
 
 /// Una seduta di [minuti] minuti centrata su [focus]. [rotazione] cambia gli
 /// esercizi da una seduta all'altra.
@@ -87,10 +88,7 @@ List<WorkoutStep> sedutaMobilita({
         intensita: '',
         recuperoS: '15',
         // Il consiglio una volta sola, sul primo esercizio.
-        note: i == 0
-            ? 'Movimenti lenti, respira con calma: allunga senza mai sentire '
-                  'dolore.'
-            : '',
+        note: i == 0 ? l10n.movimentiLentiRespiraCalma : '',
         esercizio: scelti[i].id,
       ),
   ];

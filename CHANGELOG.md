@@ -2,6 +2,68 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.0.0
+
+- Prima versione pubblica: il codice è su GitHub e l'APK firmato si scarica dalla pagina Releases; si installa sopra la 0.1.0 e la 1.12.x senza perdere nulla.
+- Oggi: nome, sport, durata ed esercizi della seduta e la fascia del giorno nella lingua scelta (prima restavano in italiano).
+- Piegamenti: tornano le due foto come per gli altri esercizi; le animazioni verranno rifatte da zero per tutto il catalogo.
+- Tutte le novità rispetto alla 1.12.3 sono nella sezione 0.1.0 di CHANGELOG.md.
+
+## 0.1.0
+
+- Bici al chiuso: il riquadro del battito compare solo con la fascia collegata; senza, la potenza prende tutta la riga.
+- Icone tutte arrotondate, con lo stesso stile in ogni pagina.
+- Prepara le sedute: titoli corti, che non vanno più a capo sui telefoni stretti.
+- Numeri che non "ballano" quando cambiano, e che entrano con un piccolo movimento; nell'allenamento guidato l'esercizio nuovo entra senza scatti.
+- Grafico delle ore a settimana: un filo di spazio tra gli sport della colonna e asse "2 h, 4 h, 6 h".
+- Colori degli sport più leggibili: stessa tinta, più scuri sul fondo chiaro (e bici più chiara sullo scuro).
+- Grafici: assi su numeri tondi (0, 200, 400 W), passo sui tempi tondi senza che le soste schiaccino la scala.
+- Mappa a tema: strade, acqua e verde staccano di più dal fondo.
+- Corsa, camminata e bici all'aperto: nella pagina "Dati" un dato per riga con numeri grandi finché ci stanno; quando arrivano passi, watt o cadenza la pagina passa da sola alla griglia a due colonne, senza scorrere.
+- Oggi: il "+" si fa da parte mentre scorri in giù e torna risalendo; anello e barra di avanzamento si riempiono quando compaiono.
+- Settimana: con più allenamenti del previsto si legge "5 fatti"; "1 esercizio" al posto di "1 esercizi".
+- Riepilogo: non compaiono più i tratti di zero secondi in coda agli intervalli.
+- Corsa strutturata: nel riepilogo "Previsto e fatto", un grafico solo con le fasce dell'intensità da tenere e la linea di quella tenuta, in zone (battito o passo secondo l'obiettivo del blocco).
+- Bici con i watt: nel riepilogo un grafico solo, con le barre colorate del programma e sopra la linea dei watt veri.
+- Riepilogo della sessione: la matita apre una pagina sola per nome, indoor/outdoor, dati, esercizi della forza ed eliminazione; in basso "Grafici" e accanto il tasto tondo per condividere.
+- Riepilogo e immagini da condividere: accanto all'icona dello sport c'è solo il nome della seduta.
+- Primo avvio: scelti gli sport, "Inizia oggi" crea subito il piano (3 sedute da 30 minuti, lunedì, mercoledì e venerdì); le altre domande sono facoltative.
+- Modo semplice (Profilo → Funzioni avanzate): zone, icone dei sensori, intervals.icu e import da file restano nascosti finché non servono; chi usava già l'app vede tutto.
+- Profilo: "I miei sensori" per collegare fascia cardio e sensori della bici, anche in modo semplice.
+- Oggi: invito ad attivare il backup automatico, avviso se l'ultimo non è riuscito, e sotto la settimana le settimane di fila, i traguardi e i record.
+- Seduta lunga di corsa e bici: si può spegnere da "Prepara le sedute".
+- Nuoto: le vasche corrette a mano valgono nel riepilogo, nei grafici e nelle immagini da condividere.
+- Bici registrata con l'app: nel riepilogo ogni blocco con i watt da tenere e quelli tenuti.
+- Mappa durante l'allenamento: al posto della "i" c'è il tasto dei livelli, anche nella minimappa.
+- Condividi: tre grafiche per ogni sport (es. corsa: Mappa, Km per km, Poster; forza: Esercizi, Muscoli, Poster con il record; arrampicata: Seduta, Progressi, Poster col grado), più "La tua foto" dalla galleria con i numeri sopra; nella Classica e nel Poster il percorso disegnato nitido, acceso a ogni condivisione e da spegnere con l'interruttore (spento, nella Classica c'è un grafico della seduta); nella grafica Mappa la mappa vera Pulse, Strade o Satellite, da un menu a tendina; marchio "#avidididadi" in alto.
+- Sessioni di corsa e bici: l'etichetta dice "Indoor" o "Outdoor" (prima "Al chiuso").
+- Numerazione azzerata: dopo la 1.12.4 l'app riparte da 0.1.0 e passerà a 1.0.0 solo alla pubblicazione; si installa sopra la versione di prima senza perdere nulla.
+- Tasto "+": "Allenamento libero" diventa "Forza"; alla fine scrivi tutti gli esercizi fatti, con ripetizioni e kg (o corpo libero), anche dopo dal dettaglio della seduta; per plank e tenute scegli "Tempo" e scrivi i secondi. Arrampicata passa in fondo, prima di "Altra attività".
+- Altra attività: le dai tu il nome (es. Kayak), che resta sulla sessione, e scegli all'inizio se registrare il percorso GPS.
+- Riepilogo della seduta: i tratti fatti sono divisi nelle sezioni della seduta prevista (riscaldamento, principale, defaticamento), con gli stessi titoli e pallini; una riga per passo, e i tratti in più a fine seduta in una riga sola.
+- Corsa e bici dall'orologio (con intervals.icu): i tratti sono i giri veri del Garmin, anche con il giro automatico di 1 km; compaiono solo se la seduta ha una struttura (ripetute, più passi), mentre lungo, lento e uscite continue mostrano solo i totali.
+- Sedute registrate con l'app: ogni blocco viene salvato con tempo fatto e previsto, battito e watt, così vedi anche un blocco chiuso prima del previsto.
+- Nuoto dall'orologio (con intervals.icu): nel dettaglio vedi gli intervalli con metri, tempo, passo e battito, e i recuperi; se i metri combaciano con la seduta in programma prendono i nomi dei passi. Nei grafici passo ogni 100 m e bracciate al minuto. Gli intervalli si correggono a mano: nome, metri, tempo, ordine, tratti da togliere o aggiungere.
+- Bici all'aperto senza misuratore di potenza: i passi in watt o in % dell'FTP si seguono col battito della zona corrispondente, con avvisi a voce; a schermo vedi watt e bpm.
+- Lungo: se lo fai più lungo del previsto conta comunque come lungo, e i prossimi lunghi partono da quello che hai fatto davvero.
+- Allenamento senza sensori: il movimento dell'esercizio si vede in grande sotto il tempo; il riquadro del battito compare solo quando il battito arriva davvero.
+- Tornando nell'app le sessioni nuove dell'orologio arrivano da sole, senza chiuderla e riaprirla.
+- Avvisi in basso più brevi: si chiudono scorrendo in qualsiasi direzione e "Annulla" ha il bordo, per non confonderlo con la chiusura.
+- Menu del "+" e altri fogli dal basso: non finiscono più sotto i tasti del telefono.
+- Lingua: al primo avvio e dal Profilo scegli italiano, inglese o greco; app, esercizi, piano già creato, coach e widget della schermata home seguono la lingua scelta.
+- Voce dell'allenamento: ha una lingua sua (Durante l'allenamento → Lingua della voce), anche diversa da quella dell'app.
+- Corsa e camminata: i passi contati dal telefono, con i passi al minuto, durante l'allenamento, nella notifica e nel riepilogo.
+- Passi: il permesso "Attività fisica" si chiede solo la prima volta; si accendono e spengono da Profilo → Dati e collegamenti → Passi dal telefono.
+- Tasto indietro: da Progressi, Coach e Profilo torna a Oggi; da Oggi chiude l'app.
+- Giro guidato: "Avanti" ed "Esci" restano sempre sopra la barra di Android.
+- All'apertura riaccetta l'informativa (posizione per "Altra attività", passi dal telefono).
+- Test delle soglie: nuovo tipo di seduta "Test" per corsa, bici e nuoto; in bici un solo "Test FTP" (a rampa sul rullo smart o da 20 minuti su strada), nel nuoto 400 + 200 m che danno il passo critico.
+- In Oggi un test si propone solo quando serve (FTP mancante o fermo da 8 settimane, intervalli troppo facili), al posto di una seduta dura; "più tardi" lo rimanda di 2 settimane.
+- FTP stimato dalle uscite delle ultime 6 settimane: se sale, l'app chiede se aggiornarlo; FTP e passo critico già scritti restano validi.
+- Le mie zone: "Fai il test per calcolarlo" per bici e nuoto.
+- Nuoto registrato con l'app: metri e passo per 100 m di ogni tratto.
+- Assistente: nel messaggio ci sono anche i blocchi delle sedute (con watt medi e previsti dei test), watt, cadenza, FC max, i tratti dell'orologio con i nomi della seduta prevista e, nel nuoto, vasche, passo medio e stile.
+
 ## 1.12.3
 
 - Le mie attività: al primo avvio scegli i tuoi sport e vedi solo quelli; dal Profilo ne aggiungi o togli e il calendario si aggiorna.

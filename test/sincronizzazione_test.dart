@@ -74,11 +74,11 @@ void main() {
     test('il titolo Garmin dà il nome e il tipo della corsa', () {
       Sessione con(String titolo) =>
           sessione(record('t', 'RUNNING').conTitolo(titolo));
-      expect(con('Pistoia - Fartlek FC').tipo, 'Fartlek');
-      expect(con('Pistoia - Tempo Run FC').tipo, 'Tempo run');
+      expect(con('Milano - Fartlek FC').tipo, 'Fartlek');
+      expect(con('Milano - Tempo Run FC').tipo, 'Tempo run');
       expect(con('Artemisio - Lento 7km').tipo, 'Lento');
       expect(con('Brescia Corsa').tipo, 'Corsa');
-      expect(con('Pistoia - Fartlek FC').note, 'Pistoia - Fartlek FC');
+      expect(con('Milano - Fartlek FC').note, 'Milano - Fartlek FC');
       // Per gli altri sport il tipo resta quello dell'attività.
       expect(
         sessione(record('n', 'SWIMMING_POOL').conTitolo('Piscina Base')).tipo,
@@ -99,7 +99,7 @@ void main() {
       expect(conTipoDalPiano([corsa], piano).single.tipo, 'Fartlek');
       // Il titolo scritto dall'app vince sul piano.
       final conTitolo = sessione(
-        record('t', 'RUNNING').conTitolo('Pistoia - Tempo Run'),
+        record('t', 'RUNNING').conTitolo('Milano - Tempo Run'),
       );
       expect(conTipoDalPiano([conTitolo], piano).single.tipo, 'Tempo run');
       // Nessun programma quel giorno: resta Corsa.

@@ -1,4 +1,5 @@
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 // Modalità allenamento: i passi di un workout diventano blocchi da eseguire uno
 // alla volta. Quelli a tempo hanno un conto alla rovescia e passano da soli;
@@ -21,6 +22,9 @@ class Blocco {
   final String ripetizioni; // previste: "8-10", "45 s"…
   final double? kg; // dalla scheda del personal trainer, se c'è
   final bool kgPerSerie; // la scheda dà pesi diversi per serie
+
+  /// Metri previsti del blocco ("4 × 50 m" → 50), null se non è a distanza.
+  final double? metri;
   const Blocco({
     required this.tipo,
     required this.titolo,
@@ -36,6 +40,7 @@ class Blocco {
     this.ripetizioni = '',
     this.kg,
     this.kgPerSerie = false,
+    this.metri,
   });
 
   bool get aTempo => secondi != null;
@@ -74,6 +79,11 @@ double? kgDellaSerie(String kg, int n) {
   return v.isEmpty ? null : v[(n - 1).clamp(0, v.length - 1)];
 }
 
+double? _metriPrevisti(String testo) {
+  final m = double.tryParse(testo.trim().replaceAll(',', '.'));
+  return m != null && m > 0 ? m : null;
+}
+
 /// I blocchi da eseguire, nell'ordine dei passi.
 List<Blocco> blocchiDa(List<WorkoutStep> passi) {
   final ordinati = [...passi]..sort((a, b) => a.ordine.compareTo(b.ordine));
@@ -94,14 +104,14 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
             // Nell'arrampicata le "serie" di un passo sono le ripetizioni.
             if (n > 1)
               s.sport == 'Arrampicata'
-                  ? 'Ripetizione $i di $n'
-                  : 'Serie $i di $n',
+                  ? l10n.ripetizione(i, n)
+                  : l10n.serie(i, n),
             if (quanti.isNotEmpty) quanti,
           ].join(' · '),
           intensita: s.intensita,
           obiettivo2: s.obiettivo2,
           note: [
-            if (perLato && secondiDi(s) != null) 'Cambia lato a metà.',
+            if (perLato && secondiDi(s) != null) l10n.cambiaLatoMeta,
             s.note,
           ].where((x) => x.isNotEmpty).join(' '),
           fase: s.fase,
@@ -112,6 +122,7 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           ripetizioni: s.ripetizioni,
           kg: kgDellaSerie(s.kg, i),
           kgPerSerie: s.kg.split(';').toSet().length > 1,
+          metri: _metriPrevisti(s.distanzaM),
         ),
       );
       // Recupero tra le serie, e dopo l'ultima se c'è un altro passo.
@@ -123,12 +134,12 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
             titolo: 'Recupero',
             dettaglio: i < n
                 ? s.sport == 'Arrampicata'
-                      ? 'Poi ripetizione ${i + 1} di $n'
-                      : 'Poi serie ${i + 1} di $n'
+                      ? l10n.poiRipetizione(i + 1, n)
+                      : l10n.poiSerie(i + 1, n)
                 : '',
             note: s.sport == 'Corsa' || s.sport == 'Bici'
-                ? 'Continua piano, senza fermarti.'
-                : 'Respira e bevi un sorso d\'acqua.',
+                ? l10n.continuaPianoSenzaFermarti
+                : l10n.respiraBeviSorsoAcqua,
             fase: s.fase,
             secondi: rec,
             passo: p,

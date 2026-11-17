@@ -2,34 +2,20 @@ import 'dart:math' as math;
 
 import 'esercizi.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 /// Obiettivi del piano di forza, con una spiegazione breve per la scelta.
-const obiettivi = {
-  'forza': ('Forza', 'Poche ripetizioni con carichi alti e recuperi lunghi.'),
-  'ipertrofia': (
-    'Massa muscolare',
-    'Ripetizioni medie, più volume per far crescere i muscoli.',
-  ),
-  'resistenza': (
-    'Resistenza muscolare',
-    'Tante ripetizioni e recuperi brevi, utile per gli sport di resistenza.',
-  ),
-  'generale': (
-    'Forma generale',
-    'Un equilibrio tra forza, muscoli e resistenza.',
-  ),
+Map<String, (String, String)> get obiettivi => {
+  'forza': ('Forza', l10n.pocheRipetizioniCarichiAlti),
+  'ipertrofia': (l10n.massaMuscolare, l10n.ripetizioniMediePiuVolume),
+  'resistenza': (l10n.resistenzaMuscolare, l10n.tanteRipetizioniRecuperiBrevi),
+  'generale': (l10n.formaGenerale, l10n.equilibrioTraForzaMuscoli),
 };
 
-const livelli = {
-  'principiante': (
-    'Principiante',
-    'Ti alleni con i pesi da poco o non lo fai da tempo.',
-  ),
-  'intermedio': (
-    'Intermedio',
-    'Ti alleni con costanza da almeno qualche mese.',
-  ),
-  'avanzato': ('Avanzato', 'Ti alleni da anni e conosci bene la tecnica.'),
+Map<String, (String, String)> get livelli => {
+  'principiante': (l10n.principiante, l10n.tiAlleniPesiPoco),
+  'intermedio': (l10n.intermedio, l10n.tiAlleniCostanzaAlmeno),
+  'avanzato': (l10n.avanzato, l10n.tiAlleniAnniConosci),
 };
 
 /// Serie, ripetizioni, recupero e fatica per ogni obiettivo.
@@ -213,7 +199,7 @@ PianoForza generaPianoForza({
     final gambeLeggere = domani != null && _corseImpegnative.contains(domani);
 
     final id = '$prefissoForza${isoData(data)}';
-    final nome = '$nomeSessione · settimana ${sb + 1} di 4';
+    final nome = l10n.settimana4(nomeSessione, sb + 1);
     var ordine = 0;
     WorkoutStep passo(
       String fase,
@@ -251,7 +237,7 @@ PianoForza generaPianoForza({
         passo(
           'riscaldamento',
           e,
-          rip: e.tipo == 'mobilita' ? '10 per lato' : '10 lenti',
+          rip: e.tipo == 'mobilita' ? l10n.n10Lato : l10n.n10Lenti,
         ),
       );
     }
@@ -317,12 +303,11 @@ PianoForza generaPianoForza({
       );
       final note = [
         if (peso.isNotEmpty) peso,
-        if (sb == 3) 'Settimana di scarico: una serie in meno, stessa tecnica.',
-        if (sb == 1)
-          'Settimana 2: una ripetizione in più rispetto alla scorsa.',
-        if (sb == 2) 'Settimana 3: due ripetizioni in più rispetto alla prima.',
+        if (sb == 3) l10n.settimanaScaricoSerieMeno,
+        if (sb == 1) l10n.settimana2RipetizionePiu,
+        if (sb == 2) l10n.settimana3DueRipetizioni,
         if (gambeLeggere && _gambe.contains(schema))
-          'Gambe leggere: domani hai ${_nomeCorsa(domani)}.',
+          l10n.gambeLeggereDomaniHai(_nomeCorsa(domani)),
       ].join(' ');
       passi.add(
         passo(
@@ -330,7 +315,7 @@ PianoForza generaPianoForza({
           e,
           serie: '$serie',
           rip: rip,
-          intensita: '${par.rpe}/10 di fatica',
+          intensita: l10n.n10Fatica(par.rpe),
           recupero: '${par.recupero}',
           note: note,
         ),
@@ -355,8 +340,8 @@ PianoForza generaPianoForza({
           rip: e.schema == 'rullo'
               ? '60 s'
               : e.nome.startsWith('Circonduzioni')
-              ? '10 per lato'
-              : '30 s per lato',
+              ? l10n.n10Lato
+              : l10n.n30SLato,
         ),
       );
     }
@@ -367,9 +352,9 @@ PianoForza generaPianoForza({
 }
 
 String _nomeCorsa(String? tipo) => switch (tipo) {
-  'lungo' => 'il Lungo',
-  'fartlek' => 'il Fartlek',
-  _ => 'il Tempo run',
+  'lungo' => l10n.lungo,
+  'fartlek' => l10n.fartlek,
+  _ => l10n.tempoRun,
 };
 
 /// Sceglie un esercizio per lo schema, ruotando tra le opzioni a ogni blocco.
@@ -467,12 +452,15 @@ String _pesoSuggerito(Esercizio e, Attrezzatura a, String livello, int passi) {
   final chiave = _conPeso.firstWhere(gruppo.contains, orElse: () => '');
   if (chiave.isEmpty) return '';
   if (chiave == 'bilanciere') {
-    return 'Parti con la sola barra e aggiungi dischi fino alla fatica indicata.';
+    return l10n.partiSolaBarraAggiungi;
   }
   final pesi = a[chiave] ?? const [];
   if (pesi.isEmpty) return '';
   if (pesi.length == 1) {
-    return 'Peso: ${attrezzoDa(chiave)!.nome.toLowerCase()} ${fmtNum(pesi.first)} kg.';
+    return l10n.pesoKg(
+      attrezzoDa(chiave)!.nome.toLowerCase(),
+      fmtNum(pesi.first),
+    );
   }
   final quota =
       switch (livello) {
@@ -483,5 +471,5 @@ String _pesoSuggerito(Esercizio e, Attrezzatura a, String livello, int passi) {
       (_gambe.contains(e.schema) ? 0.2 : 0);
   final base = ((pesi.length - 1) * math.min(quota, 1.0)).round();
   final p = pesi[(base + passi).clamp(0, pesi.length - 1)];
-  return 'Peso: circa ${fmtNum(p)} kg.';
+  return l10n.pesoCircaKg(fmtNum(p));
 }

@@ -15,6 +15,7 @@ import 'backup_auto.dart';
 import 'benvenuto.dart';
 import 'condivisione.dart';
 import 'csv.dart';
+import 'dati_live.dart';
 import 'esercizi.dart';
 import 'esporta.dart';
 import 'feedback.dart';
@@ -23,6 +24,8 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
+import 'esecuzione.dart';
+import 'intervalli.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
 import 'llm.dart';
@@ -41,7 +44,9 @@ import 'sessioni_eliminate.dart';
 import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
+import 'test_soglia.dart';
 import 'workout_base.dart';
+import 'l10n/lingua.dart';
 
 /// Sport ignorati dall'app (non mostrati né importati).
 const sportEsclusi = {'Altro'};
@@ -89,6 +94,9 @@ class AppState extends ChangeNotifier {
   Attrezzatura attrezzatura = {};
   List<FeedbackSessione> feedback = []; // in ordine di data
   List<SerieFatta> serieFatte = []; // ripetizioni e kg della forza
+
+  /// Intervalli corretti a mano, per id della sessione.
+  Map<String, List<IntervalloFatto>> intervalliModificati = {};
   List<SedutaArrampicata> arrampicate = []; // vie, blocchi e gradi
   List<SedutaNuoto> nuotate = []; // vasche e tempi scritti a mano
   List<Scheda> schede = []; // schede scritte a mano (personal trainer)
@@ -227,6 +235,13 @@ class AppState extends ChangeNotifier {
 
     cartella = await Storage.cartella();
     esercizi = await caricaEsercizi();
+    final tPot = await Storage.readTabella(filePotenzeMigliori);
+    potenzeMigliori = tPot == null
+        ? []
+        : tPot.righe
+              .map((r) => PotenzaMigliore.da(tPot, r))
+              .whereType<PotenzaMigliore>()
+              .toList();
     final tf = await Storage.readTabella('feedback.csv');
     feedback = tf == null
         ? []
@@ -242,6 +257,8 @@ class AppState extends ChangeNotifier {
               .map((r) => SerieFatta.da(tSerie, r))
               .whereType<SerieFatta>()
               .toList();
+    final tInt = await Storage.readTabella('intervalli_modificati.csv');
+    intervalliModificati = tInt == null ? {} : intervalliModificatiDa(tInt);
     final tNuoto = await Storage.readTabella('nuoto.csv');
     nuotate = tNuoto == null
         ? []
@@ -274,6 +291,11 @@ class AppState extends ChangeNotifier {
       await Storage.readTabella('schede_esercizi.csv'),
     );
     profilo = Profilo.da(await Storage.readTabella('profilo.csv'));
+    // FTP e passo scritti con una versione senza le date: valgono come
+    // confermati adesso, altrimenti l'app proporrebbe subito un altro test.
+    if (datePerSoglieVecchie(profilo, soloData(DateTime.now()))) {
+      await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    }
     assistente = ConfigAssistente.da(
       await Storage.readTabella('assistente.csv'),
     );
@@ -876,21 +898,38 @@ class AppState extends ChangeNotifier {
 
   /// Configurazione guidata: settimana tipo, piano di 3 mesi e sedute pronte
   /// per gli sport scelti. Restituisce quante sedute ci sono da oggi.
+  /// Con [daOggi] ("Inizia oggi") i giorni sono dal lunedì al venerdì e la
+  /// prima seduta è anticipata a oggi.
   Future<int> configuraDaZero({
     required String nome,
     required List<String> sport,
     required int giorni,
     required int minuti,
     required String livello,
+    bool daOggi = false,
+    bool avanzata = false,
   }) async {
     final oggi = soloData(DateTime.now());
     if (nome.trim().isNotEmpty) profilo.nome = nome.trim();
     profilo.benvenuto = true;
     profilo.attivita = sport.toSet();
+    // "Inizia oggi": sedute tutte uguali, senza quella lunga che cresce.
+    profilo.senzaLungo = daOggi;
+    // Chi comincia vede l'app semplice; con un orologio, tutto.
+    profilo.avanzata = avanzata ? 'si' : 'no';
     await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
-    settimana = settimanaDa(sport: sport, giorni: giorni, minuti: minuti);
+    settimana = settimanaDa(
+      sport: sport,
+      giorni: giorni,
+      minuti: minuti,
+      feriali: daOggi,
+    );
     await Storage.writeSettimana(settimana);
     await genera(oggi, 3);
+    if (daOggi) {
+      piano = conPrimaSedutaOggi(piano, oggi);
+      await Storage.writePiano(piano);
+    }
     if (sport.contains('Forza')) await creaPianoForza('generale', livello);
     final resistenza = {
       for (final s in sport)
@@ -901,6 +940,20 @@ class AppState extends ChangeNotifier {
     }
     notifyListeners();
     return piano.where((r) => !r.data.isBefore(oggi)).length;
+  }
+
+  /// Funzioni avanzate (zone, watt, sensori, intervals.icu) in vista o no.
+  Future<void> impostaAvanzata(bool accesa) async {
+    profilo.avanzata = accesa ? 'si' : 'no';
+    await salvaProfilo();
+  }
+
+  /// Seduta lunga di corsa e bici accesa o spenta.
+  Future<void> impostaLungo(bool acceso) async {
+    profilo.senzaLungo = !acceso;
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    await _aggiornaEndurance();
+    notifyListeners();
   }
 
   /// Come cresce il carico di uno sport: durata, intensità o automatico.
@@ -1039,6 +1092,9 @@ class AppState extends ChangeNotifier {
             regolazione: profilo.regolazioneEndurance,
             progressione: profilo.progressione,
             principiante: profilo.livello == 'principiante',
+            lungo: !profilo.senzaLungo,
+            ftpBici: ftpBici,
+            rampaBici: usaRullo,
           );
     // Le schede scritte a mano, dove valgono, al posto delle sedute preparate.
     var nuovo = generato;
@@ -1122,6 +1178,28 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Accende il backup automatico: fa scegliere la cartella e scrive subito
+  /// il primo. Falso se la scelta è stata annullata.
+  Future<bool> accendiBackupAuto() async {
+    final c = await scegliCartellaBackup();
+    if (c == null) return false;
+    await impostaBackupAuto(
+      backupAuto.copyWith(cartella: c.$1, nomeCartella: c.$2, errore: ''),
+    );
+    await backupAutomatico(subito: true);
+    return true;
+  }
+
+  /// "Non ora" alla proposta del backup: torna più avanti.
+  /// Con [aLungo] (spento apposta dal Profilo) aspetta subito il tempo lungo.
+  Future<void> rimandaBackup({bool aLungo = false}) => impostaBackupAuto(
+    ImpostazioniBackup(
+      frequenza: backupAuto.frequenza,
+      rimandato: DateTime.now(),
+      rimandi: aLungo ? 2 : backupAuto.rimandi + 1,
+    ),
+  );
+
   /// All'apertura: scrive il backup se è ora. Con [subito], comunque.
   Future<void> backupAutomatico({bool subito = false}) async {
     if (!backupAuto.attivo) return;
@@ -1154,9 +1232,7 @@ class AppState extends ChangeNotifier {
       debugPrint('Ripristino: dati non caricabili ($e), torno a prima');
       await Storage.rimetti(prima);
       await load();
-      throw const FormatException(
-        'Il backup è rovinato: i tuoi dati sono rimasti quelli di prima.',
-      );
+      throw FormatException(l10n.backupRovinatoTuoiDati);
     }
     if (fotoPrima != null &&
         b.nomeFoto != profilo.foto &&
@@ -1205,7 +1281,41 @@ class AppState extends ChangeNotifier {
     recupero: recupero,
     sportGenerati: profilo.sportGenerati,
     attivita: profilo.attivita,
+    blocchi: _blocchiContesto,
+    potenze: potenzeMigliori,
+    nuotate: nuotate,
   );
+
+  /// I blocchi delle sedute recenti per il messaggio all'assistente.
+  Map<String, List<IntervalloFatto>> _blocchiContesto = {};
+
+  /// Legge i blocchi (gradini, ripetute) delle sedute recenti, da mettere nel
+  /// messaggio all'assistente. Si chiama prima di prepararlo.
+  Future<void> preparaContestoAssistente() async {
+    final o = soloData(DateTime.now());
+    final nuovi = <String, List<IntervalloFatto>>{};
+    for (final s in sessioni) {
+      if (s.data.isAfter(o) ||
+          o.difference(s.data).inDays >= giorniBlocchiContesto ||
+          stessoSport(s.sport, 'Forza')) {
+        continue;
+      }
+      try {
+        final giorno = soloData(s.data);
+        final l = trattiDaMostrare(
+          s.sport,
+          senzaCodaBreve(await intervalliDi(s)),
+          passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport)),
+          aMano: intervalliModificati[s.id],
+        );
+        if (l.length >= 2) nuovi[s.id] = l;
+      } catch (_) {
+        // Senza blocchi la seduta va lo stesso, con i totali.
+      }
+    }
+    _blocchiContesto = nuovi;
+    notifyListeners();
+  }
 
   /// Verifica che il servizio scelto risponda e aggiorna lo stato mostrato.
   Future<void> verificaAssistente() async {
@@ -1223,7 +1333,7 @@ class AppState extends ChangeNotifier {
     } on ErroreLlm catch (e) {
       _connesso(e.messaggio);
     } catch (e) {
-      _connesso('Errore: $e');
+      _connesso(l10n.errore(e));
     }
   }
 
@@ -1256,6 +1366,7 @@ class AppState extends ChangeNotifier {
     try {
       // Solo gli ultimi messaggi, per contenere costi e lunghezza.
       final storia = chat.length > 12 ? chat.sublist(chat.length - 12) : chat;
+      await preparaContestoAssistente();
       final risposta = await chiediAssistente(
         assistente,
         await ChiaviAssistente.leggi(assistente.fornitore),
@@ -1287,7 +1398,7 @@ class AppState extends ChangeNotifier {
       return e.messaggio;
     } catch (e) {
       chat = chat.sublist(0, chat.length - 1);
-      return 'Errore: $e';
+      return l10n.errore(e);
     } finally {
       assistenteInAttesa = false;
       notifyListeners();
@@ -1335,6 +1446,7 @@ class AppState extends ChangeNotifier {
   Future<String> messaggioAgente({required bool completo}) async {
     final c = assistente;
     final oggi = DateTime.now();
+    await preparaContestoAssistente();
     final testo = completo
         ? messaggioInizialeAgente(
             codice: c.codiceEsterno,
@@ -1650,6 +1762,279 @@ class AppState extends ChangeNotifier {
       ], da: MessaggioChat(false, '')) >
       0;
 
+  // ---------------------------------------------------------------------
+  // Test delle soglie e stima dell'FTP della bici
+
+  /// I migliori 20 minuti e il miglior minuto delle uscite in bici con i watt.
+  List<PotenzaMigliore> potenzeMigliori = [];
+
+  Future<void> _salvaPotenze() => Storage.write(
+    filePotenzeMigliori,
+    potenzeMiglioriHeader,
+    potenzeMigliori.map((p) => p.toRow()).toList(),
+  );
+
+  /// Il test di bici che c'era quel giorno ("rampa", "venti" o vuoto), dal
+  /// tipo e dal nome della sessione o dalla seduta in programma.
+  String testBiciDel(Sessione s) {
+    final giorno = soloData(s.data);
+    final agente = allenamentiAgente
+        .where((w) => w.id == idAllenamentoAgente(giorno, 'Bici'))
+        .map((w) => w.nome)
+        .firstOrNull;
+    final generato = passiSeduta(
+      giorno,
+      'Bici',
+      tipoDel(giorno, 'Bici'),
+    ).map((w) => w.nome).firstOrNull;
+    for (final t in [
+      '${s.tipo} ${s.note}',
+      agente ?? '',
+      if (eTest(tipoDel(giorno, 'Bici'))) generato ?? tipoTestFtp,
+    ]) {
+      final test = testBiciDa(t);
+      if (test.isNotEmpty) return test;
+    }
+    return '';
+  }
+
+  /// Ricorda le potenze migliori di un'uscita in bici (per la stima dell'FTP).
+  Future<void> registraPotenza(Sessione s, List<Campione> potenza) async {
+    if (!stessoSport(s.sport, 'Bici')) return;
+    final p = potenzaMiglioreDa(s.id, s.data, potenza, test: testBiciDel(s));
+    if (p == null) return;
+    final prima = potenzeMigliori
+        .where((x) => x.idSessione == s.id)
+        .firstOrNull;
+    if (prima != null &&
+        prima.w1 == p.w1 &&
+        prima.w20 == p.w20 &&
+        prima.test == p.test) {
+      return;
+    }
+    potenzeMigliori = [
+      ...potenzeMigliori.where((x) => x.idSessione != s.id),
+      p,
+    ];
+    await _salvaPotenze();
+    notifyListeners();
+  }
+
+  /// Le uscite in bici nuove da intervals.icu con i watt: si scaricano i dati
+  /// per la stima dell'FTP (solo le ultime 6 settimane, al massimo 8 a volta).
+  Future<void> _potenzeDaIcu(
+    ClientIntervals client,
+    List<AttivitaIcu> nuove,
+  ) async {
+    final da = soloData(DateTime.now())
+        .subtract(const Duration(days: giorniStimaFtp));
+    final viste = {for (final p in potenzeMigliori) p.idSessione};
+    final daLeggere = [
+      for (final a in nuove)
+        if (stessoSport(a.sessione.sport, 'Bici') &&
+            a.sessione.potenzaMedia > 0 &&
+            a.sessione.durataMin >= 20 &&
+            a.sessione.inizio != null &&
+            !a.sessione.data.isBefore(da) &&
+            !viste.contains(a.sessione.id))
+          a.sessione,
+    ].take(8);
+    for (final s in daLeggere) {
+      try {
+        final serie = await client.serie(
+          s.id.substring(prefissoIcu.length),
+          s.inizio!,
+        );
+        await registraPotenza(s, serie.potenza);
+      } on ErroreIntervals {
+        return; // ci si riprova alla prossima sincronizzazione
+      }
+    }
+  }
+
+  /// L'FTP della bici di adesso (scritto o di intervals.icu).
+  int? get ftpBici => zonePotenza?.ftp;
+
+  /// L'FTP più alto che dicono le uscite delle ultime 6 settimane, se è
+  /// almeno il 3% sopra quello di adesso.
+  int? get ftpProposto =>
+      ftpDaProporre(potenzeMigliori, ftpBici, DateTime.now());
+
+  /// L'uscita da cui viene la proposta.
+  PotenzaMigliore? get uscitaProposta =>
+      miglioreRecente(potenzeMigliori, DateTime.now());
+
+  /// Scrive l'FTP della bici (a mano, da un test o da una proposta).
+  Future<void> impostaFtp(int watt) async {
+    profilo.ftpManuale = watt;
+    profilo.ftpData = soloData(DateTime.now());
+    profilo.testRimandati.remove('Bici');
+    await salvaProfilo();
+  }
+
+  /// Scrive il passo critico del nuoto, per esempio dal test.
+  Future<void> impostaPassoCritico(int secondi) async {
+    profilo.passoCriticoManuale = secondi;
+    profilo.passoCriticoData = soloData(DateTime.now());
+    profilo.testRimandati.remove('Nuoto');
+    await salvaProfilo();
+  }
+
+  /// C'è un rullo o un sensore di potenza: le uscite hanno i watt.
+  bool get potenzaMisurata =>
+      potenzeMigliori.isNotEmpty ||
+      sessioni.any((s) => stessoSport(s.sport, 'Bici') && s.potenzaMedia > 0);
+
+  /// Si pedala sul rullo: un'uscita al chiuso con i watt negli ultimi 60
+  /// giorni. Allora il test dell'FTP è a rampa, in ERG.
+  bool get usaRullo {
+    final da = soloData(DateTime.now()).subtract(const Duration(days: 60));
+    return sessioni.any(
+      (s) =>
+          stessoSport(s.sport, 'Bici') &&
+          !s.data.isBefore(da) &&
+          s.potenzaMedia > 0 &&
+          (alChiuso(s) || tipoAlChiuso(s.tipo)),
+    );
+  }
+
+  DateTime? _ultimoTestBici() => potenzeMigliori
+      .where((p) => p.test.isNotEmpty)
+      .map((p) => p.data)
+      .fold<DateTime?>(null, (a, b) => a == null || b.isAfter(a) ? b : a);
+
+  /// L'ultima volta che l'FTP è stato confermato: scritto, da un test o da
+  /// un'uscita vicina alla soglia.
+  DateTime? _ultimaProvaBici() {
+    final ftp = ftpBici;
+    DateTime? d = profilo.ftpData;
+    for (final p in potenzeMigliori) {
+      final f = p.ftp;
+      final conta =
+          p.test.isNotEmpty || (f != null && ftp != null && f >= ftp * 0.97);
+      if (conta && (d == null || p.data.isAfter(d))) d = p.data;
+    }
+    return d;
+  }
+
+  /// Fatica e completamento delle ultime sedute dure di bici (dal più recente).
+  List<(int, bool)> _feedbackIntervalliBici() {
+    final da = soloData(DateTime.now()).subtract(const Duration(days: 42));
+    final dopoTest = _ultimoTestBici() ?? profilo.ftpData;
+    return [
+      for (final f in feedback.reversed)
+        if (stessoSport(f.sport, 'Bici') &&
+            !f.data.isBefore(da) &&
+            (dopoTest == null || f.data.isAfter(dopoTest)) &&
+            tipoDel(f.data, 'Bici').toLowerCase().contains('intervall'))
+          (f.fatica, f.completata),
+    ];
+  }
+
+  /// Già un test in calendario per quello sport, da oggi in poi.
+  bool testInCalendario(String sport) {
+    final oggi = soloData(DateTime.now());
+    return piano.any(
+      (r) =>
+          !r.data.isBefore(oggi) &&
+          stessoSport(r.sport, sport) &&
+          eTest(r.tipo),
+    );
+  }
+
+  bool _sportAttivo(String sport) =>
+      profilo.sportGenerati.contains(sport) ||
+      piano.any(
+        (r) =>
+            stessoSport(r.sport, sport) &&
+            !r.data.isBefore(soloData(DateTime.now())),
+      );
+
+  /// Perché proporre il test dell'FTP in bici adesso (null se non serve).
+  MotivoTest? get motivoTestFtpBici {
+    if (!_sportAttivo('Bici') || testInCalendario('Bici')) return null;
+    // Se basta accettare l'FTP dalle uscite, il test non serve.
+    if (ftpProposto != null) return null;
+    return motivoTestBici(
+      ftp: ftpBici,
+      potenzaMisurata: potenzaMisurata,
+      ultimaProva: _ultimaProvaBici(),
+      ultimoTest: _ultimoTestBici(),
+      intervalli: _feedbackIntervalliBici(),
+      oggi: DateTime.now(),
+      rimandatoFino: profilo.testRimandati['Bici'],
+    );
+  }
+
+  /// Perché proporre il test del passo critico (null se non serve).
+  MotivoTest? get motivoTestPassoCritico {
+    if (!_sportAttivo('Nuoto') || testInCalendario('Nuoto')) return null;
+    return motivoTestNuoto(
+      ultimoTest: profilo.passoCriticoData,
+      passoScritto: profilo.passoCriticoManuale > 0,
+      oggi: DateTime.now(),
+      rimandatoFino: profilo.testRimandati['Nuoto'],
+    );
+  }
+
+  /// La seduta che un test di [sport] sostituirebbe (null se non ce n'è una
+  /// nelle prossime 3 settimane).
+  PianoRiga? sedutaPerIlTest(String sport) => sedutaPerTest(
+    piano,
+    sport,
+    DateTime.now(),
+    inizio: profilo.inizioEndurance,
+  );
+
+  /// Non riproporre il test di [sport] per 2 settimane.
+  Future<void> rimandaTest(String sport) async {
+    profilo.testRimandati[sport] = soloData(DateTime.now())
+        .add(const Duration(days: 14));
+    await Storage.write('profilo.csv', profiloHeader, profilo.toRows());
+    notifyListeners();
+  }
+
+  /// I passi del test dell'FTP in bici: rampa sul rullo, 20 minuti fuori.
+  List<WorkoutStep> passiTestBici(String id, {required bool rampa}) => rampa
+      ? passiTestRampa(id, ftp: ftpBici)
+      : passiTestVenti(id, ftp: ftpBici);
+
+  /// Mette il test dell'FTP in bici nel calendario di quel giorno.
+  Future<bool> programmaTestFtpBici(DateTime data, {required bool rampa}) {
+    final passi = passiTestBici(
+      idAllenamentoAgente(data, 'Bici'),
+      rampa: rampa,
+    );
+    return _programmaTest(data, 'Bici', tipoTestFtp, passi);
+  }
+
+  /// Mette il test del passo critico nel calendario di quel giorno.
+  Future<bool> programmaTestNuoto(DateTime data) => _programmaTest(
+    data,
+    'Nuoto',
+    tipoTestNuoto,
+    passiTestNuoto(idAllenamentoAgente(data, 'Nuoto')),
+  );
+
+  Future<bool> _programmaTest(
+    DateTime data,
+    String sport,
+    String tipo,
+    List<WorkoutStep> passi,
+  ) async =>
+      await applicaAllenamentiAgente([
+        AllenamentoAgente(
+          data: soloData(data),
+          sport: sport,
+          tipo: tipo,
+          nome: passi.first.nome,
+          fascia: '',
+          passi: passi,
+          durataIndicata: passi.first.durataTot,
+        ),
+      ], da: MessaggioChat(false, '')) >
+      0;
+
   /// Passo critico del nuoto in secondi per 100 m (null se non stimabile).
   int? get passoCritico => profilo.passoCriticoManuale > 0
       ? profilo.passoCriticoManuale
@@ -1698,6 +2083,7 @@ class AppState extends ChangeNotifier {
       previsto: r,
       fatte: sessioni,
       metriPrevisti: stessoSport(r.sport, 'Nuoto') ? metriDi(passi).round() : 0,
+      lungo: tipoLungo(r.tipo) || passi.any((p) => tipoLungo(p.nome)),
     );
   }
 
@@ -1927,9 +2313,9 @@ class AppState extends ChangeNotifier {
   Future<String> inviaSessioneIntervals(Sessione s) async {
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      return 'Collega prima intervals.icu da Profilo → Dati e collegamenti.';
+      return l10n.collegaPrimaIntervalsIcu;
     }
-    if (inviate.containsKey(s.id)) return 'Già inviata a intervals.icu.';
+    if (inviate.containsKey(s.id)) return l10n.giaInviataIntervalsIcu;
     final nome = nomeAttivita(s, ritocchi[s.id]?.nome ?? '');
     try {
       final client = ClientIntervals(chiave);
@@ -1947,7 +2333,7 @@ class AppState extends ChangeNotifier {
       inviate = {...inviate, s.id: id ?? ''};
       await _salvaInviate();
       notifyListeners();
-      return 'Inviata a intervals.icu.';
+      return l10n.inviataIntervalsIcu;
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2090,14 +2476,14 @@ class AppState extends ChangeNotifier {
   /// Prova la chiave, la salva cifrata e scarica gli ultimi 90 giorni.
   Future<String> collegaIntervals(String chiave) async {
     final k = chiave.trim();
-    if (k.isEmpty) return 'Incolla prima la chiave API.';
+    if (k.isEmpty) return l10n.incollaPrimaChiaveApi;
     try {
       final nome = await ClientIntervals(k).verifica();
       await ChiaveIntervals.salva(k);
       intervalsCollegato = true;
       ultimaIntervals = null;
       final esito = await sincronizzaIntervals();
-      return '${nome.isEmpty ? 'Collegato' : 'Collegato come $nome'}. $esito';
+      return '${nome.isEmpty ? l10n.collegato : l10n.collegatoCome(nome)}. $esito';
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2109,7 +2495,7 @@ class AppState extends ChangeNotifier {
     if (!intervalsCollegato || sincronizzandoIntervals) return '';
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      erroreIntervals = 'Chiave non trovata: collega di nuovo intervals.icu.';
+      erroreIntervals = l10n.chiaveNonTrovataCollega;
       notifyListeners();
       return erroreIntervals!;
     }
@@ -2150,7 +2536,8 @@ class AppState extends ChangeNotifier {
       await _salvaIntervals();
       _ricombina();
       await _aggiornaEndurance();
-      final letto = '${nuove.length} attività lette da intervals.icu.';
+      await _potenzeDaIcu(ClientIntervals(chiave), nuove);
+      final letto = l10n.attivitaLetteIntervalsIcu(nuove.length);
       if (!invioIntervals) return letto;
       sincronizzandoIntervals = false;
       await inviaSeduteFatte();
@@ -2205,7 +2592,7 @@ class AppState extends ChangeNotifier {
     if (!intervalsCollegato || inviando) return '';
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) {
-      return 'Chiave non trovata: collega di nuovo intervals.icu.';
+      return l10n.chiaveNonTrovataCollega;
     }
     inviando = true;
     notifyListeners();
@@ -2242,15 +2629,16 @@ class AppState extends ChangeNotifier {
       await _salvaInviati();
       await _salvaIntervals();
       if (nuovi.isEmpty && daCancellare.isEmpty) {
-        return 'Il calendario di intervals.icu è già aggiornato.';
+        return l10n.calendarioIntervalsIcuGia;
       }
       final tolte = daCancellare.length - nuovi.length;
       final fatto = [
         if (nuovi.isNotEmpty)
-          '${nuovi.length} ${nuovi.length == 1 ? 'seduta mandata' : 'sedute mandate'}',
-        if (tolte > 0) '$tolte ${tolte == 1 ? 'tolta' : 'tolte'}',
+          '${nuovi.length} ${nuovi.length == 1 ? l10n.sedutaMandata : l10n.seduteMandate}',
+        if (tolte > 0)
+          '$tolte ${tolte == 1 ? l10n.parolaTolta : l10n.parolaTolte}',
       ].join(', ');
-      return '${maiuscola(fatto)} a intervals.icu.';
+      return l10n.intervalsIcu(maiuscola(fatto));
     } on ErroreIntervals catch (e) {
       erroreInvio = e.messaggio;
       return e.messaggio;
@@ -2277,7 +2665,7 @@ class AppState extends ChangeNotifier {
       inviatiIcu = [];
       await _salvaInviati();
       notifyListeners();
-      return '$n sedute tolte dal calendario di intervals.icu.';
+      return l10n.seduteTolteDalCalendario(n);
     } on ErroreIntervals catch (e) {
       return e.messaggio;
     }
@@ -2304,6 +2692,56 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Tutte le serie di una sessione per i grafici: da intervals.icu se c'è,
+  /// altrimenti da Health Connect, con i sensori collegati all'app e la
+  /// velocità dal GPS se manca.
+  Future<SerieSessione> serieDi(Sessione s) async {
+    final serie = await _serieDi(s);
+    // I watt migliori dell'uscita: servono alla stima dell'FTP.
+    await registraPotenza(s, serie.potenza);
+    return serie;
+  }
+
+  Future<SerieSessione> _serieDi(Sessione s) async {
+    // Da intervals.icu: tutti i dati dell'orologio (anche quota e potenza).
+    final icu = await serieIcu(s);
+    if (icu != null && !icu.vuota) return icu;
+    var serie = const SerieSessione();
+    if (s.inizio != null && s.fine != null && s.origine.isNotEmpty) {
+      // Con Freeletics il battito arriva dall'orologio: niente filtro sull'app.
+      serie = await hc.serie(
+        s.inizio!,
+        s.fine!,
+        origine: daFreeletics(s) ? '' : s.origine,
+        conPassi: siCammina(s.sport),
+      );
+    }
+    // Battito, potenza, cadenza e velocità dai sensori collegati all'app
+    // (rulli, misuratore di potenza, fascia cardio).
+    final app = await serieApp(s);
+    if (!app.vuota) {
+      serie = SerieSessione(
+        fc: serie.fc.isEmpty ? app.fc : serie.fc,
+        velocita: serie.velocita.isEmpty ? app.velocita : serie.velocita,
+        potenza: app.potenza,
+        // Quella di Health Connect resta, se i sensori non ne hanno una.
+        cadenza: app.cadenza.isEmpty ? serie.cadenza : app.cadenza,
+      );
+    }
+    if (serie.velocita.isEmpty && sportConPercorso(s.sport, s.tipo)) {
+      final r = await percorsoDi(s);
+      if (r.stato == StatoPercorso.dati && r.percorso != null) {
+        serie = SerieSessione(
+          fc: serie.fc,
+          velocita: velocitaDaPercorso(r.percorso!),
+          potenza: serie.potenza,
+          cadenza: serie.cadenza,
+        );
+      }
+    }
+    return serie;
+  }
+
   /// Battito, velocità, altitudine e potenza di un'attività di intervals.icu.
   Future<SerieSessione?> serieIcu(Sessione s) async {
     final chiave = await ChiaveIntervals.leggi();
@@ -2316,6 +2754,93 @@ class AppState extends ChangeNotifier {
     } on ErroreIntervals {
       return null;
     }
+  }
+
+  /// Gli intervalli di un'attività (lavoro e recuperi): la copia sul telefono
+  /// (anche i blocchi delle sedute registrate con l'app), altrimenti per
+  /// quelle di intervals.icu dalla rete. Vuoti se non ci sono.
+  Future<List<IntervalloFatto>> intervalliDi(Sessione s) async {
+    // Corsa e bici dall'orologio: i giri veri, dal file originale.
+    if (s.id.startsWith(prefissoIcu) && !stessoSport(s.sport, 'Nuoto')) {
+      final giri = await _giriDi(s);
+      if (giri.isNotEmpty) return giri;
+    }
+    final file = fileIntervalli(s.id);
+    final t = await Storage.leggiTesto(file);
+    if (t != null) {
+      final l = intervalliDaCsv(t);
+      // Nuoto registrato con l'app: i metri dei blocchi dalla seduta prevista.
+      if (stessoSport(s.sport, 'Nuoto') && l.any((i) => i.fase.isNotEmpty)) {
+        final giorno = soloData(s.data);
+        return conMetriPrevisti(
+          l,
+          blocchiDa(passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport))),
+        );
+      }
+      return l;
+    }
+    if (!s.id.startsWith(prefissoIcu)) return const [];
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) return const [];
+    try {
+      final l = await ClientIntervals(chiave)
+          .intervalli(s.id.substring(prefissoIcu.length));
+      // Appena finita l'attività possono non esserci ancora: si riprova.
+      if (l.isNotEmpty) await Storage.scriviTesto(file, intervalliCsv(l));
+      return l;
+    } on ErroreIntervals {
+      return const [];
+    }
+  }
+
+  /// I giri dell'orologio di un'attività di intervals.icu: la copia già
+  /// letta, altrimenti dal file originale (una volta sola: se non ha giri si
+  /// segna e non si riscarica).
+  Future<List<IntervalloFatto>> _giriDi(Sessione s) async {
+    final file = fileGiri(s.id);
+    final t = await Storage.leggiTesto(file);
+    if (t != null) return intervalliDaCsv(t);
+    final chiave = await ChiaveIntervals.leggi();
+    if (chiave == null) return const [];
+    try {
+      final giri = await ClientIntervals(chiave)
+          .giriOrologio(s.id.substring(prefissoIcu.length));
+      await Storage.scriviTesto(file, intervalliCsv(giri));
+      return giri;
+    } on ErroreIntervals {
+      return const []; // senza rete: si riprova la prossima volta
+    }
+  }
+
+  /// I blocchi di una seduta registrata con l'app, com'è andata davvero.
+  Future<void> salvaIntervalliApp(
+    String idSessione,
+    List<IntervalloFatto> intervalli,
+  ) async {
+    if (intervalli.isEmpty) return;
+    await Storage.scriviTesto(
+      fileIntervalli(idSessione),
+      intervalliCsv(intervalli),
+    );
+  }
+
+  /// Salva gli intervalli corretti a mano di una sessione; con [nuovi] null
+  /// si torna a quelli dell'orologio.
+  Future<void> salvaIntervalli(
+    String idSessione,
+    List<IntervalloFatto>? nuovi,
+  ) async {
+    intervalliModificati = {...intervalliModificati}..remove(idSessione);
+    if (nuovi != null) intervalliModificati[idSessione] = nuovi;
+    await Storage.write(
+      'intervalli_modificati.csv',
+      intervalliModificatiHeader,
+      [
+        for (final e in intervalliModificati.entries)
+          ...righeIntervalli(e.key, e.value),
+      ],
+    );
+    notifyListeners();
   }
 
   Future<void> ritoccaSessione(RitoccoSessione r) async {
@@ -2335,26 +2860,23 @@ class AppState extends ChangeNotifier {
   /// permessi che mancano; altrimenti, senza permessi, non fa nulla.
   /// Restituisce il messaggio da mostrare.
   Future<String> sincronizzaHc({bool interattiva = false}) async {
-    if (sincronizzando) return 'Sincronizzazione già in corso.';
+    if (sincronizzando) return l10n.sincronizzazioneGiaCorso;
     sincronizzando = true;
     notifyListeners();
     try {
       final disp = await hc.disponibilita();
       if (disp != DisponibilitaHc.disponibile) {
         return switch (disp) {
-          DisponibilitaHc.daAggiornare =>
-            'Health Connect va aggiornato: aprilo dal Play Store.',
-          DisponibilitaHc.nonInstallata =>
-            'Health Connect non è installato sul telefono.',
-          _ => 'Health Connect è disponibile solo su Android.',
+          DisponibilitaHc.daAggiornare => l10n.healthConnectVaAggiornato,
+          DisponibilitaHc.nonInstallata => l10n.healthConnectNonInstallato,
+          _ => l10n.healthConnectDisponibileSolo,
         };
       }
       if ((await hc.permessi())[HealthDataType.WORKOUT] != true) {
-        if (!interattiva) return 'Health Connect non è ancora collegato.';
+        if (!interattiva) return l10n.healthConnectNonAncora;
         await hc.chiediPermessi();
         if ((await hc.permessi())[HealthDataType.WORKOUT] != true) {
-          return 'Senza il permesso per le sessioni di allenamento non posso '
-              'leggere nulla. Puoi darlo da "Rivedi permessi".';
+          return l10n.senzaPermessoSessioniAllenamento;
         }
       }
 
@@ -2437,16 +2959,16 @@ class AppState extends ChangeNotifier {
       final cambiate = nuove.length - aggiunte;
       final tolte = cancellati.where((u) => prima.contains('hc-$u')).length;
       if (aggiunte + cambiate + tolte == 0) {
-        return 'Nessuna novità da Health Connect.';
+        return l10n.nessunaNovitaHealthConnect;
       }
       return [
-        if (aggiunte > 0) '$aggiunte sessioni nuove',
-        if (cambiate > 0) '$cambiate aggiornate',
-        if (tolte > 0) '$tolte rimosse',
+        if (aggiunte > 0) l10n.sessioniNuove(aggiunte),
+        if (cambiate > 0) l10n.quanteAggiornate(cambiate),
+        if (tolte > 0) l10n.quanteRimosse(tolte),
       ].join(', ');
     } catch (e) {
       debugPrint('Health Connect: errore $e');
-      return 'Errore durante la sincronizzazione: $e';
+      return l10n.erroreDuranteSincronizzazione(e);
     } finally {
       sincronizzando = false;
       notifyListeners();
@@ -2525,6 +3047,19 @@ class AppState extends ChangeNotifier {
       ...serieFatte.where((s) => s.data != d || !chiavi.contains(s.chiave)),
       ...nuove,
     ];
+    await Storage.write(
+      'serie.csv',
+      serieHeader,
+      serieFatte.map((s) => s.toRow()).toList(),
+    );
+    notifyListeners();
+  }
+
+  /// Tutte le serie di un giorno scritte a mano: sostituiscono quelle che
+  /// c'erano, così un esercizio tolto sparisce davvero.
+  Future<void> scriviSerieDel(DateTime giorno, List<SerieFatta> nuove) async {
+    final d = soloData(giorno);
+    serieFatte = [...serieFatte.where((s) => s.data != d), ...nuove];
     await Storage.write(
       'serie.csv',
       serieHeader,
@@ -2676,7 +3211,7 @@ class AppState extends ChangeNotifier {
     if (!stessoSport(sport, 'Forza')) {
       if (!profilo.sportGenerati.contains(sport) || sport == sportMobilita) {
         notifyListeners();
-        return 'Feedback salvato: conta nel carico di allenamento.';
+        return l10n.feedbackSalvatoContaNel;
       }
       // La prossima seduta di questo sport, prima e dopo il ricalcolo.
       final oggi = soloData(DateTime.now());
@@ -2718,12 +3253,15 @@ class AppState extends ChangeNotifier {
       final giorno =
           '${giorniSettimana[quando.weekday - 1].toLowerCase()} '
           '${quando.day}/${quando.month}';
-      return '$frase\n\nProssima seduta ($giorno): '
-          '${cambi.isEmpty ? 'resta uguale' : cambi.join(', ')}.';
+      return l10n.prossimaSeduta(
+        frase,
+        giorno,
+        cambi.isEmpty ? l10n.restaUguale : cambi.join(', '),
+      );
     }
     if (profilo.obiettivo.isEmpty) {
       notifyListeners();
-      return 'Feedback salvato.';
+      return l10n.feedbackSalvato;
     }
     final r = regola(
       storico: feedback
@@ -2749,10 +3287,9 @@ class AppState extends ChangeNotifier {
   /// Health Connect (vedi [modelloCsvSessioni]).
   Future<String> importaSessioniCsv(String testo) async {
     final t = Tabella.da(testo);
-    if (t == null || t.righe.isEmpty) return 'file vuoto o non valido.';
+    if (t == null || t.righe.isEmpty) return l10n.fileVuotoONon;
     if (t.ha(['data', 'sport'])) return _importaSessioni(t);
-    return 'formato non riconosciuto: servono almeno le colonne data e sport '
-        '(trovate: ${t.idx.keys.join(', ')}).';
+    return l10n.formatoNonRiconosciutoServono(t.idx.keys.join(', '));
   }
 
   Future<String> _importaSessioni(Tabella t) async {
@@ -2785,10 +3322,10 @@ class AppState extends ChangeNotifier {
     _ricombina();
     notifyListeners();
     final extra = [
-      if (scartate > 0) '$scartate righe scartate (data o sport mancanti)',
-      if (ignorate > 0) '$ignorate ignorate (${sportEsclusi.join(', ')})',
+      if (scartate > 0) l10n.righeScartateDataO(scartate),
+      if (ignorate > 0) l10n.ignorate(ignorate, sportEsclusi.join(', ')),
     ].map((e) => ', $e').join();
-    return '$nuove sessioni nuove, $aggiornate aggiornate$extra.';
+    return l10n.sessioniNuoveAggiornate(nuove, aggiornate, extra);
   }
 
   // ---------------------------------------------------------------------

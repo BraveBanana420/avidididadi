@@ -20,6 +20,7 @@ class AllenamentoInCorso {
   final String tipo;
   final String nome;
   final bool libera;
+  final bool conGps; // GPS scelto a mano (altra attività)
   final List<WorkoutStep> passi;
   final int indice; // blocco a cui si era arrivati
   final bool finito; // già al riepilogo
@@ -42,6 +43,7 @@ class AllenamentoInCorso {
   final List<int> potenza; // somma, quanti, massimo
   final List<int> cadenza;
   final double metriSensore; // dai sensori della bici
+  final int passiContati; // dal contapassi del telefono (corsa, camminata)
   final String idPercorso; // percorso seguito ('' = nessuno)
   final double? progressoPercorso; // metri fatti sulla traccia
 
@@ -50,6 +52,7 @@ class AllenamentoInCorso {
     required this.tipo,
     required this.nome,
     required this.libera,
+    this.conGps = false,
     required this.passi,
     required this.indice,
     required this.finito,
@@ -72,6 +75,7 @@ class AllenamentoInCorso {
     this.potenza = const [0, 0, 0],
     this.cadenza = const [0, 0, 0],
     this.metriSensore = 0,
+    this.passiContati = 0,
     this.idPercorso = '',
     this.progressoPercorso,
   });
@@ -81,6 +85,7 @@ class AllenamentoInCorso {
     'tipo': tipo,
     'nome': nome,
     'libera': libera,
+    'gps': conGps,
     // I passi come righe di workout.csv: si rileggono con lo stesso codice.
     'passi': [for (final p in passi) p.toRow()],
     'indice': indice,
@@ -116,6 +121,7 @@ class AllenamentoInCorso {
     'potenza': potenza,
     'cadenza': cadenza,
     'metri_sensore': metriSensore,
+    'passi_contati': passiContati,
     'percorso': idPercorso,
     'progresso_percorso': progressoPercorso,
   };
@@ -135,6 +141,7 @@ class AllenamentoInCorso {
         tipo: j['tipo'] as String,
         nome: j['nome'] as String,
         libera: j['libera'] as bool,
+        conGps: j['gps'] == true,
         passi: passi,
         indice: (j['indice'] as num).toInt(),
         finito: j['finito'] as bool,
@@ -183,6 +190,7 @@ class AllenamentoInCorso {
         potenza: _tre(j['potenza']),
         cadenza: _tre(j['cadenza']),
         metriSensore: (j['metri_sensore'] as num? ?? 0).toDouble(),
+        passiContati: (j['passi_contati'] as num? ?? 0).toInt(),
         idPercorso: j['percorso'] as String? ?? '',
         progressoPercorso: (j['progresso_percorso'] as num?)?.toDouble(),
       );

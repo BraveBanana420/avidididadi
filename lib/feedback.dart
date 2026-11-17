@@ -1,6 +1,7 @@
 import 'csv.dart';
 import 'generatore_endurance.dart';
 import 'models.dart';
+import 'l10n/lingua.dart';
 
 const feedbackHeader = [
   'data',
@@ -102,17 +103,16 @@ const regolazioneMin = -3, regolazioneMax = 5;
   switch (e) {
     case Esito.facile:
       r++;
-      msg.add('Bene! Dalla prossima sessione aumento un po\' il carico.');
+      msg.add(l10n.beneDallaProssimaSessione);
     case Esito.duro:
       r--;
       msg.add(
         ultimo.dolore
-            ? 'Hai segnalato dolore: alleggerisco le prossime sessioni. '
-                  'Se il dolore continua, fermati e chiedi a un medico.'
-            : 'Alleggerisco un po\' le prossime sessioni.',
+            ? l10n.haiSegnalatoDoloreAlleggerisco
+            : l10n.alleggeriscoPoProssimeSessioni,
       );
     case Esito.giusto:
-      msg.add('Carico giusto: si continua così.');
+      msg.add(l10n.caricoGiustoSiContinua);
   }
 
   // Tre sessioni di fila nello stesso verso cambiano il livello.
@@ -129,11 +129,11 @@ const regolazioneMin = -3, regolazioneMax = 5;
         i < _ordineLivelli.length - 1) {
       l = _ordineLivelli[i + 1];
       r = 0;
-      msg.add('Ti alleni meglio di quanto pensavi: passo al livello $l.');
+      msg.add(l10n.tiAlleniMeglioQuanto(l));
     } else if (ultimi.every((x) => x == Esito.duro) && i > 0) {
       l = _ordineLivelli[i - 1];
       r = 0;
-      msg.add('Passo al livello $l, più adatto per ora.');
+      msg.add(l10n.passoAlLivelloPiu(l));
     }
   }
   return (
@@ -180,19 +180,13 @@ const regolazioneEnduranceMin = -3, regolazioneEnduranceMax = 3;
       dividiProgressione(r, modo).$2 !=
       dividiProgressione(regolazione, modo).$2;
   final messaggio = switch (e) {
-    _ when f.dolore =>
-      'Hai segnalato dolore: alleggerisco le prossime sedute di $sport. '
-          'Se il dolore continua, fermati e chiedi a un medico.',
-    Esito.facile when r == regolazione =>
-      "Bene! Le sedute di $sport sono già al massimo dell'aumento.",
-    Esito.facile when suIntensita =>
-      "Bene! Aumento un po' l'intensità delle prossime sedute di $sport, "
-          'a parità di tempo.',
-    Esito.facile => "Bene! Allungo un po' le prossime sedute di $sport.",
-    Esito.duro when suIntensita =>
-      "Rendo un po' meno intense le prossime sedute di $sport.",
-    Esito.duro => "Accorcio un po' le prossime sedute di $sport.",
-    Esito.giusto => 'Fatica giusta: si continua così.',
+    _ when f.dolore => l10n.haiSegnalatoDoloreAlleggerisco2(sport),
+    Esito.facile when r == regolazione => l10n.beneSeduteSonoGia(sport),
+    Esito.facile when suIntensita => l10n.beneAumentoPoIntensita(sport),
+    Esito.facile => l10n.beneAllungoPoProssime(sport),
+    Esito.duro when suIntensita => l10n.rendoPoMenoIntense(sport),
+    Esito.duro => l10n.accorcioPoProssimeSedute(sport),
+    Esito.giusto => l10n.faticaGiustaSiContinua,
   };
   return (regolazione: r, messaggio: messaggio);
 }

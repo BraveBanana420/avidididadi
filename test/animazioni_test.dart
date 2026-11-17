@@ -4,9 +4,20 @@ import 'package:allenamenti_app/animazioni_esercizi.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('il push-up ha il WebP, gli altri esercizi no', () {
-    expect(animazioneDi('Pushups'), 'assets/exercises/animated/push_up.webp');
+  test('senza animazione l\'esercizio usa le foto (anche il push-up)', () {
+    expect(animazioneDi('Pushups'), isNull);
     expect(animazioneDi('Incline_Push-Up'), isNull);
+  });
+
+  test('una riga della mappa diventa il percorso dell\'asset', () {
+    for (final MapEntry(:key, :value) in animazioniEsercizi.entries) {
+      expect(animazioneDi(key), '$cartellaAnimazioni$value');
+    }
+  });
+
+  test('la cartella delle animazioni esiste anche vuota', () {
+    // pubspec la registra: se mancasse, la compilazione si fermerebbe.
+    expect(Directory(cartellaAnimazioni).existsSync(), isTrue);
   });
 
   test('ogni animazione della mappa esiste ed è un WebP animato', () {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_piccolo_nome">Today</string>
+    <string name="widget_piccolo_desc">Today\'s session, with the button to start</string>
+    <string name="widget_largo_nome">Today and week</string>
+    <string name="widget_largo_desc">Today\'s session and your week</string>
+</resources>

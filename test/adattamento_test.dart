@@ -184,6 +184,41 @@ void main() {
       );
     });
 
+    test('lungo più lungo del previsto: è sempre il lungo', () {
+      // Caso reale: lungo da 70 minuti, corso con Garmin in 101 minuti.
+      final lungo = PianoRiga(
+        data: giorno(0, 6),
+        fascia: 'Mattina',
+        sport: 'Corsa',
+        tipo: 'Lungo',
+        durataMin: 70,
+      );
+      Sessione corsa(int min) => Sessione(
+        id: 'hc-lungo',
+        data: giorno(0, 6),
+        sport: 'Corsa',
+        tipo: 'Milano Corsa',
+        durataMin: min,
+        distanzaKm: 15.02,
+      );
+      expect(
+        statoSeduta(previsto: lungo, fatte: [corsa(101)], lungo: true),
+        StatoSeduta.svolta,
+      );
+      // Molto più corto resta un'altra seduta.
+      expect(
+        statoSeduta(previsto: lungo, fatte: [corsa(35)], lungo: true),
+        StatoSeduta.sostituita,
+      );
+      // Senza sapere che è un lungo vale la regola di prima.
+      expect(
+        statoSeduta(previsto: lungo, fatte: [corsa(101)]),
+        StatoSeduta.sostituita,
+      );
+      expect(tipoLungo('Lungo · 70 min'), true);
+      expect(tipoLungo('Allunghi'), false);
+    });
+
     test('la fatica attesa è quella dell\'attività vera, non della soglia', () {
       expect(faticaPrevista(previsto.tipo), 7);
       expect(

@@ -108,7 +108,11 @@ void main() {
         home: Scaffold(body: Center(child: IconaTriathlon())),
       ),
     );
-    for (final i in [Icons.pool, Icons.directions_bike, Icons.directions_run]) {
+    for (final i in [
+      Icons.pool_rounded,
+      Icons.directions_bike_rounded,
+      Icons.directions_run_rounded,
+    ]) {
       expect(find.byIcon(i), findsOneWidget);
     }
     // Sta nello spazio di un'icona normale, senza andare a capo.
