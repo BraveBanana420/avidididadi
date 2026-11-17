@@ -5,6 +5,7 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 ## 1.0.0
 
 - Prima versione pubblica: il codice è su GitHub e l'APK firmato si scarica dalla pagina Releases; si installa sopra la 0.1.0 e la 1.12.x senza perdere nulla.
+- Profilo → Sostieni il progetto: apre la pagina Ko-fi delle donazioni (facoltative, non sbloccano nulla).
 - Oggi: nome, sport, durata ed esercizi della seduta e la fascia del giorno nella lingua scelta (prima restavano in italiano).
 - Piegamenti: tornano le due foto come per gli altri esercizi; le animazioni verranno rifatte da zero per tutto il catalogo.
 - Tutte le novità rispetto alla 1.12.3 sono nella sezione 0.1.0 di CHANGELOG.md.

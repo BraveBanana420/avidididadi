@@ -450,14 +450,15 @@ class ProfileScreen extends StatelessWidget {
                       onTap: () => _rifaiConfigurazione(context),
                     ),
                     // Solo un link: donare non sblocca nessuna funzione.
-                    RigaPulse(
-                      segno: const IconaQuadrata(Icons.favorite_rounded),
-                      titolo: l10n.sostieniProgetto,
-                      sottotitolo: l10n.sostieniSotto,
-                      linea: false,
-                      fine: const Icon(Icons.open_in_new_rounded, size: 20),
-                      onTap: () => apriLink(context, urlDonazioni),
-                    ),
+                    if (urlDonazioni.isNotEmpty)
+                      RigaPulse(
+                        segno: const IconaQuadrata(Icons.favorite_rounded),
+                        titolo: l10n.sostieniProgetto,
+                        sottotitolo: l10n.sostieniSotto,
+                        linea: false,
+                        fine: const Icon(Icons.open_in_new_rounded, size: 20),
+                        onTap: () => apriLink(context, urlDonazioni),
+                      ),
                   ],
                 ),
               ],

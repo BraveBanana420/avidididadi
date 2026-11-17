@@ -155,6 +155,16 @@ Segnalazioni, idee e pull request sono benvenute: leggi
 [Codice di condotta](CODE_OF_CONDUCT.md). Problemi di sicurezza: vedi
 [SECURITY.md](SECURITY.md).
 
+Anche senza programmare puoi aiutare con le
+[animazioni degli esercizi](docs/animazioni/README.it.md).
+
+## Sostieni il progetto
+
+Avidididadi è gratuita e lo resterà: una donazione non sblocca nulla, aiuta solo
+l'app a crescere. Se ti piace, puoi offrirmi un caffè su
+[Ko-fi](https://ko-fi.com/avidididadi) (anche dall'app, in Profilo → Sostieni il
+progetto). Grazie! 💪
+
 ## Licenza
 
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
