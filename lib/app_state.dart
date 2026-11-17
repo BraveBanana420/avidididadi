@@ -24,6 +24,7 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
+import 'esecuzione.dart';
 import 'intervalli.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
@@ -1280,7 +1281,41 @@ class AppState extends ChangeNotifier {
     recupero: recupero,
     sportGenerati: profilo.sportGenerati,
     attivita: profilo.attivita,
+    blocchi: _blocchiContesto,
+    potenze: potenzeMigliori,
+    nuotate: nuotate,
   );
+
+  /// I blocchi delle sedute recenti per il messaggio all'assistente.
+  Map<String, List<IntervalloFatto>> _blocchiContesto = {};
+
+  /// Legge i blocchi (gradini, ripetute) delle sedute recenti, da mettere nel
+  /// messaggio all'assistente. Si chiama prima di prepararlo.
+  Future<void> preparaContestoAssistente() async {
+    final o = soloData(DateTime.now());
+    final nuovi = <String, List<IntervalloFatto>>{};
+    for (final s in sessioni) {
+      if (s.data.isAfter(o) ||
+          o.difference(s.data).inDays >= giorniBlocchiContesto ||
+          stessoSport(s.sport, 'Forza')) {
+        continue;
+      }
+      try {
+        final giorno = soloData(s.data);
+        final l = trattiDaMostrare(
+          s.sport,
+          senzaCodaBreve(await intervalliDi(s)),
+          passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport)),
+          aMano: intervalliModificati[s.id],
+        );
+        if (l.length >= 2) nuovi[s.id] = l;
+      } catch (_) {
+        // Senza blocchi la seduta va lo stesso, con i totali.
+      }
+    }
+    _blocchiContesto = nuovi;
+    notifyListeners();
+  }
 
   /// Verifica che il servizio scelto risponda e aggiorna lo stato mostrato.
   Future<void> verificaAssistente() async {
@@ -1331,6 +1366,7 @@ class AppState extends ChangeNotifier {
     try {
       // Solo gli ultimi messaggi, per contenere costi e lunghezza.
       final storia = chat.length > 12 ? chat.sublist(chat.length - 12) : chat;
+      await preparaContestoAssistente();
       final risposta = await chiediAssistente(
         assistente,
         await ChiaviAssistente.leggi(assistente.fornitore),
@@ -1410,6 +1446,7 @@ class AppState extends ChangeNotifier {
   Future<String> messaggioAgente({required bool completo}) async {
     final c = assistente;
     final oggi = DateTime.now();
+    await preparaContestoAssistente();
     final testo = completo
         ? messaggioInizialeAgente(
             codice: c.codiceEsterno,
@@ -2730,7 +2767,18 @@ class AppState extends ChangeNotifier {
     }
     final file = fileIntervalli(s.id);
     final t = await Storage.leggiTesto(file);
-    if (t != null) return intervalliDaCsv(t);
+    if (t != null) {
+      final l = intervalliDaCsv(t);
+      // Nuoto registrato con l'app: i metri dei blocchi dalla seduta prevista.
+      if (stessoSport(s.sport, 'Nuoto') && l.any((i) => i.fase.isNotEmpty)) {
+        final giorno = soloData(s.data);
+        return conMetriPrevisti(
+          l,
+          blocchiDa(passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport))),
+        );
+      }
+      return l;
+    }
     if (!s.id.startsWith(prefissoIcu)) return const [];
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) return const [];

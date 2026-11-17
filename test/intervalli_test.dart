@@ -634,6 +634,128 @@ void main() {
       );
     });
 
+    test('nuoto con l\'app: senza GPS i blocchi a distanza hanno i metri '
+        'previsti e il passo', () {
+      final passi = [
+        WorkoutStep(
+          id: 'n',
+          sport: 'Nuoto',
+          nome: 'Tecnica',
+          durataTot: 40,
+          ordine: 1,
+          fase: 'riscaldamento',
+          descrizione: 'Stile libero facile',
+          serie: '',
+          ripetizioni: '',
+          distanzaM: '200',
+          durataMin: '',
+          intensita: '',
+          recuperoS: '',
+          note: '',
+        ),
+        WorkoutStep(
+          id: 'n',
+          sport: 'Nuoto',
+          nome: 'Tecnica',
+          durataTot: 40,
+          ordine: 2,
+          fase: 'principale',
+          descrizione: 'Stile libero svelto',
+          serie: '4',
+          ripetizioni: '',
+          distanzaM: '50',
+          durataMin: '',
+          intensita: '',
+          recuperoS: '20',
+          note: '',
+        ),
+      ];
+      final blocchi = blocchiDa(passi);
+      expect(blocchi.first.metri, 200);
+      TrattoApp vasca(int blocco, int da, int secondi) => (
+        blocco: blocco,
+        inizio: t0.add(Duration(seconds: da)),
+        fine: t0.add(Duration(seconds: da + secondi)),
+        secondi: secondi,
+        metri: 0.0,
+      );
+      final l = intervalliDaTratti(blocchi, [
+        vasca(0, 0, 250),
+        vasca(1, 250, 48),
+        vasca(2, 298, 20),
+        vasca(3, 318, 50),
+      ]);
+      expect(l[0].metri, 200);
+      expect(passoIntervallo(l[0], 'Nuoto'), '2:05/100 m');
+      expect(l[1].metri, 50);
+      expect(passoIntervallo(l[1], 'Nuoto'), '1:36/100 m');
+      expect(l[2].recupero, isTrue);
+      expect(l[2].metri, 0);
+      // Le nuotate salvate prima, senza metri: si riprendono dal piano.
+      final vecchie = [for (final i in l) i.copia(metri: 0)];
+      final riprese = conMetriPrevisti(vecchie, blocchi);
+      expect([for (final i in riprese) i.metri], [200, 50, 0, 50]);
+      // Se i metri ci sono già, la lista resta com'è.
+      expect(identical(conMetriPrevisti(l, blocchi), l), isTrue);
+    });
+
+    test('nuoto dal Garmin (intervals.icu): i tratti prendono i nomi della '
+        'seduta prevista; corsa senza struttura niente tratti', () {
+      WorkoutStep passo(int ordine, String desc, String serie, String m) =>
+          WorkoutStep(
+            id: 'n',
+            sport: 'Nuoto',
+            nome: 'Tecnica',
+            durataTot: 40,
+            ordine: ordine,
+            fase: ordine == 1 ? 'riscaldamento' : 'principale',
+            descrizione: desc,
+            serie: serie,
+            ripetizioni: '',
+            distanzaM: m,
+            durataMin: '',
+            intensita: '',
+            recuperoS: '20',
+            note: '',
+          );
+      final passi = [
+        passo(1, 'Stile libero facile', '', '200'),
+        passo(2, 'Stile libero svelto', '2', '50'),
+      ];
+      const garmin = [
+        IntervalloFatto(recupero: false, inizioS: 0, secondi: 250, metri: 200),
+        IntervalloFatto(recupero: true, inizioS: 250, secondi: 30),
+        IntervalloFatto(recupero: false, inizioS: 280, secondi: 48, metri: 50),
+        IntervalloFatto(recupero: true, inizioS: 328, secondi: 20),
+        IntervalloFatto(recupero: false, inizioS: 348, secondi: 47, metri: 50),
+      ];
+      final l = trattiDaMostrare('Nuoto', garmin, passi);
+      expect(
+        [for (final i in l) i.nome],
+        [
+          'Stile libero facile',
+          '',
+          'Stile libero svelto 1/2',
+          '',
+          'Stile libero svelto 2/2',
+        ],
+      );
+      expect(passoIntervallo(l[4], 'Nuoto'), '1:34/100 m');
+      // Quelli corretti a mano valgono su tutto.
+      expect(trattiDaMostrare('Nuoto', garmin, passi, aMano: garmin), garmin);
+      // Un lento di corsa con i giri da 1 km: niente tratti.
+      const giri = [
+        IntervalloFatto(recupero: false, inizioS: 0, secondi: 330, metri: 1000),
+        IntervalloFatto(
+          recupero: false,
+          inizioS: 330,
+          secondi: 325,
+          metri: 1000,
+        ),
+      ];
+      expect(trattiDaMostrare('Corsa', giri, const []), isEmpty);
+    });
+
     test('i file vecchi a 5 colonne si leggono ancora', () {
       final l = intervalliDaCsv('l,0,332,200,109\nr,332,52,0,117');
       expect(l.length, 2);

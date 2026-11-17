@@ -3,11 +3,14 @@ import 'dart:convert';
 import 'carico.dart';
 import 'csv.dart';
 import 'feedback.dart';
+import 'intervalli.dart';
 import 'allenamento_agente.dart';
 import 'allenamento_arrampicata.dart';
+import 'modifica_sessione.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'recupero.dart';
+import 'test_soglia.dart';
 import 'l10n/lingua.dart';
 
 /// Assistente facoltativo: un modello linguistico scelto dall'utente (Claude,
@@ -143,6 +146,9 @@ String contestoAllenamento({
   required List<GiornoRecupero> recupero,
   Set<String> sportGenerati = const {},
   Set<String> attivita = const {},
+  Map<String, List<IntervalloFatto>> blocchi = const {},
+  List<PotenzaMigliore> potenze = const [],
+  List<SedutaNuoto> nuotate = const [],
 }) {
   final o = soloData(oggi);
   final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
@@ -203,6 +209,7 @@ String contestoAllenamento({
   if (recenti.isEmpty) b.writeln('- nessuna');
   for (final s in recenti.skip(recenti.length > 40 ? recenti.length - 40 : 0)) {
     final f = feedback.where((x) => x.di(s.data, s.sport)).firstOrNull;
+    final n = nuotate.where((x) => x.idSessione == s.id).firstOrNull;
     b.writeln(
       [
         '- ${_gg(s.data)} ${s.sport}',
@@ -210,12 +217,27 @@ String contestoAllenamento({
         '${s.durataMin} min',
         if (s.distanzaKm > 0) '${fmtNum(s.distanzaKm)} km',
         if (s.fcMedia > 0) 'FC media ${s.fcMedia}',
+        if (s.fcMax > 0) 'FC max ${s.fcMax}',
+        if (s.potenzaMedia > 0) '${s.potenzaMedia} W medi',
+        if (s.cadenzaMedia > 0) 'cadenza ${s.cadenzaMedia} rpm',
+        if (n != null && n.vasche > 0)
+          '${n.vasche} vasche da ${n.lunghezzaM} m',
+        if (n != null && n.passo100S > 0)
+          'passo medio ${fmtPasso100(n.passo100S)}',
+        if (n != null && n.stile.isNotEmpty) n.stile.toLowerCase(),
         if (f != null) 'fatica ${f.fatica}/10',
         if (f != null && !f.completata) 'non completata',
         if (f != null && f.dolore) 'DOLORE',
         if (f != null && f.note.isNotEmpty) 'note: "${f.note}"',
       ].join(', '),
     );
+    final p = potenze.where((x) => x.idSessione == s.id).firstOrNull;
+    final l = blocchi[s.id] ?? const <IntervalloFatto>[];
+    if (o.difference(s.data).inDays < giorniBlocchiContesto) {
+      for (final r in righeBlocchi(l, potenza: p, sport: s.sport)) {
+        b.writeln('  $r');
+      }
+    }
   }
 
   final rec = recupero
@@ -254,6 +276,97 @@ String contestoAllenamento({
   }
   return b.toString().trim();
 }
+
+/// Per quanti giorni indietro si mandano i blocchi delle sedute.
+const giorniBlocchiContesto = 14;
+
+/// Più blocchi di così non si mandano (una rampa ne ha al massimo 32).
+const _maxBlocchi = 40;
+
+/// Un blocco è completato se è durato quanto previsto (3 s di margine).
+bool bloccoCompletato(IntervalloFatto i) =>
+    i.previstoS <= 0 || i.secondi >= i.previstoS - 3;
+
+/// Le righe con i blocchi di una seduta (gradini, ripetute, recuperi) e,
+/// per i test dell'FTP, il risultato: così l'assistente vede in quale
+/// gradino o ripetuta si è arrivati e con quanti watt.
+List<String> righeBlocchi(
+  List<IntervalloFatto> blocchi, {
+  PotenzaMigliore? potenza,
+  String sport = '',
+}) {
+  final righe = <String>[];
+  final p = potenza;
+  if (p != null && p.test.isNotEmpty) {
+    final f = p.ftp;
+    righe.add(
+      [
+        p.test == 'rampa' ? 'Test FTP a rampa' : 'Test FTP 20 minuti',
+        'miglior minuto ${p.w1} W',
+        if (p.w20 > 0) 'migliori 20 minuti ${p.w20} W',
+        if (f != null) 'FTP che ne risulta $f W',
+      ].join(', '),
+    );
+  }
+  if (blocchi.isEmpty) return righe;
+  final lavoro = [
+    for (final i in blocchi)
+      if (!i.recupero && i.wattMedi > 0 && bloccoCompletato(i)) i,
+  ];
+  if (p != null && p.test == 'rampa' && lavoro.isNotEmpty) {
+    final gradini = lavoro.where((i) => i.fase == 'principale').toList();
+    final tra = gradini.isEmpty ? lavoro : gradini;
+    final alto = tra.reduce((a, b) => b.wattMedi > a.wattMedi ? b : a);
+    final ultimo = tra.last;
+    righe.add(
+      'Blocco completato con i watt medi più alti: '
+      '${alto.nome.isEmpty ? 'n. ${blocchi.indexOf(alto) + 1}' : alto.nome} '
+      '(${alto.wattMedi} W); ultimo completato: '
+      '${ultimo.nome.isEmpty ? 'n. ${blocchi.indexOf(ultimo) + 1}' : ultimo.nome} '
+      '(${ultimo.wattMedi} W)',
+    );
+  }
+  righe.add(
+    'Blocchi (durata fatta/prevista, metri, passo, watt medi/previsti, '
+    'FC media):',
+  );
+  final mostrati = blocchi.take(_maxBlocchi).toList();
+  for (var n = 0; n < mostrati.length; n++) {
+    final i = mostrati[n];
+    final w = i.wattPrevisti;
+    righe.add(
+      [
+        '${n + 1}. ${i.recupero
+            ? 'recupero'
+            : i.nome.isEmpty
+            ? 'blocco'
+            : i.nome}',
+        if (i.fase.isNotEmpty) i.fase,
+        '${_mmss(i.secondi)}${i.previstoS > 0 ? '/${_mmss(i.previstoS)}' : ''}',
+        if (i.previstoS > 0 && !bloccoCompletato(i)) 'NON completato',
+        if (i.metri > 0) '${i.metri.round()} m',
+        if (!i.recupero && sport.isNotEmpty)
+          ?_vuotoNull(passoIntervallo(i, sport)),
+        if (i.wattMedi > 0)
+          '${i.wattMedi} W'
+              '${w == null
+                  ? ''
+                  : w.$1 == w.$2
+                  ? ' (previsti ${w.$1})'
+                  : ' (previsti ${w.$1}-${w.$2})'}',
+        if (i.fcMedia > 0) 'FC ${i.fcMedia}',
+      ].join(', '),
+    );
+  }
+  if (blocchi.length > mostrati.length) {
+    righe.add('… altri ${blocchi.length - mostrati.length} blocchi');
+  }
+  return righe;
+}
+
+String? _vuotoNull(String s) => s.isEmpty ? null : s;
+
+String _mmss(int s) => '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}';
 
 /// In che lingua deve rispondere il coach: quella dell'app.
 String get linguaRisposta => switch (codiceLingua) {
