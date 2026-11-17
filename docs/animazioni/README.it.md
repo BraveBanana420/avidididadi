@@ -28,8 +28,8 @@ Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
 leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
 polsi, scarpe nere con dettagli rossi. Stile cartone 3D semi-realistico.
 
-La donna per ora ha solo la vista davanti: anche le viste di lato e da dietro, nello
-stesso stile, sono un aiuto benvenuto.
+Le immagini degli avatar le fornisce solo il progetto: usale come riferimento per
+la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 
 ## Regole per ogni animazione
 
@@ -42,6 +42,7 @@ stesso stile, sono un aiuto benvenuto.
 | **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Di lato** per quasi tutti gli esercizi; **di fronte** quando il movimento è laterale (es. jumping jack, alzate laterali) |
 | **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
 | **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
+| **Personaggio** | uguale alle immagini degli avatar in ogni fotogramma (viso, capelli, corpo, vestiti). Li confrontiamo prima di accettarla: se qualcosa è cambiato, riprova |
 
 Per la tecnica giusta segui le istruzioni dell'esercizio in
 [`assets/esercizi.json`](../../assets/esercizi.json) (campo `istruzioni`), le
@@ -49,11 +50,19 @@ stesse che mostra l'app.
 
 ## Come farla
 
-Ogni animazione è un **video 2D che parte da un'immagine**: prima un'immagine ferma
-dell'avatar nella posizione di partenza, poi uno strumento da immagine a video che
-la anima. Gli avatar sono nati così, e lo stile resta uguale. Non servono modelli
-3D. Va bene qualsiasi strumento per immagini e video, purché le sue condizioni
-permettano di pubblicare il risultato (vedi [Licenza e diritti](#licenza-e-diritti-importante)).
+Ogni animazione è un **video 2D che parte dalle immagini degli avatar**: prima
+un'immagine ferma dell'avatar nella posizione di partenza dell'esercizio, poi uno
+strumento da immagine a video che la anima. Gli avatar sono nati così, e lo stile
+resta uguale. Non servono modelli 3D. Va bene qualsiasi strumento per immagini e
+video, purché le sue condizioni permettano di pubblicare il risultato (vedi
+[Licenza e diritti](#licenza-e-diritti-importante)).
+
+Perché serve l'immagine in più? Uno strumento da immagine a video usa la foto che
+gli dai come **primo fotogramma**: partendo dall'avatar in piedi, il video
+mostrerebbe il personaggio che si mette in posizione, e il giro non si
+chiuderebbe. Alcuni strumenti video possono invece usare l'avatar come
+**riferimento del personaggio** e creare direttamente l'esercizio: va bene anche
+così, purché il personaggio resti identico e il risultato rispetti le regole.
 
 ### 1. Immagine di partenza (es. Nano Banana / Gemini)
 
@@ -83,8 +92,8 @@ l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà con
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
 <the movement in one or two lines>. Correct technique, realistic body mechanics.
-The camera is completely still: no zoom, no pan, no cuts. The grey background
-does not change. The movement ends exactly in the starting position, so the video
+The character, outfit and background stay exactly as in the image.
+The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```
 

@@ -28,8 +28,8 @@ Outfit: black sleeveless top (sports bra for the female avatar) with red side
 panels, black leggings with red stripes (black shorts on top for the male), black
 wrist wraps, black shoes with red details. Semi-realistic 3D cartoon style.
 
-The female avatar has only the front view for now: side and back views in the
-same style are a welcome contribution too.
+The avatar images are provided only by the project: use them as the reference for
+your animation, but don't publish new versions or other views of the avatars.
 
 ## Rules for every animation
 
@@ -42,6 +42,7 @@ same style are a welcome contribution too.
 | **Camera** | fixed: no zoom, no pan, no cuts. **Side view** for most exercises; **front view** when the movement is sideways (e.g. jumping jacks, lateral raises) |
 | **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
 | **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
+| **Character** | identical to the avatar images in every frame (face, hair, body, outfit). We compare them before accepting: if something changed, try again |
 
 For the correct technique, follow the exercise instructions in
 [`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
@@ -49,11 +50,18 @@ same ones the app shows.
 
 ## How to make it
 
-Every animation is a **2D video made from an image**: first a still image of the
-avatar in the starting position, then an image-to-video tool that animates it.
-The avatars were made this way, so the style stays the same. No 3D models are
-needed. Any image or video tool is fine, as long as its terms let you publish the
-result (see [License and rights](#license-and-rights-important)).
+Every animation is a **2D video made from the avatar images**: first a still image
+of the avatar in the starting position of the exercise, then an image-to-video
+tool that animates it. The avatars were made this way, so the style stays the
+same. No 3D models are needed. Any image or video tool is fine, as long as its
+terms let you publish the result (see [License and rights](#license-and-rights-important)).
+
+Why the extra image? An image-to-video tool uses the picture you give it as the
+**first frame**: starting from the standing avatar, the video would show the
+character getting into position, and the loop would not close. Some video tools
+can instead take the avatar as a **character reference** and generate the exercise
+directly: that's fine too, as long as the character stays identical and the
+result follows the rules.
 
 ### 1. Starting image (e.g. Nano Banana / Gemini)
 
@@ -83,8 +91,8 @@ use the same image for both: the loop will be seamless.
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
 <the movement in one or two lines>. Correct technique, realistic body mechanics.
-The camera is completely still: no zoom, no pan, no cuts. The grey background
-does not change. The movement ends exactly in the starting position, so the video
+The character, outfit and background stay exactly as in the image.
+The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```
 
