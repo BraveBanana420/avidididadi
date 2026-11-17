@@ -643,6 +643,29 @@ List<IntervalloFatto> conMetriPrevisti(
   ];
 }
 
+/// I tratti di una seduta come si mostrano (e si mandano all'assistente):
+/// quelli corretti a mano ([aMano]) valgono su tutto; quelli dell'app hanno
+/// già nome e sezione; quelli dell'orologio (Garmin, via intervals.icu)
+/// prendono i nomi della seduta prevista. Corsa e bici dall'orologio senza
+/// struttura (un lungo, giri da 1 km) non dicono niente più dei totali: vuoto.
+List<IntervalloFatto> trattiDaMostrare(
+  String sport,
+  List<IntervalloFatto> letti,
+  List<WorkoutStep> passi, {
+  List<IntervalloFatto>? aMano,
+}) {
+  if (aMano != null) return aMano;
+  if (letti.where((i) => !i.recupero).length < 2) return const [];
+  final nuoto = stessoSport(sport, 'Nuoto');
+  final dallApp = letti.any((i) => i.fase.isNotEmpty);
+  if (!nuoto && !dallApp && !sedutaStrutturata(passi)) return const [];
+  final abbinati = dallApp ? letti : abbinaAlPiano(sport, letti, passi);
+  if (nuoto) return abbinati;
+  final lista = conFuoriProgrammaUniti(abbinati);
+  if (!dallApp && !lista.any((i) => i.nome.isNotEmpty)) return const [];
+  return lista;
+}
+
 /// Vero se la seduta in programma ha una struttura (ripetute, più passi):
 /// solo allora in corsa e bici i tratti dicono qualcosa di più dei totali.
 /// Un lungo, un lento o un'uscita continua sono un passo solo.

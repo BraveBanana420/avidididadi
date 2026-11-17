@@ -699,6 +699,63 @@ void main() {
       expect(identical(conMetriPrevisti(l, blocchi), l), isTrue);
     });
 
+    test('nuoto dal Garmin (intervals.icu): i tratti prendono i nomi della '
+        'seduta prevista; corsa senza struttura niente tratti', () {
+      WorkoutStep passo(int ordine, String desc, String serie, String m) =>
+          WorkoutStep(
+            id: 'n',
+            sport: 'Nuoto',
+            nome: 'Tecnica',
+            durataTot: 40,
+            ordine: ordine,
+            fase: ordine == 1 ? 'riscaldamento' : 'principale',
+            descrizione: desc,
+            serie: serie,
+            ripetizioni: '',
+            distanzaM: m,
+            durataMin: '',
+            intensita: '',
+            recuperoS: '20',
+            note: '',
+          );
+      final passi = [
+        passo(1, 'Stile libero facile', '', '200'),
+        passo(2, 'Stile libero svelto', '2', '50'),
+      ];
+      const garmin = [
+        IntervalloFatto(recupero: false, inizioS: 0, secondi: 250, metri: 200),
+        IntervalloFatto(recupero: true, inizioS: 250, secondi: 30),
+        IntervalloFatto(recupero: false, inizioS: 280, secondi: 48, metri: 50),
+        IntervalloFatto(recupero: true, inizioS: 328, secondi: 20),
+        IntervalloFatto(recupero: false, inizioS: 348, secondi: 47, metri: 50),
+      ];
+      final l = trattiDaMostrare('Nuoto', garmin, passi);
+      expect(
+        [for (final i in l) i.nome],
+        [
+          'Stile libero facile',
+          '',
+          'Stile libero svelto 1/2',
+          '',
+          'Stile libero svelto 2/2',
+        ],
+      );
+      expect(passoIntervallo(l[4], 'Nuoto'), '1:34/100 m');
+      // Quelli corretti a mano valgono su tutto.
+      expect(trattiDaMostrare('Nuoto', garmin, passi, aMano: garmin), garmin);
+      // Un lento di corsa con i giri da 1 km: niente tratti.
+      const giri = [
+        IntervalloFatto(recupero: false, inizioS: 0, secondi: 330, metri: 1000),
+        IntervalloFatto(
+          recupero: false,
+          inizioS: 330,
+          secondi: 325,
+          metri: 1000,
+        ),
+      ];
+      expect(trattiDaMostrare('Corsa', giri, const []), isEmpty);
+    });
+
     test('i file vecchi a 5 colonne si leggono ancora', () {
       final l = intervalliDaCsv('l,0,332,200,109\nr,332,52,0,117');
       expect(l.length, 2);

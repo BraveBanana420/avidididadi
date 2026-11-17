@@ -1301,8 +1301,14 @@ class AppState extends ChangeNotifier {
         continue;
       }
       try {
-        final l = intervalliModificati[s.id] ?? await intervalliDi(s);
-        if (l.length >= 2) nuovi[s.id] = senzaCodaBreve(l);
+        final giorno = soloData(s.data);
+        final l = trattiDaMostrare(
+          s.sport,
+          senzaCodaBreve(await intervalliDi(s)),
+          passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport)),
+          aMano: intervalliModificati[s.id],
+        );
+        if (l.length >= 2) nuovi[s.id] = l;
       } catch (_) {
         // Senza blocchi la seduta va lo stesso, con i totali.
       }

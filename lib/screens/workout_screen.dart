@@ -1132,35 +1132,11 @@ class _IntervalliState extends State<_Intervalli> {
         final diagramma = stessoSport(s.sport, 'Bici')
             ? RiepilogoBici(state: state, sessione: s, tratti: letti)
             : null;
-        // Un tratto solo non dice niente di più dei totali.
-        if (aMano == null && letti.where((i) => !i.recupero).length < 2) {
-          return diagramma ?? const SizedBox.shrink();
-        }
+        // Quelli corretti a mano, quelli dell'app o quelli dell'orologio con
+        // i nomi della seduta prevista (vuoto se non dicono più dei totali).
         final passi = _passi;
-        final nuoto = stessoSport(s.sport, 'Nuoto');
-        // Corsa e bici: un lungo, un lento o un'uscita continua sono un passo
-        // solo, e i giri dell'orologio non dicono niente di più dei totali.
-        // I tratti si mostrano solo se la seduta ha una struttura.
-        // Quelli registrati con l'app sono i blocchi veri del player: si
-        // vedono sempre, anche se la seduta in calendario è cambiata.
-        final dallApp = letti.any((i) => i.fase.isNotEmpty);
-        if (aMano == null && !nuoto && !dallApp && !sedutaStrutturata(passi)) {
-          return diagramma ?? const SizedBox.shrink();
-        }
-        // Quelli corretti a mano valgono al posto di quelli dell'orologio.
-        // Quelli registrati con l'app hanno già nome e sezione.
-        final abbinati = dallApp ? letti : abbinaAlPiano(s.sport, letti, passi);
-        // I chilometri in più a fine seduta: una riga sola.
-        final lista =
-            aMano ?? (nuoto ? abbinati : conFuoriProgrammaUniti(abbinati));
-        // Corsa e bici dall'orologio: i giri di 1 km non dicono niente di
-        // più dei totali; si mostrano solo se combaciano con la seduta.
-        if (aMano == null &&
-            !dallApp &&
-            !stessoSport(s.sport, 'Nuoto') &&
-            !lista.any((i) => i.nome.isNotEmpty)) {
-          return diagramma ?? const SizedBox.shrink();
-        }
+        final lista = trattiDaMostrare(s.sport, letti, passi, aMano: aMano);
+        if (lista.isEmpty) return diagramma ?? const SizedBox.shrink();
         // Abbinati alla seduta prevista: le sue sezioni e i suoi pallini.
         final fasi = fasiDegliIntervalli(lista, passi);
         final conSezioni = fasi.any((f) => f.isNotEmpty);
