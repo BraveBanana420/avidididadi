@@ -6,25 +6,19 @@ Ogni esercizio dell'app può mostrare una breve animazione che si ripete: nel
 dettaglio dell'esercizio e durante l'allenamento guidato. Partiamo **da zero**: per
 ora ogni esercizio mostra due foto. **Puoi aiutare senza scrivere codice.**
 
-L'elenco degli esercizi, con quelli già fatti e quelli con l'immagine di partenza
-pronta: [EXERCISES.md](EXERCISES.md). Parti dalla *Priorità 1*: sono quelli che usa
-quasi ogni piano.
+L'elenco degli esercizi, con quelli già fatti: [EXERCISES.md](EXERCISES.md).
+Parti dalla *Priorità 1*: sono quelli che usa quasi ogni piano.
 
-## Come funziona
+## Lo stile in una riga
 
-1. **L'immagine di partenza la diamo noi**: l'avatar già nella posizione di
-   partenza dell'esercizio, nella cartella [`start/`](start/). Tu la animi e basta.
-2. **La trasformi in un breve video 2D** con uno strumento da immagine a video.
-3. Noi la controlliamo e la aggiungiamo all'app.
-
-**Non creare né modificare tu immagini degli avatar**, neanche piccoli ritocchi: le
-immagini generate vengono sempre un po' diverse (viso, vestiti, proporzioni) e il
-catalogo smetterebbe di sembrare un'unica serie. Se l'esercizio che vuoi non ha
-ancora l'immagine di partenza, chiedila nella issue e la aggiungiamo noi.
+Stesso personaggio, stesso fondo grigio chiaro, inquadratura ferma, una
+ripetizione lenta che ricomincia senza scatti. Le prime animazioni accettate
+faranno da esempio per le successive.
 
 ## I due avatar
 
-Solo come riferimento, per sapere come devono apparire in ogni fotogramma:
+Usa uno di questi due personaggi, **esattamente com'è** (viso, capelli, corpo,
+vestiti). Un'animazione = un personaggio. Scegli quello che preferisci.
 
 | Uomo: davanti | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
 |---|---|---|---|---|
@@ -34,17 +28,20 @@ Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
 leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
 polsi, scarpe nere con dettagli rossi. Stile cartone 3D semi-realistico.
 
+La donna per ora ha solo la vista davanti: anche le viste di lato e da dietro, nello
+stesso stile, sono un aiuto benvenuto.
+
 ## Regole per ogni animazione
 
 | | |
 |---|---|
-| **Partenza** | l'immagine di [`start/`](start/), così com'è: stesso personaggio, vestiti, fondo, inquadratura e vista |
 | **File finale** | WebP animato, **640 × 320 px** (2:1), circa **15 fotogrammi al secondo**, **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** |
 | **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
-| **Niente di nuovo** | niente scritte, loghi, filigrane, palestre, altre persone o oggetti che non sono nell'immagine di partenza |
-| **Inquadratura** | ferma: niente zoom, movimenti o tagli. Tutto il corpo e gli attrezzi sempre dentro |
+| **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
+| **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
+| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Di lato** per quasi tutti gli esercizi; **di fronte** quando il movimento è laterale (es. jumping jack, alzate laterali) |
+| **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
 | **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
-| **Personaggio** | uguale all'immagine di partenza in ogni fotogramma: se cambiano viso, capelli o vestiti, riprova |
 
 Per la tecnica giusta segui le istruzioni dell'esercizio in
 [`assets/esercizi.json`](../../assets/esercizi.json) (campo `istruzioni`), le
@@ -52,24 +49,49 @@ stesse che mostra l'app.
 
 ## Come farla
 
-### 1. Animazione (uno strumento da immagine a video, es. Dreamina, Kling, Runway, Veo)
+Ogni animazione è un **video 2D che parte da un'immagine**: prima un'immagine ferma
+dell'avatar nella posizione di partenza, poi uno strumento da immagine a video che
+la anima. Gli avatar sono nati così, e lo stile resta uguale. Non servono modelli
+3D. Va bene qualsiasi strumento per immagini e video, purché le sue condizioni
+permettano di pubblicare il risultato (vedi [Licenza e diritti](#licenza-e-diritti-importante)).
+
+### 1. Immagine di partenza (es. Nano Banana / Gemini)
+
+Carica le immagini dell'avatar (davanti e lato) e chiedi la posizione di partenza.
+Le richieste funzionano meglio in inglese, quindi lasciale così:
+
+```text
+Use the attached character exactly as he is: same face, hair, body and outfit
+(black sleeveless top with red side panels, black shorts over black leggings with
+red stripes, black wrist wraps, black shoes with red details), same semi-realistic
+3D cartoon style.
+Show him in the starting position of: <EXERCISE NAME> (<one line from the
+instructions>), seen from the <side / front>.
+Full body visible with some margin, plain light grey background (#D9D9DB) with a
+slightly lighter floor, soft studio light. No text, no logo, no other objects
+<except: EQUIPMENT in matte black>. Wide 2:1 image.
+```
+
+Per la donna sostituisci "he" e i vestiti con "she" e "black sports bra with red
+details, black leggings with red stripes, ...".
+
+### 2. Animazione (uno strumento da immagine a video, es. Dreamina, Kling, Runway, Veo)
 
 Dagli l'immagine di partenza. Se lo strumento permette di scegliere il **primo e
-l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà
-continuo. Le richieste funzionano meglio in inglese, quindi lasciala così:
+l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà continuo.
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
 <the movement in one or two lines>. Correct technique, realistic body mechanics.
-The character, outfit and background stay exactly as in the image.
-The camera is completely still: no zoom, no pan, no cuts. The movement ends
-exactly in the starting position, so the video loops seamlessly. No text.
+The camera is completely still: no zoom, no pan, no cuts. The grey background
+does not change. The movement ends exactly in the starting position, so the video
+loops seamlessly. No text.
 ```
 
 Fanne qualche versione e tieni quella con la tecnica migliore: mani, piedi e
 articolazioni non devono piegarsi in modo strano.
 
-### 2. Conversione in WebP (facoltativa)
+### 3. Conversione in WebP (facoltativa)
 
 Se hai [ffmpeg](https://ffmpeg.org/), taglia la ripetizione migliore (`-ss` è dove
 inizia, `-t` quanto dura) e converti:
@@ -86,31 +108,30 @@ ffmpeg, manda direttamente l'MP4.
 ## Licenza e diritti (importante)
 
 - Le animazioni sono pubblicate con licenza **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.it)**
-  (pubblico dominio, come le foto degli esercizi): chiunque può riusarle. Anche gli
-  avatar e le immagini di partenza sono CC0.
-- Usa solo le immagini di partenza del progetto. Mai spezzoni, fotogrammi o
-  personaggi presi da altre app, siti, video o giochi, e mai persone vere.
-- Controlla che le condizioni dello strumento video permettano di pubblicare il
-  risultato in un progetto open source (alcuni piani gratuiti no, o aggiungono una
-  filigrana) e **scrivi quale strumento e quale piano hai usato** (gratuito o a
-  pagamento). Se non sei sicuro, chiedi nella issue prima di mandarla: meglio
-  aspettare che pubblicare qualcosa che non si può usare.
-- **Manda anche le condizioni**: il link alle condizioni d'uso dello strumento e,
-  se è separata, alla pagina del piano, più uno screenshot o un PDF della parte che
-  dice di chi sono i risultati e se si possono pubblicare o usare per scopi
-  commerciali, e la data in cui hai fatto l'animazione (le condizioni cambiano nel
-  tempo). Le leggiamo prima di accettarla: se non lo permettono non possiamo
-  pubblicarla, anche se è bellissima.
+  (pubblico dominio, come le foto degli esercizi): chiunque può riusarle. Anche i
+  due avatar sono CC0.
+- Manda solo cose **fatte da te**. Mai spezzoni, fotogrammi o personaggi presi da
+  altre app, siti, video o giochi, e mai persone vere.
+- Se usi uno strumento di intelligenza artificiale, controlla che le sue condizioni
+  permettano di pubblicare il risultato in un progetto open source (alcuni piani
+  gratuiti no, o aggiungono una filigrana) e **scrivi quali strumenti e quale piano
+  hai usato** (gratuito o a pagamento). Se non sei sicuro, chiedi nella issue prima
+  di mandarla: meglio aspettare che pubblicare qualcosa che non si può usare.
+- **Manda anche le condizioni**, per ogni strumento usato (quello per l'immagine e
+  quello per il video): il link alle condizioni d'uso e, se è separata, alla pagina
+  del piano, più uno screenshot o un PDF della parte che dice di chi sono i
+  risultati e se si possono pubblicare o usare per scopi commerciali, e la data in
+  cui hai fatto l'animazione (le condizioni cambiano nel tempo). Le leggiamo prima
+  di accettarla: se non lo permettono non possiamo pubblicarla, anche se è bellissima.
 
 ## Come mandarla
 
-1. Scegli in [EXERCISES.md](EXERCISES.md) un esercizio con l'immagine di partenza
-   pronta, e guarda le issue aperte, per non fare in due lo stesso esercizio.
+1. Guarda [EXERCISES.md](EXERCISES.md) e le issue aperte, per non fare in due lo
+   stesso esercizio.
 2. Apri una issue con il modulo **Exercise animation / Animazione esercizio**,
-   scrivendo su quale esercizio stai lavorando (o chiedendo la sua immagine di
-   partenza).
+   scrivendo su quale esercizio stai lavorando.
 3. Quando è pronta, trascina il WebP o l'MP4 nella issue (al massimo 10 MB),
-   insieme alle condizioni dello strumento usato.
+   insieme alle condizioni degli strumenti usati.
 4. Noi controlliamo l'animazione e le condizioni, poi la aggiungiamo all'app.
 
 Sai usare Git? Apri invece una pull request verso `staging`:
