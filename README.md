@@ -10,15 +10,11 @@ workout (timer, voice, GPS, smart trainer), and shows your progress.
 **Your data stays on your phone**: no server, no account, no ads, no tracking.
 The app is available in Italian, English and Greek.
 
-> Screenshots coming soon.
->
-> | Today | Guided workout | Progress | Coach |
-> |---|---|---|---|
-> | _placeholder_ | _placeholder_ | _placeholder_ | _placeholder_ |
->
-> To produce them on your PC, with sample data and in all four themes:
-> `flutter test tool/schermate/schermate_test.dart --dart-define=LINGUA=en`
-> (images in `build/schermate_en/`).
+| Today | Guided workout | Progress | Coach |
+|---|---|---|---|
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/en/today_dark.webp"><img src="docs/screenshots/en/today_light.webp" width="200" alt="Today"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/en/workout_dark.webp"><img src="docs/screenshots/en/workout_light.webp" width="200" alt="Guided workout"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/en/progress_dark.webp"><img src="docs/screenshots/en/progress_light.webp" width="200" alt="Progress"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/en/coach_dark.webp"><img src="docs/screenshots/en/coach_light.webp" width="200" alt="Coach"></picture> |
+
+<sub>Sample data. The app also has a light/dark background and a red or neon accent; GitHub shows the screenshots matching your theme. To produce them: `flutter test tool/schermate/schermate_test.dart --dart-define=LINGUA=en`.</sub>
 
 ## Features
 
@@ -146,7 +142,6 @@ photo; API keys are never included.
 
 ## Roadmap
 
-- [ ] Real screenshots in this README
 - [ ] More languages (contributions welcome: see `lib/l10n/`)
 - [ ] Simple mode also for zones in session texts, charts and Progress
 - [ ] Backup to Google Drive

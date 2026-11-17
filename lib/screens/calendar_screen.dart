@@ -989,15 +989,15 @@ class _HeroSeduta extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    r.tipo.isEmpty ? r.sport : r.tipo,
+                    mostra(r.tipo.isEmpty ? r.sport : r.tipo),
                     style: t.displaySmall?.copyWith(color: ink, height: 1),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     [
-                      if (r.tipo.isNotEmpty) r.sport,
-                      if (r.durataMin > 0) '${r.durataMin} minuti',
-                      if (esercizi > 1) '$esercizi esercizi',
+                      if (r.tipo.isNotEmpty) mostra(r.sport),
+                      if (r.durataMin > 0) l10n.quantiMinuti(r.durataMin),
+                      if (esercizi > 1) l10n.quantiEsercizi(esercizi),
                     ].join(' · '),
                     style: TextStyle(
                       color: ink,
@@ -1165,8 +1165,8 @@ class _DaFare extends StatelessWidget {
       segno: IconaQuadrata(iconaSport(r.sport), colore: coloreSport(r.sport)),
       titolo: titoloSessione(r.sport, r.tipo),
       sottotitolo: [
-        if (r.durataMin > 0) '${r.durataMin} minuti',
-        r.fascia.toLowerCase(),
+        if (r.durataMin > 0) l10n.quantiMinuti(r.durataMin),
+        mostra(r.fascia).toLowerCase(),
         if (passato) l10n.nonFatto,
       ].join(' · '),
       linea: false,

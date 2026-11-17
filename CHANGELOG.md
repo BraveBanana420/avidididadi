@@ -2,6 +2,13 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.0.0
+
+- Prima versione pubblica: il codice è su GitHub e l'APK firmato si scarica dalla pagina Releases; si installa sopra la 0.1.0 e la 1.12.x senza perdere nulla.
+- Oggi: nome, sport, durata ed esercizi della seduta e la fascia del giorno nella lingua scelta (prima restavano in italiano).
+- Piegamenti: tornano le due foto come per gli altri esercizi; le animazioni verranno rifatte da zero per tutto il catalogo.
+- Tutte le novità rispetto alla 1.12.3 sono nella sezione 0.1.0 di CHANGELOG.md.
+
 ## 0.1.0
 
 - Bici al chiuso: il riquadro del battito compare solo con la fascia collegata; senza, la potenza prende tutta la riga.
@@ -55,7 +62,6 @@ Una sezione per ogni versione distribuita: novità rispetto alla precedente, mol
 - FTP stimato dalle uscite delle ultime 6 settimane: se sale, l'app chiede se aggiornarlo; FTP e passo critico già scritti restano validi.
 - Le mie zone: "Fai il test per calcolarlo" per bici e nuoto.
 - Nuoto registrato con l'app: metri e passo per 100 m di ogni tratto.
-- Piegamenti: tornano le due foto come per gli altri esercizi; le animazioni verranno rifatte da zero per tutto il catalogo.
 - Assistente: nel messaggio ci sono anche i blocchi delle sedute (con watt medi e previsti dei test), watt, cadenza, FC max, i tratti dell'orologio con i nomi della seduta prevista e, nel nuoto, vasche, passo medio e stile.
 
 ## 1.12.3

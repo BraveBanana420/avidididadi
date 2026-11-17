@@ -10,15 +10,11 @@ l'allenamento (timer, voce, GPS, rullo smart) e mostra i progressi.
 **I dati restano sul telefono**: niente server, account, pubblicità o
 tracciamento. L'app è in italiano, inglese e greco.
 
-> Screenshot in arrivo.
->
-> | Oggi | Allenamento guidato | Progressi | Coach |
-> |---|---|---|---|
-> | _segnaposto_ | _segnaposto_ | _segnaposto_ | _segnaposto_ |
->
-> Per crearli sul PC, con dati di esempio e nei quattro temi:
-> `flutter test tool/schermate/schermate_test.dart` (immagini in
-> `build/schermate/`; in inglese con `--dart-define=LINGUA=en`).
+| Oggi | Allenamento guidato | Progressi | Coach |
+|---|---|---|---|
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/it/today_dark.webp"><img src="docs/screenshots/it/today_light.webp" width="200" alt="Oggi"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/it/workout_dark.webp"><img src="docs/screenshots/it/workout_light.webp" width="200" alt="Allenamento guidato"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/it/progress_dark.webp"><img src="docs/screenshots/it/progress_light.webp" width="200" alt="Progressi"></picture> | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/screenshots/it/coach_dark.webp"><img src="docs/screenshots/it/coach_light.webp" width="200" alt="Coach"></picture> |
+
+<sub>Dati di esempio. L'app ha fondo chiaro o scuro e accento rosso o neon; GitHub mostra le schermate adatte al tuo tema. Per crearle: `flutter test tool/schermate/schermate_test.dart`.</sub>
 
 ## Funzioni
 
@@ -145,7 +141,6 @@ profilo; le chiavi API non ci sono mai.
 
 ## Prossimi passi
 
-- [ ] Screenshot veri in questo README
 - [ ] Altre lingue (contributi benvenuti: vedi `lib/l10n/`)
 - [ ] Modo semplice anche per le zone nei testi delle sedute, nei grafici e in
       Progressi

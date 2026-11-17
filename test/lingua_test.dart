@@ -27,6 +27,33 @@ void main() {
     linguaVoceScelta.value = 'app';
   });
 
+  test(
+    'nelle schermate minuti ed esercizi non sono scritti fissi in italiano',
+    () {
+      // Come nella scheda di Oggi, dove in inglese si leggeva "45 minuti".
+      final fisso = RegExp(r"\}\s+(minuti|esercizi)'");
+      for (final f in Directory('lib/screens').listSync().whereType<File>()) {
+        final righe = f.readAsLinesSync();
+        for (var i = 0; i < righe.length; i++) {
+          expect(
+            fisso.hasMatch(righe[i]),
+            isFalse,
+            reason:
+                '${f.path}:${i + 1}: usa l10n.quantiMinuti / quantiEsercizi',
+          );
+        }
+      }
+    },
+  );
+
+  test('in inglese tipo, sport e fascia della seduta si traducono', () {
+    usaLingua('en');
+    expect(mostra('Uscita'), 'Ride');
+    expect(mostra('Bici'), 'Cycling');
+    expect(mostra('Mattina').toLowerCase(), 'morning');
+    expect(l10n.quantiMinuti(45), '45 minutes');
+  });
+
   group('file ARB', () {
     final it = _arb('it');
     final en = _arb('en');
