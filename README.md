@@ -155,6 +155,16 @@ Bug reports, ideas and pull requests are welcome: read
 [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: see
 [SECURITY.md](SECURITY.md).
 
+No coding needed to help with the
+[exercise animations](docs/animazioni/README.md).
+
+## Support
+
+Avidididadi is free and always will be: a donation doesn't unlock anything, it
+just helps the app grow. If you like it, you can buy me a coffee on
+[Ko-fi](https://ko-fi.com/avidididadi) (also from Profile → Support the project
+in the app). Thank you! 💪
+
 ## License
 
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
