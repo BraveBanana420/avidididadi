@@ -17,6 +17,24 @@ mappa = (radice / "lib/animazioni_esercizi.dart").read_text(encoding="utf-8")
 blocco = re.search(r"animazioniEsercizi\s*=\s*<String, String>\{(.*?)\};", mappa, re.S)
 fatti = set(re.findall(r"'([^']+)'\s*:", blocco.group(1))) if blocco else set()
 
+# Le immagini di partenza (date dal maintainer): <ID>_male.jpg / <ID>_female.png...
+cartella_start = radice / "docs/animazioni/start"
+partenze = {
+    f.stem
+    for f in cartella_start.glob("*")
+    if f.suffix.lower() in (".jpg", ".jpeg", ".png", ".webp")
+}
+
+
+def partenza(e):
+    """Quali avatar hanno l'immagine di partenza pronta: "M", "F", "M, F" o "—"."""
+    lettere = [
+        lettera
+        for lettera, avatar in (("M", "male"), ("F", "female"))
+        if f"{e['id']}_{avatar}" in partenze
+    ]
+    return ", ".join(lettere) or "—"
+
 
 def priorita(e):
     """1 = principiante a corpo libero (li usa quasi ogni piano),
@@ -41,6 +59,9 @@ righe = [
     f"Done / Fatti: **{len(fatti)} / {len(esercizi)}**. "
     "Before starting one, check the open issues so two people don't make the same animation.",
     "",
+    "**Start image / Immagine di partenza**: M = male / uomo, F = female / donna, in [start/](start/). "
+    "— = not ready yet: ask for it in the issue / non ancora pronta: chiedila nella issue.",
+    "",
     "How to make them / Come farle: [README.md](README.md) · [README.it.md](README.it.md)",
     "",
 ]
@@ -53,8 +74,8 @@ for p, titolo in gruppi.items():
     righe += [
         f"## {titolo}",
         "",
-        "| | ID | English | Italiano | Type / Tipo | Equipment / Attrezzi |",
-        "|---|---|---|---|---|---|",
+        "| | ID | English | Italiano | Start image / Partenza | Type / Tipo | Equipment / Attrezzi |",
+        "|---|---|---|---|---|---|---|",
     ]
     for e in scelti:
         spunta = "✅" if e["id"] in fatti else "⬜"
@@ -62,7 +83,7 @@ for p, titolo in gruppi.items():
         attrezzi = " / ".join(" + ".join(g) for g in e["attrezzi"]) or "—"
         tipo = "strength" if e["tipo"] == "forza" else "mobility"
         righe.append(
-            f"| {spunta} | `{e['id']}` | {e['nome_en']} | {e['nome']} | {tipo} | {attrezzi} |"
+            f"| {spunta} | `{e['id']}` | {e['nome_en']} | {e['nome']} | {partenza(e)} | {tipo} | {attrezzi} |"
         )
     righe.append("")
 

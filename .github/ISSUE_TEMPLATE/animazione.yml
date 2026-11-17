@@ -26,32 +26,29 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: vista
+    id: partenza
     attributes:
-      label: View / Vista
+      label: Start image / Immagine di partenza
       options:
-        - Side / Lato
-        - Front / Davanti
-        - Three-quarter / Tre quarti
+        - Ready in docs/animazioni/start / Pronta in docs/animazioni/start
+        - Missing, please add it / Manca, per favore aggiungetela
     validations:
       required: true
   - type: textarea
     id: strumenti
     attributes:
-      label: Tools and plans used / Strumenti e piani usati
-      description: For the image and for the video, with the plan (free / paid). / Per l'immagine e per il video, con il piano (gratuito / a pagamento).
-      placeholder: |
-        Image / Immagine: ... (free plan / piano gratuito)
-        Video: ... (paid plan "..." / piano a pagamento "...")
+      label: Video tool and plan / Strumento video e piano
+      description: Name of the tool and plan (free / paid). / Nome dello strumento e piano (gratuito / a pagamento).
+      placeholder: e.g. Kling, free plan / es. Kling, piano gratuito
     validations:
       required: true
   - type: textarea
     id: condizioni
     attributes:
-      label: Terms of the tools / Condizioni degli strumenti
+      label: Terms of the tool / Condizioni dello strumento
       description: |
-        For every tool: link to the terms of service (and to the plan page, if separate), a screenshot or PDF of the part about who owns the results and whether they can be published or used commercially, and the date you made the animation. You can add it later, but we need it before accepting.
-        Per ogni strumento: link alle condizioni d'uso (e alla pagina del piano, se separata), screenshot o PDF della parte su chi possiede i risultati e se si possono pubblicare o usare per scopi commerciali, e la data in cui hai fatto l'animazione. Puoi aggiungerle dopo, ma servono prima di accettarla.
+        Link to the terms of service (and to the plan page, if separate), a screenshot or PDF of the part about who owns the results and whether they can be published or used commercially, and the date you made the animation. You can add it later, but we need it before accepting.
+        Link alle condizioni d'uso (e alla pagina del piano, se separata), screenshot o PDF della parte su chi possiede i risultati e se si possono pubblicare o usare per scopi commerciali, e la data in cui hai fatto l'animazione. Puoi aggiungerle dopo, ma servono prima di accettarla.
   - type: textarea
     id: file
     attributes:
@@ -62,7 +59,9 @@ body:
     attributes:
       label: Rights / Diritti
       options:
-        - label: I made it myself, with the project avatars, and it contains no material from other apps, websites, videos, games or real people. / L'ho fatta io, con gli avatar del progetto, senza materiale di altre app, siti, video, giochi o persone vere.
+        - label: I animated the project start image without changing it, and I didn't create or edit any avatar image. / Ho animato l'immagine di partenza del progetto senza modificarla, e non ho creato né ritoccato immagini degli avatar.
           required: true
-        - label: The terms of the tools I used let me publish it, and I release it under CC0 1.0 (public domain). / Le condizioni degli strumenti usati mi permettono di pubblicarla, e la rilascio con licenza CC0 1.0 (pubblico dominio).
+        - label: It contains no material from other apps, websites, videos, games or real people. / Non contiene materiale di altre app, siti, video, giochi o persone vere.
+          required: true
+        - label: The terms of the tool I used let me publish it, and I release it under CC0 1.0 (public domain). / Le condizioni dello strumento usato mi permettono di pubblicarla, e la rilascio con licenza CC0 1.0 (pubblico dominio).
           required: true

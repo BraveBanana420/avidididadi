@@ -6,19 +6,25 @@ Every exercise in the app can show a short looping animation: in the exercise
 details and during the guided workout. We are starting **from scratch**: for now
 every exercise shows two photos. **You can help without writing any code.**
 
-The list of exercises, with the ones already done: [EXERCISES.md](EXERCISES.md).
-Start from *Priority 1*: they are the ones almost every plan uses.
+The list of exercises, with the ones already done and the ones with a start image
+ready: [EXERCISES.md](EXERCISES.md). Start from *Priority 1*: they are the ones
+almost every plan uses.
 
-## The style in one line
+## How it works
 
-Same character, same light grey background, fixed camera, one slow repetition
-that loops without a jump. The first accepted animations will become the
-examples for the next ones.
+1. **We provide the start image**: the avatar already in the starting position of
+   the exercise, in [`start/`](start/). You only animate it.
+2. **You turn it into a short 2D video** with an image-to-video tool.
+3. We check it and add it to the app.
+
+**Never create or edit images of the avatars yourself**, not even small fixes:
+generated images always come out a little different (face, outfit, proportions)
+and the catalog would stop looking like one set. If the exercise you want has no
+start image yet, ask for it in the issue and we will add it.
 
 ## The two avatars
 
-Use one of these two characters, **exactly as they are** (face, hair, body,
-outfit). One animation = one character. Pick the one you prefer.
+For reference only, so you know how they must look in every frame:
 
 | Male: front | Male: side | Male: back | Male: T-pose | Female: front |
 |---|---|---|---|---|
@@ -28,20 +34,17 @@ Outfit: black sleeveless top (sports bra for the female avatar) with red side
 panels, black leggings with red stripes (black shorts on top for the male), black
 wrist wraps, black shoes with red details. Semi-realistic 3D cartoon style.
 
-The female avatar has only the front view for now: side and back views in the
-same style are a welcome contribution too.
-
 ## Rules for every animation
 
 | | |
 |---|---|
+| **Start** | the start image from [`start/`](start/), unchanged: same character, outfit, background, framing and view |
 | **Final file** | animated WebP, **640 × 320 px** (2:1), about **15 fps**, **2–3 seconds**, infinite loop, no audio, **max 300 KB** |
 | **What you send** | the WebP, or an MP4 video: we can convert it |
-| **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
-| **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
-| **Camera** | fixed: no zoom, no pan, no cuts. **Side view** for most exercises; **front view** when the movement is sideways (e.g. jumping jacks, lateral raises) |
-| **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
+| **Nothing new** | no text, logo, watermark, gym, other people or objects that are not in the start image |
+| **Camera** | fixed: no zoom, no pan, no cuts. The whole body and the equipment always inside the frame |
 | **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
+| **Character** | must stay identical to the start image in every frame: if the face, hair or outfit change, try again |
 
 For the correct technique, follow the exercise instructions in
 [`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
@@ -49,49 +52,24 @@ same ones the app shows.
 
 ## How to make it
 
-Every animation is a **2D video made from an image**: first a still image of the
-avatar in the starting position, then an image-to-video tool that animates it.
-The avatars were made this way, so the style stays the same. No 3D models are
-needed. Any image or video tool is fine, as long as its terms let you publish the
-result (see [License and rights](#license-and-rights-important)).
+### 1. Animation (an image-to-video tool, e.g. Dreamina, Kling, Runway, Veo)
 
-### 1. Starting image (e.g. Nano Banana / Gemini)
-
-Upload the avatar images (front and side) and ask for the starting position.
-Prompts work best in English:
-
-```text
-Use the attached character exactly as he is: same face, hair, body and outfit
-(black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same semi-realistic
-3D cartoon style.
-Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen from the <side / front>.
-Full body visible with some margin, plain light grey background (#D9D9DB) with a
-slightly lighter floor, soft studio light. No text, no logo, no other objects
-<except: EQUIPMENT in matte black>. Wide 2:1 image.
-```
-
-For the female avatar, replace "he" and the outfit with "she" and "black sports
-bra with red details, black leggings with red stripes, ...".
-
-### 2. Animation (an image-to-video tool, e.g. Dreamina, Kling, Runway, Veo)
-
-Give it the starting image. If the tool lets you choose a **first and last frame**,
-use the same image for both: the loop will be seamless.
+Give it the start image. If the tool lets you choose a **first and last frame**,
+use the same image for both: the loop will be seamless. Prompts work best in
+English:
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
 <the movement in one or two lines>. Correct technique, realistic body mechanics.
-The camera is completely still: no zoom, no pan, no cuts. The grey background
-does not change. The movement ends exactly in the starting position, so the video
-loops seamlessly. No text.
+The character, outfit and background stay exactly as in the image.
+The camera is completely still: no zoom, no pan, no cuts. The movement ends
+exactly in the starting position, so the video loops seamlessly. No text.
 ```
 
 Generate a few versions and keep the one with the best technique: hands, feet and
 joints must not bend in strange ways.
 
-### 3. Conversion to WebP (optional)
+### 2. Conversion to WebP (optional)
 
 If you have [ffmpeg](https://ffmpeg.org/), cut the best repetition (`-ss` is where
 it starts, `-t` how long it lasts) and convert:
@@ -108,29 +86,30 @@ don't have ffmpeg, just send the MP4.
 ## License and rights (important)
 
 - Animations are published under **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)**
-  (public domain, like the exercise photos), so anyone can reuse them. The two
-  avatars are CC0 too.
-- Send only things **you made**. Never use clips, frames or characters taken from
-  other apps, websites, videos or games, and never real people.
-- If you use an AI tool, check that its terms let you publish the result in an
-  open-source project (some free plans don't, or add a watermark), and **say which
-  tools and which plan you used** (free or paid). If you are not sure, ask in the
-  issue before sending: we would rather wait than publish something we may not use.
-- **Send the terms too**, for every tool you used (the image one and the video
-  one): the link to its terms of service and, if they are separate, to the plan
-  page, plus a screenshot or PDF of the part about who owns the results and
-  whether you can publish or use them commercially, and the date you made the
-  animation (terms change over time). We read them before accepting the
-  animation; if they don't allow it, we can't publish it, even if it's beautiful.
+  (public domain, like the exercise photos), so anyone can reuse them. The
+  avatars and the start images are CC0 too.
+- Use only the project start images. Never use clips, frames or characters taken
+  from other apps, websites, videos or games, and never real people.
+- Check that the terms of your video tool let you publish the result in an
+  open-source project (some free plans don't, or add a watermark), and **say
+  which tool and which plan you used** (free or paid). If you are not sure, ask
+  in the issue before sending: we would rather wait than publish something we may
+  not use.
+- **Send the terms too**: the link to the tool's terms of service and, if they are
+  separate, to the plan page, plus a screenshot or PDF of the part about who owns
+  the results and whether you can publish or use them commercially, and the date
+  you made the animation (terms change over time). We read them before accepting
+  the animation; if they don't allow it, we can't publish it, even if it's
+  beautiful.
 
 ## How to send it
 
-1. Check [EXERCISES.md](EXERCISES.md) and the open issues, so two people don't make
-   the same exercise.
+1. Choose an exercise in [EXERCISES.md](EXERCISES.md) with the start image ready,
+   and check the open issues, so two people don't make the same exercise.
 2. Open an issue with the **Exercise animation** template, saying which exercise
-   you are working on.
+   you are working on (or asking for its start image).
 3. When it's ready, drag the WebP or MP4 into the issue (max 10 MB), together with
-   the terms of the tools you used.
+   the terms of the tool you used.
 4. We check the animation and the terms, then add it to the app.
 
 Comfortable with Git? Open a pull request against `staging` instead:
