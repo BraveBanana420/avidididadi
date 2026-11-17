@@ -1,5 +1,12 @@
 # Avidididadi
 
+[![License: GPL-3.0](https://img.shields.io/github/license/BraveBanana420/avidididadi)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/BraveBanana420/avidididadi)](https://github.com/BraveBanana420/avidididadi/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/BraveBanana420/avidididadi/total)](https://github.com/BraveBanana420/avidididadi/releases)
+![Android 8.0+ (API 26)](https://img.shields.io/badge/Android-8.0%2B%20%28API%2026%29-3DDC84?logo=android&logoColor=white)
+
+[<img src="docs/badges/get-it-on-obtainium.png" alt="Get it on Obtainium" height="48">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22it.avidididadi.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FBraveBanana420%2Favidididadi%22%2C%22author%22%3A%22BraveBanana420%22%2C%22name%22%3A%22Avidididadi%22%2C%22additionalSettings%22%3A%22%7B%5C%22autoApkFilterByArch%5C%22%3Atrue%7D%22%7D)
+
 **English** · [Italiano](README.it.md)
 
 Avidididadi is an Android app (Flutter) to plan and follow your training:
@@ -49,6 +56,12 @@ The app is available in Italian, English and Greek.
   shareable images, backup and restore to a file.
 
 ## Install the APK
+
+**Recommended: [Obtainium](https://github.com/ImranR98/Obtainium)**, to get
+updates automatically. Install Obtainium, tap the badge above (or *Add App*
+and paste `https://github.com/BraveBanana420/avidididadi`), then pick the `arm64-v8a` APK.
+
+**Manual download:**
 
 1. On your phone open the [Releases](https://github.com/BraveBanana420/avidididadi/releases)
    page and download `Avidididadi-<version>-arm64-v8a.apk` (almost every
