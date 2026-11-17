@@ -1,0 +1,131 @@
+# Exercise animations
+
+**English** · [Italiano](README.it.md)
+
+Every exercise in the app can show a short looping animation: in the exercise
+details and during the guided workout. Today only the push-up has one, all the
+others show two photos. **You can help without writing any code.**
+
+The list of exercises, with the ones already done: [EXERCISES.md](EXERCISES.md).
+Start from *Priority 1*: they are the ones almost every plan uses.
+
+## Look at the example first
+
+[`push_up.webp`](../../assets/exercises/animated/push_up.webp): this is the style
+every animation should have. Same character, same light grey background, fixed
+camera, one slow repetition that loops without a jump.
+
+## The two avatars
+
+Use one of these two characters, **exactly as they are** (face, hair, body,
+outfit). One animation = one character. Pick the one you prefer.
+
+| Male: front | Male: side | Male: back | Male: T-pose | Female: front |
+|---|---|---|---|---|
+| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
+
+Outfit: black sleeveless top (sports bra for the female avatar) with red side
+panels, black leggings with red stripes (black shorts on top for the male), black
+wrist wraps, black shoes with red details. Semi-realistic 3D cartoon style.
+
+The female avatar has only the front view for now: side and back views in the
+same style are a welcome contribution too.
+
+## Rules for every animation
+
+| | |
+|---|---|
+| **Final file** | animated WebP, **640 × 320 px** (2:1), about **15 fps**, **2–3 seconds**, infinite loop, no audio, **max 300 KB** |
+| **What you send** | the WebP, or an MP4 video: we can convert it |
+| **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
+| **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
+| **Camera** | fixed: no zoom, no pan, no cuts. **Side view** for most exercises; **front view** when the movement is sideways (e.g. jumping jacks, lateral raises) |
+| **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
+| **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
+
+For the correct technique, follow the exercise instructions in
+[`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
+same ones the app shows.
+
+## How we made the push-up
+
+You can use any tool (Blender, Cascadeur, an AI video generator...) as long as the
+result follows the rules above. This is what worked for us.
+
+### 1. Starting image (e.g. Nano Banana / Gemini)
+
+Upload the avatar images (front and side) and ask for the starting position.
+Prompts work best in English:
+
+```text
+Use the attached character exactly as he is: same face, hair, body and outfit
+(black sleeveless top with red side panels, black shorts over black leggings with
+red stripes, black wrist wraps, black shoes with red details), same semi-realistic
+3D cartoon style.
+Show him in the starting position of: <EXERCISE NAME> (<one line from the
+instructions>), seen from the <side / front>.
+Full body visible with some margin, plain light grey background (#D9D9DB) with a
+slightly lighter floor, soft studio light. No text, no logo, no other objects
+<except: EQUIPMENT in matte black>. Wide 2:1 image.
+```
+
+For the female avatar, replace "he" and the outfit with "she" and "black sports
+bra with red details, black leggings with red stripes, ...".
+
+### 2. Animation (e.g. Dreamina, image to video)
+
+Give it the starting image. If the tool lets you choose a **first and last frame**,
+use the same image for both: the loop will be seamless.
+
+```text
+The character performs one slow, controlled repetition of <EXERCISE NAME>:
+<the movement in one or two lines>. Correct technique, realistic body mechanics.
+The camera is completely still: no zoom, no pan, no cuts. The grey background
+does not change. The movement ends exactly in the starting position, so the video
+loops seamlessly. No text.
+```
+
+Generate a few versions and keep the one with the best technique: hands, feet and
+joints must not bend in strange ways.
+
+### 3. Conversion to WebP (optional)
+
+If you have [ffmpeg](https://ffmpeg.org/), cut the best repetition (`-ss` is where
+it starts, `-t` how long it lasts) and convert:
+
+```sh
+ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
+  -vf "fps=15,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
+  -c:v libwebp -quality 75 -compression_level 6 -loop 0 exercise_id.webp
+```
+
+If the file is over 300 KB, lower `-quality` (e.g. 60) or shorten `-t`. If you
+don't have ffmpeg, just send the MP4.
+
+## License and rights (important)
+
+- Animations are published under **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)**
+  (public domain, like the exercise photos), so anyone can reuse them. The two
+  avatars are CC0 too.
+- Send only things **you made**. Never use clips, frames or characters taken from
+  other apps, websites, videos or games, and never real people.
+- If you use an AI tool, check that its terms let you publish the result in an
+  open-source project (some free plans don't, or add a watermark), and **say which
+  tools you used**.
+
+## How to send it
+
+1. Check [EXERCISES.md](EXERCISES.md) and the open issues, so two people don't make
+   the same exercise.
+2. Open an issue with the **Exercise animation** template, saying which exercise
+   you are working on.
+3. When it's ready, drag the WebP or MP4 into the issue (max 10 MB).
+
+Comfortable with Git? Open a pull request against `staging` instead:
+
+- add the file to `assets/exercises/animated/`, named after the exercise ID in
+  lowercase (`Bodyweight_Walking_Lunge` → `bodyweight_walking_lunge.webp`);
+- add a line to `animazioniEsercizi` in `lib/animazioni_esercizi.dart`;
+- run `python tool/elenco_animazioni.py` to update [EXERCISES.md](EXERCISES.md).
+
+Thank you! 💪

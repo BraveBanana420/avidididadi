@@ -1,0 +1,58 @@
+name: Exercise animation / Animazione esercizio
+description: Make or send an exercise animation / Crea o manda l'animazione di un esercizio
+title: "Animation: <exercise ID>"
+labels: ["animation", "help wanted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Read the guide first / Prima leggi la guida: [English](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/README.md) · [Italiano](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/README.it.md).
+        Open this issue when you **start**, so nobody else makes the same exercise. Attach the file later in a comment.
+        Apri la issue quando **inizi**, così nessun altro fa lo stesso esercizio. Il file lo alleghi dopo in un commento.
+  - type: input
+    id: esercizio
+    attributes:
+      label: Exercise ID / ID dell'esercizio
+      description: From / Da [EXERCISES.md](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/EXERCISES.md), e.g. `Bodyweight_Walking_Lunge`
+    validations:
+      required: true
+  - type: dropdown
+    id: avatar
+    attributes:
+      label: Avatar
+      options:
+        - Male / Uomo
+        - Female / Donna
+    validations:
+      required: true
+  - type: dropdown
+    id: vista
+    attributes:
+      label: View / Vista
+      options:
+        - Side / Lato
+        - Front / Davanti
+        - Three-quarter / Tre quarti
+    validations:
+      required: true
+  - type: textarea
+    id: strumenti
+    attributes:
+      label: Tools used / Strumenti usati
+      description: e.g. "Nano Banana for the first frame, Dreamina image-to-video, ffmpeg". Include the plan if it matters (free / paid).
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: File (WebP or MP4) / File (WebP o MP4)
+      description: Drag it here when it's ready (max 10 MB). You can also leave it empty and add it later. / Trascinalo qui quando è pronto, o aggiungilo dopo.
+  - type: checkboxes
+    id: diritti
+    attributes:
+      label: Rights / Diritti
+      options:
+        - label: I made it myself, with the project avatars, and it contains no material from other apps, websites, videos, games or real people. / L'ho fatta io, con gli avatar del progetto, senza materiale di altre app, siti, video, giochi o persone vere.
+          required: true
+        - label: The terms of the tools I used let me publish it, and I release it under CC0 1.0 (public domain). / Le condizioni degli strumenti usati mi permettono di pubblicarla, e la rilascio con licenza CC0 1.0 (pubblico dominio).
+          required: true

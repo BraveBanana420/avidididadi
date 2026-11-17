@@ -13,6 +13,12 @@ are both fine (le issue e le PR in italiano vanno benissimo).
 - Never attach your backup, CSV files, GPX tracks or API keys to an issue:
   they contain health and location data. Use made-up values.
 
+## Exercise animations (no coding needed)
+
+You can make the short looping animations of the exercises, with the two project
+avatars: see the [guide](docs/animazioni/README.md) ([italiano](docs/animazioni/README.it.md))
+and the [list of exercises](docs/animazioni/EXERCISES.md).
+
 ## Branches
 
 - `main`: the stable version. Releases are tagged here (`v1.2.3`).
