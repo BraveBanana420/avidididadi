@@ -105,6 +105,23 @@ di rilascio non viene mai firmato per sbaglio con la chiave di debug:
 Le release su GitHub le compila `.github/workflows/release.yml` quando si
 carica un'etichetta `v*`.
 
+**Variante foss** (senza Google Play Services, per F-Droid). Due plugin
+portano le librerie di posizione di Google: `geolocator_android` e
+`maplibre_gl`. `tool/prepara_foss.py` li copia in `.foss/` senza quelle
+parti (tutti e due usano già il `LocationManager` di Android quando Google
+manca) e scrive `pubspec_overrides.yaml`; restano entrambi fuori da git.
+
+```sh
+flutter pub get
+python3 tool/prepara_foss.py              # da qui in poi build foss
+flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD)
+python3 tool/prepara_foss.py --ripristina # torna alla build normale
+```
+
+La CI la compila a ogni pull request e controlla che nell'APK non ci siano
+classi `com.google.android.gms`. Health Connect resta: la sua libreria è
+libera (AndroidX), ma da Android 8 a 13 serve l'app Health Connect di Google.
+
 ## Formato dei dati
 
 Tutto è salvato in file CSV (UTF-8, separati da virgola, intestazione nella
