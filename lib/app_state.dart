@@ -24,6 +24,7 @@ import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
 import 'generatore_mobilita.dart';
 import 'health_connect.dart';
+import 'esecuzione.dart';
 import 'intervalli.dart';
 import 'intervals.dart';
 import 'invio_intervals.dart';
@@ -1282,6 +1283,7 @@ class AppState extends ChangeNotifier {
     attivita: profilo.attivita,
     blocchi: _blocchiContesto,
     potenze: potenzeMigliori,
+    nuotate: nuotate,
   );
 
   /// I blocchi delle sedute recenti per il messaggio all'assistente.
@@ -2759,7 +2761,18 @@ class AppState extends ChangeNotifier {
     }
     final file = fileIntervalli(s.id);
     final t = await Storage.leggiTesto(file);
-    if (t != null) return intervalliDaCsv(t);
+    if (t != null) {
+      final l = intervalliDaCsv(t);
+      // Nuoto registrato con l'app: i metri dei blocchi dalla seduta prevista.
+      if (stessoSport(s.sport, 'Nuoto') && l.any((i) => i.fase.isNotEmpty)) {
+        final giorno = soloData(s.data);
+        return conMetriPrevisti(
+          l,
+          blocchiDa(passiSeduta(giorno, s.sport, tipoDel(giorno, s.sport))),
+        );
+      }
+      return l;
+    }
     if (!s.id.startsWith(prefissoIcu)) return const [];
     final chiave = await ChiaveIntervals.leggi();
     if (chiave == null) return const [];

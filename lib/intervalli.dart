@@ -594,7 +594,9 @@ List<IntervalloFatto> intervalliDaTratti(
             recupero: recupero,
             inizioS: t.inizio.difference(partenza).inSeconds,
             secondi: t.secondi,
-            metri: t.metri,
+            // In piscina non c'è il GPS: un blocco a distanza chiuso con
+            // "Fatto" vale i metri previsti, così si vede il passo.
+            metri: t.metri > 0 || b.secondi != null ? t.metri : b.metri ?? 0,
             fcMedia: _mediaTra(fc, t.inizio, t.fine),
             wattMedi: _mediaTra(potenza, t.inizio, t.fine),
             previstoS: b.secondi ?? 0,
@@ -609,6 +611,35 @@ List<IntervalloFatto> intervalliDaTratti(
                 : b.titolo,
           );
         }(),
+  ];
+}
+
+/// I tratti registrati con l'app prima che si salvassero i metri dei blocchi
+/// a distanza (nuoto): si riprendono dalla seduta prevista, abbinando in
+/// ordine lavoro con lavoro (stesso nome) e recupero con recupero. Se un
+/// tratto ha già i metri, la lista resta com'è.
+List<IntervalloFatto> conMetriPrevisti(
+  List<IntervalloFatto> fatti,
+  List<Blocco> blocchi,
+) {
+  if (fatti.any((i) => i.metri > 0) || blocchi.isEmpty) return fatti;
+  var k = 0;
+  return [
+    for (final i in fatti)
+      () {
+        for (var j = k; j < blocchi.length; j++) {
+          final b = blocchi[j];
+          final rec = b.tipo == TipoBlocco.recupero;
+          if (rec != i.recupero) continue;
+          if (!rec && i.nome.isNotEmpty && !i.nome.startsWith(b.titolo)) {
+            continue;
+          }
+          k = j + 1;
+          final m = b.secondi == null ? b.metri : null;
+          return m == null ? i : i.copia(metri: m);
+        }
+        return i;
+      }(),
   ];
 }
 

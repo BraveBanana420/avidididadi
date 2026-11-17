@@ -6,6 +6,7 @@ import 'feedback.dart';
 import 'intervalli.dart';
 import 'allenamento_agente.dart';
 import 'allenamento_arrampicata.dart';
+import 'modifica_sessione.dart';
 import 'models.dart';
 import 'obiettivo.dart';
 import 'recupero.dart';
@@ -147,6 +148,7 @@ String contestoAllenamento({
   Set<String> attivita = const {},
   Map<String, List<IntervalloFatto>> blocchi = const {},
   List<PotenzaMigliore> potenze = const [],
+  List<SedutaNuoto> nuotate = const [],
 }) {
   final o = soloData(oggi);
   final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
@@ -207,6 +209,7 @@ String contestoAllenamento({
   if (recenti.isEmpty) b.writeln('- nessuna');
   for (final s in recenti.skip(recenti.length > 40 ? recenti.length - 40 : 0)) {
     final f = feedback.where((x) => x.di(s.data, s.sport)).firstOrNull;
+    final n = nuotate.where((x) => x.idSessione == s.id).firstOrNull;
     b.writeln(
       [
         '- ${_gg(s.data)} ${s.sport}',
@@ -217,6 +220,11 @@ String contestoAllenamento({
         if (s.fcMax > 0) 'FC max ${s.fcMax}',
         if (s.potenzaMedia > 0) '${s.potenzaMedia} W medi',
         if (s.cadenzaMedia > 0) 'cadenza ${s.cadenzaMedia} rpm',
+        if (n != null && n.vasche > 0)
+          '${n.vasche} vasche da ${n.lunghezzaM} m',
+        if (n != null && n.passo100S > 0)
+          'passo medio ${fmtPasso100(n.passo100S)}',
+        if (n != null && n.stile.isNotEmpty) n.stile.toLowerCase(),
         if (f != null) 'fatica ${f.fatica}/10',
         if (f != null && !f.completata) 'non completata',
         if (f != null && f.dolore) 'DOLORE',
@@ -226,7 +234,7 @@ String contestoAllenamento({
     final p = potenze.where((x) => x.idSessione == s.id).firstOrNull;
     final l = blocchi[s.id] ?? const <IntervalloFatto>[];
     if (o.difference(s.data).inDays < giorniBlocchiContesto) {
-      for (final r in righeBlocchi(l, potenza: p)) {
+      for (final r in righeBlocchi(l, potenza: p, sport: s.sport)) {
         b.writeln('  $r');
       }
     }
@@ -285,6 +293,7 @@ bool bloccoCompletato(IntervalloFatto i) =>
 List<String> righeBlocchi(
   List<IntervalloFatto> blocchi, {
   PotenzaMigliore? potenza,
+  String sport = '',
 }) {
   final righe = <String>[];
   final p = potenza;
@@ -317,7 +326,10 @@ List<String> righeBlocchi(
       '(${ultimo.wattMedi} W)',
     );
   }
-  righe.add('Blocchi (durata fatta/prevista, watt medi/previsti, FC media):');
+  righe.add(
+    'Blocchi (durata fatta/prevista, metri, passo, watt medi/previsti, '
+    'FC media):',
+  );
   final mostrati = blocchi.take(_maxBlocchi).toList();
   for (var n = 0; n < mostrati.length; n++) {
     final i = mostrati[n];
@@ -333,6 +345,8 @@ List<String> righeBlocchi(
         '${_mmss(i.secondi)}${i.previstoS > 0 ? '/${_mmss(i.previstoS)}' : ''}',
         if (i.previstoS > 0 && !bloccoCompletato(i)) 'NON completato',
         if (i.metri > 0) '${i.metri.round()} m',
+        if (!i.recupero && sport.isNotEmpty)
+          ?_vuotoNull(passoIntervallo(i, sport)),
         if (i.wattMedi > 0)
           '${i.wattMedi} W'
               '${w == null
@@ -349,6 +363,8 @@ List<String> righeBlocchi(
   }
   return righe;
 }
+
+String? _vuotoNull(String s) => s.isEmpty ? null : s;
 
 String _mmss(int s) => '${s ~/ 60}:${(s % 60).toString().padLeft(2, '0')}';
 

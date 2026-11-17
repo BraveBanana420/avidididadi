@@ -3,6 +3,7 @@ import 'package:allenamenti_app/csv.dart';
 import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/generatore_endurance.dart';
 import 'package:allenamenti_app/llm.dart';
+import 'package:allenamenti_app/modifica_sessione.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
 import 'package:allenamenti_app/test_soglia.dart';
@@ -238,6 +239,80 @@ void main() {
         contains('Gradino 5, principale, 1:00/1:00, 211 W (previsti 210)'),
       );
       expect(c, contains('Gradino 13, principale, 0:25/1:00, NON completato'));
+    });
+
+    test('nuoto: passo di ogni tratto e dati scritti a mano', () {
+      final ieri = oggi.subtract(const Duration(days: 1));
+      final c = contestoAllenamento(
+        oggi: oggi,
+        zone: const Zone(fcMax: 180, fcRiposo: 50),
+        sessioni: [
+          Sessione(
+            id: 'app-nuoto',
+            data: ieri,
+            sport: 'Nuoto',
+            tipo: 'Tecnica',
+            durataMin: 40,
+            distanzaKm: 1.5,
+          ),
+        ],
+        piano: piano,
+        feedback: const [],
+        recupero: const [],
+        blocchi: {
+          'app-nuoto': const [
+            IntervalloFatto(
+              recupero: false,
+              inizioS: 0,
+              secondi: 250,
+              metri: 200,
+              nome: 'Stile libero facile',
+              fase: 'riscaldamento',
+            ),
+            IntervalloFatto(
+              recupero: false,
+              inizioS: 250,
+              secondi: 48,
+              metri: 50,
+              nome: 'Stile libero svelto 1/4',
+              fase: 'principale',
+            ),
+            IntervalloFatto(
+              recupero: true,
+              inizioS: 298,
+              secondi: 20,
+              previstoS: 20,
+              fase: 'principale',
+            ),
+          ],
+        },
+        nuotate: [
+          SedutaNuoto(
+            idSessione: 'app-nuoto',
+            data: ieri,
+            vasche: 60,
+            passo100S: 115,
+            stile: 'Stile libero',
+          ),
+        ],
+      );
+      expect(
+        c,
+        contains('60 vasche da 25 m, passo medio 1:55/100 m, stile libero'),
+      );
+      expect(
+        c,
+        contains(
+          '1. Stile libero facile, riscaldamento, 4:10, 200 m, 2:05/100 m',
+        ),
+      );
+      expect(
+        c,
+        contains(
+          '2. Stile libero svelto 1/4, principale, 0:48, 50 m, 1:36/100 m',
+        ),
+      );
+      expect(c, contains('3. recupero, principale, 0:20/0:20'));
     });
 
     test('configurazione salvata e riletta, chiave esclusa', () {

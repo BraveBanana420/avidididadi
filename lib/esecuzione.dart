@@ -22,6 +22,9 @@ class Blocco {
   final String ripetizioni; // previste: "8-10", "45 s"…
   final double? kg; // dalla scheda del personal trainer, se c'è
   final bool kgPerSerie; // la scheda dà pesi diversi per serie
+
+  /// Metri previsti del blocco ("4 × 50 m" → 50), null se non è a distanza.
+  final double? metri;
   const Blocco({
     required this.tipo,
     required this.titolo,
@@ -37,6 +40,7 @@ class Blocco {
     this.ripetizioni = '',
     this.kg,
     this.kgPerSerie = false,
+    this.metri,
   });
 
   bool get aTempo => secondi != null;
@@ -73,6 +77,11 @@ double? kgDellaSerie(String kg, int n) {
       ?double.tryParse(x.trim().replaceAll(',', '.')),
   ];
   return v.isEmpty ? null : v[(n - 1).clamp(0, v.length - 1)];
+}
+
+double? _metriPrevisti(String testo) {
+  final m = double.tryParse(testo.trim().replaceAll(',', '.'));
+  return m != null && m > 0 ? m : null;
 }
 
 /// I blocchi da eseguire, nell'ordine dei passi.
@@ -113,6 +122,7 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
           ripetizioni: s.ripetizioni,
           kg: kgDellaSerie(s.kg, i),
           kgPerSerie: s.kg.split(';').toSet().length > 1,
+          metri: _metriPrevisti(s.distanzaM),
         ),
       );
       // Recupero tra le serie, e dopo l'ultima se c'è un altro passo.
