@@ -27,6 +27,12 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
   String app = appAgente.first;
   bool consenso = false;
 
+  @override
+  void initState() {
+    super.initState();
+    widget.state.preparaContestoAssistente();
+  }
+
   Future<void> _collega() async {
     final navigator = Navigator.of(context);
     await widget.state.salvaAssistente(); // dati personali sì/no
@@ -103,9 +109,12 @@ class _CollegaAgenteScreenState extends State<CollegaAgenteScreen> {
               title: Text(l10n.vediEsattamenteCosaViene),
               childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               children: [
-                SelectableText(
-                  widget.state.contestoAssistente,
-                  style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                ListenableBuilder(
+                  listenable: widget.state,
+                  builder: (context, _) => SelectableText(
+                    widget.state.contestoAssistente,
+                    style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                  ),
                 ),
               ],
             ),

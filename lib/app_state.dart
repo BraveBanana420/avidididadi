@@ -1280,7 +1280,34 @@ class AppState extends ChangeNotifier {
     recupero: recupero,
     sportGenerati: profilo.sportGenerati,
     attivita: profilo.attivita,
+    blocchi: _blocchiContesto,
+    potenze: potenzeMigliori,
   );
+
+  /// I blocchi delle sedute recenti per il messaggio all'assistente.
+  Map<String, List<IntervalloFatto>> _blocchiContesto = {};
+
+  /// Legge i blocchi (gradini, ripetute) delle sedute recenti, da mettere nel
+  /// messaggio all'assistente. Si chiama prima di prepararlo.
+  Future<void> preparaContestoAssistente() async {
+    final o = soloData(DateTime.now());
+    final nuovi = <String, List<IntervalloFatto>>{};
+    for (final s in sessioni) {
+      if (s.data.isAfter(o) ||
+          o.difference(s.data).inDays >= giorniBlocchiContesto ||
+          stessoSport(s.sport, 'Forza')) {
+        continue;
+      }
+      try {
+        final l = intervalliModificati[s.id] ?? await intervalliDi(s);
+        if (l.length >= 2) nuovi[s.id] = senzaCodaBreve(l);
+      } catch (_) {
+        // Senza blocchi la seduta va lo stesso, con i totali.
+      }
+    }
+    _blocchiContesto = nuovi;
+    notifyListeners();
+  }
 
   /// Verifica che il servizio scelto risponda e aggiorna lo stato mostrato.
   Future<void> verificaAssistente() async {
@@ -1331,6 +1358,7 @@ class AppState extends ChangeNotifier {
     try {
       // Solo gli ultimi messaggi, per contenere costi e lunghezza.
       final storia = chat.length > 12 ? chat.sublist(chat.length - 12) : chat;
+      await preparaContestoAssistente();
       final risposta = await chiediAssistente(
         assistente,
         await ChiaviAssistente.leggi(assistente.fornitore),
@@ -1410,6 +1438,7 @@ class AppState extends ChangeNotifier {
   Future<String> messaggioAgente({required bool completo}) async {
     final c = assistente;
     final oggi = DateTime.now();
+    await preparaContestoAssistente();
     final testo = completo
         ? messaggioInizialeAgente(
             codice: c.codiceEsterno,

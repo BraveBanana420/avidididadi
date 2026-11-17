@@ -452,6 +452,7 @@ class _ImpostazioniAssistenteScreenState
   void initState() {
     super.initState();
     _leggiChiave();
+    widget.state.preparaContestoAssistente();
   }
 
   @override
@@ -726,9 +727,12 @@ class _ImpostazioniAssistenteScreenState
                 title: Text(l10n.vediEsattamenteCosaViene),
                 childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 children: [
-                  SelectableText(
-                    widget.state.contestoAssistente,
-                    style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                  ListenableBuilder(
+                    listenable: widget.state,
+                    builder: (context, _) => SelectableText(
+                      widget.state.contestoAssistente,
+                      style: t.bodySmall?.copyWith(fontFamily: 'monospace'),
+                    ),
                   ),
                 ],
               ),

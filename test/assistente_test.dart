@@ -1,9 +1,11 @@
 import 'package:allenamenti_app/assistente.dart';
 import 'package:allenamenti_app/csv.dart';
+import 'package:allenamenti_app/intervalli.dart';
 import 'package:allenamenti_app/generatore_endurance.dart';
 import 'package:allenamenti_app/llm.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/obiettivo.dart';
+import 'package:allenamenti_app/test_soglia.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -155,6 +157,87 @@ void main() {
       expect(c, contains('2026-10-21 mer Corsa, Lento, 45 min, 8 km'));
       expect(c, contains('2026-10-24 sab Corsa, Lungo, 90 min'));
       expect(c, isNot(contains('2026-10-20'))); // piano passato escluso
+    });
+
+    test('test FTP a rampa: watt di ogni gradino e gradino più alto', () {
+      final ieri = oggi.subtract(const Duration(days: 1));
+      final blocchi = [
+        const IntervalloFatto(
+          recupero: false,
+          inizioS: 0,
+          secondi: 600,
+          previstoS: 600,
+          wattMedi: 112,
+          nome: 'Pedalata facile',
+          fase: 'riscaldamento',
+        ),
+        for (var i = 0; i < 12; i++)
+          IntervalloFatto(
+            recupero: false,
+            inizioS: 600 + i * 60,
+            secondi: 60,
+            previstoS: 60,
+            wattMedi: 151 + i * 15,
+            wattPrevisti: (150 + i * 15, 150 + i * 15),
+            nome: 'Gradino ${i + 1}',
+            fase: 'principale',
+            fcMedia: 120 + i * 4,
+          ),
+        // Il 13° gradino lasciato dopo 25 secondi.
+        const IntervalloFatto(
+          recupero: false,
+          inizioS: 1320,
+          secondi: 25,
+          previstoS: 60,
+          wattMedi: 340,
+          wattPrevisti: (330, 330),
+          nome: 'Gradino 13',
+          fase: 'principale',
+        ),
+      ];
+      final c = contestoAllenamento(
+        oggi: oggi,
+        zone: const Zone(fcMax: 180, fcRiposo: 50),
+        ftp: 250,
+        sessioni: [
+          Sessione(
+            id: 'app-bici',
+            data: ieri,
+            sport: 'Bici',
+            tipo: 'Test FTP',
+            durataMin: 33,
+            potenzaMedia: 190,
+            cadenzaMedia: 90,
+          ),
+        ],
+        piano: piano,
+        feedback: const [],
+        recupero: const [],
+        blocchi: {'app-bici': blocchi},
+        potenze: [
+          PotenzaMigliore(
+            idSessione: 'app-bici',
+            data: ieri,
+            w20: 0,
+            w1: 330,
+            test: 'rampa',
+          ),
+        ],
+      );
+      expect(c, contains('190 W medi, cadenza 90 rpm'));
+      expect(c, contains('Test FTP a rampa, miglior minuto 330 W'));
+      expect(c, contains('FTP che ne risulta 248 W'));
+      expect(
+        c,
+        contains(
+          'Blocco completato con i watt medi più alti: Gradino 12 (316 W)',
+        ),
+      );
+      expect(
+        c,
+        contains('Gradino 5, principale, 1:00/1:00, 211 W (previsti 210)'),
+      );
+      expect(c, contains('Gradino 13, principale, 0:25/1:00, NON completato'));
     });
 
     test('configurazione salvata e riletta, chiave esclusa', () {
