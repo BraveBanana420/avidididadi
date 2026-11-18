@@ -73,6 +73,8 @@ google-services.json
 *.tcx
 # Note e file solo locali.
 NOTE_PRIVATE.md
+# Permessi locali di Claude Code (possono contenere percorsi del PC).
+.claude/settings.local.json
 *.local.md
 local.properties
 # Build e pacchetti.

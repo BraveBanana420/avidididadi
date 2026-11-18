@@ -2,6 +2,12 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.0.1
+
+- Nell'app non cambia nulla: si installa sopra la 1.0.0 senza perdere i dati.
+- Aggiornamenti automatici con Obtainium: badge e istruzioni nella pagina GitHub.
+- APK più pulito: tolto un blocco di dati per Google Play che fuori dal Play Store non serve.
+
 ## 1.0.0
 
 - Prima versione pubblica: il codice è su GitHub e l'APK firmato si scarica dalla pagina Releases; si installa sopra la 0.1.0 e la 1.12.x senza perdere nulla.

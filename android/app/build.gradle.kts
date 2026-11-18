@@ -47,6 +47,13 @@ android {
         }
     }
 
+    // Niente blocco "dependencies info" nell'APK: è cifrato con una chiave di
+    // Google, nessuno può leggerlo e F-Droid e IzzyOnDroid lo segnalano.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     buildTypes {
         release {
             // Sempre la chiave vera: un APK firmato con quella di debug non si
