@@ -132,7 +132,8 @@ Fatto (su `staging`, da provare sul telefono e nei 4 temi):
   niente tratti di zero secondi. La prova "rosso e oro" è stata annullata.
   `tool/schermate` disegna le schermate nei 4 temi senza telefono. Da
   guardare sul telefono nei 4 temi.
-- [x] **Rifiniture grafiche** (15/11): "Prepara le sedute" con titoli corti;
+
+- [x] **Rifiniture grafiche** (15/11): "Prepara le sedute" con titoli corti;
   icone tutte arrotondate (a contorno solo dove dice uno stato); cifre a
   larghezza fissa (`cifreFisse`); `EntrataMorbida` per numeri ed esercizi;
   2 px tra i pezzi delle colonne; `tool/schermate` disegna anche la bici al
@@ -162,6 +163,13 @@ Da riprendere, forse:
   resta sul telefono (Drive di solito non compare nella scelta della
   cartella: da verificare). Un vero backup su Drive chiede l'accesso con
   Google: da fare insieme al Play Store.
+- [ ] **F-Droid e IzzyOnDroid** (rimandati il 18/11/2026): il lavoro è nei
+  commit `7d9ca5e` (cartella `fastlane/` con testi e screenshot in JPG) e
+  `b77214f` (variante foss: `tool/prepara_foss.py` e lavoro `foss` nella CI),
+  tolti dopo; si recuperano con `git revert` del commit che li ha tolti.
+  IzzyOnDroid prende i nostri APK dalle Releases (anche con il GPS di
+  Google), ma il limite indicativo è 30 MB per APK e non ama le app per le
+  piattaforme AI; F-Droid compila da sé e vuole la variante foss.
 - [ ] **Play Store** (se si decide di pubblicare): account sviluppatore
   (25 $), informativa privacy su una pagina web (GitHub Pages, dal testo di
   `privacy_screen.dart`), modulo "Sicurezza dei dati", dichiarazioni per
