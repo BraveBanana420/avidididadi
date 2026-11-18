@@ -73,6 +73,11 @@ google-services.json
 *.tcx
 # Note e file solo locali.
 NOTE_PRIVATE.md
+# Permessi locali di Claude Code (possono contenere percorsi del PC).
+.claude/settings.local.json
+# Variante foss (tool/prepara_foss.py): copie dei plugin senza Google.
+/.foss/
+/pubspec_overrides.yaml
 *.local.md
 local.properties
 # Build e pacchetti.

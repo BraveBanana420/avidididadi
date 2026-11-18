@@ -1,0 +1,23 @@
+Avidididadi prepara e guida i tuoi allenamenti: forza, corsa, nuoto, bici, mobilità e arrampicata. Il piano si adatta a come vanno le sedute, l'allenamento guidato ti accompagna passo passo e Progressi mostra come migliori.
+
+<b>I dati restano sul telefono</b>: niente server, account, pubblicità o tracciamento. In italiano, inglese e greco.
+
+<b>Funzioni</b>
+<ul>
+<li><b>Piano</b>: calendario con settimana tipo facoltativa; generatori per forza, corsa, nuoto, bici e mobilità; progressione per durata o intensità; si adatta ai tuoi feedback e al recupero.</li>
+<li><b>Oggi</b>: la seduta del giorno, la settimana, l'energia da sonno, HRV e battito a riposo.</li>
+<li><b>Allenamento guidato</b>: timer, recuperi, bip e voce; GPS per corsa, camminata e bici (anche a schermo spento); percorsi con indicazioni a voce.</li>
+<li><b>Rullo smart</b> (FTMS): modalità ERG con i watt di ogni blocco; fasce cardio e sensori della bici via Bluetooth.</li>
+<li><b>Test delle soglie</b>: FTP della bici (rampa o 20 minuti), FTP della corsa, passo critico nel nuoto.</li>
+<li><b>Health Connect</b> (solo lettura): sessioni da altre app, battito, sonno, HRV, percorsi.</li>
+<li><b>intervals.icu</b> (facoltativo, con la tua chiave API): attività dall'orologio e sedute in programma mandate al calendario.</li>
+<li><b>Mappe</b>: MapLibre + OpenFreeMap, import GPX, zona offline intorno a un percorso.</li>
+<li><b>Coach</b> (facoltativo): un assistente AI con la tua chiave API, Ollama sul tuo PC o l'app del tuo assistente con un codice di collegamento.</li>
+<li><b>Altro</b>: catalogo esercizi con animazioni, mappa dei muscoli, widget per la home, immagini da condividere, backup e ripristino su file.</li>
+</ul>
+
+<b>Servizi in rete</b> (tutti facoltativi o avviati da te): mappe OpenFreeMap ed Esri, immagini degli esercizi da free-exercise-db su GitHub, intervals.icu e assistenti AI solo se aggiungi la tua chiave.
+
+Non è un consiglio medico: piani, zone e punteggi di recupero sono stime automatiche.
+
+Software libero con licenza GPL-3.0.

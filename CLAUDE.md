@@ -37,6 +37,7 @@ flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse
 adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
 ```
 
+- **Variante foss** (senza Google Play Services, per F-Droid): `python3 tool/prepara_foss.py` dopo `flutter pub get`, poi la build di sempre; `python3 tool/prepara_foss.py --ripristina` per tornare alla normale. Copia `geolocator_android` e `maplibre_gl` in `.foss/` senza le parti di Google e scrive `pubspec_overrides.yaml` (fuori da git). Se un plugin cambia versione e lo script si ferma, va aggiornato. La CI (`ci.yml`, lavoro `foss`) la compila e controlla che nell'APK non ci sia `com.google.android.gms`.
 - **Firma**: `android/key.properties` (fuori da git, modello in `key.properties.example`). Un APK di debug ha un'altra firma e non si installa sopra quello di rilascio.
 - **Telefono** (numero di serie in `NOTE_PRIVATE.md`, qui `<seriale>`): installa **senza avviare** l'app; niente tocchi né screenshot se non li chiede l'utente. In Git Bash, per i percorsi dentro `adb shell` usa `MSYS_NO_PATHCONV=1`.
 - **Senza cavo**: Debug wireless + Tailscale (telefono su un Wi-Fi qualsiasi). `adb connect <IP Tailscale del telefono>:<porta>`: l'IP è in `NOTE_PRIVATE.md`, la porta la comunica l'utente (cambia quando il Debug wireless si riaccende). Poi usa `adb -s <ip>:<porta>` al posto del numero di serie.

@@ -1,5 +1,12 @@
 # Avidididadi
 
+[![Licenza: GPL-3.0](https://img.shields.io/github/license/BraveBanana420/avidididadi)](LICENSE)
+[![Ultima versione](https://img.shields.io/github/v/release/BraveBanana420/avidididadi)](https://github.com/BraveBanana420/avidididadi/releases/latest)
+[![Download](https://img.shields.io/github/downloads/BraveBanana420/avidididadi/total)](https://github.com/BraveBanana420/avidididadi/releases)
+![Android 8.0+ (API 26)](https://img.shields.io/badge/Android-8.0%2B%20%28API%2026%29-3DDC84?logo=android&logoColor=white)
+
+[<img src="docs/badges/get-it-on-obtainium.png" alt="Scarica con Obtainium" height="48">](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22it.avidididadi.app%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FBraveBanana420%2Favidididadi%22%2C%22author%22%3A%22BraveBanana420%22%2C%22name%22%3A%22Avidididadi%22%2C%22additionalSettings%22%3A%22%7B%5C%22autoApkFilterByArch%5C%22%3Atrue%7D%22%7D)
+
 [English](README.md) · **Italiano**
 
 Avidididadi è un'app Android (Flutter) per pianificare e seguire gli
@@ -49,6 +56,13 @@ tracciamento. L'app è in italiano, inglese e greco.
 
 ## Installare l'APK
 
+**Consigliato: [Obtainium](https://github.com/ImranR98/Obtainium)**, per
+ricevere gli aggiornamenti in automatico. Installa Obtainium, tocca il badge
+qui sopra (oppure *Aggiungi app* e incolla
+`https://github.com/BraveBanana420/avidididadi`), poi scegli l'APK `arm64-v8a`.
+
+**Download manuale:**
+
 1. Dal telefono apri la pagina
    [Releases](https://github.com/BraveBanana420/avidididadi/releases) e
    scarica `Avidididadi-<versione>-arm64-v8a.apk` (quasi tutti i telefoni
@@ -90,6 +104,23 @@ di rilascio non viene mai firmato per sbaglio con la chiave di debug:
 
 Le release su GitHub le compila `.github/workflows/release.yml` quando si
 carica un'etichetta `v*`.
+
+**Variante foss** (senza Google Play Services, per F-Droid). Due plugin
+portano le librerie di posizione di Google: `geolocator_android` e
+`maplibre_gl`. `tool/prepara_foss.py` li copia in `.foss/` senza quelle
+parti (tutti e due usano già il `LocationManager` di Android quando Google
+manca) e scrive `pubspec_overrides.yaml`; restano entrambi fuori da git.
+
+```sh
+flutter pub get
+python3 tool/prepara_foss.py              # da qui in poi build foss
+flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD)
+python3 tool/prepara_foss.py --ripristina # torna alla build normale
+```
+
+La CI la compila a ogni pull request e controlla che nell'APK non ci siano
+classi `com.google.android.gms`. Health Connect resta: la sua libreria è
+libera (AndroidX), ma da Android 8 a 13 serve l'app Health Connect di Google.
 
 ## Formato dei dati
 
