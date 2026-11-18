@@ -104,23 +104,6 @@ is never signed with the debug key by mistake:
 Releases on GitHub are built by `.github/workflows/release.yml` when a `v*`
 tag is pushed.
 
-**FOSS build** (no Google Play Services, for F-Droid). Two plugins pull in
-Google's location libraries: `geolocator_android` and `maplibre_gl`.
-`tool/prepara_foss.py` copies them to `.foss/` without those parts (both
-already fall back to Android's own `LocationManager`) and writes
-`pubspec_overrides.yaml`; both stay out of git.
-
-```sh
-flutter pub get
-python3 tool/prepara_foss.py              # FOSS build from now on
-flutter build apk --release --split-per-abi --dart-define=COMMIT=$(git rev-parse --short HEAD)
-python3 tool/prepara_foss.py --ripristina # back to the normal build
-```
-
-CI builds it on every pull request and checks that the APK has no
-`com.google.android.gms` classes. Health Connect stays: its library is free
-(AndroidX), but on Android 8–13 it needs Google's Health Connect app.
-
 ## Data format
 
 Everything is stored as CSV files (UTF-8, comma-separated, header in the
