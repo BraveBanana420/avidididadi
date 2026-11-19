@@ -47,7 +47,7 @@ adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.
     - funzioni nuove → MINOR (1.0.1 → 1.1.0);
     - cambi che rompono i dati o le abitudini di chi usa l'app → MAJOR (1.1.0 → 2.0.0), solo dopo averlo chiesto all'utente.
   - Il numero di build (`+N`) sale di 1 insieme alla versione e **non scende mai**: Android rifiuta di installare un numero più basso sopra uno più alto (per questo dopo la 1.12.4+32 si è ripartiti da 0.1.0+32).
-  - Attuale: `1.0.1+34` (su `main` e `staging`).
+  - Attuale: `1.0.2+35` (su `main` e `staging`).
 - **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono. Prima la stessa Wi-Fi (`adb mdns services`, poi `adb connect <ip>:<porta>`), poi Tailscale. Se non è raggiungibile, dillo e installa alla prima occasione.
 - **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
   - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
