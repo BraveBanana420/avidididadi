@@ -500,7 +500,7 @@ IconData _iconaGrafica(GraficaCondivisa g) => switch (g) {
 };
 
 /// Il marchio dell'app in cima alle immagini: "#avidididadi", minuscolo,
-/// nel colore del testo (bianco sul fondo scuro).
+/// nel carattere del logo e nel colore del testo (bianco sul fondo scuro).
 class _Marchio extends StatelessWidget {
   const _Marchio();
 
@@ -509,13 +509,8 @@ class _Marchio extends StatelessWidget {
     '#avidididadi',
     maxLines: 1,
     softWrap: false,
-    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontFamily: famigliaTitoli,
-      fontFamilyFallback: ripiegoTitoli,
-      fontWeight: FontWeight.w700,
-      letterSpacing: -0.3,
-      color: Theme.of(context).colorScheme.onSurface,
-    ),
+    style: stileMarchio(Theme.of(context).textTheme.titleMedium)
+        ?.copyWith(color: Theme.of(context).colorScheme.onSurface),
   );
 }
 
@@ -1612,14 +1607,7 @@ class ImmagineFoto extends StatelessWidget {
                   '#avidididadi',
                   maxLines: 1,
                   softWrap: false,
-                  style: chiaro(
-                    t.titleMedium?.copyWith(
-                      fontFamily: famigliaTitoli,
-                      fontFamilyFallback: ripiegoTitoli,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
+                  style: chiaro(stileMarchio(t.titleMedium)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

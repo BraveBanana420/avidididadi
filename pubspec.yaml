@@ -99,6 +99,12 @@ flutter:
           weight: 500
         - asset: assets/fonts/SpaceGrotesk-Bold.ttf
           weight: 700
+    # Il carattere del logo #avidididadi: solo corsivo di peso normale.
+    - family: LiberationSans
+      fonts:
+        - asset: assets/fonts/LiberationSans-Italic.ttf
+          style: italic
+          weight: 400
 
   # To add assets to your application, add an assets section, like this:
   # assets:

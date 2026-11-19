@@ -68,6 +68,19 @@ const famigliaTesto = 'Manrope';
 /// Space Grotesk non ha le lettere greche: i titoli in greco usano Manrope.
 const ripiegoTitoli = [famigliaTesto];
 
+/// Il carattere del logo "#avidididadi": Liberation Sans corsivo, solo peso
+/// normale, come nel logo del progetto.
+const famigliaMarchio = 'LiberationSans';
+
+/// [base] nel carattere del logo: corsivo, peso normale, spaziatura normale.
+TextStyle? stileMarchio(TextStyle? base) => base?.copyWith(
+  fontFamily: famigliaMarchio,
+  fontFamilyFallback: const [],
+  fontStyle: FontStyle.italic,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 0,
+);
+
 /// Rosso del tema scuro e neon del tema chiaro.
 const rossoPulse = Color(0xFFFF3B47);
 const rosaNeon = Color(0xFFFF2E93);
