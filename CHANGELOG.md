@@ -2,6 +2,10 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.0.2
+
+- Immagini da condividere: la scritta #avidididadi ora ha il carattere del logo.
+
 ## 1.0.1
 
 - Nell'app non cambia nulla: si installa sopra la 1.0.0 senza perdere i dati.
