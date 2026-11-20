@@ -77,6 +77,7 @@ class PrivacyScreen extends StatelessWidget {
       (l10n.sensoriBluetoothBattitoBici, l10n.soloSeScegliTu),
       (l10n.mappe, l10n.disegnareMappaAppScarica),
       (l10n.intervalsIcuFacoltativo, l10n.seColleghiIntervalsIcu),
+      (l10n.webhookFacoltativo, l10n.webhookPrivacy),
       (l10n.immaginiDegliEsercizi, l10n.fotoDegliEserciziVengono),
       (l10n.assistenteFacoltativo2, l10n.soloSeAttiviTu),
       (l10n.assistenteNellaTuaApp, l10n.seColleghiAppTuo),

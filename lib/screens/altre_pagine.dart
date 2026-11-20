@@ -12,6 +12,7 @@ import 'intervals_card.dart';
 import 'passi_card.dart';
 import 'import_csv.dart';
 import 'privacy_screen.dart';
+import 'webhook_screen.dart';
 import '../l10n/lingua.dart';
 
 /// Collegamenti e dati: Health Connect, backup e import. La parte tecnica,
@@ -44,6 +45,8 @@ class DatiCollegamentiScreen extends StatelessWidget {
           if (state.profilo.modoAvanzato) ...[
             const SizedBox(height: 12),
             ImportCsvAvanzato(state: state),
+            const SizedBox(height: 12),
+            SezioneWebhook(state: state),
           ],
           const SizedBox(height: 8),
           TextButton.icon(

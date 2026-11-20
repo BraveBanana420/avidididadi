@@ -12001,6 +12001,294 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Non sono riuscito a metterlo nel calendario.'**
   String get tsNonRiuscito;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Webhook'**
+  String get webhookTitolo;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Manda i tuoi allenamenti a un indirizzo web tuo (Home Assistant, n8n, Node-RED…)'**
+  String get webhookSottotitolo;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'A ogni allenamento finito, piano cambiato o record nuovo l\'app manda un messaggio all\'indirizzo che scegli tu, così i dati arrivano nei tuoi pannelli. Nessun server nostro: l\'indirizzo è tuo.'**
+  String get webhookSpiegazione;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Invia i dati al webhook'**
+  String get webhookAttivo;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Spento: non parte niente.'**
+  String get webhookSpento;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Acceso'**
+  String get webhookAcceso;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Indirizzo (URL)'**
+  String get webhookIndirizzo;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Serve un indirizzo completo che inizi con https://'**
+  String get webhookUrlNonValido;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Chiave segreta (facoltativa)'**
+  String get webhookChiave;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Con la chiave ogni messaggio ha una firma: chi lo riceve controlla che arrivi davvero dalla tua app.'**
+  String get webhookChiaveAiuto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Genera'**
+  String get webhookGenera;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Copia la chiave'**
+  String get webhookCopia;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Chiave copiata'**
+  String get webhookChiaveCopiata;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Mostra o nascondi la chiave'**
+  String get webhookMostraChiave;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Salva'**
+  String get webhookSalva;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Webhook salvato'**
+  String get webhookSalvato;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Prima scrivi e salva un indirizzo https://'**
+  String get webhookPrimaUrl;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cosa inviare'**
+  String get webhookCosaInviare;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Allenamento completato'**
+  String get webhookEventoAllenamento;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Data, sport, durata, distanza, battito, watt, esercizi, serie e carichi'**
+  String get webhookEventoAllenamentoSotto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Piano aggiornato'**
+  String get webhookEventoPiano;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Le sedute in programma, quando cambiano'**
+  String get webhookEventoPianoSotto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Nuovo record'**
+  String get webhookEventoRecord;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Più kg in un esercizio o la distanza più lunga in uno sport'**
+  String get webhookEventoRecordSotto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Quali allenamenti'**
+  String get webhookQualiAllenamenti;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Solo quelli registrati con l\'app'**
+  String get webhookSoloApp;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Anche quelli importati'**
+  String get webhookTutti;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Da Health Connect, intervals.icu e CSV, compresi quelli già salvati'**
+  String get webhookTuttiSotto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Quali allenamenti inviare?'**
+  String get webhookSceltaTitolo;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Puoi mandare solo quelli che registri con l\'app, oppure anche quelli che arrivano da Health Connect, intervals.icu e dai CSV. Con la seconda scelta partono anche quelli già salvati (ora sono {p0}): possono essere centinaia, e il primo invio può richiedere un po\'. Partono uno alla volta, anche con l\'app chiusa.'**
+  String webhookSceltaTesto(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Invia test'**
+  String get webhookInviaTest;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test riuscito: risposta HTTP {p0}'**
+  String webhookTestOk(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Test non riuscito: {p0}'**
+  String webhookTestErrore(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'risposta HTTP {p0}'**
+  String webhookCodiceHttp(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'nessuna risposta entro 10 secondi'**
+  String get webhookErroreTimeout;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'rete non raggiungibile'**
+  String get webhookErroreRete;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'connessione non riuscita (certificato o indirizzo)'**
+  String get webhookErroreAltro;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'messaggio troppo vecchio, scartato'**
+  String get webhookErroreScaduto;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Stato'**
+  String get webhookStato;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo invio riuscito: {p0} alle {p1}:{p2}'**
+  String webhookUltimoOk(Object p0, Object p1, Object p2);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ancora nessun invio riuscito'**
+  String get webhookMaiInviato;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ultimo errore: {p0} alle {p1}:{p2}, {p3}'**
+  String webhookUltimoErrore(Object p0, Object p1, Object p2, Object p3);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggi in coda: {p0}'**
+  String webhookInCoda(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Messaggi scartati: {p0}'**
+  String webhookScartati(Object p0);
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Come funziona'**
+  String get webhookComeFunziona;
+
+  /// screens/webhook_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Ogni messaggio è una richiesta POST con un JSON. Se non arriva (niente rete, server spento) resta in coda e l\'app ritenta dopo 1, 5 e 15 minuti, poi ogni ora, anche ad app chiusa appena torna la rete: al massimo 10 volte o 7 giorni. Gli errori 4xx (indirizzo o chiave sbagliati) non si ritentano. Formato ed esempi in docs/WEBHOOK.md, nel repository dell\'app su GitHub.'**
+  String get webhookComeFunzionaTesto;
+
+  /// screens/privacy_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Webhook (facoltativo)'**
+  String get webhookFacoltativo;
+
+  /// screens/privacy_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Solo se accendi il webhook e scrivi un indirizzo https, l\'app manda a quell\'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.'**
+  String get webhookPrivacy;
 }
 
 class _AppLocalizationsDelegate

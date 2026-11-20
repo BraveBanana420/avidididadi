@@ -10478,5 +10478,252 @@
   "tsNonRiuscito": "Non sono riuscito a metterlo nel calendario.",
   "@tsNonRiuscito": {
     "description": "screens/calendar_screen.dart"
+  },
+  "webhookTitolo": "Webhook",
+  "@webhookTitolo": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSottotitolo": "Manda i tuoi allenamenti a un indirizzo web tuo (Home Assistant, n8n, Node-RED…)",
+  "@webhookSottotitolo": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSpiegazione": "A ogni allenamento finito, piano cambiato o record nuovo l'app manda un messaggio all'indirizzo che scegli tu, così i dati arrivano nei tuoi pannelli. Nessun server nostro: l'indirizzo è tuo.",
+  "@webhookSpiegazione": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookAttivo": "Invia i dati al webhook",
+  "@webhookAttivo": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSpento": "Spento: non parte niente.",
+  "@webhookSpento": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookAcceso": "Acceso",
+  "@webhookAcceso": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookIndirizzo": "Indirizzo (URL)",
+  "@webhookIndirizzo": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookUrlNonValido": "Serve un indirizzo completo che inizi con https://",
+  "@webhookUrlNonValido": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookChiave": "Chiave segreta (facoltativa)",
+  "@webhookChiave": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookChiaveAiuto": "Con la chiave ogni messaggio ha una firma: chi lo riceve controlla che arrivi davvero dalla tua app.",
+  "@webhookChiaveAiuto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookGenera": "Genera",
+  "@webhookGenera": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookCopia": "Copia la chiave",
+  "@webhookCopia": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookChiaveCopiata": "Chiave copiata",
+  "@webhookChiaveCopiata": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookMostraChiave": "Mostra o nascondi la chiave",
+  "@webhookMostraChiave": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSalva": "Salva",
+  "@webhookSalva": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSalvato": "Webhook salvato",
+  "@webhookSalvato": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookPrimaUrl": "Prima scrivi e salva un indirizzo https://",
+  "@webhookPrimaUrl": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookCosaInviare": "Cosa inviare",
+  "@webhookCosaInviare": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoAllenamento": "Allenamento completato",
+  "@webhookEventoAllenamento": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoAllenamentoSotto": "Data, sport, durata, distanza, battito, watt, esercizi, serie e carichi",
+  "@webhookEventoAllenamentoSotto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoPiano": "Piano aggiornato",
+  "@webhookEventoPiano": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoPianoSotto": "Le sedute in programma, quando cambiano",
+  "@webhookEventoPianoSotto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoRecord": "Nuovo record",
+  "@webhookEventoRecord": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookEventoRecordSotto": "Più kg in un esercizio o la distanza più lunga in uno sport",
+  "@webhookEventoRecordSotto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookQualiAllenamenti": "Quali allenamenti",
+  "@webhookQualiAllenamenti": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSoloApp": "Solo quelli registrati con l'app",
+  "@webhookSoloApp": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookTutti": "Anche quelli importati",
+  "@webhookTutti": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookTuttiSotto": "Da Health Connect, intervals.icu e CSV, compresi quelli già salvati",
+  "@webhookTuttiSotto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSceltaTitolo": "Quali allenamenti inviare?",
+  "@webhookSceltaTitolo": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookSceltaTesto": "Puoi mandare solo quelli che registri con l'app, oppure anche quelli che arrivano da Health Connect, intervals.icu e dai CSV. Con la seconda scelta partono anche quelli già salvati (ora sono {p0}): possono essere centinaia, e il primo invio può richiedere un po'. Partono uno alla volta, anche con l'app chiusa.",
+  "@webhookSceltaTesto": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookInviaTest": "Invia test",
+  "@webhookInviaTest": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookTestOk": "Test riuscito: risposta HTTP {p0}",
+  "@webhookTestOk": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookTestErrore": "Test non riuscito: {p0}",
+  "@webhookTestErrore": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookCodiceHttp": "risposta HTTP {p0}",
+  "@webhookCodiceHttp": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookErroreTimeout": "nessuna risposta entro 10 secondi",
+  "@webhookErroreTimeout": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookErroreRete": "rete non raggiungibile",
+  "@webhookErroreRete": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookErroreAltro": "connessione non riuscita (certificato o indirizzo)",
+  "@webhookErroreAltro": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookErroreScaduto": "messaggio troppo vecchio, scartato",
+  "@webhookErroreScaduto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookStato": "Stato",
+  "@webhookStato": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookUltimoOk": "Ultimo invio riuscito: {p0} alle {p1}:{p2}",
+  "@webhookUltimoOk": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookMaiInviato": "Ancora nessun invio riuscito",
+  "@webhookMaiInviato": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookUltimoErrore": "Ultimo errore: {p0} alle {p1}:{p2}, {p3}",
+  "@webhookUltimoErrore": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      },
+      "p2": {
+        "type": "Object"
+      },
+      "p3": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookInCoda": "Messaggi in coda: {p0}",
+  "@webhookInCoda": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookScartati": "Messaggi scartati: {p0}",
+  "@webhookScartati": {
+    "description": "screens/webhook_screen.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "webhookComeFunziona": "Come funziona",
+  "@webhookComeFunziona": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookComeFunzionaTesto": "Ogni messaggio è una richiesta POST con un JSON. Se non arriva (niente rete, server spento) resta in coda e l'app ritenta dopo 1, 5 e 15 minuti, poi ogni ora, anche ad app chiusa appena torna la rete: al massimo 10 volte o 7 giorni. Gli errori 4xx (indirizzo o chiave sbagliati) non si ritentano. Formato ed esempi in docs/WEBHOOK.md, nel repository dell'app su GitHub.",
+  "@webhookComeFunzionaTesto": {
+    "description": "screens/webhook_screen.dart"
+  },
+  "webhookFacoltativo": "Webhook (facoltativo)",
+  "@webhookFacoltativo": {
+    "description": "screens/privacy_screen.dart"
+  },
+  "webhookPrivacy": "Solo se accendi il webhook e scrivi un indirizzo https, l'app manda a quell'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.",
+  "@webhookPrivacy": {
+    "description": "screens/privacy_screen.dart"
   }
 }

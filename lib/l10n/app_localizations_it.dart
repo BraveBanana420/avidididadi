@@ -7231,4 +7231,175 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get tsNonRiuscito => 'Non sono riuscito a metterlo nel calendario.';
+
+  @override
+  String get webhookTitolo => 'Webhook';
+
+  @override
+  String get webhookSottotitolo =>
+      'Manda i tuoi allenamenti a un indirizzo web tuo (Home Assistant, n8n, Node-RED…)';
+
+  @override
+  String get webhookSpiegazione =>
+      'A ogni allenamento finito, piano cambiato o record nuovo l\'app manda un messaggio all\'indirizzo che scegli tu, così i dati arrivano nei tuoi pannelli. Nessun server nostro: l\'indirizzo è tuo.';
+
+  @override
+  String get webhookAttivo => 'Invia i dati al webhook';
+
+  @override
+  String get webhookSpento => 'Spento: non parte niente.';
+
+  @override
+  String get webhookAcceso => 'Acceso';
+
+  @override
+  String get webhookIndirizzo => 'Indirizzo (URL)';
+
+  @override
+  String get webhookUrlNonValido =>
+      'Serve un indirizzo completo che inizi con https://';
+
+  @override
+  String get webhookChiave => 'Chiave segreta (facoltativa)';
+
+  @override
+  String get webhookChiaveAiuto =>
+      'Con la chiave ogni messaggio ha una firma: chi lo riceve controlla che arrivi davvero dalla tua app.';
+
+  @override
+  String get webhookGenera => 'Genera';
+
+  @override
+  String get webhookCopia => 'Copia la chiave';
+
+  @override
+  String get webhookChiaveCopiata => 'Chiave copiata';
+
+  @override
+  String get webhookMostraChiave => 'Mostra o nascondi la chiave';
+
+  @override
+  String get webhookSalva => 'Salva';
+
+  @override
+  String get webhookSalvato => 'Webhook salvato';
+
+  @override
+  String get webhookPrimaUrl => 'Prima scrivi e salva un indirizzo https://';
+
+  @override
+  String get webhookCosaInviare => 'Cosa inviare';
+
+  @override
+  String get webhookEventoAllenamento => 'Allenamento completato';
+
+  @override
+  String get webhookEventoAllenamentoSotto =>
+      'Data, sport, durata, distanza, battito, watt, esercizi, serie e carichi';
+
+  @override
+  String get webhookEventoPiano => 'Piano aggiornato';
+
+  @override
+  String get webhookEventoPianoSotto =>
+      'Le sedute in programma, quando cambiano';
+
+  @override
+  String get webhookEventoRecord => 'Nuovo record';
+
+  @override
+  String get webhookEventoRecordSotto =>
+      'Più kg in un esercizio o la distanza più lunga in uno sport';
+
+  @override
+  String get webhookQualiAllenamenti => 'Quali allenamenti';
+
+  @override
+  String get webhookSoloApp => 'Solo quelli registrati con l\'app';
+
+  @override
+  String get webhookTutti => 'Anche quelli importati';
+
+  @override
+  String get webhookTuttiSotto =>
+      'Da Health Connect, intervals.icu e CSV, compresi quelli già salvati';
+
+  @override
+  String get webhookSceltaTitolo => 'Quali allenamenti inviare?';
+
+  @override
+  String webhookSceltaTesto(Object p0) {
+    return 'Puoi mandare solo quelli che registri con l\'app, oppure anche quelli che arrivano da Health Connect, intervals.icu e dai CSV. Con la seconda scelta partono anche quelli già salvati (ora sono $p0): possono essere centinaia, e il primo invio può richiedere un po\'. Partono uno alla volta, anche con l\'app chiusa.';
+  }
+
+  @override
+  String get webhookInviaTest => 'Invia test';
+
+  @override
+  String webhookTestOk(Object p0) {
+    return 'Test riuscito: risposta HTTP $p0';
+  }
+
+  @override
+  String webhookTestErrore(Object p0) {
+    return 'Test non riuscito: $p0';
+  }
+
+  @override
+  String webhookCodiceHttp(Object p0) {
+    return 'risposta HTTP $p0';
+  }
+
+  @override
+  String get webhookErroreTimeout => 'nessuna risposta entro 10 secondi';
+
+  @override
+  String get webhookErroreRete => 'rete non raggiungibile';
+
+  @override
+  String get webhookErroreAltro =>
+      'connessione non riuscita (certificato o indirizzo)';
+
+  @override
+  String get webhookErroreScaduto => 'messaggio troppo vecchio, scartato';
+
+  @override
+  String get webhookStato => 'Stato';
+
+  @override
+  String webhookUltimoOk(Object p0, Object p1, Object p2) {
+    return 'Ultimo invio riuscito: $p0 alle $p1:$p2';
+  }
+
+  @override
+  String get webhookMaiInviato => 'Ancora nessun invio riuscito';
+
+  @override
+  String webhookUltimoErrore(Object p0, Object p1, Object p2, Object p3) {
+    return 'Ultimo errore: $p0 alle $p1:$p2, $p3';
+  }
+
+  @override
+  String webhookInCoda(Object p0) {
+    return 'Messaggi in coda: $p0';
+  }
+
+  @override
+  String webhookScartati(Object p0) {
+    return 'Messaggi scartati: $p0';
+  }
+
+  @override
+  String get webhookComeFunziona => 'Come funziona';
+
+  @override
+  String get webhookComeFunzionaTesto =>
+      'Ogni messaggio è una richiesta POST con un JSON. Se non arriva (niente rete, server spento) resta in coda e l\'app ritenta dopo 1, 5 e 15 minuti, poi ogni ora, anche ad app chiusa appena torna la rete: al massimo 10 volte o 7 giorni. Gli errori 4xx (indirizzo o chiave sbagliati) non si ritentano. Formato ed esempi in docs/WEBHOOK.md, nel repository dell\'app su GitHub.';
+
+  @override
+  String get webhookFacoltativo => 'Webhook (facoltativo)';
+
+  @override
+  String get webhookPrivacy =>
+      'Solo se accendi il webhook e scrivi un indirizzo https, l\'app manda a quell\'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.';
 }
