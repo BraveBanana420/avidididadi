@@ -46,6 +46,10 @@ The app is available in Italian, English and Greek.
 - **intervals.icu** (optional, your API key): complete activities from Garmin,
   Polar, Suunto…, and your planned sessions sent to your intervals.icu
   calendar (and from there to your watch).
+- **Webhook** (optional, off by default): workouts, plan changes and new
+  records sent as signed JSON to an https address of yours (Home Assistant,
+  n8n, Node-RED, Make, Zapier…), with an offline retry queue. See
+  [docs/WEBHOOK.md](docs/WEBHOOK.md).
 - **Maps**: MapLibre + OpenFreeMap, themed; GPX import; offline area around a
   route.
 - **Coach** (optional): Claude, GPT or Gemini with your API key, Ollama on your
@@ -151,6 +155,9 @@ photo; API keys are never included.
 - API keys (assistant, intervals.icu) are stored only in Android's encrypted
   storage, never in CSV files, backups or logs.
 - The assistant never receives your name, photo or GPS routes.
+- The webhook sends only to the https address you enter, never your name,
+  photo, body measurements or GPS routes; its address and secret key stay in
+  the encrypted storage, outside backups.
 - Full policy inside the app: Profile → Privacy.
 
 ## Roadmap
