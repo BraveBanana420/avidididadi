@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:health/health.dart' show HealthDataType;
+import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'adattamento.dart';
 import 'arrampicata.dart';
@@ -45,6 +48,8 @@ import 'serie_sessione.dart';
 import 'sincronizzazione.dart';
 import 'storage.dart';
 import 'test_soglia.dart';
+import 'webhook.dart';
+import 'webhook_sfondo.dart';
 import 'workout_base.dart';
 import 'l10n/lingua.dart';
 
@@ -324,6 +329,7 @@ class AppState extends ChangeNotifier {
 
     // Le sedute future seguono sempre i feedback e i dati più recenti.
     await _aggiornaEndurance();
+    await _caricaWebhook();
     notifyListeners();
   }
 
@@ -787,6 +793,8 @@ class AppState extends ChangeNotifier {
     _ricombina();
     await _aggiornaEndurance();
     notifyListeners();
+    // In sottofondo: senza rete non deve tenere ferma la fine dell'allenamento.
+    unawaited(_allenamentoWebhook(s));
   }
 
   /// Salva battito, potenza e cadenza registrati dai sensori durante
@@ -3441,5 +3449,238 @@ class AppState extends ChangeNotifier {
     }
     await _salvaPercorsiPiano();
     notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------
+  // Webhook in uscita (vedi webhook.dart e docs/WEBHOOK.md)
+
+  ImpostazioniWebhook webhook = const ImpostazioniWebhook();
+  StatoWebhook statoWebhook = const StatoWebhook();
+  int codaWebhook = 0; // messaggi in attesa
+
+  /// Allenamenti e record già messi in coda (`sessione:<id>`, `record:…`):
+  /// non partono una seconda volta.
+  Set<String> _inviatiWebhook = {};
+  Timer? _controlloWebhook; // pausa prima di cercare le novità
+  Timer? _ritentaWebhook; // ogni minuto, con l'app aperta e la coda piena
+  bool _svuotandoWebhook = false;
+  String? _versioneApp;
+
+  /// Ogni cambiamento dei dati passa da qui: con il webhook acceso, dopo
+  /// qualche secondo di calma, si cercano piano cambiato, record e (se
+  /// scelto) allenamenti arrivati da fuori. Un posto solo, invece di uno per
+  /// ognuna delle tante scritture del piano.
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+    if (!webhook.attivo) return;
+    _controlloWebhook?.cancel();
+    _controlloWebhook = Timer(const Duration(seconds: 5), _novitaWebhook);
+  }
+
+  @override
+  void dispose() {
+    _controlloWebhook?.cancel();
+    _ritentaWebhook?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _caricaWebhook() async {
+    webhook = ImpostazioniWebhook.da(
+      await Storage.readTabella(fileImpostazioniWebhook),
+    );
+    final t = await Storage.readTabella(fileInviatiWebhook);
+    _inviatiWebhook = {
+      if (t != null)
+        for (final r in t.righe)
+          if (t.v(r, 'chiave').isNotEmpty) t.v(r, 'chiave'),
+    };
+    if (!webhook.attivo) return;
+    final coda = CodaWebhook(Directory(await Storage.cartella()));
+    statoWebhook = await coda.stato();
+    codaWebhook = (await coda.leggi()).length;
+    // All'avvio: quello rimasto in coda riparte subito.
+    unawaited(svuotaCodaWebhook());
+  }
+
+  Future<void> _salvaImpostazioniWebhook() => Storage.write(
+    fileImpostazioniWebhook,
+    const ['chiave', 'valore'],
+    webhook.toRows(),
+  );
+
+  Future<void> _salvaInviatiWebhook() => Storage.write(
+    fileInviatiWebhook,
+    const ['chiave'],
+    [
+      for (final c in _inviatiWebhook) [c],
+    ],
+  );
+
+  /// La versione dell'app per il payload e lo User-Agent ("1.0.2").
+  Future<String> _versione() async {
+    if (_versioneApp != null) return _versioneApp!;
+    try {
+      _versioneApp = (await PackageInfo.fromPlatform()).version;
+    } catch (_) {
+      _versioneApp = '';
+    }
+    return _versioneApp!;
+  }
+
+  /// Quanti allenamenti partirebbero scegliendo "tutti" (anche lo storico).
+  int get allenamentiDaMandareWebhook => sessioni
+      .where((s) => !_inviatiWebhook.contains('sessione:${s.id}'))
+      .length;
+
+  /// Salva le impostazioni (non l'indirizzo e la chiave: [salvaSegretiWebhook]).
+  /// Spento, la coda si svuota senza mandare niente.
+  Future<void> impostaWebhook(ImpostazioniWebhook nuove) async {
+    final accesoOra = nuove.attivo && !webhook.attivo;
+    webhook = nuove;
+    await _salvaImpostazioniWebhook();
+    final coda = CodaWebhook(Directory(await Storage.cartella()));
+    if (!nuove.attivo) {
+      _controlloWebhook?.cancel();
+      _ritentaWebhook?.cancel();
+      _ritentaWebhook = null;
+      await coda.svuotaSenzaInviare();
+      await annullaSfondoWebhook();
+      codaWebhook = 0;
+    } else if (accesoOra) {
+      statoWebhook = await coda.stato();
+    }
+    notifyListeners();
+  }
+
+  Future<void> salvaSegretiWebhook(String url, String chiave) async {
+    await SegretiWebhook.salva(url, chiave);
+    notifyListeners();
+  }
+
+  /// Mette in coda un evento e prova subito a mandarlo. Non aspetta la rete:
+  /// chi salva un allenamento non resta mai fermo qui.
+  Future<void> _accodaWebhook(
+    List<(String, Map<String, Object?>)> eventi,
+  ) async {
+    final scelti = [
+      for (final e in eventi)
+        if (webhook.vuole(e.$1)) e,
+    ];
+    if (scelti.isEmpty) return;
+    final versione = await _versione();
+    await CodaWebhook(Directory(await Storage.cartella())).aggiungi([
+      for (final (evento, dati) in scelti)
+        MessaggioWebhook.nuovo(evento, dati, versioneApp: versione),
+    ]);
+    codaWebhook += scelti.length;
+    unawaited(svuotaCodaWebhook());
+  }
+
+  /// Un allenamento appena registrato con l'app: parte sempre, anche se ha
+  /// lo stesso id di uno di prima (la seduta rifatta lo stesso giorno).
+  Future<void> _allenamentoWebhook(Sessione s) async {
+    if (!webhook.vuole(eventoAllenamento)) return;
+    _inviatiWebhook.add('sessione:${s.id}');
+    await _salvaInviatiWebhook();
+    await _accodaWebhook([(eventoAllenamento, datiAllenamento(s, serieFatte))]);
+  }
+
+  /// Le novità dopo un cambiamento: piano diverso dall'ultimo mandato, record
+  /// nuovi, allenamenti arrivati da fuori (solo se l'utente ha scelto "tutti").
+  Future<void> _novitaWebhook() async {
+    if (!webhook.attivo) return;
+    final eventi = <(String, Map<String, Object?>)>[];
+    var segnati = false;
+    final h = hashPiano(piano);
+    if (h != webhook.hashPiano) {
+      if (webhook.vuole(eventoPiano)) {
+        eventi.add((eventoPiano, datiPiano(piano, DateTime.now())));
+      }
+      webhook = webhook.copyWith(hashPiano: h);
+      await _salvaImpostazioniWebhook();
+    }
+    if (webhook.vuole(eventoAllenamento) && webhook.origini == origineTutti) {
+      final oggi = soloData(DateTime.now());
+      final nuove = [
+        for (final s in sessioni)
+          if (!s.data.isAfter(oggi) &&
+              !_inviatiWebhook.contains('sessione:${s.id}'))
+            s,
+      ]..sort((a, b) => a.data.compareTo(b.data));
+      for (final s in nuove) {
+        _inviatiWebhook.add('sessione:${s.id}');
+        eventi.add((eventoAllenamento, datiAllenamento(s, serieFatte)));
+      }
+      segnati = nuove.isNotEmpty;
+    }
+    if (webhook.vuole(eventoRecord)) {
+      for (final r in recordRecenti(
+        serie: serieFatte,
+        sessioni: sessioni,
+        oggi: DateTime.now(),
+      )) {
+        if (_inviatiWebhook.add(r.chiave)) {
+          eventi.add((eventoRecord, r.dati));
+          segnati = true;
+        }
+      }
+    }
+    if (segnati) await _salvaInviatiWebhook();
+    await _accodaWebhook(eventi);
+  }
+
+  /// Prova a mandare quello che è in coda. Se resta qualcosa: un tentativo
+  /// ogni minuto finché l'app è aperta, e WorkManager per quando è chiusa.
+  Future<void> svuotaCodaWebhook() async {
+    if (!webhook.attivo || _svuotandoWebhook) return;
+    final url = await SegretiWebhook.url();
+    if (url == null) return;
+    _svuotandoWebhook = true;
+    final client = http.Client();
+    try {
+      final r = await CodaWebhook(
+        Directory(await Storage.cartella()),
+      ).svuota(client: client, url: url, chiave: await SegretiWebhook.chiave());
+      statoWebhook = r.stato;
+      codaWebhook = r.rimasti;
+      if (r.rimasti > 0) {
+        await pianificaSfondoWebhook(r.prossimo);
+        _ritentaWebhook ??= Timer.periodic(
+          const Duration(minutes: 1),
+          (_) => svuotaCodaWebhook(),
+        );
+      } else {
+        await annullaSfondoWebhook();
+        _ritentaWebhook?.cancel();
+        _ritentaWebhook = null;
+      }
+    } catch (e) {
+      debugPrint('Webhook: coda non svuotata (${e.runtimeType})');
+    } finally {
+      client.close();
+      _svuotandoWebhook = false;
+    }
+    // Solo la pagina: non è un cambiamento dei dati da controllare.
+    super.notifyListeners();
+  }
+
+  /// "Invia test": subito, fuori dalla coda, con indirizzo e chiave scritti
+  /// nella pagina (anche se non ancora salvati).
+  Future<EsitoWebhook> inviaTestWebhook(String url, String chiave) async {
+    final client = http.Client();
+    try {
+      final m = MessaggioWebhook.nuovo(eventoTest, {
+        'message': 'Test from Avidididadi',
+      }, versioneApp: await _versione());
+      return await inviaWebhook(
+        client,
+        url.trim(),
+        chiave.trim().isEmpty ? null : chiave.trim(),
+        m,
+      );
+    } finally {
+      client.close();
+    }
   }
 }

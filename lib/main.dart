@@ -21,6 +21,7 @@ import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
+import 'webhook_sfondo.dart';
 import 'l10n/lingua.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/lingua_screen.dart';
@@ -30,6 +31,8 @@ Future<void> main() async {
   await caricaTema();
   await caricaLingua();
   await caricaTour();
+  // Per mandare la coda del webhook anche ad app chiusa, quando torna la rete.
+  await preparaSfondoWebhook();
   runApp(const AllenamentiApp());
 }
 
@@ -82,6 +85,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState stato) {
     if (stato != AppLifecycleState.resumed) return;
+    // Il webhook ritenta a ogni ritorno nell'app: leggero se la coda è vuota.
+    state.svuotaCodaWebhook();
     final ora = DateTime.now();
     if (!daRisincronizzare(_sincronizzataIl, ora)) return;
     _sincronizzataIl = ora;
