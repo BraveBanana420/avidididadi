@@ -311,6 +311,18 @@ async function aggiornaQuota() {
   return q;
 }
 
+/** Dollari rimasti sulla chiave a pagamento di immagini e video (null se manca o non risponde). */
+async function creditoVideo() {
+  const key = process.env.OPENROUTER_VIDEO_KEY;
+  if (!key) return null;
+  try {
+    const r = await fetch('https://openrouter.ai/api/v1/key', { headers: { Authorization: `Bearer ${key}` } });
+    return (await r.json()).data?.limit_remaining ?? null;
+  } catch {
+    return null;
+  }
+}
+
 async function modelliGratuiti() {
   const r = await fetch('https://openrouter.ai/api/v1/models');
   return new Set((await r.json()).data.map((m) => m.id).filter((id) => id.endsWith(':free')));
@@ -378,17 +390,31 @@ function leggiPiano(s) {
  * Il margine 1,5 copre riserve e 429.
  */
 function stimaRichieste(piano) {
-  const base = piano.tasks.filter((t) => !t.manuale && !t.claude).reduce((n, t) => n + 10 + 3 * (t.file?.length || 1), 0);
+  const base = piano.tasks.filter((t) => !t.manuale && !t.claude && !t.animazione).reduce((n, t) => n + 10 + 3 * (t.file?.length || 1), 0);
   return Math.ceil(base * 1.5);
 }
 
+/** File che un task animazione cambia (li scrive agents/animazione.mjs integra). */
+const FILE_ANIMAZIONE = ['assets/exercises/animated/', 'docs/animazioni/', 'lib/animazioni_esercizi.dart'];
+
+/**
+ * Spesa prevista sulla chiave dei video, in dollari: ~0,15 $ per un video,
+ * ~0,10 $ in più se serve l'immagine di partenza (2 prove con Nano Banana).
+ */
+function stimaDollari(piano) {
+  let d = 0;
+  for (const t of piano.tasks.filter((x) => x.animazione)) for (const e of t.esercizi || []) d += 0.15 + (e.partenza === 'genera' ? 0.1 : 0);
+  return Math.round(d * 100) / 100;
+}
+
 function chiTask(t) {
-  if (t.manuale) return 'a mano (Dreamina)';
+  if (t.manuale) return 'a mano';
   if (t.claude) return 'Claude';
+  if (t.animazione) return 'Claude + IA video (a pagamento)';
   return t.modello;
 }
 
-function pianoMarkdown(s, piano, stima) {
+function pianoMarkdown(s, piano, stima, dollari = 0, credito = null) {
   const q = s.quota;
   const righe = [
     `# Piano ${s.esecuzione.id} – ${s.esecuzione.nome}`,
@@ -397,6 +423,7 @@ function pianoMarkdown(s, piano, stima) {
     '',
     `**Richieste OpenRouter stimate:** ~${stima}` + (q ? ` (oggi ne restano ${q.rimaste} su ${q.limite})` : ''),
     '',
+    ...(dollari ? [`**Spesa stimata per immagini e video:** ~${dollari.toFixed(2)} $` + (credito != null ? ` (sulla chiave dei video restano ${credito.toFixed(2)} $)` : ''), ''] : []),
     '| Task | Tipo | Chi lo fa | File |',
     '|---|---|---|---|',
     ...piano.tasks.map((t) => `| ${t.id} – ${t.titolo} | ${t.tipo} | ${chiTask(t)} | ${(t.file || []).map((f) => '`' + f + '`').join(', ')} |`),
@@ -404,8 +431,12 @@ function pianoMarkdown(s, piano, stima) {
   ];
   for (const t of piano.tasks) {
     righe.push(`## ${t.id} – ${t.titolo}`, '', `- **Obiettivo:** ${t.obiettivo}`, `- **File:** ${(t.file || []).map((f) => '`' + f + '`').join(', ')}`, `- **Fatto quando:** ${t.fatto}`);
-    if (t.manuale) righe.push(`- **A mano con Dreamina.** Prompt: ${t.prompt_dreamina}`, `- **Dove mettere il file:** \`${t.destinazione}\``);
+    if (t.manuale) righe.push(`- **A mano.** ${t.istruzioni_utente || ''}`, `- **Dove mettere il file:** \`${t.destinazione}\``);
     else if (t.claude) righe.push(`- **Lo fa Claude** (${t.perche_claude || 'compito delicato'})`);
+    else if (t.animazione) {
+      righe.push('- **Animazioni** (Claude con `agents/animazione.mjs`, crediti a pagamento):');
+      for (const e of t.esercizi || []) righe.push(`  - \`${e.id}\`, vista ${e.vista || 'tre_quarti'}, partenza: ${e.partenza === 'genera' ? 'generata con Nano Banana' : "dall'avatar"}. Movimento: ${e.movimento}`);
+    }
     else righe.push(`- **Modello:** \`${t.modello}\` (riserva: \`${t.riserva}\`)`);
     righe.push('');
   }
@@ -760,8 +791,22 @@ const comandi = {
       if (!/^t\d+$/.test(t.id) || ids.has(t.id)) bloccanti.push(`id non valido o ripetuto: ${t.id}`);
       ids.add(t.id);
       for (const k of ['titolo', 'tipo', 'obiettivo', 'fatto']) if (!t[k]) bloccanti.push(`${t.id}: manca "${k}"`);
+      if (t.animazione) {
+        t.file = FILE_ANIMAZIONE;
+        const catalogo = new Set((leggiJson(path.join(REPO, 'assets', 'esercizi.json')) || []).map((e) => e.id));
+        if (!t.esercizi?.length) bloccanti.push(`${t.id}: un task animazione vuole "esercizi": [{ id, vista, partenza, movimento }]`);
+        for (const e of t.esercizi || []) {
+          if (!catalogo.has(e.id)) bloccanti.push(`${t.id}: ${e.id} non è in assets/esercizi.json`);
+          if (!['avatar', 'genera'].includes(e.partenza)) bloccanti.push(`${t.id}: ${e.id} vuole "partenza": "avatar" (parte in piedi) o "genera"`);
+          if (e.partenza === 'genera' && !e.posa) bloccanti.push(`${t.id}: ${e.id} con partenza "genera" vuole "posa" (in inglese)`);
+          if (e.vista && !['tre_quarti', 'lato', 'fronte'].includes(e.vista)) bloccanti.push(`${t.id}: ${e.id} ha una vista sconosciuta (${e.vista})`);
+          if (!e.movimento) bloccanti.push(`${t.id}: ${e.id} vuole "movimento" (una ripetizione, in inglese)`);
+        }
+        if (piano.tasks.filter((x) => x.animazione).length > 1) bloccanti.push('Metti tutte le animazioni in un solo task: toccano gli stessi file e andrebbero in conflitto');
+        if (!process.env.OPENROUTER_VIDEO_KEY) bloccanti.push(`${t.id}: manca OPENROUTER_VIDEO_KEY (la chiave con il tetto di spesa per immagini e video)`);
+      }
       if (!t.file?.length) bloccanti.push(`${t.id}: manca l'elenco "file"`);
-      if (!t.manuale && !t.claude) {
+      if (!t.manuale && !t.claude && !t.animazione) {
         if (!t.modello || !t.riserva) bloccanti.push(`${t.id}: servono "modello" e "riserva"`);
         if (t.modello === t.riserva) avvisi.push(`${t.id}: modello e riserva sono uguali`);
         for (const m of [t.modello, t.riserva].filter(Boolean)) {
@@ -770,7 +815,7 @@ const comandi = {
         }
         for (const f of t.file || []) if (vietato(f)) bloccanti.push(`${t.id}: ${f} è vietato ai worker (fallo fare a Claude con "claude": true)`);
       }
-      if (t.manuale && (!t.prompt_dreamina || !t.destinazione)) bloccanti.push(`${t.id}: un task a mano vuole "prompt_dreamina" e "destinazione"`);
+      if (t.manuale && (!t.istruzioni_utente || !t.destinazione)) bloccanti.push(`${t.id}: un task a mano vuole "istruzioni_utente" e "destinazione"`);
       for (const f of t.file || []) {
         if (visti.has(f)) avvisi.push(`${t.id} e ${visti.get(f)} toccano lo stesso file ${f}: possibili conflitti`);
         else visti.set(f, t.id);
@@ -780,7 +825,11 @@ const comandi = {
     const stima = stimaRichieste(piano);
     if (q && stima > q.rimaste) avvisi.push(`⚠️ La stima (~${stima}) supera le richieste rimaste oggi (${q.rimaste}): rischi di fermarti a metà.`);
     else if (q && stima > q.rimaste * 0.7) avvisi.push(`La stima (~${stima}) usa gran parte delle richieste rimaste (${q.rimaste}).`);
-    const md = pianoMarkdown(stato(), piano, stima);
+    const dollari = stimaDollari(piano);
+    const credito = dollari ? await creditoVideo() : null;
+    if (dollari && credito != null && dollari > credito) avvisi.push(`⚠️ Le animazioni costano circa ${dollari.toFixed(2)} $ ma sulla chiave dei video restano ${credito.toFixed(2)} $: alza il tetto o togli qualche esercizio.`);
+    else if (dollari) avvisi.push(`Le animazioni spendono crediti veri: circa ${dollari.toFixed(2)} $${credito != null ? ` (restano ${credito.toFixed(2)} $)` : ''}.`);
+    const md = pianoMarkdown(stato(), piano, stima, dollari, credito);
     fs.writeFileSync(path.join(cartellaRun(s), 'piano.md'), md);
     const prima = new Map((s.tasks || []).map((t) => [t.id, t]));
     aggiorna((x) => {
@@ -790,7 +839,7 @@ const comandi = {
         titolo: t.titolo,
         tipo: t.tipo,
         chi: chiTask(t),
-        modello: t.manuale || t.claude ? chiTask(t) : t.modello,
+        modello: t.manuale || t.claude || t.animazione ? chiTask(t) : t.modello,
         riserva: t.riserva || null,
         stato: prima.get(t.id)?.stato === 'fatto' ? 'fatto' : t.manuale ? 'a mano' : 'in attesa',
         tentativi: 0,
@@ -842,7 +891,7 @@ const comandi = {
     const iS = arg.indexOf('--solo');
     const solo = iS >= 0 ? arg[iS + 1].split(',') : null;
     const fatti = new Set(s.tasks.filter((t) => t.stato === 'fatto').map((t) => t.id));
-    const coda = piano.tasks.filter((t) => !t.manuale && !t.claude && !fatti.has(t.id) && (!solo || solo.includes(t.id)));
+    const coda = piano.tasks.filter((t) => !t.manuale && !t.claude && !t.animazione && !fatti.has(t.id) && (!solo || solo.includes(t.id)));
     if (!coda.length) return stampa('Nessun task da dare ai worker.');
     const q = await aggiornaQuota();
     if (q && q.rimaste < 5) throw new Error(`Restano solo ${q.rimaste} richieste gratuite oggi: meglio riprovare domani.`);

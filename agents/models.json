@@ -12,7 +12,8 @@
     "test": "Test in test/<area>_test.dart con dati realistici",
     "documentazione": "Commenti ///, README, guide in docs/",
     "traduzioni_arb": "Testi in lib/l10n/app_it.arb e app_en.arb con gli stessi segnaposto",
-    "piccoli_ritocchi": "Modifiche piccole e meccaniche su pochi file"
+    "piccoli_ritocchi": "Modifiche piccole e meccaniche su pochi file",
+    "animazione": "Animazioni WebP degli esercizi: le fa Claude con agents/animazione.mjs e i modelli a pagamento di strumenti_esterni, non i worker"
   },
   "modelli": [
     {
@@ -72,12 +73,22 @@
   },
   "strumenti_esterni": [
     {
-      "nome": "Dreamina",
-      "per": ["animazioni WebP degli esercizi", "immagini"],
-      "come": "Non è un worker: il task diventa 'a mano'. L'orchestratore scrive il prompt da incollare in Dreamina, l'utente genera il file e lo mette nella cartella indicata, poi un worker lo collega all'app.",
-      "regole": "Seguire docs/animazioni: stesso avatar del progetto, WebP animato 640x320, 2-3 s, max 300 KB (Dreamina dà un video: la conversione la fa Claude con ffmpeg). Licenza CC0 da verificare con i termini di Dreamina."
+      "nome": "Seedance 2.0 Mini (ByteDance, fornitore BytePlus 'Seed')",
+      "id": "bytedance/seedance-2.0-mini",
+      "per": ["video degli esercizi da immagine, primo = ultimo fotogramma"],
+      "costo": "~0,14 $ a video (480p, 4 s)",
+      "prova": "22/11: squat e leg extension giusti, personaggio e macchina identici; scelto rispetto a Veo 3.1 Lite e Gemini Omni 1.2 Flash (squat meno profondo)",
+      "termini": "Il risultato è di chi lo genera; bisogna dichiarare che è fatto con l'IA e non togliere le credenziali C2PA: si tiene il video originale (docs/animazioni/FONTI.md)"
+    },
+    {
+      "nome": "Nano Banana 2.1 (Google)",
+      "id": "google/gemini-nano-banana-2.1",
+      "per": ["immagini di partenza degli esercizi dagli avatar", "nuove viste degli avatar"],
+      "costo": "~0,04 $ a immagine",
+      "termini": "Google non rivendica la proprietà dei contenuti generati"
     }
   ],
+  "regole_strumenti_esterni": "Sono a pagamento: solo con la chiave OPENROUTER_VIDEO_KEY (tetto di spesa), mai con quella dei worker. Li usa Claude tramite agents/animazione.mjs, che controlla il credito prima di spendere. Niente Dreamina (passaggio a mano, licenza incerta).",
   "regole_scelta": [
     "Per ogni task prendi il modello con il punteggio più alto per il suo tipo di compito.",
     "A parità di punteggio scegli quello con affidabilità più alta, poi il più veloce.",

@@ -51,18 +51,19 @@ Sei l'**orchestratore**: scomponi, fai lavorare i worker, controlli, rimonti e a
    - **Micro-task**: 1–3 file, meno di ~150 righe cambiate, indipendenti, **file diversi tra loro** quando possibile. Un file in comune è un rischio di conflitto: meglio un task solo.
    - **`tipo`** è una delle chiavi di `tipi_compito` in `agents/models.json`. **`modello`** è quello con il punteggio più alto per quel tipo (a parità vince l'affidabilità più alta); **`riserva`** è il secondo.
    - **`file`**: percorsi esatti, oppure una cartella che finisce con `/`. I file generati da `flutter gen-l10n` seguono gli ARB da soli.
-   - **Immagini e animazioni degli esercizi** (WebP animati, non GIF): `"manuale": true`, con `"prompt_dreamina"` (il testo da incollare in Dreamina, che rispetta `docs/animazioni`) e `"destinazione"` (dove mettere il file). Un worker poi può collegarlo all'app in un altro task.
+   - **Animazioni degli esercizi** (WebP animati, non GIF): **un solo task** con `"animazione": true`, `"tipo": "animazione"` e l'elenco `"esercizi"` (vedi punto c2). Per ognuno: `"id"` (come in `assets/esercizi.json`), `"vista"` (`tre_quarti` di norma; `lato` o `fronte` solo se da 3/4 il movimento non si capisce), `"partenza"` (`"avatar"` se l'esercizio parte in piedi a corpo libero, gratis; altrimenti `"genera"` con `"posa"`: la posizione di partenza in inglese, attrezzi compresi) e `"movimento"` (una ripetizione in inglese, dalle `istruzioni_en`). `"file"` lo mette l'aiutante. Costa crediti veri (chiave `OPENROUTER_VIDEO_KEY`, con tetto di spesa): il piano mostra la stima in dollari.
+   - **Cose che può fare solo l'utente** (rare): `"manuale": true` con `"istruzioni_utente"` e `"destinazione"`.
    - **Task delicati** (file vietati ai worker, ragionamento su tanti file, sicurezza e privacy): `"claude": true` con `"perche_claude"`.
 4. `node agents/orchestra.mjs piano`: controlla il piano, scrive `piano.md` e stima le richieste. Se segnala qualcosa "da correggere", correggi e rilancia.
 5. `node agents/orchestra.mjs issue`: crea la issue (etichetta `orchestra`) con piano e checklist, e la mette in "Da approvare" nel Project.
 
 ## b. Approvazione
 
-Mostra all'utente: la tabella dei task (cosa, chi lo fa, file), la **stima delle richieste rispetto a quelle rimaste oggi**, gli avvisi e il link della issue. Se la stima supera le richieste rimaste, o ne usa più del 70%, **dillo chiaramente** e proponi di dividere il lavoro in più giorni. **Aspetta l'ok.** Se l'utente chiede cambi: modifica `piano.json`, poi `piano` e `issue --aggiorna`, e mostra di nuovo.
+Mostra all'utente: la tabella dei task (cosa, chi lo fa, file), la **stima delle richieste rispetto a quelle rimaste oggi**, la **spesa in dollari** se ci sono animazioni, gli avvisi e il link della issue. Se la stima supera le richieste rimaste, o ne usa più del 70%, **dillo chiaramente** e proponi di dividere il lavoro in più giorni. **Aspetta l'ok.** Se l'utente chiede cambi: modifica `piano.json`, poi `piano` e `issue --aggiorna`, e mostra di nuovo.
 
 Dopo l'ok: `node agents/orchestra.mjs fase worker "✅ Piano approvato"`.
 
-**Task a mano (Dreamina)**: dai all'utente il prompt e la cartella di destinazione, e aspetta che ti dica di aver messo il file. Poi `prepara <id>`, copia il file nel worktree e `completa <id> utente`.
+**Task a mano**: dai all'utente le istruzioni e la cartella di destinazione, e aspetta che ti dica di aver messo il file. Poi `prepara <id>`, copia il file nel clone e `completa <id> utente`.
 
 ## c. Worker
 
@@ -70,6 +71,17 @@ Ogni task lavora in un **git worktree**: una seconda cartella collegata alla ste
 
 - Lancia `node agents/orchestra.mjs lancia --paralleli 2 > agents/runs/<id>/lancia.out 2>&1` **in background** e aspetta l'avviso di fine (niente controlli ogni pochi secondi); intanto aggiorna il pannello su claude.ai come spiegato al punto h. Per ogni task l'aiutante: crea il worktree, avvia `opencode run --agent worker` con il modello scelto e con permessi ristretti (`agents/opencode-worker.json`), conta le richieste e gestisce i 429.
 - I task `"claude": true` li fai tu nel frattempo: `node agents/orchestra.mjs prepara <id>` (stampa la cartella), lavori lì dentro, poi `node agents/orchestra.mjs completa <id>`.
+
+## c2. Animazioni (le fai tu, con `agents/animazione.mjs`)
+
+Mentre i worker lavorano: `node agents/orchestra.mjs prepara <id>` (stampa il clone). Per ogni esercizio, in una cartella `agents/runs/<id>/anim/<ID esercizio>/`:
+
+1. **Partenza**: `node agents/animazione.mjs partenza <cartella> --esercizio <ID> --vista <vista> --avatar` (gratis), oppure `--quante 2 --posa "<posa>"` (~0,09 $). **Guarda le immagini** (Read): personaggio identico agli avatar (viso, capelli, vestiti, leggings neri senza righe), attrezzo coerente e senza marchi, tutto dentro l'inquadratura. Se nessuna va bene, riprova una volta con una posa più precisa; poi chiedi all'utente.
+2. **Video**: `node agents/animazione.mjs video <cartella> --immagine partenza_N.jpg --movimento "<movimento>"` (~0,15 $, 1-3 minuti, in background). **Guarda `anteprima-video.jpg`**: tecnica giusta (ampiezza, schiena, articolazioni), personaggio e attrezzo uguali in ogni fotogramma, ritorno alla posizione di partenza. Se è sbagliato, riprova una volta cambiando il movimento; poi chiedi all'utente se spendere ancora.
+3. **WebP**: `node agents/animazione.mjs converti <cartella> --esercizio <ID>` sceglie da solo il più fluido che sta nel limite (300 KB a corpo libero, 400 KB con attrezzi). Guarda `anteprima-webp.png`; se avvisa che il giro salta, valuta di rifare il video.
+4. **Nell'app**: `node agents/animazione.mjs integra <cartella> --esercizio <ID> --repo <clone>` (asset, mappa in `lib/animazioni_esercizi.dart`, `FONTI.md`, video originale in `originali/`, `EXERCISES.md`).
+
+Alla fine `node agents/orchestra.mjs completa <id>` (controlli e test, compresi peso e fonti delle animazioni). Nel commento della issue scrivi la spesa (`meta.json` di ogni cartella ha il costo). Mostra le animazioni all'utente prima della PR: dal telefono con una pagina artifact che le contiene. Mai mandare a questi modelli dati personali: solo avatar del progetto e testi degli esercizi.
 
 ## d. Controlli
 

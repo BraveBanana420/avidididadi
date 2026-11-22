@@ -17,6 +17,14 @@ In Claude Code scrivi `/orchestra <la richiesta in parole semplici>`. Poi:
 3. I worker lavorano, al massimo 2-3 insieme. Ogni task viene controllato (`dart format`, `flutter analyze`, `flutter test`); se fallisce si riprova una volta con il modello di riserva.
 4. Claude unisce i task in `feature/<nome>`, rifà tutti i controlli e l'APK di debug, e apre la **PR**. **Tu la rivedi e la unisci.**
 
+## Animazioni degli esercizi
+
+Chiedi per esempio `/orchestra fai le animazioni di affondi e curl con manubri`. Le fa **Claude**, non i worker, con `agents/animazione.mjs` e due modelli **a pagamento** su OpenRouter: Nano Banana 2.1 per l'immagine di partenza (~0,04 $, non serve se l'esercizio parte in piedi) e Seedance 2.0 Mini per il video (~0,14 $). Claude guarda ogni immagine e ogni video prima di andare avanti, poi crea il WebP (il più fluido che sta in 300 KB, 400 KB con attrezzi) e lo mette nell'app con la sua fonte in `docs/animazioni/FONTI.md`.
+
+- Serve una **seconda chiave** solo per questi modelli, `OPENROUTER_VIDEO_KEY`, con un **tetto di spesa** (per esempio 3 $): il piano mostra la spesa prevista e l'aiutante si ferma se il credito non basta. `node agents/animazione.mjs credito` dice quanto resta.
+- Serve **ffmpeg** (`winget install Gyan.FFmpeg`).
+- Le regole delle animazioni (avatar, vista da 3/4, fondo, peso, licenza) sono in `docs/animazioni/README.md`.
+
 ## Seguire una corsa
 
 - **Issue** con etichetta `orchestra`: piano, caselle dei task, un commento per ogni fase.
@@ -30,6 +38,7 @@ In Claude Code scrivi `/orchestra <la richiesta in parole semplici>`. Poi:
 |---|---|
 | `.claude/commands/orchestra.md` | Le istruzioni che segue Claude |
 | `agents/orchestra.mjs` | L'aiutante: `node agents/orchestra.mjs aiuto` elenca i comandi |
+| `agents/animazione.mjs` | L'aiutante delle animazioni: `node agents/animazione.mjs` elenca i comandi |
 | `agents/models.json` | Modelli gratuiti, punteggi per tipo di compito e riserve |
 | `agents/opencode-worker.json` | Cosa possono fare i worker (permessi) |
 | `agents/github.json` | Project e colonne |
@@ -54,4 +63,6 @@ In Claude Code scrivi `/orchestra <la richiesta in parole semplici>`. Poi:
 | Un task resta `fallito` | Il motivo è in `agents/status.json`; Claude lo sistema o ti chiede cosa fare |
 | La dashboard non si apre | Avvia il server; se la porta 4747 è occupata è già acceso |
 | Errore 401 da OpenRouter | Chiave sbagliata o scaduta: creane una nuova e riapri VS Code |
+| "Sulla chiave dei video restano…" | Alza il tetto della chiave dei video su openrouter.ai/settings/keys, o fai meno animazioni |
+| Un'animazione supera il limite di peso | `converti` prova già fino a 15 fps: rigenera il video con un movimento più corto |
 | Fermare tutto | `node agents/orchestra.mjs annulla` |
