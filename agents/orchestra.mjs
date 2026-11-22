@@ -326,15 +326,17 @@ async function commenta(testo) {
 }
 
 /** Spunta (o segna come fallita) la casella di un task nel corpo della issue. */
-async function spunta(id, riuscito, nota = '') {
+/** Spunta (o segna come fallito) un task nella checklist; con [chi] scrive chi l'ha fatto davvero. */
+async function spunta(id, riuscito, nota = '', chi = '') {
   const s = stato();
   if (!s?.issue?.numero) return;
   const r = await gh(['issue', 'view', String(s.issue.numero), '--json', 'body', '-q', '.body']);
   if (r.code) return;
   const riga = new RegExp(`^- \\[[ x]\\] \\*\\*${id}\\*\\*(.*?)( · ❌.*)?$`, 'm');
-  const corpo = r.testo.replace(/\r?\n$/, '').replace(riga, (_, resto) =>
-    riuscito ? `- [x] **${id}**${resto}` : `- [ ] **${id}**${resto} · ❌ ${nota}`.slice(0, 300),
-  );
+  const corpo = r.testo.replace(/\r?\n$/, '').replace(riga, (_, resto) => {
+    const r2 = chi ? resto.replace(/ · [^·]*$/, ` · ${chi}`) : resto;
+    return riuscito ? `- [x] **${id}**${r2}` : `- [ ] **${id}**${r2} · ❌ ${nota}`.slice(0, 300);
+  });
   const f = path.join(cartellaRun(s), 'issue-corpo.md');
   fs.writeFileSync(f, corpo + '\n');
   await gh(['issue', 'edit', String(s.issue.numero), '--body-file', f]);
@@ -370,9 +372,14 @@ function leggiPiano(s) {
  * Stima prudente: ~6 richieste di base + 2 per file, più un 30% per i tentativi ripetuti.
  * (Prove del 22/11: 6-8 richieste anche per un worker con compiti minimi.)
  */
+/**
+ * Richieste OpenRouter previste. Tarata sulla prova del 22/11: un task da un
+ * file ha usato 11 richieste al primo colpo, 29 con un secondo tentativo.
+ * Il margine 1,5 copre riserve e 429.
+ */
 function stimaRichieste(piano) {
-  const base = piano.tasks.filter((t) => !t.manuale && !t.claude).reduce((n, t) => n + 6 + 2 * (t.file?.length || 1), 0);
-  return Math.ceil(base * 1.3);
+  const base = piano.tasks.filter((t) => !t.manuale && !t.claude).reduce((n, t) => n + 10 + 3 * (t.file?.length || 1), 0);
+  return Math.ceil(base * 1.5);
 }
 
 function chiTask(t) {
@@ -647,7 +654,7 @@ async function eseguiTask(t, exe) {
       }
       aggiornaTask(t.id, { stato: 'fatto', fine: ora(), nota: c.nota || null });
       stampa(`${t.id}: fatto con ${m}`);
-      await spunta(t.id, true);
+      await spunta(t.id, true, '', m);
       return;
     }
     motivo = c.motivo;
@@ -884,7 +891,7 @@ const comandi = {
     const err = await committa(t, st.cartella, chi);
     if (err) throw new Error(err);
     aggiornaTask(id, { stato: 'fatto', fine: ora(), modello: chi, nota: c.nota || null });
-    await spunta(id, true);
+    await spunta(id, true, '', chi);
     stampa(`${id}: fatto (${chi})`);
   },
 
