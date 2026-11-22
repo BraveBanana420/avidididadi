@@ -1,30 +1,43 @@
 /// Dettagli di una sessione di Health Connect oltre ai totali: segmenti
 /// (esercizi con ripetizioni), lap e distanze parziali.
+///
+/// Un esercizio della sessione con inizio, fine, tipo di Health Connect
+/// e ripetizioni.
 class SegmentoHc {
   final DateTime inizio;
   final DateTime fine;
   final int tipo; // ExerciseSegment.SEGMENT_TYPE_*
   final int ripetizioni;
   const SegmentoHc(this.inizio, this.fine, this.tipo, this.ripetizioni);
+
+  /// Tempo tra inizio e fine.
   Duration get durata => fine.difference(inizio);
 }
 
+/// Un giro registrato dall'orologio, metri null se non noti.
 class LapHc {
   final DateTime inizio;
   final DateTime fine;
   final double? metri;
   const LapHc(this.inizio, this.fine, this.metri);
+
+  /// Tempo tra inizio e fine.
   Duration get durata => fine.difference(inizio);
 }
 
+/// Una distanza parziale tra due istanti.
 class TrattoHc {
   final DateTime inizio;
   final DateTime fine;
   final double metri;
   const TrattoHc(this.inizio, this.fine, this.metri);
+
+  /// Tempo tra inizio e fine.
   Duration get durata => fine.difference(inizio);
 }
 
+/// Titolo, note, segmenti, giri e distanze di una sessione;
+/// tutto vuoto se mancano.
 class DettagliHc {
   final String titolo;
   final String note;
@@ -42,7 +55,9 @@ class DettagliHc {
   static DateTime _t(double ms) =>
       DateTime.fromMillisecondsSinceEpoch(ms.round());
 
-  /// Dalle liste piatte mandate da Android.
+  /// Dalle liste piatte mandate da Android, a gruppi di numeri (4 per
+  /// segmento, 3 per giro e per distanza); metri negativi in un giro
+  /// vogliono dire "non noti".
   factory DettagliHc.daMappa(Map<Object?, Object?> m) {
     List<double> l(String k) => (m[k] as List?)?.cast<double>() ?? const [];
     final s = l('segmenti'), p = l('lap'), d = l('distanze');

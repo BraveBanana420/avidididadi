@@ -7,9 +7,13 @@ String _esc(String s) =>
     ? '"${s.replaceAll('"', '""')}"'
     : s;
 
+/// Compone il CSV: mette tra virgolette i campi con virgole, virgolette o a
+/// capo, e chiude con un a capo finale.
 String toCsv(List<List<String>> rows) =>
     '${rows.map((r) => r.map(_esc).join(',')).join('\n')}\n';
 
+/// Legge un CSV: gestisce i campi tra virgolette ("" vale una virgoletta), gli
+/// a capo \r\n e scarta le righe vuote.
 List<List<String>> parseCsv(String text, {String sep = ','}) {
   final rows = <List<String>>[];
   var row = <String>[];
@@ -52,17 +56,26 @@ List<List<String>> parseCsv(String text, {String sep = ','}) {
 
 /// CSV letto per nome di colonna (l'ordine delle colonne non conta).
 class Tabella {
+  /// Collega il nome della colonna (in minuscolo) alla sua posizione.
   final Map<String, int> idx;
+
+  /// Le righe dei dati, senza l'intestazione.
   final List<List<String>> righe;
+
+  /// Costruisce la tabella con l'indice delle colonne e le sue righe.
   Tabella(this.idx, this.righe);
 
+  /// Valore della colonna (già senza spazi), '' se manca o la riga è corta.
   String v(List<String> r, String col) {
     final i = idx[col];
     return (i == null || i >= r.length) ? '' : r[i].trim();
   }
 
+  /// Vero se ci sono tutte le colonne indicate.
   bool ha(List<String> colonne) => colonne.every(idx.containsKey);
 
+  /// Tabella dal testo: toglie il BOM, sceglie ; o , dalla prima riga e
+  /// restituisce null se il testo è vuoto.
   static Tabella? da(String testo) {
     final t = testo.replaceFirst('\ufeff', '');
     final prima = t.split('\n').first;
