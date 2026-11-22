@@ -74,7 +74,10 @@ qui sopra (oppure *Aggiungi app* e incolla
    recenti). Telefoni vecchi a 32 bit: `armeabi-v7a`.
 2. Apri il file e, quando Android lo chiede, consenti al browser o al gestore
    file di installare app.
-3. Aggiornamenti: installa il nuovo APK sopra il vecchio, i dati restano.
+3. Aggiornamenti: quando esce una versione nuova l'app lo dice (al massimo
+   una volta al giorno) e la installa con un tocco (Profilo → Aggiornamenti
+   dell'app, si può spegnere). Oppure installa il nuovo APK sopra il vecchio,
+   i dati restano.
    Tutte le versioni sono firmate con la stessa chiave: un APK compilato da
    altri (o di debug) non si installa sopra.
 

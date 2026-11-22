@@ -7318,7 +7318,7 @@
   "@permessiTelefono": {
     "description": "screens/privacy_screen.dart"
   },
-  "healthConnectLetturaDei": "Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente), notifiche (solo quella dell'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l'app continua a funzionare senza la parte che ne ha bisogno.",
+  "healthConnectLetturaDei": "Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente, aggiornamenti), installazione di app (solo per gli aggiornamenti dell'app, che confermi ogni volta), notifiche (solo quella dell'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l'app continua a funzionare senza la parte che ne ha bisogno.",
   "@healthConnectLetturaDei": {
     "description": "screens/privacy_screen.dart"
   },
@@ -7370,7 +7370,7 @@
   "@serviziTerzi": {
     "description": "screens/privacy_screen.dart"
   },
-  "alcuneFunzioniUsanoServizi": "Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.",
+  "alcuneFunzioniUsanoServizi": "Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e gli aggiornamenti dell'app e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.",
   "@alcuneFunzioniUsanoServizi": {
     "description": "screens/privacy_screen.dart"
   },
@@ -10725,5 +10725,70 @@
   "webhookPrivacy": "Solo se accendi il webhook e scrivi un indirizzo https, l'app manda a quell'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.",
   "@webhookPrivacy": {
     "description": "screens/privacy_screen.dart"
+  },
+  "aggiornamentiApp": "Aggiornamenti dell'app",
+  "@aggiornamentiApp": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentiAppSotto": "Controlla ogni giorno su GitHub. Tocca per cercare ora",
+  "@aggiornamentiAppSotto": {
+    "description": "aggiornamento.dart"
+  },
+  "nuovaVersione": "È uscita la versione {p0}",
+  "@nuovaVersione": {
+    "description": "aggiornamento.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "aggiornamentoSpiegazione": "Si installa sopra l'app che hai: dati e impostazioni restano. Android ti chiederà di confermare.",
+  "@aggiornamentoSpiegazione": {
+    "description": "aggiornamento.dart"
+  },
+  "novitaVersione": "Novità",
+  "@novitaVersione": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornaApp": "Aggiorna",
+  "@aggiornaApp": {
+    "description": "aggiornamento.dart"
+  },
+  "scaricoAggiornamento": "Scarico l'aggiornamento…",
+  "@scaricoAggiornamento": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentoPermesso": "Senza il permesso di installare app l'aggiornamento non può partire. Puoi darlo la prossima volta che tocchi Aggiorna.",
+  "@aggiornamentoPermesso": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentoRete": "Download non riuscito: controlla la connessione e riprova.",
+  "@aggiornamentoRete": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentoImpronta": "Il file scaricato non è identico a quello pubblicato: non l'ho installato.",
+  "@aggiornamentoImpronta": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentoErrore": "Aggiornamento non riuscito. Puoi scaricare l'APK dalla pagina Releases su GitHub.",
+  "@aggiornamentoErrore": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentoAnnullato": "Aggiornamento annullato.",
+  "@aggiornamentoAnnullato": {
+    "description": "aggiornamento.dart"
+  },
+  "haiUltimaVersione": "Hai già l'ultima versione.",
+  "@haiUltimaVersione": {
+    "description": "aggiornamento.dart"
+  },
+  "githubNonRisponde": "GitHub non risponde: riprova più tardi.",
+  "@githubNonRisponde": {
+    "description": "aggiornamento.dart"
+  },
+  "aggiornamentiPrivacy": "Una volta al giorno, all'apertura, l'app chiede a GitHub (api.github.com) qual è l'ultima versione pubblicata. Se tocchi Aggiorna, scarica l'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l'indirizzo IP del telefono e la versione chiesta, nient'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell'app.",
+  "@aggiornamentiPrivacy": {
+    "description": "aggiornamento.dart"
   }
 }

@@ -72,7 +72,9 @@ and paste `https://github.com/BraveBanana420/avidididadi`), then pick the `arm64
    recent phone). Older 32-bit phones: `armeabi-v7a`.
 2. Open the file and allow installing apps from your browser or file manager
    when Android asks.
-3. Updates: install the new APK over the old one. Your data stays. All
+3. Updates: when a new version is out, the app tells you once a day and
+   installs it with one tap (Profile → App updates; you can turn it off).
+   Or install the new APK over the old one. Your data stays. All
    releases are signed with the same key: an APK built by someone else (or a
    debug build) can't be installed over it.
 

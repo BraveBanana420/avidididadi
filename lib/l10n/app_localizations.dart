@@ -8369,7 +8369,7 @@ abstract class AppLocalizations {
   /// screens/privacy_screen.dart
   ///
   /// In it, this message translates to:
-  /// **'Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente), notifiche (solo quella dell\'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l\'app continua a funzionare senza la parte che ne ha bisogno.'**
+  /// **'Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente, aggiornamenti), installazione di app (solo per gli aggiornamenti dell\'app, che confermi ogni volta), notifiche (solo quella dell\'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l\'app continua a funzionare senza la parte che ne ha bisogno.'**
   String get healthConnectLetturaDei;
 
   /// screens/privacy_screen.dart
@@ -8447,7 +8447,7 @@ abstract class AppLocalizations {
   /// screens/privacy_screen.dart
   ///
   /// In it, this message translates to:
-  /// **'Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.'**
+  /// **'Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e gli aggiornamenti dell\'app e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.'**
   String get alcuneFunzioniUsanoServizi;
 
   /// screens/privacy_screen.dart
@@ -12289,6 +12289,96 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Solo se accendi il webhook e scrivi un indirizzo https, l\'app manda a quell\'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.'**
   String get webhookPrivacy;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamenti dell\'app'**
+  String get aggiornamentiApp;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Controlla ogni giorno su GitHub. Tocca per cercare ora'**
+  String get aggiornamentiAppSotto;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'È uscita la versione {p0}'**
+  String nuovaVersione(Object p0);
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Si installa sopra l\'app che hai: dati e impostazioni restano. Android ti chiederà di confermare.'**
+  String get aggiornamentoSpiegazione;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Novità'**
+  String get novitaVersione;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiorna'**
+  String get aggiornaApp;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Scarico l\'aggiornamento…'**
+  String get scaricoAggiornamento;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Senza il permesso di installare app l\'aggiornamento non può partire. Puoi darlo la prossima volta che tocchi Aggiorna.'**
+  String get aggiornamentoPermesso;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Download non riuscito: controlla la connessione e riprova.'**
+  String get aggiornamentoRete;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il file scaricato non è identico a quello pubblicato: non l\'ho installato.'**
+  String get aggiornamentoImpronta;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento non riuscito. Puoi scaricare l\'APK dalla pagina Releases su GitHub.'**
+  String get aggiornamentoErrore;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Aggiornamento annullato.'**
+  String get aggiornamentoAnnullato;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Hai già l\'ultima versione.'**
+  String get haiUltimaVersione;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'GitHub non risponde: riprova più tardi.'**
+  String get githubNonRisponde;
+
+  /// aggiornamento.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.'**
+  String get aggiornamentiPrivacy;
 }
 
 class _AppLocalizationsDelegate

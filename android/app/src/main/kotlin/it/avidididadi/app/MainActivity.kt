@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.IntentFilter
 import android.content.Intent
+import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -24,6 +25,7 @@ import android.os.VibratorManager
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
@@ -49,6 +51,7 @@ import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Locale
 
 // FlutterFragmentActivity: il pacchetto health chiede i permessi di Health Connect
@@ -312,6 +315,110 @@ class MainActivity : FlutterFragmentActivity() {
         }
     }
 
+    // ---------- aggiornamenti dell'app ----------
+
+    // APK in attesa del permesso "Installa app sconosciute".
+    private var apkInAttesa: String? = null
+    private var attesaInstallazione: MethodChannel.Result? = null
+    private val richiestaInstallazione =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            val percorso = apkInAttesa
+            val risultato = attesaInstallazione
+            apkInAttesa = null
+            attesaInstallazione = null
+            if (percorso == null || risultato == null) return@registerForActivityResult
+            if (packageManager.canRequestPackageInstalls()) {
+                installa(percorso, risultato)
+            } else {
+                File(percorso).delete()
+                risultato.success("permesso")
+            }
+        }
+
+    /**
+     * Passa l'APK (nella cache dell'app) a una sessione dell'installatore di
+     * Android e lo cancella: da lì la copia la tiene Android, che la toglie
+     * a installazione finita o annullata. Android chiede sempre conferma.
+     */
+    private fun installa(percorso: String, result: MethodChannel.Result) {
+        val apk = File(percorso)
+        if (!apk.isFile || apk.parentFile?.parentFile?.canonicalPath != cacheDir.canonicalPath) {
+            result.success("errore")
+            return
+        }
+        lifecycleScope.launch {
+            val esito = withContext(Dispatchers.IO) {
+                val installatore = packageManager.packageInstaller
+                var id = -1
+                try {
+                    val parametri = PackageInstaller.SessionParams(
+                        PackageInstaller.SessionParams.MODE_FULL_INSTALL,
+                    ).apply { setAppPackageName(packageName) }
+                    id = installatore.createSession(parametri)
+                    installatore.openSession(id).use { sessione ->
+                        apk.inputStream().use { dentro ->
+                            sessione.openWrite("avidididadi.apk", 0, apk.length()).use { fuori ->
+                                dentro.copyTo(fuori)
+                                sessione.fsync(fuori)
+                            }
+                        }
+                        // Esplicito (solo questa app) e modificabile: l'installatore
+                        // ci scrive l'esito.
+                        val esito = PendingIntent.getBroadcast(
+                            this@MainActivity, 0,
+                            Intent(AZIONE_INSTALLAZIONE).setPackage(packageName),
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+                        )
+                        sessione.commit(esito.intentSender)
+                    }
+                    "avviata"
+                } catch (e: Exception) {
+                    Log.w("Avidididadi", "aggiornamento non avviato", e)
+                    if (id >= 0) {
+                        try {
+                            installatore.abandonSession(id)
+                        } catch (_: Exception) {
+                        }
+                    }
+                    "errore"
+                } finally {
+                    apk.delete()
+                }
+            }
+            result.success(esito)
+        }
+    }
+
+    // Esito dell'installatore: la conferma da mostrare, o un errore da dire
+    // all'app. Se riesce, Android chiude l'app per sostituirla.
+    private val ricevitoreInstallazione = object : BroadcastReceiver() {
+        override fun onReceive(c: Context?, i: Intent?) {
+            val stato = i?.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
+            when (stato) {
+                PackageInstaller.STATUS_PENDING_USER_ACTION -> {
+                    val conferma = if (Build.VERSION.SDK_INT >= 33) {
+                        i.getParcelableExtra(Intent.EXTRA_INTENT, Intent::class.java)
+                    } else {
+                        @Suppress("DEPRECATION")
+                        i.getParcelableExtra(Intent.EXTRA_INTENT)
+                    }
+                    try {
+                        conferma?.let { startActivity(it) }
+                    } catch (e: Exception) {
+                        canale?.invokeMethod("esitoAggiornamento", "errore")
+                    }
+                }
+                PackageInstaller.STATUS_SUCCESS -> {}
+                PackageInstaller.STATUS_FAILURE_ABORTED ->
+                    canale?.invokeMethod("esitoAggiornamento", "annullato")
+                else -> {
+                    Log.w("Avidididadi", "aggiornamento: ${i?.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)}")
+                    canale?.invokeMethod("esitoAggiornamento", "errore")
+                }
+            }
+        }
+    }
+
     /** Notifica dell'allenamento: stesso numero di quella del GPS, che sostituisce. */
     private fun notificaAllenamento(dati: Map<*, *>) {
         val gestore = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -370,6 +477,7 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onDestroy() {
         try {
             unregisterReceiver(ricevitorePausa)
+            unregisterReceiver(ricevitoreInstallazione)
         } catch (_: IllegalArgumentException) {
         }
         NotificationManagerCompat.from(this).cancel(ID_NOTIFICA)
@@ -417,12 +525,41 @@ class MainActivity : FlutterFragmentActivity() {
         ContextCompat.registerReceiver(
             this, ricevitorePausa, IntentFilter(AZIONE_PAUSA), ContextCompat.RECEIVER_NOT_EXPORTED,
         )
+        ContextCompat.registerReceiver(
+            this, ricevitoreInstallazione, IntentFilter(AZIONE_INSTALLAZIONE),
+            ContextCompat.RECEIVER_NOT_EXPORTED,
+        )
         canale = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "avidididadi/avvio").apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {
                     "azioneAvvio" -> {
                         result.success(azioneAvvio)
                         azioneAvvio = null
+                    }
+                    "abiTelefono" -> result.success(Build.SUPPORTED_ABIS.firstOrNull())
+                    "installaAggiornamento" -> {
+                        val percorso = call.arguments as String
+                        if (packageManager.canRequestPackageInstalls()) {
+                            installa(percorso, result)
+                        } else {
+                            // Prima volta: Android chiede di consentire le installazioni
+                            // da Avidididadi, poi si riparte da qui.
+                            apkInAttesa = percorso
+                            attesaInstallazione = result
+                            try {
+                                richiestaInstallazione.launch(
+                                    Intent(
+                                        Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
+                                        Uri.parse("package:$packageName"),
+                                    ),
+                                )
+                            } catch (e: Exception) {
+                                apkInAttesa = null
+                                attesaInstallazione = null
+                                File(percorso).delete()
+                                result.success("permesso")
+                            }
+                        }
                     }
                     "apriPermessiHc" -> {
                         apriPermessiHealthConnect()
@@ -812,6 +949,7 @@ class MainActivity : FlutterFragmentActivity() {
         private const val ID_NOTIFICA = 75415
         private const val CANALE_ALLENAMENTO = "allenamento"
         private const val AZIONE_PAUSA = "it.avidididadi.app.PAUSA"
+        private const val AZIONE_INSTALLAZIONE = "it.avidididadi.app.INSTALLAZIONE"
         private val AZIONI_PRIVACY = setOf(
             "androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE",
             "android.intent.action.VIEW_PERMISSION_USAGE",

@@ -2,6 +2,10 @@
     <!-- Immagini degli esercizi scaricate al bisogno. -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Aggiornamenti dall'app: passa l'APK della release all'installatore di
+         Android, che chiede sempre conferma. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+
     <!-- GPS per registrare il percorso di corsa e bici, anche a schermo spento
          (servizio in primo piano con notifica, avviato dall'allenamento). -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>

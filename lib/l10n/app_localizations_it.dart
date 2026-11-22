@@ -5044,7 +5044,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get healthConnectLetturaDei =>
-      'Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente), notifiche (solo quella dell\'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l\'app continua a funzionare senza la parte che ne ha bisogno.';
+      'Health Connect (lettura dei dati elencati sopra), posizione precisa (solo durante corsa, camminata e bici), dispositivi nelle vicinanze (solo per il sensore del battito), attività fisica (solo per i passi in corsa e camminata), internet (mappe, immagini, assistente, aggiornamenti), installazione di app (solo per gli aggiornamenti dell\'app, che confermi ogni volta), notifiche (solo quella dell\'allenamento in corso, con tempo e dati, visibile anche a schermo bloccato). Puoi negare ognuno di questi permessi: l\'app continua a funzionare senza la parte che ne ha bisogno.';
 
   @override
   String get comeRevocareOCancellare => 'Come revocare o cancellare';
@@ -5090,7 +5090,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get alcuneFunzioniUsanoServizi =>
-      'Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.';
+      'Alcune funzioni usano servizi di altri: Health Connect e le app che vi scrivono (es. Garmin Connect), OpenFreeMap e OpenStreetMap per le mappe, GitHub per le immagini degli esercizi e gli aggiornamenti dell\'app e, se lo attivi, il servizio di intelligenza artificiale che scegli. Questi servizi hanno condizioni proprie, possono cambiare o non essere disponibili. Chiave API e costi del servizio di intelligenza artificiale sono a tuo carico.';
 
   @override
   String get tuoiDati => 'I tuoi dati';
@@ -7402,4 +7402,58 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get webhookPrivacy =>
       'Solo se accendi il webhook e scrivi un indirizzo https, l\'app manda a quell\'indirizzo, scelto e gestito da te, i dati degli eventi che spunti: allenamenti fatti (data, orari, sport, nome, durata, distanza, battito, watt, cadenza, passi, calorie, RPE, note, esercizi con serie e kg), sedute in programma e record. Niente nome, foto, misure del corpo o percorsi GPS. Indirizzo e chiave segreta restano cifrati sul telefono e non entrano nel backup. Chi riceve i dati è il servizio che hai scelto tu, con le sue condizioni sulla privacy. Spegnendolo non parte più niente e la coda si svuota.';
+
+  @override
+  String get aggiornamentiApp => 'Aggiornamenti dell\'app';
+
+  @override
+  String get aggiornamentiAppSotto =>
+      'Controlla ogni giorno su GitHub. Tocca per cercare ora';
+
+  @override
+  String nuovaVersione(Object p0) {
+    return 'È uscita la versione $p0';
+  }
+
+  @override
+  String get aggiornamentoSpiegazione =>
+      'Si installa sopra l\'app che hai: dati e impostazioni restano. Android ti chiederà di confermare.';
+
+  @override
+  String get novitaVersione => 'Novità';
+
+  @override
+  String get aggiornaApp => 'Aggiorna';
+
+  @override
+  String get scaricoAggiornamento => 'Scarico l\'aggiornamento…';
+
+  @override
+  String get aggiornamentoPermesso =>
+      'Senza il permesso di installare app l\'aggiornamento non può partire. Puoi darlo la prossima volta che tocchi Aggiorna.';
+
+  @override
+  String get aggiornamentoRete =>
+      'Download non riuscito: controlla la connessione e riprova.';
+
+  @override
+  String get aggiornamentoImpronta =>
+      'Il file scaricato non è identico a quello pubblicato: non l\'ho installato.';
+
+  @override
+  String get aggiornamentoErrore =>
+      'Aggiornamento non riuscito. Puoi scaricare l\'APK dalla pagina Releases su GitHub.';
+
+  @override
+  String get aggiornamentoAnnullato => 'Aggiornamento annullato.';
+
+  @override
+  String get haiUltimaVersione => 'Hai già l\'ultima versione.';
+
+  @override
+  String get githubNonRisponde => 'GitHub non risponde: riprova più tardi.';
+
+  @override
+  String get aggiornamentiPrivacy =>
+      'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.';
 }
