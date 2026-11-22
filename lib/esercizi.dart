@@ -244,7 +244,7 @@ Map<String, String> get nomiSchemi => {
   'isolamento_gambe': l10n.gambeAlleMacchine,
   'pliometria': l10n.pliometria,
   'total_body': l10n.totalBody,
-  'mobilita': 'Mobilità e stretching',
+  'mobilita': mostra('Mobilità e stretching'),
   'rullo': l10n.rulloAutomassaggio,
 };
 

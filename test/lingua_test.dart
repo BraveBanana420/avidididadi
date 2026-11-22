@@ -201,6 +201,9 @@ void main() {
       expect(e.nomeEl, isNotEmpty, reason: e.id);
       // Le frasi greche sono tradotte dall'italiano, una per una.
       expect(e.istruzioniEl, hasLength(e.istruzioniIt.length), reason: e.id);
+      for (final riga in e.istruzioniEl) {
+        expect(riga, matches(RegExp('[\u0370-\u03ff]')), reason: e.id);
+      }
     }
     final e = esercizi.firstWhere((e) => e.id == 'Pushups');
     expect(e.nome, 'Piegamenti sulle braccia');
@@ -211,6 +214,10 @@ void main() {
     expect(e.nome, 'Κάμψεις');
     expect(e.istruzioni.first, startsWith('Χέρια στο πάτωμα'));
     expect(e.descrizioneAttrezzi, isNotEmpty);
+    // Anche i gruppi del catalogo, compreso quello della mobilità.
+    expect(nomiSchemi['mobilita'], 'Κινητικότητα και διατάσεις');
+    usaLingua('en');
+    expect(nomiSchemi['mobilita'], 'Mobility and stretching');
   });
 
   testWidgets('la pagina della lingua cambia i testi e la salva', (t) async {
