@@ -20,9 +20,9 @@ examples for the next ones.
 Use one of these two characters, **exactly as they are** (face, hair, body,
 outfit). One animation = one character. Pick the one you prefer.
 
-| Male: front | Male: side | Male: back | Male: T-pose | Female: front |
-|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
+| Male: front | Male: 3/4 | Male: side | Male: back | Male: T-pose | Female: front |
+|---|---|---|---|---|---|
+| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Male avatar, three-quarter"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
 
 Outfit: black sleeveless top (sports bra for the female avatar) with red side
 panels, black leggings with red stripes (black shorts on top for the male), black
@@ -39,7 +39,7 @@ your animation, but don't publish new versions or other views of the avatars.
 | **What you send** | the WebP, or an MP4 video: we can convert it |
 | **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
 | **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
-| **Camera** | fixed: no zoom, no pan, no cuts. **Side view** for most exercises; **front view** when the movement is sideways (e.g. jumping jacks, lateral raises) |
+| **Camera** | fixed: no zoom, no pan, no cuts. **Three-quarter view** (body turned about 45°, like the "Male: 3/4" avatar) for most exercises: it shows depth and the side of the movement at once. **Side** or **front view** only when the movement is unclear from three-quarters (e.g. front view for jumping jacks and lateral raises, side view for some floor exercises) |
 | **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
 | **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
 | **Character** | identical to the avatar images in every frame (face, hair, body, outfit). We compare them before accepting: if something changed, try again |
@@ -65,7 +65,9 @@ result follows the rules.
 
 ### 1. Starting image (e.g. Nano Banana / Gemini)
 
-Upload the avatar images (front and side) and ask for the starting position.
+Upload the avatar images (three-quarter, front and side) and ask for the starting
+position. If the exercise starts standing, the three-quarter avatar can already be
+the starting image: widen it to 16:9 with the same background and go to step 2.
 Prompts work best in English:
 
 ```text
@@ -74,7 +76,8 @@ Use the attached character exactly as he is: same face, hair, body and outfit
 red stripes, black wrist wraps, black shoes with red details), same semi-realistic
 3D cartoon style.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen from the <side / front>.
+instructions>), seen in the same three-quarter view as the attached image
+<or: from the side / from the front>.
 Full body visible with some margin, plain light grey background (#D9D9DB) with a
 slightly lighter floor, soft studio light. No text, no logo, no other objects
 <except: EQUIPMENT in matte black>. Wide 2:1 image.
@@ -130,6 +133,11 @@ don't have ffmpeg, just send the MP4.
   whether you can publish or use them commercially, and the date you made the
   animation (terms change over time). We read them before accepting the
   animation; if they don't allow it, we can't publish it, even if it's beautiful.
+- If the animation is made with AI, **send the original video too**, exactly as the
+  tool produced it, without converting it: it often carries credentials saying
+  "AI-generated", and some terms forbid removing them. We keep it in
+  [`originali/`](originali/) and record tools, date and terms in
+  [FONTI.md](FONTI.md), where the animation is marked as AI-made.
 
 ## How to send it
 

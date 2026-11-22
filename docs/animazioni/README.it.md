@@ -20,9 +20,9 @@ faranno da esempio per le successive.
 Usa uno di questi due personaggi, **esattamente com'è** (viso, capelli, corpo,
 vestiti). Un'animazione = un personaggio. Scegli quello che preferisci.
 
-| Uomo: davanti | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
-|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Avatar uomo, davanti"> | <img src="avatar/male_side.jpg" width="140" alt="Avatar uomo, lato"> | <img src="avatar/male_back.jpg" width="140" alt="Avatar uomo, dietro"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Avatar uomo, posa a T"> | <img src="avatar/female_front.jpg" width="140" alt="Avatar donna, davanti"> |
+| Uomo: davanti | Uomo: 3/4 | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
+|---|---|---|---|---|---|
+| <img src="avatar/male_front.jpg" width="140" alt="Avatar uomo, davanti"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Avatar uomo, tre quarti"> | <img src="avatar/male_side.jpg" width="140" alt="Avatar uomo, lato"> | <img src="avatar/male_back.jpg" width="140" alt="Avatar uomo, dietro"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Avatar uomo, posa a T"> | <img src="avatar/female_front.jpg" width="140" alt="Avatar donna, davanti"> |
 
 Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
 leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
@@ -39,7 +39,7 @@ la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 | **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
 | **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
 | **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
-| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Di lato** per quasi tutti gli esercizi; **di fronte** quando il movimento è laterale (es. jumping jack, alzate laterali) |
+| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Da 3/4** (corpo girato di circa 45°, come l'avatar "Uomo: 3/4") per quasi tutti gli esercizi: si vedono insieme la profondità e il lato del movimento. **Di lato** o **di fronte** solo quando da 3/4 il movimento non si capisce bene (es. di fronte per jumping jack e alzate laterali, di lato per alcuni esercizi a terra) |
 | **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
 | **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
 | **Personaggio** | uguale alle immagini degli avatar in ogni fotogramma (viso, capelli, corpo, vestiti). Li confrontiamo prima di accettarla: se qualcosa è cambiato, riprova |
@@ -66,7 +66,9 @@ così, purché il personaggio resti identico e il risultato rispetti le regole.
 
 ### 1. Immagine di partenza (es. Nano Banana / Gemini)
 
-Carica le immagini dell'avatar (davanti e lato) e chiedi la posizione di partenza.
+Carica le immagini dell'avatar (3/4, davanti e lato) e chiedi la posizione di partenza.
+Se l'esercizio parte in piedi, l'avatar da 3/4 può già essere la posizione di
+partenza: allargalo a 16:9 con lo stesso fondo e passa al punto 2.
 Le richieste funzionano meglio in inglese, quindi lasciale così:
 
 ```text
@@ -75,7 +77,8 @@ Use the attached character exactly as he is: same face, hair, body and outfit
 red stripes, black wrist wraps, black shoes with red details), same semi-realistic
 3D cartoon style.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen from the <side / front>.
+instructions>), seen in the same three-quarter view as the attached image
+<or: from the side / from the front>.
 Full body visible with some margin, plain light grey background (#D9D9DB) with a
 slightly lighter floor, soft studio light. No text, no logo, no other objects
 <except: EQUIPMENT in matte black>. Wide 2:1 image.
@@ -132,6 +135,11 @@ ffmpeg, manda direttamente l'MP4.
   risultati e se si possono pubblicare o usare per scopi commerciali, e la data in
   cui hai fatto l'animazione (le condizioni cambiano nel tempo). Le leggiamo prima
   di accettarla: se non lo permettono non possiamo pubblicarla, anche se è bellissima.
+- Se l'animazione è fatta con l'IA, **manda anche il video originale** così com'è
+  uscito dallo strumento, senza convertirlo: spesso contiene le credenziali che dicono
+  "generato con IA", e alcune condizioni vietano di toglierle. Lo teniamo in
+  [`originali/`](originali/) e scriviamo strumenti, data e termini in
+  [FONTI.md](FONTI.md), dove l'animazione è segnata come fatta con l'IA.
 
 ## Come mandarla
 

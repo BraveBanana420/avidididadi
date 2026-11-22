@@ -31,6 +31,33 @@ void main() {
     }
   });
 
+  test('lo squat a corpo libero ha la sua animazione', () {
+    expect(
+      animazioneDi('Bodyweight_Squat'),
+      '${cartellaAnimazioni}bodyweight_squat.webp',
+    );
+  });
+
+  test('ogni animazione rispetta il limite di 300 KB', () {
+    for (final file in animazioniEsercizi.values) {
+      final byte = File('$cartellaAnimazioni$file').lengthSync();
+      expect(byte, lessThanOrEqualTo(300 * 1024), reason: file);
+    }
+  });
+
+  test('ogni animazione ha il video originale e la sua fonte', () {
+    final fonti = File('docs/animazioni/FONTI.md').readAsStringSync();
+    for (final file in animazioniEsercizi.values) {
+      final nome = file.replaceAll('.webp', '');
+      expect(
+        File('docs/animazioni/originali/$nome.mp4').existsSync(),
+        isTrue,
+        reason: file,
+      );
+      expect(fonti, contains('`$file`'), reason: file);
+    }
+  });
+
   test('pubspec registra la cartella delle animazioni', () {
     expect(
       File('pubspec.yaml').readAsStringSync(),
