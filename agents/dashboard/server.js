@@ -18,6 +18,25 @@ const GITHUB = path.join(AGENTS, 'github.json');
 /** Nomi host accettati: blocca le pagine esterne che provano a parlare col server (DNS rebinding). */
 const HOST_AMMESSI = new Set([`127.0.0.1:${PORTA}`, `localhost:${PORTA}`]);
 
+/**
+ * Con `tailscale serve` le richieste arrivano dal telefono col nome Tailscale del PC:
+ * lo leggo qui all'avvio, così non finisce nel codice pubblico.
+ * Il server resta comunque in ascolto solo su 127.0.0.1.
+ */
+function aggiungiNomeTailscale() {
+  try {
+    const out = require('node:child_process').execFileSync('tailscale', ['status', '--json'], { encoding: 'utf8', timeout: 5000, windowsHide: true });
+    const self = JSON.parse(out).Self || {};
+    const nome = String(self.DNSName || '').replace(/\.$/, '').toLowerCase();
+    if (!nome) return null;
+    for (const h of [nome, `${nome}:${PORTA}`, `${nome.split('.')[0]}:${PORTA}`]) HOST_AMMESSI.add(h);
+    return nome;
+  } catch {
+    return null;
+  }
+}
+const nomeTailscale = aggiungiNomeTailscale();
+
 function leggiJson(f) {
   try {
     return JSON.parse(fs.readFileSync(f, 'utf8'));
@@ -116,4 +135,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORTA, HOST, () => {
   console.log(`Dashboard di /orchestra: http://${HOST}:${PORTA}  (solo da questo PC, Ctrl+C per fermarla)`);
+  if (nomeTailscale) console.log(`Dal telefono, con Tailscale e "tailscale serve" attivo: http://${nomeTailscale}:${PORTA}`);
 });

@@ -85,7 +85,7 @@ local.properties
 /android/.gradle/
 /android/build/
 
-# /orchestra: stato e storico delle corse restano sul PC (scelta da confermare)
+# /orchestra: stato e storico delle corse restano sul PC (contengono richieste e percorsi locali)
 /agents/status.json
 /agents/status.json.*.tmp
 /agents/runs/
