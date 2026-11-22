@@ -68,7 +68,7 @@ Dopo l'ok: `node agents/orchestra.mjs fase worker "✅ Piano approvato"`.
 
 Ogni task lavora in un **git worktree**: una seconda cartella collegata alla stessa repo, con un suo branch (`orchestra/<id>/<task>`), fuori dal progetto (`..\allenamenti_app_wt\`). Così i worker lavorano insieme senza pestarsi i piedi, e la cartella dell'utente non viene toccata.
 
-- Lancia `node agents/orchestra.mjs lancia --paralleli 2` **in background** e aspetta l'avviso di fine (niente controlli ogni pochi secondi). Per ogni task l'aiutante: crea il worktree, avvia `opencode run --agent worker` con il modello scelto e con permessi ristretti (`agents/opencode-worker.json`), conta le richieste e gestisce i 429.
+- Lancia `node agents/orchestra.mjs lancia --paralleli 2 > agents/runs/<id>/lancia.out 2>&1` **in background** e aspetta l'avviso di fine (niente controlli ogni pochi secondi); intanto aggiorna il pannello su claude.ai come spiegato al punto h. Per ogni task l'aiutante: crea il worktree, avvia `opencode run --agent worker` con il modello scelto e con permessi ristretti (`agents/opencode-worker.json`), conta le richieste e gestisce i 429.
 - I task `"claude": true` li fai tu nel frattempo: `node agents/orchestra.mjs prepara <id>` (stampa la cartella), lavori lì dentro, poi `node agents/orchestra.mjs completa <id>`.
 
 ## d. Controlli
@@ -95,7 +95,13 @@ Per un task ancora `fallito`: guarda il motivo in `status.json` e il lavoro rima
 
 ## h. Pannello di controllo (sempre)
 
-I comandi dell'aiutante aggiornano già `status.json`, le caselle e i commenti della issue e la colonna del Project. Per gli eventi in più usa:
+I comandi dell'aiutante aggiornano già `status.json`, le caselle e i commenti della issue e la colonna del Project, e riscrivono `agents/pannello.json` (riassunto ripulito, senza percorsi né prompt).
+
+**Pannello su claude.ai** (se esiste `agents/locale.json`): dopo **ogni** comando dell'aiutante che cambia qualcosa, carica il riassunto nella pagina con `ArtifactData` `set`: `url` = `pannello_url`, `collection` = `data/orchestra/stato`, `doc_id` = `pannello`, `file_path` = `agents/pannello.json`, `if_version` = la versione dell'ultimo `set` (all'inizio della sessione leggila con un `get`; se la scrittura viene rifiutata per la versione, usa quella che il rifiuto indica). Fallo anche all'inizio, dopo `node agents/orchestra.mjs pannello`, così la quota è aggiornata.
+- Durante `lancia`: avvialo in background con l'uscita in `agents/runs/<id>/lancia.out` e segui quel file con **Monitor** (`tail -f … | grep --line-buffered -E "tentativo|fatto|non ce l'ha fatta|controlli non superati|429|ERRORE|Richieste rimaste"`): a ogni evento ricarica il pannello. Il processo `lancia` non deve dipendere dal Monitor (se il Monitor scade, riarmalo).
+- Il pannello non deve mai fermare la corsa: se `ArtifactData` fallisce, continua e dillo alla fine.
+
+Per gli eventi in più usa:
 - `fase <nome> "commento"` a ogni cambio di fase che fai tu;
 - `errore "testo"` per qualsiasi problema (lo vede anche il telefono);
 - `commenta "testo"` per note utili all'utente.

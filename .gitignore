@@ -91,3 +91,7 @@ local.properties
 /agents/runs/
 # Cartella locale di OpenCode (impostazioni e sessioni dei worker)
 /.opencode/
+# Riassunto e indirizzo del pannello su claude.ai (solo sul PC)
+/agents/pannello.json
+/agents/pannello.json.*.tmp
+/agents/locale.json

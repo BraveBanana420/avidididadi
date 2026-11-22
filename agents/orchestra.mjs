@@ -14,6 +14,8 @@ const STATUS = path.join(AGENTS, 'status.json');
 const MODELS = path.join(AGENTS, 'models.json');
 const GITHUB_CFG = path.join(AGENTS, 'github.json');
 const WORKER_CFG = path.join(AGENTS, 'opencode-worker.json');
+/** Riassunto ripulito per il pannello su claude.ai (resta fuori da git). */
+const PANNELLO = path.join(AGENTS, 'pannello.json');
 /** I worktree stanno fuori dal progetto, così flutter analyze non li vede. */
 const WT_ROOT = path.resolve(REPO, '..', path.basename(REPO) + '_wt');
 const BASE = 'staging';
@@ -172,7 +174,86 @@ function aggiorna(fn) {
   if (s.esecuzione?.id && fs.existsSync(path.join(RUNS, s.esecuzione.id))) {
     scriviJson(path.join(RUNS, s.esecuzione.id, 'stato.json'), s);
   }
+  scriviPannello(s);
   return s;
+}
+
+/** Toglie percorsi del PC e nomi utente dai testi che escono dal computer. */
+function ripulisci(testo, max = 400) {
+  if (testo == null) return null;
+  return String(testo)
+    .replace(/[A-Za-z]:[\\/](?:Users|Utenti)[\\/][^\s'"`)]*/gi, '<percorso>')
+    .replace(/\/(?:c\/)?(?:Users|home)\/[^\s'"`)]*/gi, '<percorso>')
+    .slice(0, max);
+}
+
+/**
+ * Riassunto per il pannello su claude.ai (agents/pannello.json, fuori da git):
+ * un solo documento piatto, senza percorsi, prompt o chiavi. Claude lo carica nella pagina.
+ */
+function scriviPannello(s) {
+  try {
+    const e = s?.esecuzione || {};
+    const q = s?.quota || {};
+    const storico = fs.existsSync(RUNS)
+      ? fs
+          .readdirSync(RUNS)
+          .filter((d) => /^\d{4}-\d{2}-\d{2}_\d{4}$/.test(d) && d !== e.id)
+          .sort()
+          .reverse()
+          .slice(0, 15)
+          .map((d) => leggiJson(path.join(RUNS, d, 'stato.json')))
+          .filter((x) => x?.esecuzione)
+          .map((x) => ({
+            id: x.esecuzione.id,
+            nome: x.esecuzione.nome,
+            fase: x.esecuzione.fase,
+            inizio: x.esecuzione.inizio,
+            fatti: (x.tasks || []).filter((t) => t.stato === 'fatto').length,
+            totale: (x.tasks || []).length,
+            richieste: x.richieste_usate ?? (x.tasks || []).reduce((n, t) => n + (t.richieste || 0), 0),
+            issue: x.issue?.url || null,
+            pr: x.pr?.url || null,
+          }))
+      : [];
+    scriviJson(PANNELLO, {
+      aggiornato: ora(),
+      id: e.id || null,
+      nome: e.nome || null,
+      richiesta: ripulisci(e.richiesta, 600),
+      fase: e.fase || null,
+      inizio: e.inizio || null,
+      fine: e.fine || null,
+      branch: e.branch || null,
+      issue_url: s?.issue?.url || null,
+      issue_numero: s?.issue?.numero || null,
+      pr_url: s?.pr?.url || null,
+      pr_numero: s?.pr?.numero || null,
+      progetto: leggiJson(GITHUB_CFG)?.url || null,
+      stima: s?.stima_richieste ?? null,
+      errore: ripulisci(s?.ultimo_errore?.testo),
+      errore_quando: s?.ultimo_errore?.quando || null,
+      quota_rimaste: q.rimaste ?? null,
+      quota_limite: q.limite ?? null,
+      quota_usate: q.usate ?? null,
+      quota_letta: q.letta || null,
+      tasks: (s?.tasks || []).map((t) => ({
+        id: t.id,
+        titolo: ripulisci(t.titolo, 120),
+        tipo: t.tipo || null,
+        modello: t.modello || null,
+        stato: t.stato,
+        tentativi: t.tentativi || 0,
+        richieste: t.richieste || 0,
+        secondi: t.secondi || 0,
+        nota: ripulisci(t.nota),
+        riassunto: t.stato === 'fatto' ? ripulisci(t.riassunto) : null,
+      })),
+      storico,
+    });
+  } catch {
+    /* il pannello non deve mai fermare una corsa */
+  }
 }
 
 function aggiornaTask(id, campi) {
@@ -550,6 +631,7 @@ const comandi = {
   riordina                          chiude le issue delle corse con la PR già unita
   nuova "<richiesta>" <nome-breve>   crea la corsa e agents/status.json
   quota                             richieste gratuite di oggi
+  pannello                          rifà agents/pannello.json (riassunto per la pagina su claude.ai)
   modelli                           controlla che i modelli di models.json siano ancora gratuiti
   piano                             valida runs/<id>/piano.json, scrive piano.md e la stima
   issue [--aggiorna]                crea (o aggiorna) la issue con piano e checklist
@@ -592,6 +674,15 @@ const comandi = {
     aggiorna(() => {});
     stampa(`Corsa ${id} creata. Scrivi il piano in ${path.join(RUNS, id, 'piano.json')}`);
     if (q) stampa(`Richieste gratuite rimaste oggi: ${q.rimaste} su ${q.limite}`);
+  },
+
+  /** Rifà agents/pannello.json con la quota appena letta (anche senza corse in corso). */
+  async pannello() {
+    const q = await leggiQuota();
+    const s = stato() || {};
+    if (q) s.quota = q;
+    scriviPannello(s);
+    stampa(PANNELLO);
   },
 
   async quota() {

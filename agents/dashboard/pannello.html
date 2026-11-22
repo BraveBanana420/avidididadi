@@ -1,0 +1,271 @@
+<meta name="dash-one-writer">
+<style>
+  /* Pannello di /orchestra: una colonna leggibile sul telefono, stato prima del dettaglio. */
+  .orc { display: grid; gap: var(--cds-gap-md); max-width: 760px; margin: 0 auto; font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .orc-titolo { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .orc-sintesi { margin: var(--cds-gap-xs) 0 0; font-size: var(--cds-font-size-body); }
+  .orc-piccolo { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .orc-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); min-width: 0; }
+  .orc-et { margin: 0; font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .06em; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .orc-nome { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); overflow-wrap: anywhere; }
+  .orc-rich { margin: 0; color: var(--color-fg-muted); overflow-wrap: anywhere; }
+  .orc-fasi { display: flex; flex-wrap: wrap; gap: 6px; }
+  .orc-fase { font-size: var(--cds-font-size-caption); padding: 3px 9px; border-radius: 999px; border: 1px solid var(--color-border-line); color: var(--color-fg-muted); }
+  .orc-fase.passata { color: var(--color-ok); border-color: color-mix(in srgb, var(--color-ok) 40%, transparent); }
+  .orc-fase.attuale { color: var(--color-bg); background: var(--color-fg); border-color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .orc-fase-testo { margin: 0; }
+  .orc-link { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); }
+  .orc-link a, .orc-link span { font-size: var(--cds-font-size-caption); padding: 6px 11px; border-radius: 10px; border: 1px solid var(--color-border-line); color: var(--color-fg); text-decoration: none; overflow-wrap: anywhere; }
+  .orc-link a:hover, .orc-link a:focus-visible { border-color: var(--color-fg); }
+  .orc-errore { border-color: var(--color-bad); }
+  .orc-errore .orc-et { color: var(--color-bad); }
+  .orc-errore-testo { margin: 0; overflow-wrap: anywhere; }
+  .orc-quota { display: flex; align-items: baseline; gap: var(--cds-gap-sm); }
+  .orc-num { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 44px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .orc-barra { height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--color-fg) 10%, transparent); overflow: hidden; }
+  .orc-barra > div { height: 100%; border-radius: 999px; }
+  .orc-task { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-sm); display: grid; gap: 4px; min-width: 0; }
+  .orc-task:first-child { border-top: 0; padding-top: 0; }
+  .orc-riga { display: flex; gap: var(--cds-gap-sm); align-items: flex-start; }
+  .orc-tnome { flex: 1; min-width: 0; font-weight: var(--cds-font-weight-medium); overflow-wrap: anywhere; }
+  .orc-pill { flex: none; font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
+  .orc-dati { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  .orc-task details summary { cursor: pointer; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .orc-task pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--cds-font-size-caption); margin: 6px 0 0; padding: var(--cds-pad-sm); border-radius: var(--cds-radius); background: color-mix(in srgb, var(--color-fg) 6%, transparent); }
+  .orc-storico { display: grid; gap: var(--cds-gap-sm); }
+  .orc-voce { display: flex; gap: var(--cds-gap-sm); align-items: flex-start; border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-sm); }
+  .orc-voce:first-child { border-top: 0; padding-top: 0; }
+  .orc-voce > div { flex: 1; min-width: 0; display: grid; gap: 4px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .orc-pill.lavora::before { content: "● "; animation: orc-pulsa 1.4s infinite; }
+    @keyframes orc-pulsa { 50% { opacity: .25; } }
+  }
+</style>
+
+<div class="orc">
+  <header id="testa">
+    <h1 class="orc-titolo">Orchestra · Avidididadi</h1>
+    <p class="orc-sintesi" data-draw="sintesi">—</p>
+    <p class="orc-piccolo">Aggiornato <span data-draw="aggiornato" data-source="pannello" data-field="aggiornato" data-row="0">—</span>. Lo aggiorna Claude a ogni passo della corsa; le approvazioni si danno in Claude Code.</p>
+  </header>
+
+  <section class="orc-card" id="corsa">
+    <h2 class="orc-et">Corsa attuale</h2>
+    <p class="orc-nome" data-draw="nome" data-source="pannello" data-field="nome" data-row="0">—</p>
+    <p class="orc-rich" data-draw="richiesta" data-source="pannello" data-field="richiesta" data-row="0">—</p>
+    <div class="orc-fasi" data-draw="fasi" data-source="pannello" data-field="fase" data-row="0"></div>
+    <p class="orc-fase-testo" data-draw="fase-testo">—</p>
+    <div class="orc-link" data-draw="link"></div>
+  </section>
+
+  <section class="orc-card orc-errore" id="errore" hidden>
+    <h2 class="orc-et">Ultimo errore</h2>
+    <p class="orc-errore-testo" data-draw="errore" data-source="pannello" data-field="errore" data-row="0">—</p>
+    <p class="orc-piccolo" data-draw="errore-quando">—</p>
+  </section>
+
+  <section class="orc-card" id="quota">
+    <h2 class="orc-et">Richieste gratuite oggi</h2>
+    <div class="orc-quota">
+      <span class="orc-num" data-draw="rimaste" data-source="pannello" data-field="quota_rimaste" data-row="0">—</span>
+      <span class="orc-piccolo">rimaste su <span data-draw="limite" data-source="pannello" data-field="quota_limite" data-row="0">—</span></span>
+    </div>
+    <div class="orc-barra" data-draw="barra" role="img" aria-label="Richieste gratuite rimaste oggi"></div>
+    <p class="orc-piccolo">Usate <span data-draw="usate" data-source="pannello" data-field="quota_usate" data-row="0">—</span><span data-draw="stima"></span>. Il conto riparte ogni giorno.</p>
+  </section>
+
+  <section class="orc-card" id="tasks">
+    <h2 class="orc-et">Task</h2>
+    <p class="orc-piccolo" data-draw="conteggio">—</p>
+    <div class="orc-storico" data-draw="lista-task" data-source="tasks"></div>
+  </section>
+
+  <section class="orc-card" id="storico">
+    <h2 class="orc-et">Storico</h2>
+    <div class="orc-storico" data-draw="storico" data-source="storico"></div>
+  </section>
+</div>
+
+<script>
+  dash.calc('tasks', {
+    title: 'Task della corsa',
+    description: 'I micro-task della corsa attuale, dal pannello',
+    inputs: ['pannello'],
+    fn: (pannello) => (pannello[0] && Array.isArray(pannello[0].tasks) ? pannello[0].tasks : []),
+  });
+  dash.calc('storico', {
+    title: 'Corse passate',
+    description: 'Le ultime 15 corse finite o annullate, dal pannello',
+    inputs: ['pannello'],
+    fn: (pannello) => (pannello[0] && Array.isArray(pannello[0].storico) ? pannello[0].storico : []),
+  });
+
+  window.orc = (() => {
+    const FASI = [
+      ['piano', 'Piano', 'Claude sta scrivendo il piano.'],
+      ['approvazione', 'Approvazione', 'Il piano è pronto: aspetta il tuo ok in Claude Code.'],
+      ['worker', 'Worker', 'I worker lavorano e ogni task viene controllato appena finito.'],
+      ['unione', 'Unione', 'I task fatti vengono uniti in un solo branch.'],
+      ['controlli', 'Controlli', 'Controlli finali: analisi, test e APK di debug.'],
+      ['pr', 'PR', 'Pull request aperta: tocca a te revisionarla.'],
+      ['pulizia', 'Pulizia', 'Tolgo le cartelle temporanee e scrivo il log.'],
+      ['finita', 'Finita', 'Corsa finita.'],
+    ];
+    const STATI = {
+      'in attesa': ['in attesa', 'var(--color-fg-muted)'],
+      'al lavoro': ['al lavoro', null],
+      'in pausa (429)': ['in pausa (429)', 'var(--color-warn)'],
+      'controlli': ['controlli', null],
+      'fatto': ['fatto', 'var(--color-ok)'],
+      'fallito': ['fallito', 'var(--color-bad)'],
+      'a mano': ['a mano', 'var(--color-warn)'],
+    };
+    function riga() {
+      const p = dash.data('pannello');
+      return p.status === 'ok' && p.data.length ? p.data[0] : null;
+    }
+    function attiva(r) {
+      return !!(r && r.id && r.fase !== 'finita' && r.fase !== 'annullata');
+    }
+    function quando(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return isNaN(d) ? '—' : d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+    function el(tag, attr, ...figli) {
+      const e = document.createElement(tag);
+      for (const [k, v] of Object.entries(attr || {})) if (v != null) e.setAttribute(k, v);
+      for (const f of figli) if (f != null) e.append(f instanceof Node ? f : String(f));
+      return e;
+    }
+    function link(href, testo) {
+      return typeof href === 'string' && /^https:\/\//.test(href) ? el('a', { href, target: '_blank', rel: 'noopener noreferrer' }, testo) : null;
+    }
+    function pill(stato) {
+      const [testo, colore] = STATI[stato] || [stato || '—', 'var(--color-fg-muted)'];
+      const c = colore || dash.colors[0];
+      const p = el('span', { class: 'orc-pill' + (stato === 'al lavoro' || stato === 'controlli' ? ' lavora' : '') }, testo);
+      p.style.color = c;
+      p.style.background = `color-mix(in srgb, ${c} 14%, transparent)`;
+      return p;
+    }
+    return { FASI, riga, attiva, quando, el, link, pill };
+  })();
+
+  dash.onData(() => {
+    const r = orc.riga();
+    document.querySelectorAll('#errore').forEach((s) => { s.hidden = !(r && r.errore && orc.attiva(r)); });
+  });
+
+  dash.draw('sintesi', (e) => {
+    const p = dash.data('pannello');
+    if (p.status === 'loading') { e.textContent = '—'; return; }
+    const r = orc.riga();
+    if (!r) { e.textContent = 'Nessun dato ancora: si riempie alla prossima corsa di /orchestra.'; return; }
+    const tasks = Array.isArray(r.tasks) ? r.tasks : [];
+    const fatti = tasks.filter((t) => t.stato === 'fatto').length;
+    const resto = r.quota_rimaste != null ? ` Restano ${r.quota_rimaste} richieste gratuite oggi.` : '';
+    if (!orc.attiva(r)) { e.textContent = 'Nessuna corsa in corso.' + resto; return; }
+    const f = orc.FASI.find((x) => x[0] === r.fase);
+    e.textContent = `Fase: ${f ? f[1].toLowerCase() : r.fase}. Task fatti: ${fatti} su ${tasks.length}.` + resto;
+  });
+  dash.draw('aggiornato', (e) => { e.textContent = orc.quando(orc.riga()?.aggiornato); });
+  dash.draw('nome', (e) => {
+    const r = orc.riga();
+    e.textContent = r ? (orc.attiva(r) ? r.nome || r.id : 'Nessuna corsa in corso') : '—';
+  });
+  dash.draw('richiesta', (e) => {
+    const r = orc.riga();
+    e.textContent = r && orc.attiva(r) ? r.richiesta || '' : 'Scrivi /orchestra <richiesta> in Claude Code per iniziarne una.';
+  });
+  dash.draw('fasi', (e) => {
+    const r = orc.riga();
+    if (!r || !orc.attiva(r)) { e.replaceChildren(); return; }
+    const i = orc.FASI.findIndex((x) => x[0] === r.fase);
+    e.replaceChildren(...orc.FASI.map(([, nome], j) => orc.el('span', { class: 'orc-fase' + (j < i ? ' passata' : '') + (j === i ? ' attuale' : '') }, nome)));
+  });
+  dash.draw('fase-testo', (e) => {
+    const r = orc.riga();
+    if (!r || !orc.attiva(r)) { e.textContent = r && r.fase === 'annullata' ? 'L’ultima corsa è stata annullata.' : ''; return; }
+    const f = orc.FASI.find((x) => x[0] === r.fase);
+    e.textContent = f ? f[2] : r.fase;
+  });
+  dash.draw('link', (e) => {
+    const r = orc.riga();
+    if (!r) { e.replaceChildren(); return; }
+    const voci = [];
+    if (orc.attiva(r)) {
+      voci.push(orc.link(r.issue_url, `Issue #${r.issue_numero}`), orc.link(r.pr_url, `Pull request #${r.pr_numero}`));
+    }
+    voci.push(orc.link(r.progetto, 'Project su GitHub'));
+    if (orc.attiva(r) && r.branch) voci.push(orc.el('span', {}, r.branch));
+    e.replaceChildren(...voci.filter(Boolean));
+  });
+  dash.draw('errore', (e) => { e.textContent = orc.riga()?.errore || '—'; });
+  dash.draw('errore-quando', (e) => { e.textContent = orc.quando(orc.riga()?.errore_quando); });
+  dash.draw('rimaste', (e) => { const r = orc.riga(); e.textContent = r && r.quota_rimaste != null ? String(r.quota_rimaste) : '—'; });
+  dash.draw('limite', (e) => { const r = orc.riga(); e.textContent = r && r.quota_limite != null ? String(r.quota_limite) : '—'; });
+  dash.draw('usate', (e) => { const r = orc.riga(); e.textContent = r && r.quota_usate != null ? String(r.quota_usate) : '—'; });
+  dash.draw('stima', (e) => {
+    const r = orc.riga();
+    e.textContent = r && orc.attiva(r) && r.stima ? ` · questa corsa ne stima circa ${r.stima}` : '';
+  });
+  dash.draw('barra', (e) => {
+    const r = orc.riga();
+    if (!r || !r.quota_limite) { e.replaceChildren(); return; }
+    const perc = Math.max(0, Math.min(100, (r.quota_rimaste / r.quota_limite) * 100));
+    const b = orc.el('div');
+    b.style.width = perc + '%';
+    b.style.background = perc < 20 ? 'var(--color-bad)' : perc < 50 ? 'var(--color-warn)' : 'var(--color-ok)';
+    e.replaceChildren(b);
+    e.setAttribute('aria-label', `Richieste gratuite rimaste oggi: ${r.quota_rimaste} su ${r.quota_limite}`);
+  });
+  dash.draw('conteggio', (e) => {
+    const t = dash.data('tasks');
+    const r = orc.riga();
+    if (t.status !== 'ok' || !orc.attiva(r)) { e.textContent = r ? 'Nessun task in corso.' : '—'; return; }
+    const righe = t.data || [];
+    e.textContent = righe.length ? `Fatti: ${righe.filter((x) => x.stato === 'fatto').length} su ${righe.length}` : 'Il piano non ha ancora task.';
+  });
+  dash.draw('lista-task', (e) => {
+    const t = dash.data('tasks');
+    const r = orc.riga();
+    if (t.status !== 'ok' || !orc.attiva(r)) { e.replaceChildren(); return; }
+    e.replaceChildren(...(t.data || []).map((x) => {
+      const w = `id=${encodeURIComponent(x.id)}`;
+      const dati = orc.el('div', { class: 'orc-dati' },
+        orc.el('span', { 'data-source': 'tasks', 'data-field': 'modello', 'data-where': w }, x.modello || '—'));
+      if (x.tentativi) dati.append(' · tentativi ', orc.el('span', { 'data-source': 'tasks', 'data-field': 'tentativi', 'data-where': w }, String(x.tentativi)));
+      if (x.richieste) dati.append(' · ', orc.el('span', { 'data-source': 'tasks', 'data-field': 'richieste', 'data-where': w }, String(x.richieste)), ' richieste');
+      if (x.secondi) dati.append(' · ', orc.el('span', { 'data-source': 'tasks', 'data-field': 'secondi', 'data-where': w }, String(x.secondi)), ' s');
+      const box = orc.el('div', { class: 'orc-task' },
+        orc.el('div', { class: 'orc-riga' },
+          orc.el('span', { class: 'orc-tnome', 'data-source': 'tasks', 'data-field': 'titolo', 'data-where': w }, `${x.id} · ${x.titolo || ''}`),
+          orc.pill(x.stato)),
+        dati);
+      if (x.nota) box.append(orc.el('details', {}, orc.el('summary', {}, 'Dettagli'), orc.el('pre', {}, x.nota)));
+      if (x.riassunto) box.append(orc.el('details', {}, orc.el('summary', {}, 'Cosa ha fatto il worker'), orc.el('pre', {}, x.riassunto)));
+      return box;
+    }));
+  });
+  dash.draw('storico', (e) => {
+    const s = dash.data('storico');
+    if (s.status !== 'ok') { e.replaceChildren(); return; }
+    const righe = s.data || [];
+    if (!righe.length) { e.replaceChildren(orc.el('p', { class: 'orc-piccolo' }, 'Nessuna corsa passata.')); return; }
+    e.replaceChildren(...righe.map((x) => {
+      const w = `id=${encodeURIComponent(x.id)}`;
+      const tutto = x.fase !== 'annullata' && x.totale && x.fatti === x.totale;
+      const p = orc.pill(x.fase === 'annullata' ? 'in attesa' : tutto ? 'fatto' : 'a mano');
+      p.textContent = x.fase === 'annullata' ? 'annullata' : `${x.fatti}/${x.totale}`;
+      const link = orc.el('div', { class: 'orc-link' }, orc.link(x.issue, 'Issue'), orc.link(x.pr, 'PR'));
+      return orc.el('div', { class: 'orc-voce' },
+        orc.el('div', {},
+          orc.el('b', { 'data-source': 'storico', 'data-field': 'nome', 'data-where': w }, x.nome || x.id),
+          orc.el('span', { class: 'orc-dati' }, `${orc.quando(x.inizio)} · `,
+            orc.el('span', { 'data-source': 'storico', 'data-field': 'richieste', 'data-where': w }, String(x.richieste ?? 0)), ' richieste'),
+          link.childNodes.length ? link : null),
+        p);
+    }));
+  });
+</script>
