@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execSync } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const AGENTS = path.dirname(fileURLToPath(import.meta.url));
@@ -552,23 +553,45 @@ async function committa(t, wt, chi) {
   return r.code === 0 ? null : r.testo.trim().slice(0, 400);
 }
 
+/**
+ * Cartella di lavoro di un task: un clone separato (non un git worktree).
+ * OpenCode riconosce il progetto dalla cartella .git condivisa: con un
+ * worktree prendeva la cartella principale come radice e i worker potevano
+ * scriverci (successo il 22/11). Un clone con la sua .git e un codice di
+ * progetto unico in .git/opencode resta un progetto a sé.
+ */
 async function preparaWorktree(s, t) {
   const wt = path.join(WT_ROOT, s.esecuzione.id, t.id);
   const branch = `orchestra/${s.esecuzione.id}/${t.id}`;
   if (!fs.existsSync(wt)) {
     fs.mkdirSync(path.dirname(wt), { recursive: true });
-    const r = await git(['worktree', 'add', '-q', '-B', branch, wt, s.esecuzione.base_commit]);
-    if (r.code) throw new Error(`worktree non creato per ${t.id}: ${r.testo.trim()}`);
+    const c = await git(['clone', '-q', '--shared', '--no-checkout', REPO, wt]);
+    if (c.code) throw new Error(`clone non creato per ${t.id}: ${c.testo.trim()}`);
+    const r = await git(['checkout', '-q', '-B', branch, s.esecuzione.base_commit], wt);
+    if (r.code) throw new Error(`branch non creato per ${t.id}: ${r.testo.trim()}`);
+    fs.writeFileSync(path.join(wt, '.git', 'opencode'), randomBytes(20).toString('hex'));
+    // Stessa identità e stesso controllo pre-commit della cartella principale.
+    for (const k of ['user.name', 'user.email']) {
+      const v = (await git(['config', '--get', k])).testo.trim();
+      if (v) await git(['config', k, v], wt);
+    }
+    await git(['config', 'core.hooksPath', 'tool/git-hooks'], wt);
   }
   aggiornaTask(t.id, { branch, cartella: wt });
   return wt;
 }
 
+/** Fotografia della cartella principale: i worker non devono mai cambiarla. */
+const fotoRepo = async () => (await git(['status', '--porcelain', '-uall'])).testo;
+let fotoIniziale = null;
+/** Diventa vero se la cartella principale cambia durante il lavoro dei worker. */
+let allarme = false;
+
 /** Diventa vero quando OpenRouter dice che le richieste gratuite di oggi sono finite. */
 let richiesteFinite = false;
 
 async function eseguiTask(t, exe) {
-  if (richiesteFinite) return;
+  if (richiesteFinite || allarme) return;
   const s = stato();
   const log = path.join(cartellaRun(s), `${t.id}-controlli.log`);
   let wt;
@@ -589,6 +612,15 @@ async function eseguiTask(t, exe) {
     stampa(`${t.id}: tentativo ${i + 1} con ${m}`);
     const w = await lanciaWorker(t, m, wt, exe, motivo, i + 1, s);
     sommaTask(t.id, { richieste: w.richieste, secondi: w.secondi });
+    if (fotoIniziale !== null && (await fotoRepo()) !== fotoIniziale) {
+      allarme = true;
+      const msg = `ALLARME: la cartella principale del progetto è cambiata mentre lavorava ${t.id} (${m}). Corsa fermata: controlla "git status" prima di tutto.`;
+      stampa(msg);
+      aggiornaTask(t.id, { stato: 'fallito', fine: ora(), nota: msg });
+      await spunta(t.id, false, 'fermato per sicurezza');
+      await segnaErrore(msg);
+      return;
+    }
     const q = await aggiornaQuota();
     if (w.finite || (!w.ok && q && q.rimaste <= 0)) {
       richiesteFinite = true;
@@ -806,6 +838,7 @@ const comandi = {
     await impostaFase('worker', `🚀 Worker avviati: ${coda.map((t) => t.id).join(', ')} (massimo ${paralleli} insieme).`);
     await colonna('In corso');
     const exe = opencodeExe();
+    fotoIniziale = await fotoRepo();
     await Promise.all(
       Array.from({ length: Math.min(paralleli, coda.length) }, async () => {
         while (coda.length) await eseguiTask(coda.shift(), exe);
@@ -877,6 +910,11 @@ const comandi = {
       throw new Error(`Unione in sospeso in ${wt}: risolvi i conflitti e fai commit, poi rilancia "unisci".`);
     }
     for (const t of fatti) {
+      // Il branch del task sta nel suo clone: lo porto nella repo principale.
+      if (t.cartella && fs.existsSync(path.join(t.cartella, '.git'))) {
+        const f = await git(['fetch', '-q', t.cartella, `+${t.branch}:${t.branch}`]);
+        if (f.code) throw new Error(`Non riesco a prendere ${t.branch} da ${t.id}: ${f.testo.trim()}`);
+      }
       if ((await git(['merge-base', '--is-ancestor', t.branch, 'HEAD'], wt)).code === 0) continue;
       const r = await git(['merge', '--no-ff', '-q', '-m', `Unisce ${t.id}: ${t.titolo}`, t.branch], wt);
       if (r.code) {
@@ -966,7 +1004,8 @@ const comandi = {
     await impostaFase('pulizia');
     const cartella = path.join(WT_ROOT, s.esecuzione.id);
     const wts = fs.existsSync(cartella) ? fs.readdirSync(cartella).map((d) => path.join(cartella, d)) : [];
-    for (const wt of wts) await git(['worktree', 'remove', '--force', wt]);
+    // "unione" è un worktree; le cartelle dei task sono cloni e si cancellano e basta.
+    for (const wt of wts) if (fs.statSync(path.join(wt, '.git'), { throwIfNoEntry: false })?.isFile()) await git(['worktree', 'remove', '--force', wt]);
     await git(['worktree', 'prune']);
     for (const t of s.tasks) if (t.branch) await git(['branch', '-D', t.branch]);
     fs.rmSync(cartella, { recursive: true, force: true });
