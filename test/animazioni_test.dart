@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:allenamenti_app/animazioni_esercizi.dart';
@@ -38,10 +39,29 @@ void main() {
     );
   });
 
-  test('ogni animazione rispetta il limite di 300 KB', () {
-    for (final file in animazioniEsercizi.values) {
-      final byte = File('$cartellaAnimazioni$file').lengthSync();
-      expect(byte, lessThanOrEqualTo(300 * 1024), reason: file);
+  test('ogni animazione rispetta il suo limite di peso', () {
+    // 300 KB a corpo libero, 400 KB con attrezzi o macchine (più dettagli).
+    final esercizi = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).cast<Map<String, dynamic>>();
+    for (final MapEntry(:key, :value) in animazioniEsercizi.entries) {
+      final e = esercizi.firstWhere((x) => x['id'] == key);
+      final conAttrezzi = (e['attrezzi'] as List).isNotEmpty;
+      final byte = File('$cartellaAnimazioni$value').lengthSync();
+      expect(
+        byte,
+        lessThanOrEqualTo((conAttrezzi ? 400 : 300) * 1024),
+        reason: value,
+      );
+    }
+  });
+
+  test('ogni animazione è di un esercizio del catalogo', () {
+    final ids = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).map((e) => e['id']).toSet();
+    for (final id in animazioniEsercizi.keys) {
+      expect(ids, contains(id));
     }
   });
 

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 /// e con licenza CC0; da dove viene ognuna è scritto in docs/animazioni/FONTI.md.
 const animazioniEsercizi = <String, String>{
   'Bodyweight_Squat': 'bodyweight_squat.webp',
+  'Leg_Extensions': 'leg_extensions.webp',
 };
 
 /// Cartella delle animazioni negli asset dell'app.
