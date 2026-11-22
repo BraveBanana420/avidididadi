@@ -55,9 +55,9 @@ class DettagliHc {
   static DateTime _t(double ms) =>
       DateTime.fromMillisecondsSinceEpoch(ms.round());
 
-  /// Dalle liste piatte mandate da Android: le liste arrivano piatte
-  /// a gruppi (4 numeri per segmento, 3 per giro e per distanza); un
-  /// valore negativo dei metri di un giro vuol dire 'non noto'.
+  /// Dalle liste piatte mandate da Android, a gruppi di numeri (4 per
+  /// segmento, 3 per giro e per distanza); metri negativi in un giro
+  /// vogliono dire "non noti".
   factory DettagliHc.daMappa(Map<Object?, Object?> m) {
     List<double> l(String k) => (m[k] as List?)?.cast<double>() ?? const [];
     final s = l('segmenti'), p = l('lap'), d = l('distanze');
