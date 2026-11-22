@@ -393,7 +393,8 @@ class MainActivity : FlutterFragmentActivity() {
     // all'app. Se riesce, Android chiude l'app per sostituirla.
     private val ricevitoreInstallazione = object : BroadcastReceiver() {
         override fun onReceive(c: Context?, i: Intent?) {
-            val stato = i?.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
+            if (i == null) return
+            val stato = i.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
             when (stato) {
                 PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                     val conferma = if (Build.VERSION.SDK_INT >= 33) {
@@ -412,7 +413,7 @@ class MainActivity : FlutterFragmentActivity() {
                 PackageInstaller.STATUS_FAILURE_ABORTED ->
                     canale?.invokeMethod("esitoAggiornamento", "annullato")
                 else -> {
-                    Log.w("Avidididadi", "aggiornamento: ${i?.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)}")
+                    Log.w("Avidididadi", "aggiornamento: ${i.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE)}")
                     canale?.invokeMethod("esitoAggiornamento", "errore")
                 }
             }
