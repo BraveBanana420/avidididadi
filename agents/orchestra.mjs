@@ -107,9 +107,13 @@ function esegui(cmd, args, { cwd = REPO, env = {}, out = null, timeoutMs = 0, sh
       if (fd !== null) fs.closeSync(fd);
       ok({ code: scaduto ? -1 : code, testo, scaduto });
     };
+    // PWD va allineato a cwd: OpenCode lavora nella cartella di PWD, e partendo
+    // da Git Bash PWD resta la cartella principale (così il 22/11 un worker ci
+    // ha scritto anche da un clone separato).
+    const tutto = { ...process.env, ...(cwd ? { PWD: path.resolve(cwd) } : {}), ...env };
     const p = shell
-      ? spawn([cmd, ...args].join(' '), { cwd, env: { ...process.env, ...env }, shell: true, windowsHide: true, stdio: ['ignore', fd ?? 'pipe', fd ?? 'pipe'] })
-      : spawn(cmd, args, { cwd, env: { ...process.env, ...env }, windowsHide: true, stdio: ['ignore', fd ?? 'pipe', fd ?? 'pipe'] });
+      ? spawn([cmd, ...args].join(' '), { cwd, env: tutto, shell: true, windowsHide: true, stdio: ['ignore', fd ?? 'pipe', fd ?? 'pipe'] })
+      : spawn(cmd, args, { cwd, env: tutto, windowsHide: true, stdio: ['ignore', fd ?? 'pipe', fd ?? 'pipe'] });
     if (fd === null) {
       p.stdout.on('data', (d) => (testo += d));
       p.stderr.on('data', (d) => (testo += d));
