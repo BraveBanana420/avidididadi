@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="it" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Orchestra · Avidididadi</title>
+<style>
+  :root {
+    --fondo: #f6f6f4;
+    --superficie: #ffffff;
+    --superficie-2: #f0efec;
+    --testo: #1b1b1a;
+    --testo-2: #5e5d59;
+    --bordo: #e3e1dc;
+    --accento: #d7263d;
+    --accento-testo: #ffffff;
+    --grigio: #8a8884;   --grigio-fondo: #eceae6;
+    --blu: #1f63d6;      --blu-fondo: #e4ecfb;
+    --viola: #7a3fd1;    --viola-fondo: #efe7fb;
+    --ambra: #a76200;    --ambra-fondo: #fbf0dc;
+    --verde: #18804a;    --verde-fondo: #e1f3e8;
+    --rosso: #c4232f;    --rosso-fondo: #fbe5e6;
+    --ombra: 0 1px 2px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
+  }
+  [data-theme="dark"] {
+    --fondo: #121212;
+    --superficie: #1c1c1c;
+    --superficie-2: #262626;
+    --testo: #f1f0ed;
+    --testo-2: #a9a7a2;
+    --bordo: #333231;
+    --accento: #ff4d61;
+    --accento-testo: #121212;
+    --grigio: #a09e99;   --grigio-fondo: #2b2a29;
+    --blu: #7aa7ff;      --blu-fondo: #1b2840;
+    --viola: #bb94ff;    --viola-fondo: #2b2140;
+    --ambra: #f0b04a;    --ambra-fondo: #3a2c14;
+    --verde: #5fd394;    --verde-fondo: #163324;
+    --rosso: #ff7a82;    --rosso-fondo: #3f1a1d;
+    --ombra: none;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--fondo); color: var(--testo);
+    font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 16px 16px 48px; }
+  header { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; }
+  header h1 { font-size: 20px; margin: 0; letter-spacing: -.01em; }
+  header h1 span { color: var(--accento); }
+  .agg { color: var(--testo-2); font-size: 13px; margin-left: auto; text-align: right; }
+  .agg.errore { color: var(--rosso); }
+  button.tema {
+    border: 1px solid var(--bordo); background: var(--superficie); color: var(--testo);
+    width: 40px; height: 40px; border-radius: 12px; font-size: 18px; cursor: pointer; flex: none;
+  }
+  section {
+    background: var(--superficie); border: 1px solid var(--bordo); border-radius: 16px;
+    padding: 16px; margin-bottom: 12px; box-shadow: var(--ombra);
+  }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--testo-2); margin: 0 0 10px; font-weight: 600; }
+  .vuoto { color: var(--testo-2); }
+  .titolo-corsa { font-size: 18px; font-weight: 650; margin: 0 0 2px; }
+  .richiesta { color: var(--testo-2); margin: 0 0 12px; overflow-wrap: anywhere; }
+  .fasi { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .fase {
+    font-size: 12px; padding: 4px 9px; border-radius: 999px;
+    background: var(--superficie-2); color: var(--testo-2);
+  }
+  .fase.passata { background: var(--verde-fondo); color: var(--verde); }
+  .fase.attuale { background: var(--accento); color: var(--accento-testo); font-weight: 650; }
+  .fase-testo { font-size: 15px; margin: 0 0 12px; }
+  .link { display: flex; flex-wrap: wrap; gap: 8px; }
+  .link a {
+    color: var(--testo); text-decoration: none; border: 1px solid var(--bordo);
+    padding: 7px 12px; border-radius: 10px; font-size: 14px; background: var(--superficie-2);
+  }
+  .link a:hover { border-color: var(--accento); }
+  .quota { display: flex; align-items: baseline; gap: 8px; }
+  .quota .num { font-size: 40px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .barra { height: 10px; background: var(--superficie-2); border-radius: 999px; overflow: hidden; margin: 10px 0 6px; }
+  .barra > div { height: 100%; background: var(--verde); border-radius: 999px; transition: width .4s; }
+  .barra.media > div { background: var(--ambra); }
+  .barra.bassa > div { background: var(--rosso); }
+  .piccolo { font-size: 13px; color: var(--testo-2); }
+  .task { border-top: 1px solid var(--bordo); padding: 12px 0; }
+  .task:first-of-type { border-top: 0; padding-top: 0; }
+  .task-riga { display: flex; gap: 10px; align-items: flex-start; }
+  .task-nome { font-weight: 600; flex: 1; overflow-wrap: anywhere; }
+  .task-nome small { color: var(--testo-2); font-weight: 400; }
+  .pill { font-size: 12px; font-weight: 650; padding: 3px 9px; border-radius: 999px; white-space: nowrap; flex: none; }
+  .p-grigio { background: var(--grigio-fondo); color: var(--grigio); }
+  .p-blu { background: var(--blu-fondo); color: var(--blu); }
+  .p-viola { background: var(--viola-fondo); color: var(--viola); }
+  .p-ambra { background: var(--ambra-fondo); color: var(--ambra); }
+  .p-verde { background: var(--verde-fondo); color: var(--verde); }
+  .p-rosso { background: var(--rosso-fondo); color: var(--rosso); }
+  .p-blu::before, .p-viola::before { content: "● "; animation: pulsa 1.4s infinite; }
+  @keyframes pulsa { 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .p-blu::before, .p-viola::before { animation: none; } }
+  .task-dati { font-size: 13px; color: var(--testo-2); margin-top: 4px; overflow-wrap: anywhere; }
+  details { margin-top: 6px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--testo-2); }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; background: var(--superficie-2); padding: 10px; border-radius: 10px; margin: 6px 0 0; }
+  .errore-box { border-color: var(--rosso); background: var(--rosso-fondo); }
+  .errore-box h2 { color: var(--rosso); }
+  .storico { list-style: none; margin: 0; padding: 0; }
+  .storico li { border-top: 1px solid var(--bordo); padding: 10px 0; display: flex; gap: 10px; align-items: flex-start; }
+  .storico li:first-child { border-top: 0; padding-top: 0; }
+  .storico .info { flex: 1; min-width: 0; }
+  .storico .info b { overflow-wrap: anywhere; }
+  .storico .link a { padding: 4px 9px; font-size: 13px; }
+  footer { text-align: center; font-size: 12px; color: var(--testo-2); margin-top: 20px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Orchestra <span>·</span> Avidididadi</h1>
+    <div class="agg" id="agg">carico…</div>
+    <button class="tema" id="tema" type="button" aria-label="Cambia tema">☾</button>
+  </header>
+
+  <section id="corsa"><h2>Corsa attuale</h2><p class="vuoto">Carico…</p></section>
+  <section id="errore" class="errore-box" hidden><h2>Ultimo errore</h2><div id="errore-testo"></div></section>
+  <section id="quota"><h2>Richieste gratuite oggi</h2><p class="vuoto">Carico…</p></section>
+  <section id="tasks"><h2>Task</h2><p class="vuoto">Nessun task.</p></section>
+  <section id="storico"><h2>Storico</h2><p class="vuoto">Nessuna corsa passata.</p></section>
+
+  <footer>Solo lettura · si aggiorna ogni 10 secondi · le approvazioni si danno in Claude Code</footer>
+</main>
+
+<script>
+'use strict';
+const FASI = [
+  ['piano', 'Piano', 'Claude sta scrivendo il piano.'],
+  ['approvazione', 'Approvazione', 'Il piano è pronto: aspetta il tuo ok in Claude Code.'],
+  ['worker', 'Worker', 'I worker stanno lavorando e i loro task vengono controllati.'],
+  ['unione', 'Unione', 'I task fatti vengono uniti in un solo branch.'],
+  ['controlli', 'Controlli', 'Controlli finali: analisi, test e APK di debug.'],
+  ['pr', 'PR', 'Pull request aperta: tocca a te revisionarla.'],
+  ['pulizia', 'Pulizia', 'Tolgo le cartelle temporanee e scrivo il log.'],
+  ['finita', 'Finita', 'Corsa finita.'],
+];
+const STATI = {
+  'in attesa': ['p-grigio', 'in attesa'],
+  'al lavoro': ['p-blu', 'al lavoro'],
+  'in pausa (429)': ['p-ambra', 'in pausa (429)'],
+  'controlli': ['p-viola', 'controlli'],
+  'fatto': ['p-verde', 'fatto'],
+  'fallito': ['p-rosso', 'fallito'],
+  'a mano': ['p-ambra', 'a mano'],
+};
+
+// Tema: chiaro di default, la scelta resta salvata in questo browser.
+const radice = document.documentElement;
+const bottoneTema = document.getElementById('tema');
+function applicaTema(t) {
+  radice.dataset.theme = t;
+  bottoneTema.textContent = t === 'dark' ? '☀' : '☾';
+  bottoneTema.setAttribute('aria-label', t === 'dark' ? 'Passa al tema chiaro' : 'Passa al tema scuro');
+}
+const temaUrl = new URLSearchParams(location.search).get('tema');
+if (temaUrl) applicaTema(temaUrl === 'scuro' ? 'dark' : 'light');
+else try { applicaTema(localStorage.getItem('orchestra-tema') === 'dark' ? 'dark' : 'light'); } catch { applicaTema('light'); }
+bottoneTema.addEventListener('click', () => {
+  const t = radice.dataset.theme === 'dark' ? 'light' : 'dark';
+  applicaTema(t);
+  try { localStorage.setItem('orchestra-tema', t); } catch {}
+});
+
+// Piccolo aiuto per creare elementi senza mai inserire HTML dai dati.
+function el(tag, attr = {}, ...figli) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attr)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else e.setAttribute(k, v);
+  }
+  for (const f of figli.flat()) if (f != null && f !== false) e.append(f instanceof Node ? f : String(f));
+  return e;
+}
+const link = (href, testo) => href && /^https:\/\//.test(href) ? el('a', { href, target: '_blank', rel: 'noopener noreferrer' }, testo) : null;
+function quando(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+function durata(s) {
+  if (!s) return '0 s';
+  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${s % 60} s`;
+}
+function sostituisci(id, ...figli) {
+  const sez = document.getElementById(id);
+  sez.replaceChildren(sez.querySelector('h2'), ...figli);
+}
+
+function mostraCorsa(s, progetto) {
+  if (!s?.esecuzione) {
+    sostituisci('corsa', el('p', { class: 'vuoto' }, 'Nessuna corsa in corso. Scrivi /orchestra <richiesta> in Claude Code.'),
+      el('div', { class: 'link' }, link(progetto, 'Project su GitHub')));
+    return;
+  }
+  const e = s.esecuzione;
+  const iFase = FASI.findIndex((f) => f[0] === e.fase);
+  const fasi = el('div', { class: 'fasi' }, FASI.map(([k, nome], i) =>
+    el('span', { class: `fase ${i < iFase || e.fase === 'finita' ? 'passata' : ''} ${i === iFase && e.fase !== 'finita' ? 'attuale' : ''}` }, nome)));
+  const testoFase = e.fase === 'annullata' ? 'Corsa annullata.' : (FASI[iFase]?.[2] || e.fase);
+  sostituisci('corsa',
+    el('p', { class: 'titolo-corsa' }, e.nome || e.id),
+    el('p', { class: 'richiesta' }, e.richiesta || ''),
+    fasi,
+    el('p', { class: 'fase-testo' }, testoFase),
+    el('div', { class: 'link' },
+      link(s.issue?.url, `Issue #${s.issue?.numero}`),
+      link(s.pr?.url, `Pull request #${s.pr?.numero}`),
+      link(progetto, 'Project'),
+      e.branch ? el('a', { title: 'branch' }, e.branch) : null),
+    el('p', { class: 'piccolo' }, `Iniziata ${quando(e.inizio)}${e.fine ? ' · finita ' + quando(e.fine) : ''} · id ${e.id}`));
+}
+
+function mostraErrore(s) {
+  const box = document.getElementById('errore');
+  const err = s?.ultimo_errore;
+  const attiva = s?.esecuzione && !['finita', 'annullata'].includes(s.esecuzione.fase);
+  box.hidden = !(err && attiva);
+  if (err) document.getElementById('errore-testo').replaceChildren(el('div', {}, err.testo), el('p', { class: 'piccolo' }, quando(err.quando)));
+}
+
+function mostraQuota(q, s) {
+  if (!q) { sostituisci('quota', el('p', { class: 'vuoto' }, 'Non disponibile: manca la chiave OpenRouter nell\'ambiente del server.')); return; }
+  const perc = q.limite ? Math.max(0, Math.min(100, (q.rimaste / q.limite) * 100)) : 0;
+  const livello = perc < 20 ? 'bassa' : perc < 50 ? 'media' : '';
+  const stima = s?.stima_richieste && s.esecuzione && !['finita', 'annullata'].includes(s.esecuzione.fase)
+    ? ` · questa corsa ne stima ~${s.stima_richieste}` : '';
+  sostituisci('quota',
+    el('div', { class: 'quota' }, el('span', { class: 'num' }, q.rimaste), el('span', { class: 'piccolo' }, `rimaste su ${q.limite}`)),
+    el('div', { class: `barra ${livello}`, role: 'progressbar', 'aria-valuenow': q.rimaste, 'aria-valuemin': 0, 'aria-valuemax': q.limite },
+      el('div', { style: `width:${perc}%` })),
+    el('p', { class: 'piccolo' }, `Usate ${q.usate}${stima} · letta ${quando(q.letta)} · il conto riparte ogni giorno`));
+}
+
+function mostraTasks(s) {
+  const tasks = s?.tasks || [];
+  if (!tasks.length) { sostituisci('tasks', el('p', { class: 'vuoto' }, 'Nessun task.')); return; }
+  const fatti = tasks.filter((t) => t.stato === 'fatto').length;
+  sostituisci('tasks',
+    el('p', { class: 'piccolo' }, `Fatti: ${fatti} su ${tasks.length}`),
+    ...tasks.map((t) => {
+      const [classe, etichetta] = STATI[t.stato] || ['p-grigio', t.stato];
+      const dati = [t.modello, t.tentativi ? `tentativi ${t.tentativi}` : null, t.richieste ? `${t.richieste} richieste` : null, t.secondi ? durata(t.secondi) : null]
+        .filter(Boolean).join(' · ');
+      return el('div', { class: 'task' },
+        el('div', { class: 'task-riga' },
+          el('div', { class: 'task-nome' }, `${t.id} · ${t.titolo} `, el('small', {}, t.tipo || '')),
+          el('span', { class: `pill ${classe}` }, etichetta)),
+        el('div', { class: 'task-dati' }, dati),
+        t.nota ? el('details', {}, el('summary', {}, 'Dettagli'), el('pre', {}, t.nota)) : null,
+        t.riassunto && t.stato === 'fatto' ? el('details', {}, el('summary', {}, 'Cosa ha fatto il worker'), el('pre', {}, t.riassunto)) : null);
+    }));
+}
+
+function mostraStorico(lista, attuale) {
+  const passate = lista.filter((r) => r.id !== attuale || ['finita', 'annullata'].includes(r.fase));
+  if (!passate.length) { sostituisci('storico', el('p', { class: 'vuoto' }, 'Nessuna corsa passata.')); return; }
+  sostituisci('storico', el('ul', { class: 'storico' }, passate.map((r) => {
+    const esito = r.fase === 'annullata' ? ['p-grigio', 'annullata'] : r.totale && r.fatti === r.totale ? ['p-verde', `${r.fatti}/${r.totale}`] : ['p-ambra', `${r.fatti ?? 0}/${r.totale ?? 0}`];
+    return el('li', {},
+      el('div', { class: 'info' },
+        el('b', {}, r.nome || r.id),
+        el('div', { class: 'piccolo' }, `${quando(r.inizio)} · ${r.richieste ?? 0} richieste${r.fase && r.fase !== 'finita' ? ' · ' + r.fase : ''}`),
+        el('div', { class: 'link', style: 'margin-top:6px' }, link(r.issue, 'Issue'), link(r.pr, 'PR'))),
+      el('span', { class: `pill ${esito[0]}` }, esito[1]));
+  })));
+}
+
+let ultimo = null;
+const agg = document.getElementById('agg');
+async function aggiorna() {
+  try {
+    const r = await fetch('/api/stato', { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    const s = d.stato;
+    mostraCorsa(s, d.progetto);
+    mostraErrore(s);
+    mostraQuota(d.quota, s);
+    mostraTasks(s);
+    mostraStorico(d.storico || [], s?.esecuzione?.id);
+    ultimo = Date.now();
+    agg.classList.remove('errore');
+  } catch {
+    agg.classList.add('errore');
+    agg.textContent = 'server non raggiungibile';
+    return;
+  }
+  scriviAgg();
+}
+function scriviAgg() {
+  if (!ultimo || agg.classList.contains('errore')) return;
+  const s = Math.round((Date.now() - ultimo) / 1000);
+  agg.textContent = s < 5 ? 'aggiornato ora' : `aggiornato ${s} s fa`;
+}
+aggiorna();
+setInterval(aggiorna, 10000);
+setInterval(scriviAgg, 1000);
+</script>
+</body>
+</html>
