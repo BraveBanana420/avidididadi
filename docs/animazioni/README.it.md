@@ -26,7 +26,11 @@ vestiti). Un'animazione = un personaggio. Scegli quello che preferisci.
 
 Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
 leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
-polsi, scarpe nere con dettagli rossi. Stile cartone 3D semi-realistico.
+polsi, scarpe nere con dettagli rossi.
+
+**Stile**: illustrazione digitale disegnata, come gli avatar: contorni scuri
+netti, ombre morbide, colori uniformi. **Non** una foto e **non** un 3D
+realistico: tutte le animazioni devono sembrare lo stesso disegno.
 
 Le immagini degli avatar le fornisce solo il progetto: usale come riferimento per
 la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
@@ -37,6 +41,7 @@ la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 |---|---|
 | **File finale** | WebP animato, **640 × 320 px** (2:1), **15–24 fotogrammi al secondo** (più sono, più è fluida: 24 se il peso lo permette), **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** (**400 KB** per gli esercizi con attrezzi o macchine, che hanno più dettagli) |
 | **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
+| **Stile** | disegnato come gli avatar (contorni scuri, ombre morbide) **dal primo all'ultimo fotogramma**. Gli strumenti video tendono a passare a un 3D realistico a metà movimento: se succede, scarta il video e riprova |
 | **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
 | **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
 | **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Da 3/4** (corpo girato di circa 45°, come l'avatar "Uomo: 3/4") per quasi tutti gli esercizi: si vedono insieme la profondità e il lato del movimento. **Di lato** o **di fronte** solo quando da 3/4 il movimento non si capisce bene (es. di fronte per jumping jack e alzate laterali, di lato per alcuni esercizi a terra) |
@@ -74,8 +79,9 @@ Le richieste funzionano meglio in inglese, quindi lasciale così:
 ```text
 Use the attached character exactly as he is: same face, hair, body and outfit
 (black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same semi-realistic
-3D cartoon style.
+red stripes, black wrist wraps, black shoes with red details), same drawing style:
+hand-drawn digital illustration with clean dark outlines and soft cel shading,
+not photorealistic, not a 3D render.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
 instructions>), seen in the same three-quarter view as the attached image
 <or: from the side / from the front>.
@@ -94,8 +100,10 @@ l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà con
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, realistic body mechanics.
-The character, outfit and background stay exactly as in the image.
+<the movement in one or two lines>. Correct technique, anatomically correct movement.
+The character, outfit and background stay exactly as in the image. Keep exactly
+the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
+every frame: the character must never turn photorealistic or 3D-rendered.
 The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```

@@ -31,6 +31,8 @@ const VISTE = {
   lato: { avatar: 'male_side.jpg', testo: 'seen from the side, like the attached side view, facing left' },
   fronte: { avatar: 'male_front.jpg', testo: 'seen from the front, like the attached front view' },
 };
+/** Lo stile degli avatar: senza dirlo, i video tendono a diventare realistici a metà movimento. */
+const STILE = 'hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours, like the attached avatar images. Not a photo, not a photorealistic or 3D render';
 const VESTITI = 'black sleeveless top with red side panels, black shorts with red side panels over plain black leggings, black wrist wraps, black shoes with red soles';
 
 // ---------- utilità ----------
@@ -148,7 +150,7 @@ const comandi = {
     const quante = Math.min(4, Number(a.quante || 2));
     await controllaCredito(COSTO.immagine * quante);
     const attrezzi = conAttrezzi(e) ? ` The equipment (${e.attrezzi.map((g) => g.join(' + ')).join(' or ')}) is simple and clean, matte black and dark grey, no logos, no text, no brand.` : '';
-    const prompt = `Use the attached character exactly as he is: same face, hair, beard, body proportions and outfit exactly as in the attached images (${VESTITI}), same semi-realistic 3D cartoon style and same rendering.
+    const prompt = `Use the attached character exactly as he is: same face, hair, beard, body proportions and outfit exactly as in the attached images (${VESTITI}), same drawing style (${STILE}).
 Show him in the starting position of: ${e.nome_en.toUpperCase()}. ${a.posa}${attrezzi}
 Seen ${vista.testo}.
 Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some margin, in the centre of the image, feet near the bottom. Plain light grey background (#D9D9DB) with a slightly lighter floor, soft studio light, soft shadow on the floor. No other objects, no other people, no text. Wide 16:9 image.`;
@@ -183,7 +185,7 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
     if (!fs.existsSync(img)) throw new Error(`Immagine di partenza non trovata: ${img}`);
     if (!a.movimento) throw new Error('Serve --movimento "una ripetizione, in inglese"');
     await controllaCredito(COSTO.video);
-    const prompt = `The character performs one slow, controlled repetition: ${a.movimento} The movement ends exactly in the starting pose. Correct technique, realistic body mechanics. The character, outfit, equipment and plain grey background stay exactly as in the image. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.`;
+    const prompt = `The character performs one slow, controlled repetition: ${a.movimento} The movement ends exactly in the starting pose. Correct technique, anatomically correct movement. The character, outfit, equipment and plain grey background stay exactly as in the image. Keep exactly the same drawing style as the image in every frame (${STILE.replace(', like the attached avatar images', '')}): the character must never turn photorealistic or 3D-rendered. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.`;
     fs.writeFileSync(path.join(dir, 'prompt-video.txt'), prompt);
     const frame = (tipo) => ({ type: 'image_url', image_url: { url: dataUrl(img) }, frame_type: tipo });
     const H = { Authorization: `Bearer ${chiave()}`, 'Content-Type': 'application/json' };

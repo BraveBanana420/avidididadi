@@ -26,7 +26,11 @@ outfit). One animation = one character. Pick the one you prefer.
 
 Outfit: black sleeveless top (sports bra for the female avatar) with red side
 panels, black leggings with red stripes (black shorts on top for the male), black
-wrist wraps, black shoes with red details. Semi-realistic 3D cartoon style.
+wrist wraps, black shoes with red details.
+
+**Style**: a hand-drawn digital illustration, like the avatars: clean dark
+outlines, soft shading, smooth colours. **Not** a photo and **not** a realistic
+3D render: all the animations must look like the same drawing.
 
 The avatar images are provided only by the project: use them as the reference for
 your animation, but don't publish new versions or other views of the avatars.
@@ -37,6 +41,7 @@ your animation, but don't publish new versions or other views of the avatars.
 |---|---|
 | **Final file** | animated WebP, **640 × 320 px** (2:1), **15–24 fps** (more is smoother: 24 if the size allows), **2–3 seconds**, infinite loop, no audio, **max 300 KB** (**400 KB** for exercises with equipment or machines, which have more detail) |
 | **What you send** | the WebP, or an MP4 video: we can convert it |
+| **Style** | drawn like the avatars (dark outlines, soft shading) **from the first to the last frame**. Video tools often drift towards a realistic 3D look halfway through the movement: if it happens, throw the video away and try again |
 | **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
 | **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
 | **Camera** | fixed: no zoom, no pan, no cuts. **Three-quarter view** (body turned about 45°, like the "Male: 3/4" avatar) for most exercises: it shows depth and the side of the movement at once. **Side** or **front view** only when the movement is unclear from three-quarters (e.g. front view for jumping jacks and lateral raises, side view for some floor exercises) |
@@ -73,8 +78,9 @@ Prompts work best in English:
 ```text
 Use the attached character exactly as he is: same face, hair, body and outfit
 (black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same semi-realistic
-3D cartoon style.
+red stripes, black wrist wraps, black shoes with red details), same drawing style:
+hand-drawn digital illustration with clean dark outlines and soft cel shading,
+not photorealistic, not a 3D render.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
 instructions>), seen in the same three-quarter view as the attached image
 <or: from the side / from the front>.
@@ -93,8 +99,10 @@ use the same image for both: the loop will be seamless.
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, realistic body mechanics.
-The character, outfit and background stay exactly as in the image.
+<the movement in one or two lines>. Correct technique, anatomically correct movement.
+The character, outfit and background stay exactly as in the image. Keep exactly
+the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
+every frame: the character must never turn photorealistic or 3D-rendered.
 The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```
