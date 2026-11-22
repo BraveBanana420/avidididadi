@@ -73,9 +73,9 @@
   "strumenti_esterni": [
     {
       "nome": "Dreamina",
-      "per": ["gif", "animazioni", "immagini"],
+      "per": ["animazioni WebP degli esercizi", "immagini"],
       "come": "Non è un worker: il task diventa 'a mano'. L'orchestratore scrive il prompt da incollare in Dreamina, l'utente genera il file e lo mette nella cartella indicata, poi un worker lo collega all'app.",
-      "regole": "Seguire docs/animazioni (stesso personaggio, formati e dimensioni richiesti)."
+      "regole": "Seguire docs/animazioni: stesso avatar del progetto, WebP animato 640x320, 2-3 s, max 300 KB (Dreamina dà un video: la conversione la fa Claude con ffmpeg). Licenza CC0 da verificare con i termini di Dreamina."
     }
   ],
   "regole_scelta": [

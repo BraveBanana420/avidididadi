@@ -51,7 +51,7 @@ Sei l'**orchestratore**: scomponi, fai lavorare i worker, controlli, rimonti e a
    - **Micro-task**: 1–3 file, meno di ~150 righe cambiate, indipendenti, **file diversi tra loro** quando possibile. Un file in comune è un rischio di conflitto: meglio un task solo.
    - **`tipo`** è una delle chiavi di `tipi_compito` in `agents/models.json`. **`modello`** è quello con il punteggio più alto per quel tipo (a parità vince l'affidabilità più alta); **`riserva`** è il secondo.
    - **`file`**: percorsi esatti, oppure una cartella che finisce con `/`. I file generati da `flutter gen-l10n` seguono gli ARB da soli.
-   - **Immagini, GIF, animazioni**: `"manuale": true`, con `"prompt_dreamina"` (il testo da incollare in Dreamina, che rispetta `docs/animazioni`) e `"destinazione"` (dove mettere il file). Un worker poi può collegarlo all'app in un altro task.
+   - **Immagini e animazioni degli esercizi** (WebP animati, non GIF): `"manuale": true`, con `"prompt_dreamina"` (il testo da incollare in Dreamina, che rispetta `docs/animazioni`) e `"destinazione"` (dove mettere il file). Un worker poi può collegarlo all'app in un altro task.
    - **Task delicati** (file vietati ai worker, ragionamento su tanti file, sicurezza e privacy): `"claude": true` con `"perche_claude"`.
 4. `node agents/orchestra.mjs piano`: controlla il piano, scrive `piano.md` e stima le richieste. Se segnala qualcosa "da correggere", correggi e rilancia.
 5. `node agents/orchestra.mjs issue`: crea la issue (etichetta `orchestra`) con piano e checklist, e la mette in "Da approvare" nel Project.
