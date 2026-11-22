@@ -89,3 +89,5 @@ local.properties
 /agents/status.json
 /agents/status.json.*.tmp
 /agents/runs/
+# Cartella locale di OpenCode (impostazioni e sessioni dei worker)
+/.opencode/

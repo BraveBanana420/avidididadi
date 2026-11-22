@@ -50,7 +50,6 @@
         "bash": {
           "*": "deny",
           "flutter analyze*": "allow",
-          "flutter test*": "allow",
           "flutter gen-l10n*": "allow",
           "dart format*": "allow",
           "dart analyze*": "allow",

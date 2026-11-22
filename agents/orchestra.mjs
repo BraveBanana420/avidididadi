@@ -280,9 +280,12 @@ function leggiPiano(s) {
   return piano;
 }
 
-/** Stima prudente: ~4 richieste di base + 2 per file, più un 30% per i tentativi ripetuti. */
+/**
+ * Stima prudente: ~6 richieste di base + 2 per file, più un 30% per i tentativi ripetuti.
+ * (Prove del 22/11: 6-8 richieste anche per un worker con compiti minimi.)
+ */
 function stimaRichieste(piano) {
-  const base = piano.tasks.filter((t) => !t.manuale && !t.claude).reduce((n, t) => n + 4 + 2 * (t.file?.length || 1), 0);
+  const base = piano.tasks.filter((t) => !t.manuale && !t.claude).reduce((n, t) => n + 6 + 2 * (t.file?.length || 1), 0);
   return Math.ceil(base * 1.3);
 }
 
@@ -341,7 +344,7 @@ function promptWorker(t, motivoPrecedente) {
     '- Avvisi con avviso(...) (lib/avviso.dart), mai SnackBar. Nessuna nuova dipendenza.',
     '- I valori salvati nei CSV restano in italiano; le colonne nuove vanno in fondo.',
     '- Non toccare file fuori dall\'elenco. Non fare commit, push o altri comandi git che cambiano qualcosa: ci pensa l\'orchestratore. Ignora le regole Git di CLAUDE.md.',
-    '- Quando hai finito esegui `dart format` sui file cambiati e `flutter analyze`, e correggi i problemi che riguardano i tuoi file.',
+    '- Quando hai finito esegui `dart format` sui file cambiati e `flutter analyze`, e correggi i problemi che riguardano i tuoi file. I test (`flutter test`) li lancia l\'orchestratore dopo di te: tu non puoi.',
     '- Chiudi con un riassunto di 2-3 righe di cosa hai cambiato.',
   ]
     .filter((r) => r !== '')
@@ -389,6 +392,11 @@ async function lanciaWorker(t, modello, wt, exe, motivoPrecedente, tentativo, s)
     richieste += ev.richieste;
     const secondi = Math.round((Date.now() - t0) / 1000);
     if (r.scaduto) return { ok: false, motivo: `il worker non ha finito entro ${TIMEOUT_WORKER_MIN} minuti`, richieste, secondi };
+    if (ev.limite) {
+      // Il 429 può essere il limite del giorno: allora aspettare o cambiare modello non serve.
+      const q = await aggiornaQuota();
+      if (q && q.rimaste <= 0) return { ok: false, finite: true, motivo: 'richieste gratuite di oggi finite', richieste, secondi };
+    }
     if (ev.limite && giro === 0) {
       aggiornaTask(t.id, { stato: 'in pausa (429)' });
       stampa(`${t.id}: ${modello} sovraccarico (429), aspetto ${ATTESA_429_S} s e riprovo una volta`);
@@ -475,7 +483,11 @@ async function preparaWorktree(s, t) {
   return wt;
 }
 
+/** Diventa vero quando OpenRouter dice che le richieste gratuite di oggi sono finite. */
+let richiesteFinite = false;
+
 async function eseguiTask(t, exe) {
+  if (richiesteFinite) return;
   const s = stato();
   const log = path.join(cartellaRun(s), `${t.id}-controlli.log`);
   let wt;
@@ -496,7 +508,12 @@ async function eseguiTask(t, exe) {
     stampa(`${t.id}: tentativo ${i + 1} con ${m}`);
     const w = await lanciaWorker(t, m, wt, exe, motivo, i + 1, s);
     sommaTask(t.id, { richieste: w.richieste, secondi: w.secondi });
-    await aggiornaQuota();
+    const q = await aggiornaQuota();
+    if (w.finite || (!w.ok && q && q.rimaste <= 0)) {
+      richiesteFinite = true;
+      aggiornaTask(t.id, { stato: 'in attesa', nota: 'Fermato: richieste gratuite di oggi finite. Riprendi domani con "lancia".' });
+      return;
+    }
     if (!w.ok) {
       motivo = w.motivo;
       stampa(`${t.id}: ${m} non ce l'ha fatta: ${motivo}`);
@@ -706,6 +723,9 @@ const comandi = {
     const fine = stato();
     const riga = (t) => `${t.stato === 'fatto' ? '✅' : t.stato === 'fallito' ? '❌' : '⏸️'} ${t.id} ${t.titolo} · ${t.modello} · tentativi ${t.tentativi} · ${t.richieste} richieste · ${t.secondi}s`;
     const resoconto = fine.tasks.map(riga).join('\n');
+    if (richiesteFinite) {
+      await segnaErrore('Richieste gratuite di oggi finite: i task rimasti sono in attesa. Si riprende domani con "lancia".');
+    }
     await commenta(`🔎 Worker finiti, controlli fatti:\n\n${resoconto}`);
     stampa(resoconto);
     if (fine.quota) stampa(`Richieste rimaste oggi: ${fine.quota.rimaste} su ${fine.quota.limite}`);
