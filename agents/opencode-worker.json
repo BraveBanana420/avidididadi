@@ -1,0 +1,70 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "share": "disabled",
+  "autoupdate": false,
+  "provider": {
+    "openrouter": {
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      }
+    }
+  },
+  "agent": {
+    "worker": {
+      "description": "Worker di /orchestra: esegue un solo micro-task dentro il suo worktree.",
+      "mode": "primary",
+      "permission": {
+        "*": "deny",
+        "read": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*key.properties": "deny",
+          "*.jks": "deny",
+          "*.keystore": "deny",
+          "*NOTE_PRIVATE.md": "deny"
+        },
+        "edit": {
+          "*": "allow",
+          "*.env": "deny",
+          "*.env.*": "deny",
+          "*key.properties*": "deny",
+          "*.jks": "deny",
+          "*.keystore": "deny",
+          "*NOTE_PRIVATE.md": "deny",
+          "*build.gradle*": "deny",
+          "*AndroidManifest.xml": "deny",
+          "*.github*": "deny",
+          "*tool/git-hooks*": "deny",
+          "*opencode*.json": "deny",
+          "*agents/*": "deny",
+          "*.claude/*": "deny",
+          "*CLAUDE.md": "deny",
+          "*pubspec.yaml": "deny",
+          "*pubspec.lock": "deny"
+        },
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "todowrite": "allow",
+        "bash": {
+          "*": "deny",
+          "flutter analyze*": "allow",
+          "flutter test*": "allow",
+          "flutter gen-l10n*": "allow",
+          "dart format*": "allow",
+          "dart analyze*": "allow",
+          "git status*": "allow",
+          "git diff*": "allow"
+        },
+        "webfetch": "deny",
+        "websearch": "deny",
+        "skill": "deny",
+        "task": "deny",
+        "external_directory": "deny",
+        "doom_loop": "deny",
+        "question": "deny"
+      }
+    }
+  }
+}
