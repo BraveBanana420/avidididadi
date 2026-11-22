@@ -190,7 +190,7 @@ in the app). Thank you! 💪
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
 
 Third-party content: Manrope and Space Grotesk fonts (SIL Open Font License,
-`assets/fonts`); exercises, images and English instructions from
+`assets/fonts`); exercises and images from
 [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (Unlicense);
 maps © OpenStreetMap contributors, tiles by OpenFreeMap; satellite imagery ©
 Esri.

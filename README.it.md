@@ -192,7 +192,7 @@ progetto). Grazie! 💪
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
 
 Contenuti di terzi: caratteri Manrope e Space Grotesk (SIL Open Font License,
-`assets/fonts`); esercizi, immagini e istruzioni in inglese da
+`assets/fonts`); esercizi e immagini da
 [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (Unlicense);
 mappe © contributori di OpenStreetMap, riquadri di OpenFreeMap; immagini
 satellitari © Esri.
