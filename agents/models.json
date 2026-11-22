@@ -1,0 +1,87 @@
+{
+  "aggiornato": "2026-11-22",
+  "fonte": "https://openrouter.ai/api/v1/models (11 modelli :free su 476) + prova pratica: commenti /// alla classe Slot, una richiesta per modello",
+  "limite_giornaliero": {
+    "richieste_gratuite": 50,
+    "dove_si_legge": "GET https://openrouter.ai/api/v1/key -> data.free_model_daily_requests (used, limit, remaining)",
+    "nota": "Il limite vale per tutti i modelli :free insieme. Gli errori 429 non consumano richieste. Con almeno 10 $ di crediti sale a 1000."
+  },
+  "tipi_compito": {
+    "logica_dart": "Codice Dart senza interfaccia: calcoli, generatori, parsing CSV, modelli",
+    "interfaccia_flutter": "Schermate e widget in lib/screens/, stile Pulse",
+    "test": "Test in test/<area>_test.dart con dati realistici",
+    "documentazione": "Commenti ///, README, guide in docs/",
+    "traduzioni_arb": "Testi in lib/l10n/app_it.arb e app_en.arb con gli stessi segnaposto",
+    "piccoli_ritocchi": "Modifiche piccole e meccaniche su pochi file"
+  },
+  "modelli": [
+    {
+      "id": "particle-ai/particle-1:free",
+      "opencode": "openrouter/particle-ai/particle-1:free",
+      "contesto": 1048576,
+      "max_output": 131072,
+      "punti_di_forza": ["codice e modifiche al codebase", "commenti chiari in italiano", "veloce"],
+      "punteggi": { "logica_dart": 8, "interfaccia_flutter": 7, "test": 7, "documentazione": 9, "traduzioni_arb": 7, "piccoli_ritocchi": 9 },
+      "affidabilita": "alta",
+      "prova": "22/11: 4,7 s, codice intatto, commenti corretti che spiegano il perché",
+      "note": "Modello per agenti di programmazione, derivato da DeepSeek V4.1 Flash. Prima scelta per quasi tutto."
+    },
+    {
+      "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "opencode": "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free",
+      "contesto": 1000000,
+      "max_output": 65536,
+      "punti_di_forza": ["ragionamento", "logica complessa", "test"],
+      "punteggi": { "logica_dart": 8, "interfaccia_flutter": 7, "test": 8, "documentazione": 7, "traduzioni_arb": 7, "piccoli_ritocchi": 6 },
+      "affidabilita": "alta",
+      "prova": "22/11: 9,5 s, codice intatto, commenti buoni ma con 2 righe rientrate male (le sistema dart format)",
+      "note": "Il più grande dei gratuiti: più lento, adatto ai task con più ragionamento. Seconda scelta e modello di riserva."
+    },
+    {
+      "id": "nvidia/nemotron-3.5-lightning:free",
+      "opencode": "openrouter/nvidia/nemotron-3.5-lightning:free",
+      "contesto": 1000000,
+      "max_output": 65536,
+      "punti_di_forza": ["veloce", "quasi sempre disponibile", "compiti semplici"],
+      "punteggi": { "logica_dart": 5, "interfaccia_flutter": 4, "test": 5, "documentazione": 6, "traduzioni_arb": 6, "piccoli_ritocchi": 7 },
+      "affidabilita": "alta",
+      "prova": "22/11: ha risposto 'ok' 3 volte; nella prova dei commenti ha cambiato i rientri del codice",
+      "note": "Piccolo (3B parametri attivi). Solo per task semplici; dopo di lui serve sempre dart format."
+    },
+    {
+      "id": "google/gemma-4-31b-it:free",
+      "opencode": "openrouter/google/gemma-4-31b-it:free",
+      "contesto": 262144,
+      "max_output": 32768,
+      "punti_di_forza": ["lingue diverse dall'inglese", "testi e traduzioni"],
+      "punteggi": { "logica_dart": 6, "interfaccia_flutter": 6, "test": 5, "documentazione": 7, "traduzioni_arb": 8, "piccoli_ritocchi": 6 },
+      "affidabilita": "bassa",
+      "prova": "22/11: 4 volte su 4 errore 429 (sovraccarico da parte di Google); punteggi stimati, non ancora provati",
+      "note": "Da usare solo per le traduzioni, con un altro modello pronto come riserva."
+    }
+  ],
+  "scartati": {
+    "recursive/flint-v1.0:free": "Lento (32 s) ed errori di italiano nella prova",
+    "baidu/ernie-5.5-flash-preview:free": "Sempre 429 nella prova",
+    "inclusionai/ling-3.2-flash:free": "Sempre 429 nella prova",
+    "cohere/north-mini-code:free": "Errore del server nella prova di OpenCode (non è più nell'elenco :free)",
+    "liquid/lfm-3-1.7b:free": "Troppo piccolo per il codice",
+    "nvidia/nemotron-3.5-super-vl:free": "Pensato per immagini e video, non per il codice",
+    "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": "Pensato per audio, immagini e video, non per il codice",
+    "google/gemma-4-26b-a4b-it:free": "Versione più piccola di gemma-4-31b, stesso fornitore sovraccarico"
+  },
+  "strumenti_esterni": [
+    {
+      "nome": "Dreamina",
+      "per": ["gif", "animazioni", "immagini"],
+      "come": "Non è un worker: il task diventa 'a mano'. L'orchestratore scrive il prompt da incollare in Dreamina, l'utente genera il file e lo mette nella cartella indicata, poi un worker lo collega all'app.",
+      "regole": "Seguire docs/animazioni (stesso personaggio, formati e dimensioni richiesti)."
+    }
+  ],
+  "regole_scelta": [
+    "Per ogni task prendi il modello con il punteggio più alto per il suo tipo di compito.",
+    "A parità di punteggio scegli quello con affidabilità più alta, poi il più veloce.",
+    "Se fallisce, riprova una volta con il secondo in classifica per quel tipo.",
+    "Prima di ogni corsa controlla che gli ID siano ancora nell'elenco :free di OpenRouter."
+  ]
+}
