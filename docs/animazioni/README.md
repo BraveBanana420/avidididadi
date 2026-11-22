@@ -35,7 +35,7 @@ your animation, but don't publish new versions or other views of the avatars.
 
 | | |
 |---|---|
-| **Final file** | animated WebP, **640 × 320 px** (2:1), about **15 fps**, **2–3 seconds**, infinite loop, no audio, **max 300 KB** |
+| **Final file** | animated WebP, **640 × 320 px** (2:1), **15–24 fps** (more is smoother: 24 if the size allows), **2–3 seconds**, infinite loop, no audio, **max 300 KB** |
 | **What you send** | the WebP, or an MP4 video: we can convert it |
 | **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
 | **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
@@ -109,11 +109,11 @@ it starts, `-t` how long it lasts) and convert:
 
 ```sh
 ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=15,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
+  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
   -c:v libwebp -quality 75 -compression_level 6 -loop 0 exercise_id.webp
 ```
 
-If the file is over 300 KB, lower `-quality` (e.g. 60) or shorten `-t`. If you
+If the file is over 300 KB, lower `-quality` (e.g. 60), use `fps=20` or `fps=15`, or shorten `-t`. If you
 don't have ffmpeg, just send the MP4.
 
 ## License and rights (important)

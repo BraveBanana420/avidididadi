@@ -14,7 +14,7 @@ credenziali del generatore (C2PA), che la conversione in WebP perde.
 
 | File | Exercise / Esercizio | Made with / Fatta con | Date / Data | Original / Originale |
 |---|---|---|---|---|
-| `bodyweight_squat.webp` | `Bodyweight_Squat` | AI · start frame: avatar `male_three_quarter.jpg` widened to 16:9 · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, paid credits, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to `#D9D9DB`, sped up to 3 s, 640×320 | 2026-11-22 | [`bodyweight_squat.mp4`](originali/bodyweight_squat.mp4), [start frame](originali/bodyweight_squat_primo.jpg) |
+| `bodyweight_squat.webp` | `Bodyweight_Squat` | AI · start frame: avatar `male_three_quarter.jpg` widened to 16:9 · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, paid credits, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to `#D9D9DB`, sped up to 3 s, 640×320, 24 fps | 2026-11-22 | [`bodyweight_squat.mp4`](originali/bodyweight_squat.mp4), [start frame](originali/bodyweight_squat_primo.jpg) |
 
 ## Avatar views / Viste degli avatar
 

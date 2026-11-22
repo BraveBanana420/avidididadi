@@ -35,7 +35,7 @@ la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 
 | | |
 |---|---|
-| **File finale** | WebP animato, **640 × 320 px** (2:1), circa **15 fotogrammi al secondo**, **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** |
+| **File finale** | WebP animato, **640 × 320 px** (2:1), **15–24 fotogrammi al secondo** (più sono, più è fluida: 24 se il peso lo permette), **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** |
 | **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
 | **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
 | **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
@@ -110,11 +110,11 @@ inizia, `-t` quanto dura) e converti:
 
 ```sh
 ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=15,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
+  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
   -c:v libwebp -quality 75 -compression_level 6 -loop 0 id_esercizio.webp
 ```
 
-Se il file supera i 300 KB abbassa `-quality` (es. 60) o accorcia `-t`. Se non hai
+Se il file supera i 300 KB abbassa `-quality` (es. 60), usa `fps=20` o `fps=15`, oppure accorcia `-t`. Se non hai
 ffmpeg, manda direttamente l'MP4.
 
 ## Licenza e diritti (importante)
