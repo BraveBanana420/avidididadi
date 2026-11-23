@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../aggiornamento.dart';
 import '../avviso.dart';
@@ -13,7 +14,10 @@ Future<void> cercaAggiornamentoOra(BuildContext context) async {
     case EsitoRicerca.nuova:
       await proponiAggiornamento(context, r!);
     case EsitoRicerca.ultima:
-      messaggi.showSnackBar(avviso(content: Text(l10n.haiUltimaVersione)));
+      final versione = (await PackageInfo.fromPlatform()).version;
+      messaggi.showSnackBar(
+        avviso(content: Text(l10n.haiUltimaVersione(versione))),
+      );
     case EsitoRicerca.nessunaRisposta:
       messaggi.showSnackBar(avviso(content: Text(l10n.githubNonRisponde)));
   }

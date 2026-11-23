@@ -226,7 +226,6 @@ void main() {
       'avidididadi/avvio',
       'plugins.it_nomads.com/flutter_secure_storage',
       'flutter_health',
-      'dev.fluttercommunity.plus/package_info',
       'flutter.baseflow.com/geolocator_updates',
       'flutter.baseflow.com/geolocator_updates_android',
       'flutter.baseflow.com/geolocator_service_updates',
@@ -234,6 +233,16 @@ void main() {
     ]) {
       m.setMockMethodCallHandler(MethodChannel(c), (_) async => null);
     }
+    // La versione in fondo al Profilo.
+    m.setMockMethodCallHandler(
+      const MethodChannel('dev.fluttercommunity.plus/package_info'),
+      (_) async => {
+        'appName': 'Avidididadi',
+        'packageName': 'it.avidididadi.app',
+        'version': '1.1.0',
+        'buildNumber': '36',
+      },
+    );
     // Il GPS finto: acceso e con il permesso, ma senza posizioni.
     for (final c in const [
       'flutter.baseflow.com/geolocator_android',
@@ -311,6 +320,8 @@ void main() {
         await _foto(t, nome, '09_profilo_giu');
         await _scorri(t);
         await _foto(t, nome, '10_profilo_fondo');
+        await _scorri(t);
+        await _foto(t, nome, '10_profilo_versione');
 
         // L'avviso di una versione nuova (release finta).
         unawaited(

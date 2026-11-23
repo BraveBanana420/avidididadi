@@ -97,8 +97,8 @@ jobs:
 
       - name: APK di rilascio
         run: |
-          flutter build apk --release --split-per-abi \
-            --dart-define=COMMIT=${GITHUB_SHA::7}
+          # Senza COMMIT: nel Profilo solo "versione 1.1.0", niente "prova".
+          flutter build apk --release --split-per-abi
 
       - name: Nomi dei file, firma e checksum
         env:

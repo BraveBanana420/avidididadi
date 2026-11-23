@@ -668,6 +668,7 @@
   "tipiSeduta": "Session types",
   "prova": " · test {p0}",
   "avidididadiVersione": "Avidididadi · version {p0} ({p1}){p2}",
+  "avidididadiVersioneBreve": "Avidididadi · version {p0}",
   "tuaArrampicata": "Your climbing",
   "palestra": "Gym",
   "falesiaOZona": "Crag or area",
@@ -2042,7 +2043,7 @@
   "aggiornamentoImpronta": "The downloaded file doesn't match the published one: it wasn't installed.",
   "aggiornamentoErrore": "Update failed. You can download the APK from the Releases page on GitHub.",
   "aggiornamentoAnnullato": "Update cancelled.",
-  "haiUltimaVersione": "You already have the latest version.",
+  "haiUltimaVersione": "You already have the latest version ({p0}).",
   "githubNonRisponde": "GitHub isn't responding: try again later.",
   "aggiornamentiPrivacy": "Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone's IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates."
 }

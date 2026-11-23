@@ -2451,6 +2451,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String avidididadiVersioneBreve(Object p0) {
+    return 'Avidididadi · version $p0';
+  }
+
+  @override
   String get tuaArrampicata => 'Your climbing';
 
   @override
@@ -7421,7 +7426,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aggiornamentoAnnullato => 'Update cancelled.';
 
   @override
-  String get haiUltimaVersione => 'You already have the latest version.';
+  String haiUltimaVersione(Object p0) {
+    return 'You already have the latest version ($p0).';
+  }
 
   @override
   String get githubNonRisponde => 'GitHub isn\'t responding: try again later.';
