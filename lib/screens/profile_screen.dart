@@ -1,3 +1,6 @@
+import '../aggiornamento.dart';
+import 'aggiornamento_dialog.dart';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -429,6 +432,21 @@ class ProfileScreen extends StatelessWidget {
                       l10n.orologioAppBackupDei,
                       DatiCollegamentiScreen(state: state),
                       chiave: ChiaviTour.collegamenti,
+                    ),
+                    // Tocco sulla riga: cerca subito; interruttore: controllo
+                    // all'apertura acceso o spento.
+                    ValueListenableBuilder<bool>(
+                      valueListenable: aggiornamentiAttivi,
+                      builder: (context, attivi, _) => RigaPulse(
+                        segno: const IconaQuadrata(Icons.system_update_rounded),
+                        titolo: l10n.aggiornamentiApp,
+                        sottotitolo: l10n.aggiornamentiAppSotto,
+                        onTap: () => cercaAggiornamentoOra(context),
+                        fine: Switch(
+                          value: attivi,
+                          onChanged: impostaAggiornamenti,
+                        ),
+                      ),
                     ),
                     // Il giro guidato, vicino agli altri aiuti.
                     RigaPulse(

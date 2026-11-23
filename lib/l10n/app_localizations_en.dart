@@ -5028,7 +5028,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get healthConnectLetturaDei =>
-      'Health Connect (reading the data listed above), precise location (only during running, walking and cycling), nearby devices (only for the heart rate sensor), physical activity (only for steps while running and walking), internet (maps, images, assistant), notifications (only the one for the workout in progress, with time and data, visible even on the lock screen). You can deny each of these permissions: the app keeps working without the part that needs it.';
+      'Health Connect (reading the data listed above), precise location (only during running, walking and cycling), nearby devices (only for the heart rate sensor), physical activity (only for steps while running and walking), internet (maps, images, assistant, updates), install apps (only for app updates, which you confirm each time), notifications (only the one for the workout in progress, with time and data, visible even on the lock screen). You can deny each of these permissions: the app keeps working without the part that needs it.';
 
   @override
   String get comeRevocareOCancellare => 'How to revoke or delete';
@@ -5074,7 +5074,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get alcuneFunzioniUsanoServizi =>
-      'Some features use other parties\' services: Health Connect and the apps that write to it (e.g. Garmin Connect), OpenFreeMap and OpenStreetMap for maps, GitHub for exercise images and, if you turn it on, the artificial intelligence service you choose. These services have their own terms and may change or be unavailable. The API key and the costs of the artificial intelligence service are your responsibility.';
+      'Some features use other parties\' services: Health Connect and the apps that write to it (e.g. Garmin Connect), OpenFreeMap and OpenStreetMap for maps, GitHub for exercise images and app updates and, if you turn it on, the artificial intelligence service you choose. These services have their own terms and may change or be unavailable. The API key and the costs of the artificial intelligence service are your responsibility.';
 
   @override
   String get tuoiDati => 'Your data';
@@ -7205,4 +7205,228 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tsNonRiuscito => 'I couldn\'t add it to the calendar.';
+
+  @override
+  String get webhookTitolo => 'Webhook';
+
+  @override
+  String get webhookSottotitolo =>
+      'Send your workouts to a web address of your own (Home Assistant, n8n, Node-RED…)';
+
+  @override
+  String get webhookSpiegazione =>
+      'Every time you finish a workout, your plan changes or you set a new record, the app sends a message to the address you choose, so the data reaches your own dashboards. No server of ours: the address is yours.';
+
+  @override
+  String get webhookAttivo => 'Send data to the webhook';
+
+  @override
+  String get webhookSpento => 'Off: nothing is sent.';
+
+  @override
+  String get webhookAcceso => 'On';
+
+  @override
+  String get webhookIndirizzo => 'Address (URL)';
+
+  @override
+  String get webhookUrlNonValido =>
+      'Enter a full address starting with https://';
+
+  @override
+  String get webhookChiave => 'Secret key (optional)';
+
+  @override
+  String get webhookChiaveAiuto =>
+      'With a key every message is signed, so the receiver can check it really comes from your app.';
+
+  @override
+  String get webhookGenera => 'Generate';
+
+  @override
+  String get webhookCopia => 'Copy the key';
+
+  @override
+  String get webhookChiaveCopiata => 'Key copied';
+
+  @override
+  String get webhookMostraChiave => 'Show or hide the key';
+
+  @override
+  String get webhookSalva => 'Save';
+
+  @override
+  String get webhookSalvato => 'Webhook saved';
+
+  @override
+  String get webhookPrimaUrl => 'First enter and save an https:// address';
+
+  @override
+  String get webhookCosaInviare => 'What to send';
+
+  @override
+  String get webhookEventoAllenamento => 'Workout completed';
+
+  @override
+  String get webhookEventoAllenamentoSotto =>
+      'Date, sport, duration, distance, heart rate, power, exercises, sets and weights';
+
+  @override
+  String get webhookEventoPiano => 'Plan updated';
+
+  @override
+  String get webhookEventoPianoSotto =>
+      'Your planned sessions, when they change';
+
+  @override
+  String get webhookEventoRecord => 'New record';
+
+  @override
+  String get webhookEventoRecordSotto =>
+      'More kg in an exercise or your longest distance in a sport';
+
+  @override
+  String get webhookQualiAllenamenti => 'Which workouts';
+
+  @override
+  String get webhookSoloApp => 'Only those recorded with the app';
+
+  @override
+  String get webhookTutti => 'Imported ones too';
+
+  @override
+  String get webhookTuttiSotto =>
+      'From Health Connect, intervals.icu and CSV, including those already saved';
+
+  @override
+  String get webhookSceltaTitolo => 'Which workouts should be sent?';
+
+  @override
+  String webhookSceltaTesto(Object p0) {
+    return 'You can send only the workouts you record with the app, or also those coming from Health Connect, intervals.icu and CSV files. With the second choice the ones already saved are sent too (right now $p0): they can be hundreds, and the first sync may take a while. They go out one at a time, even with the app closed.';
+  }
+
+  @override
+  String get webhookInviaTest => 'Send test';
+
+  @override
+  String webhookTestOk(Object p0) {
+    return 'Test succeeded: HTTP response $p0';
+  }
+
+  @override
+  String webhookTestErrore(Object p0) {
+    return 'Test failed: $p0';
+  }
+
+  @override
+  String webhookCodiceHttp(Object p0) {
+    return 'HTTP response $p0';
+  }
+
+  @override
+  String get webhookErroreTimeout => 'no response within 10 seconds';
+
+  @override
+  String get webhookErroreRete => 'network unreachable';
+
+  @override
+  String get webhookErroreAltro => 'connection failed (certificate or address)';
+
+  @override
+  String get webhookErroreScaduto => 'message too old, discarded';
+
+  @override
+  String get webhookStato => 'Status';
+
+  @override
+  String webhookUltimoOk(Object p0, Object p1, Object p2) {
+    return 'Last successful send: $p0 at $p1:$p2';
+  }
+
+  @override
+  String get webhookMaiInviato => 'No successful send yet';
+
+  @override
+  String webhookUltimoErrore(Object p0, Object p1, Object p2, Object p3) {
+    return 'Last error: $p0 at $p1:$p2, $p3';
+  }
+
+  @override
+  String webhookInCoda(Object p0) {
+    return 'Queued messages: $p0';
+  }
+
+  @override
+  String webhookScartati(Object p0) {
+    return 'Discarded messages: $p0';
+  }
+
+  @override
+  String get webhookComeFunziona => 'How it works';
+
+  @override
+  String get webhookComeFunzionaTesto =>
+      'Each message is a POST request with a JSON body. If it does not arrive (no network, server down) it stays in a queue and the app retries after 1, 5 and 15 minutes, then every hour, even with the app closed as soon as the network is back: at most 10 times or 7 days. 4xx errors (wrong address or key) are not retried. Format and examples in docs/WEBHOOK.md, in the app\'s GitHub repository.';
+
+  @override
+  String get webhookFacoltativo => 'Webhook (optional)';
+
+  @override
+  String get webhookPrivacy =>
+      'Only if you turn on the webhook and enter an https address, the app sends to that address, chosen and run by you, the data of the events you tick: completed workouts (date, times, sport, name, duration, distance, heart rate, power, cadence, steps, calories, RPE, notes, exercises with sets and kg), planned sessions and records. No name, photo, body measurements or GPS routes. The address and secret key stay encrypted on the phone and are not in the backup. The receiver is the service you chose, with its own privacy terms. Turning it off stops all sending and empties the queue.';
+
+  @override
+  String get aggiornamentiApp => 'App updates';
+
+  @override
+  String get aggiornamentiAppSotto =>
+      'Checks GitHub once a day. Tap to check now';
+
+  @override
+  String nuovaVersione(Object p0) {
+    return 'Version $p0 is out';
+  }
+
+  @override
+  String get aggiornamentoSpiegazione =>
+      'It installs over the app you have: your data and settings stay. Android will ask you to confirm.';
+
+  @override
+  String get novitaVersione => 'What\'s new';
+
+  @override
+  String get aggiornaApp => 'Update';
+
+  @override
+  String get scaricoAggiornamento => 'Downloading the update…';
+
+  @override
+  String get aggiornamentoPermesso =>
+      'Without permission to install apps the update can\'t start. You can allow it the next time you tap Update.';
+
+  @override
+  String get aggiornamentoRete =>
+      'Download failed: check your connection and try again.';
+
+  @override
+  String get aggiornamentoImpronta =>
+      'The downloaded file doesn\'t match the published one: it wasn\'t installed.';
+
+  @override
+  String get aggiornamentoErrore =>
+      'Update failed. You can download the APK from the Releases page on GitHub.';
+
+  @override
+  String get aggiornamentoAnnullato => 'Update cancelled.';
+
+  @override
+  String get haiUltimaVersione => 'You already have the latest version.';
+
+  @override
+  String get githubNonRisponde => 'GitHub isn\'t responding: try again later.';
+
+  @override
+  String get aggiornamentiPrivacy =>
+      'Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone\'s IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates.';
 }

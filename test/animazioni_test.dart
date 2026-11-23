@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:allenamenti_app/animazioni_esercizi.dart';
@@ -28,6 +29,52 @@ void main() {
       expect(String.fromCharCodes(dati.sublist(8, 12)), 'WEBP');
       // Il blocco ANIM c'è solo nei WebP animati.
       expect(String.fromCharCodes(dati).contains('ANIM'), isTrue, reason: file);
+    }
+  });
+
+  test('lo squat a corpo libero ha la sua animazione', () {
+    expect(
+      animazioneDi('Bodyweight_Squat'),
+      '${cartellaAnimazioni}bodyweight_squat.webp',
+    );
+  });
+
+  test('ogni animazione rispetta il suo limite di peso', () {
+    // 300 KB a corpo libero, 400 KB con attrezzi o macchine (più dettagli).
+    final esercizi = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).cast<Map<String, dynamic>>();
+    for (final MapEntry(:key, :value) in animazioniEsercizi.entries) {
+      final e = esercizi.firstWhere((x) => x['id'] == key);
+      final conAttrezzi = (e['attrezzi'] as List).isNotEmpty;
+      final byte = File('$cartellaAnimazioni$value').lengthSync();
+      expect(
+        byte,
+        lessThanOrEqualTo((conAttrezzi ? 400 : 300) * 1024),
+        reason: value,
+      );
+    }
+  });
+
+  test('ogni animazione è di un esercizio del catalogo', () {
+    final ids = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).map((e) => e['id']).toSet();
+    for (final id in animazioniEsercizi.keys) {
+      expect(ids, contains(id));
+    }
+  });
+
+  test('ogni animazione ha il video originale e la sua fonte', () {
+    final fonti = File('docs/animazioni/FONTI.md').readAsStringSync();
+    for (final file in animazioniEsercizi.values) {
+      final nome = file.replaceAll('.webp', '');
+      expect(
+        File('docs/animazioni/originali/$nome.mp4').existsSync(),
+        isTrue,
+        reason: file,
+      );
+      expect(fonti, contains('`$file`'), reason: file);
     }
   });
 

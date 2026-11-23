@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:health/health.dart';
 
+import 'aggiornamento.dart';
 import 'dettagli_sessione.dart';
 import 'notifica_allenamento.dart';
 import 'percorso.dart';
@@ -365,6 +366,9 @@ class HealthConnectService {
       if (call.method == 'apriPrivacy') apri();
       if (call.method == 'avviaDaWidget') avviaDaWidget?.call();
       if (call.method == 'pausaDaNotifica') pausaDaNotifica?.call();
+      if (call.method == 'esitoAggiornamento' && call.arguments is String) {
+        esitoAggiornamento?.call(call.arguments as String);
+      }
       if (call.method == 'testoCondiviso' && call.arguments is String) {
         testoCondiviso?.call(call.arguments as String);
       }

@@ -5070,7 +5070,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get healthConnectLetturaDei =>
-      'Health Connect (ανάγνωση των δεδομένων που αναφέρονται παραπάνω), ακριβής τοποθεσία (μόνο κατά το τρέξιμο, το περπάτημα και το ποδήλατο), συσκευές κοντά (μόνο για τον αισθητήρα παλμών), σωματική δραστηριότητα (μόνο για τα βήματα σε τρέξιμο και περπάτημα), internet (χάρτες, εικόνες, βοηθός), ειδοποιήσεις (μόνο αυτή της τρέχουσας προπόνησης, με χρόνο και δεδομένα, ορατή και στην οθόνη κλειδώματος). Μπορείς να αρνηθείς καθεμία από αυτές τις άδειες: η εφαρμογή συνεχίζει να λειτουργεί χωρίς το μέρος που τη χρειάζεται.';
+      'Health Connect (ανάγνωση των δεδομένων που αναφέρονται παραπάνω), ακριβής τοποθεσία (μόνο κατά το τρέξιμο, το περπάτημα και το ποδήλατο), συσκευές κοντά (μόνο για τον αισθητήρα παλμών), σωματική δραστηριότητα (μόνο για τα βήματα σε τρέξιμο και περπάτημα), internet (χάρτες, εικόνες, βοηθός, ενημερώσεις), εγκατάσταση εφαρμογών (μόνο για τις ενημερώσεις της εφαρμογής, που επιβεβαιώνεις κάθε φορά), ειδοποιήσεις (μόνο αυτή της τρέχουσας προπόνησης, με χρόνο και δεδομένα, ορατή και στην οθόνη κλειδώματος). Μπορείς να αρνηθείς καθεμία από αυτές τις άδειες: η εφαρμογή συνεχίζει να λειτουργεί χωρίς το μέρος που τη χρειάζεται.';
 
   @override
   String get comeRevocareOCancellare => 'Πώς να ανακαλέσεις ή να διαγράψεις';
@@ -5116,7 +5116,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get alcuneFunzioniUsanoServizi =>
-      'Κάποιες λειτουργίες χρησιμοποιούν υπηρεσίες άλλων: το Health Connect και τις εφαρμογές που γράφουν σε αυτό (π.χ. Garmin Connect), το OpenFreeMap και το OpenStreetMap για τους χάρτες, το GitHub για τις εικόνες των ασκήσεων και, αν το ενεργοποιήσεις, την υπηρεσία τεχνητής νοημοσύνης που διαλέγεις. Αυτές οι υπηρεσίες έχουν τους δικούς τους όρους και μπορεί να αλλάξουν ή να μην είναι διαθέσιμες. Το κλειδί API και τα κόστη της υπηρεσίας τεχνητής νοημοσύνης είναι δική σου ευθύνη.';
+      'Κάποιες λειτουργίες χρησιμοποιούν υπηρεσίες άλλων: το Health Connect και τις εφαρμογές που γράφουν σε αυτό (π.χ. Garmin Connect), το OpenFreeMap και το OpenStreetMap για τους χάρτες, το GitHub για τις εικόνες των ασκήσεων και τις ενημερώσεις της εφαρμογής και, αν το ενεργοποιήσεις, την υπηρεσία τεχνητής νοημοσύνης που διαλέγεις. Αυτές οι υπηρεσίες έχουν τους δικούς τους όρους και μπορεί να αλλάξουν ή να μην είναι διαθέσιμες. Το κλειδί API και τα κόστη της υπηρεσίας τεχνητής νοημοσύνης είναι δική σου ευθύνη.';
 
   @override
   String get tuoiDati => 'Τα δεδομένα σου';
@@ -7263,4 +7263,230 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get tsNonRiuscito => 'Δεν κατάφερα να το προσθέσω στο ημερολόγιο.';
+
+  @override
+  String get webhookTitolo => 'Webhook';
+
+  @override
+  String get webhookSottotitolo =>
+      'Στείλε τις προπονήσεις σου σε μια δική σου διεύθυνση web (Home Assistant, n8n, Node-RED…)';
+
+  @override
+  String get webhookSpiegazione =>
+      'Κάθε φορά που τελειώνεις μια προπόνηση, αλλάζει το πρόγραμμά σου ή κάνεις νέο ρεκόρ, η εφαρμογή στέλνει ένα μήνυμα στη διεύθυνση που επιλέγεις, ώστε τα δεδομένα να φτάνουν στους δικούς σου πίνακες. Κανένας δικός μας διακομιστής: η διεύθυνση είναι δική σου.';
+
+  @override
+  String get webhookAttivo => 'Αποστολή δεδομένων στο webhook';
+
+  @override
+  String get webhookSpento => 'Ανενεργό: δεν στέλνεται τίποτα.';
+
+  @override
+  String get webhookAcceso => 'Ενεργό';
+
+  @override
+  String get webhookIndirizzo => 'Διεύθυνση (URL)';
+
+  @override
+  String get webhookUrlNonValido =>
+      'Γράψε μια πλήρη διεύθυνση που ξεκινά με https://';
+
+  @override
+  String get webhookChiave => 'Μυστικό κλειδί (προαιρετικό)';
+
+  @override
+  String get webhookChiaveAiuto =>
+      'Με το κλειδί κάθε μήνυμα έχει υπογραφή: όποιος το λαμβάνει ελέγχει ότι έρχεται πράγματι από την εφαρμογή σου.';
+
+  @override
+  String get webhookGenera => 'Δημιουργία';
+
+  @override
+  String get webhookCopia => 'Αντιγραφή κλειδιού';
+
+  @override
+  String get webhookChiaveCopiata => 'Το κλειδί αντιγράφηκε';
+
+  @override
+  String get webhookMostraChiave => 'Εμφάνιση ή απόκρυψη του κλειδιού';
+
+  @override
+  String get webhookSalva => 'Αποθήκευση';
+
+  @override
+  String get webhookSalvato => 'Το webhook αποθηκεύτηκε';
+
+  @override
+  String get webhookPrimaUrl =>
+      'Πρώτα γράψε και αποθήκευσε μια διεύθυνση https://';
+
+  @override
+  String get webhookCosaInviare => 'Τι να στέλνεται';
+
+  @override
+  String get webhookEventoAllenamento => 'Ολοκληρωμένη προπόνηση';
+
+  @override
+  String get webhookEventoAllenamentoSotto =>
+      'Ημερομηνία, άθλημα, διάρκεια, απόσταση, παλμοί, watt, ασκήσεις, σετ και βάρη';
+
+  @override
+  String get webhookEventoPiano => 'Ενημερωμένο πρόγραμμα';
+
+  @override
+  String get webhookEventoPianoSotto =>
+      'Οι προγραμματισμένες προπονήσεις, όταν αλλάζουν';
+
+  @override
+  String get webhookEventoRecord => 'Νέο ρεκόρ';
+
+  @override
+  String get webhookEventoRecordSotto =>
+      'Περισσότερα κιλά σε μια άσκηση ή η μεγαλύτερη απόσταση σε ένα άθλημα';
+
+  @override
+  String get webhookQualiAllenamenti => 'Ποιες προπονήσεις';
+
+  @override
+  String get webhookSoloApp => 'Μόνο όσες καταγράφονται με την εφαρμογή';
+
+  @override
+  String get webhookTutti => 'Και οι εισαγόμενες';
+
+  @override
+  String get webhookTuttiSotto =>
+      'Από Health Connect, intervals.icu και CSV, μαζί με όσες είναι ήδη αποθηκευμένες';
+
+  @override
+  String get webhookSceltaTitolo => 'Ποιες προπονήσεις να στέλνονται;';
+
+  @override
+  String webhookSceltaTesto(Object p0) {
+    return 'Μπορείς να στέλνεις μόνο όσες καταγράφεις με την εφαρμογή ή και όσες έρχονται από Health Connect, intervals.icu και αρχεία CSV. Με τη δεύτερη επιλογή στέλνονται και όσες είναι ήδη αποθηκευμένες (τώρα είναι $p0): μπορεί να είναι εκατοντάδες και η πρώτη αποστολή μπορεί να πάρει λίγη ώρα. Φεύγουν μία μία, ακόμη και με την εφαρμογή κλειστή.';
+  }
+
+  @override
+  String get webhookInviaTest => 'Δοκιμαστική αποστολή';
+
+  @override
+  String webhookTestOk(Object p0) {
+    return 'Η δοκιμή πέτυχε: απάντηση HTTP $p0';
+  }
+
+  @override
+  String webhookTestErrore(Object p0) {
+    return 'Η δοκιμή απέτυχε: $p0';
+  }
+
+  @override
+  String webhookCodiceHttp(Object p0) {
+    return 'απάντηση HTTP $p0';
+  }
+
+  @override
+  String get webhookErroreTimeout => 'καμία απάντηση μέσα σε 10 δευτερόλεπτα';
+
+  @override
+  String get webhookErroreRete => 'το δίκτυο δεν είναι διαθέσιμο';
+
+  @override
+  String get webhookErroreAltro =>
+      'η σύνδεση απέτυχε (πιστοποιητικό ή διεύθυνση)';
+
+  @override
+  String get webhookErroreScaduto => 'πολύ παλιό μήνυμα, απορρίφθηκε';
+
+  @override
+  String get webhookStato => 'Κατάσταση';
+
+  @override
+  String webhookUltimoOk(Object p0, Object p1, Object p2) {
+    return 'Τελευταία επιτυχής αποστολή: $p0 στις $p1:$p2';
+  }
+
+  @override
+  String get webhookMaiInviato => 'Καμία επιτυχής αποστολή ακόμη';
+
+  @override
+  String webhookUltimoErrore(Object p0, Object p1, Object p2, Object p3) {
+    return 'Τελευταίο σφάλμα: $p0 στις $p1:$p2, $p3';
+  }
+
+  @override
+  String webhookInCoda(Object p0) {
+    return 'Μηνύματα σε αναμονή: $p0';
+  }
+
+  @override
+  String webhookScartati(Object p0) {
+    return 'Μηνύματα που απορρίφθηκαν: $p0';
+  }
+
+  @override
+  String get webhookComeFunziona => 'Πώς λειτουργεί';
+
+  @override
+  String get webhookComeFunzionaTesto =>
+      'Κάθε μήνυμα είναι ένα αίτημα POST με JSON. Αν δεν φτάσει (χωρίς δίκτυο, διακομιστής κλειστός) μένει σε ουρά και η εφαρμογή ξαναδοκιμάζει μετά από 1, 5 και 15 λεπτά, μετά κάθε ώρα, ακόμη και με την εφαρμογή κλειστή μόλις επιστρέψει το δίκτυο: το πολύ 10 φορές ή 7 ημέρες. Τα σφάλματα 4xx (λάθος διεύθυνση ή κλειδί) δεν ξαναδοκιμάζονται. Μορφή και παραδείγματα στο docs/WEBHOOK.md, στο αποθετήριο της εφαρμογής στο GitHub.';
+
+  @override
+  String get webhookFacoltativo => 'Webhook (προαιρετικό)';
+
+  @override
+  String get webhookPrivacy =>
+      'Μόνο αν ενεργοποιήσεις το webhook και γράψεις μια διεύθυνση https, η εφαρμογή στέλνει σε αυτή τη διεύθυνση, που επιλέγεις και διαχειρίζεσαι εσύ, τα δεδομένα των γεγονότων που τσεκάρεις: ολοκληρωμένες προπονήσεις (ημερομηνία, ώρες, άθλημα, όνομα, διάρκεια, απόσταση, παλμοί, watt, ρυθμός πεταλιάς, βήματα, θερμίδες, RPE, σημειώσεις, ασκήσεις με σετ και κιλά), προγραμματισμένες προπονήσεις και ρεκόρ. Όχι όνομα, φωτογραφία, σωματικές μετρήσεις ή διαδρομές GPS. Η διεύθυνση και το μυστικό κλειδί μένουν κρυπτογραφημένα στο τηλέφωνο και δεν μπαίνουν στο αντίγραφο ασφαλείας. Τα δεδομένα τα λαμβάνει η υπηρεσία που επέλεξες εσύ, με τους δικούς της όρους απορρήτου. Αν το απενεργοποιήσεις, δεν στέλνεται πια τίποτα και η ουρά αδειάζει.';
+
+  @override
+  String get aggiornamentiApp => 'Ενημερώσεις εφαρμογής';
+
+  @override
+  String get aggiornamentiAppSotto =>
+      'Έλεγχος στο GitHub μία φορά τη μέρα. Πάτα για έλεγχο τώρα';
+
+  @override
+  String nuovaVersione(Object p0) {
+    return 'Κυκλοφόρησε η έκδοση $p0';
+  }
+
+  @override
+  String get aggiornamentoSpiegazione =>
+      'Εγκαθίσταται πάνω από την εφαρμογή που έχεις: τα δεδομένα και οι ρυθμίσεις μένουν. Το Android θα σου ζητήσει επιβεβαίωση.';
+
+  @override
+  String get novitaVersione => 'Τι νέο υπάρχει';
+
+  @override
+  String get aggiornaApp => 'Ενημέρωση';
+
+  @override
+  String get scaricoAggiornamento => 'Λήψη της ενημέρωσης…';
+
+  @override
+  String get aggiornamentoPermesso =>
+      'Χωρίς την άδεια εγκατάστασης εφαρμογών η ενημέρωση δεν μπορεί να ξεκινήσει. Μπορείς να τη δώσεις την επόμενη φορά που θα πατήσεις Ενημέρωση.';
+
+  @override
+  String get aggiornamentoRete =>
+      'Η λήψη απέτυχε: έλεγξε τη σύνδεση και δοκίμασε ξανά.';
+
+  @override
+  String get aggiornamentoImpronta =>
+      'Το αρχείο που κατέβηκε δεν ταιριάζει με αυτό που δημοσιεύτηκε: δεν εγκαταστάθηκε.';
+
+  @override
+  String get aggiornamentoErrore =>
+      'Η ενημέρωση απέτυχε. Μπορείς να κατεβάσεις το APK από τη σελίδα Releases στο GitHub.';
+
+  @override
+  String get aggiornamentoAnnullato => 'Η ενημέρωση ακυρώθηκε.';
+
+  @override
+  String get haiUltimaVersione => 'Έχεις ήδη την τελευταία έκδοση.';
+
+  @override
+  String get githubNonRisponde => 'Το GitHub δεν απαντά: δοκίμασε αργότερα.';
+
+  @override
+  String get aggiornamentiPrivacy =>
+      'Μία φορά τη μέρα, όταν ανοίγει, η εφαρμογή ρωτά το GitHub (api.github.com) ποια είναι η τελευταία έκδοση που δημοσιεύτηκε. Αν πατήσεις Ενημέρωση, κατεβάζει το APK από το GitHub στην προσωρινή της μνήμη, ελέγχει ότι είναι ίδιο με αυτό που δημοσιεύτηκε, το δίνει στο πρόγραμμα εγκατάστασης του Android και το διαγράφει: στο τηλέφωνο δεν μένουν αρχεία. Το GitHub λαμβάνει τη διεύθυνση IP του τηλεφώνου και την έκδοση που ζητήθηκε, τίποτα άλλο. Μπορείς να απενεργοποιήσεις τον έλεγχο από το Προφίλ, στο Ενημερώσεις εφαρμογής.';
 }

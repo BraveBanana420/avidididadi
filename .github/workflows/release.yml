@@ -116,15 +116,28 @@ jobs:
       - name: Note di rilascio dal CHANGELOG
         env:
           VERSIONE: ${{ steps.versione.outputs.numero }}
+        # Italiano, poi inglese e greco: ognuno dopo un segno <!-- lingua:xx -->
+        # (su GitHub non si vede) che l'app usa per mostrare le novità nella
+        # lingua di chi la usa (lib/aggiornamento.dart, novitaDa).
         run: |
-          awk -v v="## $VERSIONE" '
-            $0 == v { dentro = 1; next }
-            dentro && /^## / { exit }
-            dentro { print }
-          ' CHANGELOG.md > note.md
+          sezione() {
+            awk -v v="## $VERSIONE" '
+              $0 == v { dentro = 1; next }
+              dentro && /^## / { exit }
+              dentro { print }
+            ' "$1"
+          }
+          sezione CHANGELOG.md > note.md
           if [ ! -s note.md ]; then
             echo "Versione $VERSIONE." > note.md
           fi
+          for l in "en English" "el Ελληνικά"; do
+            codice=${l%% *}
+            testo=$(sezione "CHANGELOG.$codice.md")
+            if [ -n "$(echo "$testo" | tr -d '[:space:]')" ]; then
+              printf '\n<!-- lingua:%s -->\n### %s\n%s\n' "$codice" "${l#* }" "$testo" >> note.md
+            fi
+          done
           {
             echo
             echo "Install \`Avidididadi-$VERSIONE-arm64-v8a.apk\` on almost every recent phone (\`armeabi-v7a\` for older 32-bit ones)."

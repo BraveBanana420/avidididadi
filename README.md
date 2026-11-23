@@ -46,6 +46,10 @@ The app is available in Italian, English and Greek.
 - **intervals.icu** (optional, your API key): complete activities from Garmin,
   Polar, Suunto…, and your planned sessions sent to your intervals.icu
   calendar (and from there to your watch).
+- **Webhook** (optional, off by default): workouts, plan changes and new
+  records sent as signed JSON to an https address of yours (Home Assistant,
+  n8n, Node-RED, Make, Zapier…), with an offline retry queue. See
+  [docs/WEBHOOK.md](docs/WEBHOOK.md).
 - **Maps**: MapLibre + OpenFreeMap, themed; GPX import; offline area around a
   route.
 - **Coach** (optional): Claude, GPT or Gemini with your API key, Ollama on your
@@ -68,7 +72,9 @@ and paste `https://github.com/BraveBanana420/avidididadi`), then pick the `arm64
    recent phone). Older 32-bit phones: `armeabi-v7a`.
 2. Open the file and allow installing apps from your browser or file manager
    when Android asks.
-3. Updates: install the new APK over the old one. Your data stays. All
+3. Updates: when a new version is out, the app tells you once a day and
+   installs it with one tap (Profile → App updates; you can turn it off).
+   Or install the new APK over the old one. Your data stays. All
    releases are signed with the same key: an APK built by someone else (or a
    debug build) can't be installed over it.
 
@@ -151,6 +157,9 @@ photo; API keys are never included.
 - API keys (assistant, intervals.icu) are stored only in Android's encrypted
   storage, never in CSV files, backups or logs.
 - The assistant never receives your name, photo or GPS routes.
+- The webhook sends only to the https address you enter, never your name,
+  photo, body measurements or GPS routes; its address and secret key stay in
+  the encrypted storage, outside backups.
 - Full policy inside the app: Profile → Privacy.
 
 ## Roadmap
@@ -183,7 +192,7 @@ in the app). Thank you! 💪
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
 
 Third-party content: Manrope and Space Grotesk fonts (SIL Open Font License,
-`assets/fonts`); exercises, images and English instructions from
+`assets/fonts`); exercises and images from
 [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (Unlicense);
 maps © OpenStreetMap contributors, tiles by OpenFreeMap; satellite imagery ©
 Esri.

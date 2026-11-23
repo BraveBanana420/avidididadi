@@ -7,10 +7,12 @@
 //   flutter test tool/schermate/schermate_test.dart --dart-define=LINGUA=en
 // (immagini in build/schermate_en/<tema>/). Non è un test vero: sta
 // fuori da test/ per non rallentare `flutter test`.
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:allenamenti_app/aggiornamento.dart';
 import 'package:allenamenti_app/app_state.dart';
 import 'package:allenamenti_app/attivita_libera.dart';
 import 'package:allenamenti_app/avvisi.dart';
@@ -21,6 +23,7 @@ import 'package:allenamenti_app/main.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/profilo.dart';
 import 'package:allenamenti_app/recupero.dart';
+import 'package:allenamenti_app/screens/aggiornamento_dialog.dart';
 import 'package:allenamenti_app/screens/esecuzione_screen.dart';
 import 'package:allenamenti_app/screens/privacy_screen.dart';
 import 'package:allenamenti_app/screens/tour.dart';
@@ -308,6 +311,27 @@ void main() {
         await _foto(t, nome, '09_profilo_giu');
         await _scorri(t);
         await _foto(t, nome, '10_profilo_fondo');
+
+        // L'avviso di una versione nuova (release finta).
+        unawaited(
+          proponiAggiornamento(
+            t.element(find.byKey(ChiaviTour.voci[3])),
+            Rilascio(
+              versione: '1.1.0',
+              novita: const [
+                'Aggiornamenti dall\'app: avviso, download e installazione senza Obtainium.',
+                'Esercizi: istruzioni in inglese tradotte dall\'italiano, solo unità metriche.',
+              ],
+              nomeApk: 'Avidididadi-1.1.0-arm64-v8a.apk',
+              apk: Uri.parse('https://github.com/x/y.apk'),
+              somme: Uri.parse('https://github.com/x/SHA256SUMS.txt'),
+            ),
+          ),
+        );
+        await _assesta(t);
+        await _foto(t, nome, '20_aggiornamento');
+        t.state<NavigatorState>(find.byType(Navigator).first).pop();
+        await _assesta(t);
 
         // Le pagine interne: si aprono toccando le righe, come sul telefono.
         await _apri(t, nome, 3, find.text('Esercizi'), '11_esercizi');

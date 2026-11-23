@@ -662,23 +662,18 @@ def muscoli(lista):
     return out
 
 
-# Istruzioni in inglese scritte a mano dove free-exercise-db non le ha.
-A_MANO = {
-    'Side_Bridge': [
-        'On your side, resting on your forearm with the elbow under the shoulder.',
-        'Lift your hips until your body is straight from head to feet.',
-        'Hold the position, then switch sides.',
-    ],
-    'One-Arm_Kettlebell_Swings': [
-        'Kettlebell between your feet, feet a little wider than your shoulders.',
-        'Push your hips back, bring the kettlebell between your legs, then extend your hips forcefully.',
-        'The kettlebell rises to chest height thanks to the drive of the hips, not the arms.',
-    ],
-}
+# Traduzioni già nel catalogo (nome greco, istruzioni in inglese e greco):
+# sono scritte a partire dall'italiano, con le stesse frasi e unità metriche,
+# e il generatore le conserva. Per un esercizio nuovo vanno aggiunte a mano.
+TRADOTTI = ('nome_el', 'istruzioni_en', 'istruzioni_el')
 
 
 def main():
     db = {e['id']: e for e in json.load(open(sys.argv[1], encoding='utf-8'))}
+    try:
+        prima = {e['id']: e for e in json.load(open('assets/esercizi.json', encoding='utf-8'))}
+    except FileNotFoundError:
+        prima = {}
     out = []
     visti = set()
     for id_, nome, attrezzi, schema, istruzioni in E:
@@ -691,6 +686,7 @@ def main():
             'id': id_,
             'nome': nome,
             'nome_en': e['name'],
+            'nome_el': prima.get(id_, {}).get('nome_el', ''),
             'tipo': 'mobilita' if schema in MOBILITA else 'forza',
             'schema': schema,
             'livello': LIVELLI[e['level']],
@@ -698,11 +694,13 @@ def main():
             'muscoli': primari,
             'muscoli_secondari': [m for m in muscoli(e['secondaryMuscles']) if m not in primari],
             'istruzioni': istruzioni,
-            # Istruzioni originali di free-exercise-db, per l'app in inglese
-            # (A_MANO dove la fonte non le ha).
-            'istruzioni_en': A_MANO.get(id_) or [x.strip() for x in e['instructions'] if x.strip()],
+            'istruzioni_en': prima.get(id_, {}).get('istruzioni_en', []),
+            'istruzioni_el': prima.get(id_, {}).get('istruzioni_el', []),
             'immagini': e['images'],
         })
+    mancanti = [o['id'] for o in out if not all(o[k] for k in TRADOTTI)]
+    if mancanti:
+        print('Da tradurre (nome greco, istruzioni in inglese e greco):', ', '.join(mancanti))
     json.dump(out, open('assets/esercizi.json', 'w', encoding='utf-8'),
               ensure_ascii=False, indent=1)
     print(len(out), 'esercizi:', sum(e['tipo'] == 'forza' for e in out), 'forza,',

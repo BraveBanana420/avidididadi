@@ -20,13 +20,17 @@ examples for the next ones.
 Use one of these two characters, **exactly as they are** (face, hair, body,
 outfit). One animation = one character. Pick the one you prefer.
 
-| Male: front | Male: side | Male: back | Male: T-pose | Female: front |
-|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
+| Male: front | Male: 3/4 | Male: side | Male: back | Male: T-pose | Female: front |
+|---|---|---|---|---|---|
+| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Male avatar, three-quarter"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
 
 Outfit: black sleeveless top (sports bra for the female avatar) with red side
 panels, black leggings with red stripes (black shorts on top for the male), black
-wrist wraps, black shoes with red details. Semi-realistic 3D cartoon style.
+wrist wraps, black shoes with red details.
+
+**Style**: a hand-drawn digital illustration, like the avatars: clean dark
+outlines, soft shading, smooth colours. **Not** a photo and **not** a realistic
+3D render: all the animations must look like the same drawing.
 
 The avatar images are provided only by the project: use them as the reference for
 your animation, but don't publish new versions or other views of the avatars.
@@ -35,11 +39,12 @@ your animation, but don't publish new versions or other views of the avatars.
 
 | | |
 |---|---|
-| **Final file** | animated WebP, **640 × 320 px** (2:1), about **15 fps**, **2–3 seconds**, infinite loop, no audio, **max 300 KB** |
+| **Final file** | animated WebP, **640 × 320 px** (2:1), **15–24 fps** (more is smoother: 24 if the size allows), **2–3 seconds**, infinite loop, no audio, **max 300 KB** (**400 KB** for exercises with equipment or machines, which have more detail) |
 | **What you send** | the WebP, or an MP4 video: we can convert it |
+| **Style** | drawn like the avatars (dark outlines, soft shading) **from the first to the last frame**. Video tools often drift towards a realistic 3D look halfway through the movement: if it happens, throw the video away and try again |
 | **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
 | **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
-| **Camera** | fixed: no zoom, no pan, no cuts. **Side view** for most exercises; **front view** when the movement is sideways (e.g. jumping jacks, lateral raises) |
+| **Camera** | fixed: no zoom, no pan, no cuts. **Three-quarter view** (body turned about 45°, like the "Male: 3/4" avatar) for most exercises: it shows depth and the side of the movement at once. **Side** or **front view** only when the movement is unclear from three-quarters (e.g. front view for jumping jacks and lateral raises, side view for some floor exercises) |
 | **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
 | **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
 | **Character** | identical to the avatar images in every frame (face, hair, body, outfit). We compare them before accepting: if something changed, try again |
@@ -65,16 +70,20 @@ result follows the rules.
 
 ### 1. Starting image (e.g. Nano Banana / Gemini)
 
-Upload the avatar images (front and side) and ask for the starting position.
+Upload the avatar images (three-quarter, front and side) and ask for the starting
+position. If the exercise starts standing, the three-quarter avatar can already be
+the starting image: widen it to 16:9 with the same background and go to step 2.
 Prompts work best in English:
 
 ```text
 Use the attached character exactly as he is: same face, hair, body and outfit
 (black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same semi-realistic
-3D cartoon style.
+red stripes, black wrist wraps, black shoes with red details), same drawing style:
+hand-drawn digital illustration with clean dark outlines and soft cel shading,
+not photorealistic, not a 3D render.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen from the <side / front>.
+instructions>), seen in the same three-quarter view as the attached image
+<or: from the side / from the front>.
 Full body visible with some margin, plain light grey background (#D9D9DB) with a
 slightly lighter floor, soft studio light. No text, no logo, no other objects
 <except: EQUIPMENT in matte black>. Wide 2:1 image.
@@ -90,8 +99,10 @@ use the same image for both: the loop will be seamless.
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, realistic body mechanics.
-The character, outfit and background stay exactly as in the image.
+<the movement in one or two lines>. Correct technique, anatomically correct movement.
+The character, outfit and background stay exactly as in the image. Keep exactly
+the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
+every frame: the character must never turn photorealistic or 3D-rendered.
 The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```
@@ -106,11 +117,11 @@ it starts, `-t` how long it lasts) and convert:
 
 ```sh
 ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=15,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
+  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
   -c:v libwebp -quality 75 -compression_level 6 -loop 0 exercise_id.webp
 ```
 
-If the file is over 300 KB, lower `-quality` (e.g. 60) or shorten `-t`. If you
+If the file is over the limit, lower `-quality` (e.g. 60), use `fps=20` or `fps=15`, or shorten `-t`. If you
 don't have ffmpeg, just send the MP4.
 
 ## License and rights (important)
@@ -130,6 +141,11 @@ don't have ffmpeg, just send the MP4.
   whether you can publish or use them commercially, and the date you made the
   animation (terms change over time). We read them before accepting the
   animation; if they don't allow it, we can't publish it, even if it's beautiful.
+- If the animation is made with AI, **send the original video too**, exactly as the
+  tool produced it, without converting it: it often carries credentials saying
+  "AI-generated", and some terms forbid removing them. We keep it in
+  [`originali/`](originali/) and record tools, date and terms in
+  [FONTI.md](FONTI.md), where the animation is marked as AI-made.
 
 ## How to send it
 

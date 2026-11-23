@@ -20,13 +20,17 @@ faranno da esempio per le successive.
 Usa uno di questi due personaggi, **esattamente com'è** (viso, capelli, corpo,
 vestiti). Un'animazione = un personaggio. Scegli quello che preferisci.
 
-| Uomo: davanti | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
-|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Avatar uomo, davanti"> | <img src="avatar/male_side.jpg" width="140" alt="Avatar uomo, lato"> | <img src="avatar/male_back.jpg" width="140" alt="Avatar uomo, dietro"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Avatar uomo, posa a T"> | <img src="avatar/female_front.jpg" width="140" alt="Avatar donna, davanti"> |
+| Uomo: davanti | Uomo: 3/4 | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
+|---|---|---|---|---|---|
+| <img src="avatar/male_front.jpg" width="140" alt="Avatar uomo, davanti"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Avatar uomo, tre quarti"> | <img src="avatar/male_side.jpg" width="140" alt="Avatar uomo, lato"> | <img src="avatar/male_back.jpg" width="140" alt="Avatar uomo, dietro"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Avatar uomo, posa a T"> | <img src="avatar/female_front.jpg" width="140" alt="Avatar donna, davanti"> |
 
 Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
 leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
-polsi, scarpe nere con dettagli rossi. Stile cartone 3D semi-realistico.
+polsi, scarpe nere con dettagli rossi.
+
+**Stile**: illustrazione digitale disegnata, come gli avatar: contorni scuri
+netti, ombre morbide, colori uniformi. **Non** una foto e **non** un 3D
+realistico: tutte le animazioni devono sembrare lo stesso disegno.
 
 Le immagini degli avatar le fornisce solo il progetto: usale come riferimento per
 la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
@@ -35,11 +39,12 @@ la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 
 | | |
 |---|---|
-| **File finale** | WebP animato, **640 × 320 px** (2:1), circa **15 fotogrammi al secondo**, **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** |
+| **File finale** | WebP animato, **640 × 320 px** (2:1), **15–24 fotogrammi al secondo** (più sono, più è fluida: 24 se il peso lo permette), **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** (**400 KB** per gli esercizi con attrezzi o macchine, che hanno più dettagli) |
 | **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
+| **Stile** | disegnato come gli avatar (contorni scuri, ombre morbide) **dal primo all'ultimo fotogramma**. Gli strumenti video tendono a passare a un 3D realistico a metà movimento: se succede, scarta il video e riprova |
 | **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
 | **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
-| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Di lato** per quasi tutti gli esercizi; **di fronte** quando il movimento è laterale (es. jumping jack, alzate laterali) |
+| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Da 3/4** (corpo girato di circa 45°, come l'avatar "Uomo: 3/4") per quasi tutti gli esercizi: si vedono insieme la profondità e il lato del movimento. **Di lato** o **di fronte** solo quando da 3/4 il movimento non si capisce bene (es. di fronte per jumping jack e alzate laterali, di lato per alcuni esercizi a terra) |
 | **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
 | **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
 | **Personaggio** | uguale alle immagini degli avatar in ogni fotogramma (viso, capelli, corpo, vestiti). Li confrontiamo prima di accettarla: se qualcosa è cambiato, riprova |
@@ -66,16 +71,20 @@ così, purché il personaggio resti identico e il risultato rispetti le regole.
 
 ### 1. Immagine di partenza (es. Nano Banana / Gemini)
 
-Carica le immagini dell'avatar (davanti e lato) e chiedi la posizione di partenza.
+Carica le immagini dell'avatar (3/4, davanti e lato) e chiedi la posizione di partenza.
+Se l'esercizio parte in piedi, l'avatar da 3/4 può già essere la posizione di
+partenza: allargalo a 16:9 con lo stesso fondo e passa al punto 2.
 Le richieste funzionano meglio in inglese, quindi lasciale così:
 
 ```text
 Use the attached character exactly as he is: same face, hair, body and outfit
 (black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same semi-realistic
-3D cartoon style.
+red stripes, black wrist wraps, black shoes with red details), same drawing style:
+hand-drawn digital illustration with clean dark outlines and soft cel shading,
+not photorealistic, not a 3D render.
 Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen from the <side / front>.
+instructions>), seen in the same three-quarter view as the attached image
+<or: from the side / from the front>.
 Full body visible with some margin, plain light grey background (#D9D9DB) with a
 slightly lighter floor, soft studio light. No text, no logo, no other objects
 <except: EQUIPMENT in matte black>. Wide 2:1 image.
@@ -91,8 +100,10 @@ l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà con
 
 ```text
 The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, realistic body mechanics.
-The character, outfit and background stay exactly as in the image.
+<the movement in one or two lines>. Correct technique, anatomically correct movement.
+The character, outfit and background stay exactly as in the image. Keep exactly
+the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
+every frame: the character must never turn photorealistic or 3D-rendered.
 The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
 loops seamlessly. No text.
 ```
@@ -107,11 +118,11 @@ inizia, `-t` quanto dura) e converti:
 
 ```sh
 ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=15,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
+  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
   -c:v libwebp -quality 75 -compression_level 6 -loop 0 id_esercizio.webp
 ```
 
-Se il file supera i 300 KB abbassa `-quality` (es. 60) o accorcia `-t`. Se non hai
+Se il file supera il limite abbassa `-quality` (es. 60), usa `fps=20` o `fps=15`, oppure accorcia `-t`. Se non hai
 ffmpeg, manda direttamente l'MP4.
 
 ## Licenza e diritti (importante)
@@ -132,6 +143,11 @@ ffmpeg, manda direttamente l'MP4.
   risultati e se si possono pubblicare o usare per scopi commerciali, e la data in
   cui hai fatto l'animazione (le condizioni cambiano nel tempo). Le leggiamo prima
   di accettarla: se non lo permettono non possiamo pubblicarla, anche se è bellissima.
+- Se l'animazione è fatta con l'IA, **manda anche il video originale** così com'è
+  uscito dallo strumento, senza convertirlo: spesso contiene le credenziali che dicono
+  "generato con IA", e alcune condizioni vietano di toglierle. Lo teniamo in
+  [`originali/`](originali/) e scriviamo strumenti, data e termini in
+  [FONTI.md](FONTI.md), dove l'animazione è segnata come fatta con l'IA.
 
 ## Come mandarla
 

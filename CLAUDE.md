@@ -22,7 +22,7 @@ Le funzioni sono elencate in `README.md`.
 - `lib/screens/`: una schermata o un foglio per file (`*_screen.dart`, `*_sheet.dart`).
 - Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
 - **Testi**: italiano e inglese in `lib/l10n/app_it.arb` (modello) e `app_en.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. La voce dell'allenamento ha una lingua sua (Durante l'allenamento → Lingua della voce, in `avvisi.txt`): le frasi dette usano `l10nVoce`, non `l10n`; il greco (`app_el.arb`) ha solo le frasi della voce. Configurazione in `lib/config.dart` (URL delle donazioni).
-- `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita.
+- `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita, tradotte punto per punto in `CHANGELOG.en.md` e `CHANGELOG.el.md` (la release le pubblica tutte e tre e l'avviso di aggiornamento nell'app mostra quelle della lingua scelta; il controllo è in `test/changelog_test.dart`).
 - **Test delle soglie** in `lib/test_soglia.dart`: FTP della bici (rampa o 20 minuti), passo critico, stima dell'FTP dalle uscite (`potenze_migliori.csv`) e quando proporre un test.
 - **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
@@ -50,7 +50,7 @@ adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.
   - Attuale: `1.0.2+35` (su `main` e `staging`).
 - **Installazione a ogni aggiornamento di `staging`**: dopo il push prova sempre a installare sul telefono. Prima la stessa Wi-Fi (`adb mdns services`, poi `adb connect <ip>:<porta>`), poi Tailscale. Se non è raggiungibile, dillo e installa alla prima occasione.
 - **APK per gli amici (tester)**: è lo **stesso APK di `staging` installato sul telefono**, con la stessa versione e lo stesso nome (`Avidididadi-<versione>.apk`, niente "staging" nel nome). Copialo in `Desktop\Avidididadi-<versione>.apk` (togliendo quello vecchio) **solo quando l'utente lo chiede**.
-  - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
+  - Insieme all'APK: aggiorna `CHANGELOG.md` (novità rispetto all'ultima versione distribuita, per chi usa l'app: estremamente sintetico, una riga per punto, nessun a capo dentro le righe) e la stessa sezione tradotta in `CHANGELOG.en.md` e `CHANGELOG.el.md` e copia quella sezione sul Desktop come `Avidididadi-<versione>-novita.txt`, togliendo quello vecchio.
 - **Modifiche ai file con script**: scrivi gli script Python con lo strumento Write. Gli heredoc di bash rovinano `\'` e `\n`.
 
 ## 5. Linee guida grafiche (stile "Pulse")

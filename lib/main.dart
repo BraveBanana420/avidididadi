@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'aggiornamento.dart';
 import 'avviso.dart';
 import 'app_state.dart';
 import 'condivisione.dart';
@@ -14,6 +15,7 @@ import 'screens/esecuzione_screen.dart';
 import 'widget_home.dart';
 import 'screens/assistente_screen.dart';
 import 'screens/accettazione_screen.dart';
+import 'screens/aggiornamento_dialog.dart';
 import 'screens/benvenuto_screen.dart';
 import 'screens/privacy_screen.dart';
 import 'screens/calendar_screen.dart';
@@ -21,6 +23,7 @@ import 'screens/profile_screen.dart';
 import 'screens/progress_screen.dart';
 import 'screens/tour.dart';
 import 'tema.dart';
+import 'webhook_sfondo.dart';
 import 'l10n/lingua.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/lingua_screen.dart';
@@ -30,6 +33,11 @@ Future<void> main() async {
   await caricaTema();
   await caricaLingua();
   await caricaTour();
+  await caricaAggiornamenti();
+  // L'APK di un aggiornamento non installato non resta sul telefono.
+  unawaited(pulisciAggiornamenti());
+  // Per mandare la coda del webhook anche ad app chiusa, quando torna la rete.
+  await preparaSfondoWebhook();
   runApp(const AllenamentiApp());
 }
 
@@ -82,6 +90,8 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState stato) {
     if (stato != AppLifecycleState.resumed) return;
+    // Il webhook ritenta a ogni ritorno nell'app: leggero se la coda è vuota.
+    state.svuotaCodaWebhook();
     final ora = DateTime.now();
     if (!daRisincronizzare(_sincronizzataIl, ora)) return;
     _sincronizzataIl = ora;
@@ -114,6 +124,12 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
       avviaDaWidget: _avviaOggi,
       testoCondiviso: _daAgente,
     );
+    // L'installatore di Android ha annullato o non è riuscito.
+    esitoAggiornamento = (esito) {
+      final testo = testoEsitoInstallazione(esito);
+      if (testo == null || !mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(avviso(content: Text(testo)));
+    };
     final azione = await HealthConnectService.azioneAvvio();
     if (HealthConnectService.azioniPrivacy.contains(azione)) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _apriPrivacy());
@@ -168,6 +184,14 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
     _sincronizzataIl = DateTime.now();
     // Dopo la sincronizzazione, così il backup ha anche le sessioni nuove.
     await state.backupAutomatico();
+    // Versione nuova su GitHub: un avviso che si chiude, non al primo avvio
+    // e non sopra un'altra pagina (es. l'allenamento partito dal widget).
+    if (!state.primaVolta && mounted) {
+      final (_, nuova) = await cercaAggiornamento();
+      if (nuova != null && mounted && !Navigator.of(context).canPop()) {
+        await proponiAggiornamento(context, nuova);
+      }
+    }
   }
 
   /// Chiede se riprendere la seduta rimasta a metà.

@@ -6,8 +6,8 @@ import '../l10n/lingua.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-15.1';
-final aggiornamentoTermini = DateTime(2026, 11, 15);
+const versioneTermini = '2026-11-23.1';
+final aggiornamentoTermini = DateTime(2026, 11, 23);
 
 /// Una pagina di testo a sezioni (informativa, termini).
 class PaginaTesto extends StatelessWidget {
@@ -77,7 +77,9 @@ class PrivacyScreen extends StatelessWidget {
       (l10n.sensoriBluetoothBattitoBici, l10n.soloSeScegliTu),
       (l10n.mappe, l10n.disegnareMappaAppScarica),
       (l10n.intervalsIcuFacoltativo, l10n.seColleghiIntervalsIcu),
+      (l10n.webhookFacoltativo, l10n.webhookPrivacy),
       (l10n.immaginiDegliEsercizi, l10n.fotoDegliEserciziVengono),
+      (l10n.aggiornamentiApp, l10n.aggiornamentiPrivacy),
       (l10n.assistenteFacoltativo2, l10n.soloSeAttiviTu),
       (l10n.assistenteNellaTuaApp, l10n.seColleghiAppTuo),
       (l10n.widgetSullaSchermataHome, l10n.seAggiungiWidgetSeduta),

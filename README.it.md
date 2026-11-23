@@ -45,6 +45,11 @@ tracciamento. L'app è in italiano, inglese e greco.
 - **intervals.icu** (facoltativo, con la tua chiave API): attività complete da
   Garmin, Polar, Suunto…, e le sedute del piano nel tuo calendario di
   intervals.icu (e da lì sull'orologio).
+- **Webhook** (facoltativo, spento di default): allenamenti, piano aggiornato e
+  record nuovi mandati come JSON firmato a un tuo indirizzo https (Home
+  Assistant, n8n, Node-RED, Make, Zapier…), con una coda che ritenta senza
+  rete. Vedi [docs/WEBHOOK.md](docs/WEBHOOK.md) (riassunto in italiano in
+  fondo).
 - **Mappe**: MapLibre + OpenFreeMap con i colori del tema; import GPX; zona
   attorno al percorso anche senza rete.
 - **Coach** (facoltativo): Claude, GPT o Gemini con la tua chiave API, Ollama
@@ -69,7 +74,10 @@ qui sopra (oppure *Aggiungi app* e incolla
    recenti). Telefoni vecchi a 32 bit: `armeabi-v7a`.
 2. Apri il file e, quando Android lo chiede, consenti al browser o al gestore
    file di installare app.
-3. Aggiornamenti: installa il nuovo APK sopra il vecchio, i dati restano.
+3. Aggiornamenti: quando esce una versione nuova l'app lo dice (al massimo
+   una volta al giorno) e la installa con un tocco (Profilo → Aggiornamenti
+   dell'app, si può spegnere). Oppure installa il nuovo APK sopra il vecchio,
+   i dati restano.
    Tutte le versioni sono firmate con la stessa chiave: un APK compilato da
    altri (o di debug) non si installa sopra.
 
@@ -151,6 +159,9 @@ profilo; le chiavi API non ci sono mai.
 - Le chiavi API (assistente, intervals.icu) stanno solo nell'archivio cifrato
   di Android: mai nei CSV, nei backup o nei log.
 - All'assistente non vanno mai nome, foto o percorsi GPS.
+- Il webhook manda solo all'indirizzo https che scrivi tu, mai nome, foto,
+  misure del corpo o percorsi GPS; indirizzo e chiave segreta restano
+  nell'archivio cifrato, fuori dal backup.
 - Informativa completa nell'app: Profilo → Privacy.
 
 ## Prossimi passi
@@ -184,7 +195,7 @@ progetto). Grazie! 💪
 [GNU General Public License v3.0](LICENSE) (GPL-3.0-only).
 
 Contenuti di terzi: caratteri Manrope e Space Grotesk (SIL Open Font License,
-`assets/fonts`); esercizi, immagini e istruzioni in inglese da
+`assets/fonts`); esercizi e immagini da
 [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (Unlicense);
 mappe © contributori di OpenStreetMap, riquadri di OpenFreeMap; immagini
 satellitari © Esri.
