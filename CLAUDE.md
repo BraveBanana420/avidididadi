@@ -59,6 +59,13 @@ adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.
 - **Ogni modifica grafica va controllata nelle 4 combinazioni** (fondo chiaro o scuro × accento rosso o neon).
 - Il resto (colori, caratteri, componenti, forme, spaziature, UX) è in `.claude/rules/stile-pulse.md`: si carica da solo quando lavori sull'interfaccia; se serve altrove, leggilo.
 
+### Marchio e materiale promozionale (immagini, reel, post, pagine)
+
+- **Prima di preparare il materiale, chiedi all'utente** dove e come mettere il logo (quando è possibile chiederlo).
+- **Il nome si scrive `#avidididadi`**, in Liberation Sans corsivo di peso normale, come `stileMarchio` (`lib/tema.dart`): mai in Space Grotesk o Manrope.
+- **Il logo sta in una fascia nera orizzontale** che va da un bordo all'altro dello schermo, come lo sfondo di un adesivo allungato, con il nome chiaro al centro.
+- Colori e caratteri di Pulse (`.claude/rules/stile-pulse.md`) valgono anche fuori dall'app. Le schermate si prendono da `tool/schermate`, senza gli inviti di Oggi che chiedono informazioni.
+
 ## 6. Convenzioni di codice
 
 - **Nomi in italiano**: classi `PascalCase` (`PianoRiga`, `SuperficiePulse`), funzioni e variabili `camelCase` (`coloreSport`, `valutaSeduta`), privati con `_`. I file in `snake_case` italiano.
