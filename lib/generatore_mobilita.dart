@@ -24,12 +24,19 @@ const focusMobilita = {
 };
 
 /// Ripetizioni di un esercizio di mobilità: tutto a tempo, così la modalità
-/// allenamento passa da sola al successivo.
-String _durata(Esercizio e) => e.schema == 'rullo'
-    ? '60 s'
-    : e.nome.startsWith('Circonduzioni')
+/// allenamento passa da sola al successivo. Quelli su un lato solo hanno
+/// 30 secondi per lato, che l'allenamento divide in destra e sinistra; gli
+/// altri lo stesso tempo tutto insieme (le circonduzioni delle braccia, che
+/// scaldano, la metà).
+String durataMobilita(Esercizio e) => e.lati
+    ? l10n.n30SLato
+    : _circonduzione(e)
     ? '30 s'
-    : l10n.n30SLato;
+    : '60 s';
+
+/// Le circonduzioni vanno all'inizio: scaldano. Si riconoscono dall'id, che
+/// non cambia con la lingua.
+bool _circonduzione(Esercizio e) => e.id.contains('Circles');
 
 /// Una seduta di [minuti] minuti centrata su [focus]. [rotazione] cambia gli
 /// esercizi da una seduta all'altra.
@@ -64,9 +71,8 @@ List<WorkoutStep> sedutaMobilita({
   final scelti = [for (final i in ordine.take(quanti)) girati[i]]
     // Le circonduzioni scaldano: vanno all'inizio.
     ..sort(
-      (a, b) => (b.nome.startsWith('Circonduzioni') ? 1 : 0).compareTo(
-        a.nome.startsWith('Circonduzioni') ? 1 : 0,
-      ),
+      (a, b) =>
+          (_circonduzione(b) ? 1 : 0).compareTo(_circonduzione(a) ? 1 : 0),
     );
   final nome = '$focus · $minuti min';
   return [
@@ -77,12 +83,10 @@ List<WorkoutStep> sedutaMobilita({
         nome: nome,
         durataTot: minuti,
         ordine: i + 1,
-        fase: scelti[i].nome.startsWith('Circonduzioni')
-            ? 'riscaldamento'
-            : 'mobilità',
+        fase: _circonduzione(scelti[i]) ? 'riscaldamento' : 'mobilità',
         descrizione: scelti[i].nome,
         serie: giri > 1 ? '$giri' : '',
-        ripetizioni: _durata(scelti[i]),
+        ripetizioni: durataMobilita(scelti[i]),
         distanzaM: '',
         durataMin: '',
         intensita: '',

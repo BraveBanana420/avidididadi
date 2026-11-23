@@ -58,6 +58,45 @@ void main() {
     expect(secondiDi(passo(1, 'Vasche', metri: '200')), isNull);
   });
 
+  test('"30 s per lato" in due blocchi: prima destra, poi sinistra', () {
+    final b = blocchiDa([
+      passo(1, 'Allungamento dei flessori', serie: '2', rip: '30 s per lato'),
+    ]);
+    // Niente più "Cambia lato a metà" su un minuto unico: ogni lato ha il
+    // suo conto alla rovescia.
+    expect(b.map((x) => (x.tipo, x.secondi, x.lato, x.serie)), [
+      (TipoBlocco.lavoro, 30, latoDestro, 1),
+      (TipoBlocco.lavoro, 30, latoSinistro, 1),
+      (TipoBlocco.lavoro, 30, latoDestro, 2),
+      (TipoBlocco.lavoro, 30, latoSinistro, 2),
+    ]);
+    expect(b.first.dettaglio, 'Serie 1 di 2 · Lato destro · 30 s');
+    expect(dettaglioBreve(b[1]), 'Serie 1 di 2 · Lato sinistro');
+    expect(b.map((x) => x.passo).toSet(), {0});
+  });
+
+  test('"per lato" anche nei piani creati in inglese e in greco', () {
+    for (final rip in ['30 s per side', '30 δευτ. ανά πλευρά']) {
+      expect(secondiDi(passo(1, 'Stretch', rip: rip)), 60, reason: rip);
+      expect(blocchiDa([passo(1, 'Stretch', rip: rip)]).map((x) => x.lato), [
+        latoDestro,
+        latoSinistro,
+      ], reason: rip);
+    }
+    expect(secondiDi(passo(1, 'Plank', rip: '45 δευτ.')), 45);
+  });
+
+  test('a ripetizioni per lato resta un blocco solo, con "Fatto"', () {
+    final b = blocchiDa([
+      passo(1, 'Rematore', serie: '3', rip: '8-12 per lato'),
+    ]);
+    expect(b.map((x) => (x.secondi, x.lato)), [
+      (null, 0),
+      (null, 0),
+      (null, 0),
+    ]);
+  });
+
   test('fartlek: tratti veloci a tempo e recuperi corricchiando', () {
     final b = blocchiDa([
       passo(1, 'Corsa facile', sport: 'Corsa', minuti: '10'),

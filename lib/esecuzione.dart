@@ -25,6 +25,10 @@ class Blocco {
 
   /// Metri previsti del blocco ("4 × 50 m" → 50), null se non è a distanza.
   final double? metri;
+
+  /// Il lato degli esercizi a tempo "per lato", divisi in due blocchi:
+  /// [latoDestro] o [latoSinistro]; 0 se si fa con tutti e due insieme.
+  final int lato;
   const Blocco({
     required this.tipo,
     required this.titolo,
@@ -41,22 +45,42 @@ class Blocco {
     this.kg,
     this.kgPerSerie = false,
     this.metri,
+    this.lato = 0,
   });
 
   bool get aTempo => secondi != null;
 }
 
-final _secondi = RegExp(r'^(\d+)\s*s\b(.*)$');
+const latoDestro = 1;
+const latoSinistro = 2;
+
+// "45 s", e in greco "45 δευτ.": i generatori scrivono nella lingua dell'app.
+final _secondi = RegExp(r'^(\d+)\s*(?:s\b|δευτ\.?)(.*)$');
+
+/// "per lato" nelle tre lingue in cui i generatori lo scrivono.
+final _perLato = RegExp(r'per lato|per side|ανά πλευρά');
+
+/// Vero se le ripetizioni previste valgono per ogni lato ("10 per lato").
+bool perLato(String ripetizioni) => _perLato.hasMatch(ripetizioni);
 
 /// Secondi di un passo a tempo: "10" minuti, oppure ripetizioni come "45 s" o
 /// "30 s per lato" (che vale il doppio). Null se è a ripetizioni o distanza.
 int? secondiDi(WorkoutStep s) {
+  final lato = _secondiPerLato(s);
+  if (lato != null) return lato * 2;
   final min = double.tryParse(s.durataMin.replaceAll(',', '.'));
   if (min != null && min > 0) return (min * 60).round();
   final m = _secondi.firstMatch(s.ripetizioni.trim());
-  if (m == null) return null;
-  final v = int.parse(m.group(1)!);
-  return m.group(2)!.contains('per lato') ? v * 2 : v;
+  return m == null ? null : int.parse(m.group(1)!);
+}
+
+/// I secondi di ogni lato di "30 s per lato"; null se non è a tempo per lato.
+int? _secondiPerLato(WorkoutStep s) {
+  final min = double.tryParse(s.durataMin.replaceAll(',', '.'));
+  if (min != null && min > 0) return null;
+  final m = _secondi.firstMatch(s.ripetizioni.trim());
+  if (m == null || !perLato(m.group(2)!)) return null;
+  return int.parse(m.group(1)!);
 }
 
 String _quantita(WorkoutStep s) {
@@ -93,38 +117,46 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
     final n = (int.tryParse(s.serie.trim()) ?? 1).clamp(1, 50).toInt();
     final rec = int.tryParse(s.recuperoS.trim()) ?? 0;
     final quanti = _quantita(s);
-    final perLato = s.ripetizioni.contains('per lato');
     final titolo = s.descrizione.isEmpty ? s.nome : s.descrizione;
+    // "30 s per lato": due blocchi da 30 s, prima a destra e poi a sinistra,
+    // ognuno con il suo conto alla rovescia e la voce che dice il lato.
+    final perLatoS = _secondiPerLato(s);
     for (var i = 1; i <= n; i++) {
-      out.add(
-        Blocco(
-          tipo: TipoBlocco.lavoro,
-          titolo: titolo,
-          dettaglio: [
-            // Nell'arrampicata le "serie" di un passo sono le ripetizioni.
-            if (n > 1)
-              s.sport == 'Arrampicata'
-                  ? l10n.ripetizione(i, n)
-                  : l10n.serie(i, n),
-            if (quanti.isNotEmpty) quanti,
-          ].join(' · '),
-          intensita: s.intensita,
-          obiettivo2: s.obiettivo2,
-          note: [
-            if (perLato && secondiDi(s) != null) l10n.cambiaLatoMeta,
-            s.note,
-          ].where((x) => x.isNotEmpty).join(' '),
-          fase: s.fase,
-          esercizio: s.esercizio,
-          secondi: secondiDi(s),
-          passo: p,
-          serie: i,
-          ripetizioni: s.ripetizioni,
-          kg: kgDellaSerie(s.kg, i),
-          kgPerSerie: s.kg.split(';').toSet().length > 1,
-          metri: _metriPrevisti(s.distanzaM),
-        ),
+      Blocco lavoro({int lato = 0}) => Blocco(
+        tipo: TipoBlocco.lavoro,
+        titolo: titolo,
+        dettaglio: [
+          // Nell'arrampicata le "serie" di un passo sono le ripetizioni.
+          if (n > 1)
+            s.sport == 'Arrampicata'
+                ? l10n.ripetizione(i, n)
+                : l10n.serie(i, n),
+          if (lato == latoDestro) l10n.latoDestro,
+          if (lato == latoSinistro) l10n.latoSinistro,
+          if (lato != 0) '$perLatoS s' else if (quanti.isNotEmpty) quanti,
+        ].join(' · '),
+        intensita: s.intensita,
+        obiettivo2: s.obiettivo2,
+        // Il consiglio del passo una volta sola, sul primo lato.
+        note: lato == latoSinistro ? '' : s.note,
+        fase: s.fase,
+        esercizio: s.esercizio,
+        secondi: lato != 0 ? perLatoS : secondiDi(s),
+        passo: p,
+        serie: i,
+        ripetizioni: s.ripetizioni,
+        kg: kgDellaSerie(s.kg, i),
+        kgPerSerie: s.kg.split(';').toSet().length > 1,
+        metri: _metriPrevisti(s.distanzaM),
+        lato: lato,
       );
+      if (perLatoS != null) {
+        out
+          ..add(lavoro(lato: latoDestro))
+          ..add(lavoro(lato: latoSinistro));
+      } else {
+        out.add(lavoro());
+      }
       // Recupero tra le serie, e dopo l'ultima se c'è un altro passo.
       final ultimoDelWorkout = i == n && p == ordinati.length - 1;
       if (rec > 0 && !ultimoDelWorkout) {
@@ -158,7 +190,8 @@ String dettaglioBreve(Blocco b) => b.dettaglio
     .where(
       (x) =>
           x.isNotEmpty &&
-          !(b.aTempo && RegExp(r'^\d+([.,]\d+)?\s*(min|s)\b').hasMatch(x)),
+          !(b.aTempo &&
+              RegExp(r'^\d+([.,]\d+)?\s*(min\b|s\b|δευτ|λεπ)').hasMatch(x)),
     )
     .join(' · ');
 

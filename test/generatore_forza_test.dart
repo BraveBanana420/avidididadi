@@ -97,6 +97,27 @@ void main() {
     expect(s.every((x) => perId.containsKey(x.esercizio)), isTrue);
   });
 
+  test('gli esercizi su un lato hanno ripetizioni o secondi per lato', () {
+    final p = genera(pianoDiProva(4));
+    final lati = p.passi.where(
+      (x) => x.fase == 'principale' && perId[x.esercizio]!.lati,
+    );
+    expect(lati, isNotEmpty);
+    for (final x in lati) {
+      expect(x.ripetizioni, endsWith('per lato'), reason: x.esercizio);
+    }
+    for (final x in p.passi.where(
+      (x) => x.fase == 'principale' && !perId[x.esercizio]!.lati,
+    )) {
+      expect(x.ripetizioni, isNot(contains('per lato')), reason: x.esercizio);
+    }
+    // Il plank laterale si tiene su un fianco e poi sull'altro.
+    final plank = p.passi.where((x) => x.esercizio == 'Side_Bridge');
+    for (final x in plank) {
+      expect(x.ripetizioni, matches(r'^\d+ s per lato$'));
+    }
+  });
+
   test('la durata della settimana tipo cambia la quantità di esercizi', () {
     int principali(int durata) => sessione(
       genera(pianoDiProva(1, durata: durata)),

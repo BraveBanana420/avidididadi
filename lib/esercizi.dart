@@ -257,6 +257,10 @@ class Esercizio {
   final String tipo; // forza | mobilita
   final String schema;
   final String livello;
+
+  /// Si fa prima su un lato e poi sull'altro (non alternato): in
+  /// allenamento il tempo si divide tra lato destro e lato sinistro.
+  final bool lati;
   final List<List<String>>
   attrezzi; // basta uno dei gruppi; vuoto = corpo libero
   final List<String> muscoli;
@@ -286,6 +290,7 @@ class Esercizio {
       tipo = j['tipo'],
       schema = j['schema'],
       livello = j['livello'],
+      lati = j['lati'] == true,
       attrezzi = [
         for (final g in j['attrezzi'] as List)
           [for (final a in g as List) a as String],

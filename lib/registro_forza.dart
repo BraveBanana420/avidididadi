@@ -93,7 +93,7 @@ String fmtKg(double kg) {
 /// Ripetizioni previste da "8-10", "12" o "10 per lato"; null se è a tempo.
 (int, int)? ripetizioniPreviste(String testo) {
   final t = testo.trim();
-  if (RegExp(r'^\d+\s*s\b').hasMatch(t)) return null;
+  if (RegExp(r'^\d+\s*(?:s\b|δευτ)').hasMatch(t)) return null;
   final m = RegExp(r'^(\d+)(?:\s*[-–]\s*(\d+))?').firstMatch(t);
   if (m == null) return null;
   final lo = int.parse(m.group(1)!);
