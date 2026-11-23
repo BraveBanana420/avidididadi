@@ -1,5 +1,8 @@
-# APK di rilascio firmato, pubblicato nelle Releases quando si carica
-# un'etichetta v* (es. v0.2.0) che corrisponde alla versione di pubspec.yaml.
+# APK di rilascio firmato, pubblicato nelle Releases:
+# - da solo quando main riceve una versione nuova di pubspec.yaml (per
+#   esempio unendo la PR di staging): crea anche l'etichetta v<versione>;
+# - quando si carica a mano un'etichetta v* uguale alla versione di pubspec.yaml.
+# Se la versione ha già la sua etichetta, su main non fa niente.
 #
 # Secrets del repository (Settings → Secrets and variables → Actions):
 #   ANDROID_KEYSTORE_BASE64   il file .jks codificato in base64
@@ -10,7 +13,9 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,8 +25,37 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Su main si pubblica solo una versione che non ha ancora la sua etichetta.
+  controlla:
+    name: Versione da pubblicare
+    runs-on: ubuntu-latest
+    outputs:
+      numero: ${{ steps.v.outputs.numero }}
+      pubblica: ${{ steps.v.outputs.pubblica }}
+    steps:
+      - uses: actions/checkout@v5
+      - id: v
+        run: |
+          v=$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)
+          echo "numero=$v" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            if [ "v$v" != "$GITHUB_REF_NAME" ]; then
+              echo "::error::L'etichetta è $GITHUB_REF_NAME ma pubspec.yaml dice $v."
+              exit 1
+            fi
+            echo "pubblica=si" >> "$GITHUB_OUTPUT"
+          elif git ls-remote --exit-code --tags origin "refs/tags/v$v" > /dev/null; then
+            echo "La v$v è già pubblicata: niente release."
+            echo "pubblica=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "Versione nuova: pubblico la v$v."
+            echo "pubblica=si" >> "$GITHUB_OUTPUT"
+          fi
+
   apk:
     name: APK firmato
+    needs: controlla
+    if: needs.controlla.outputs.pubblica == 'si'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -36,15 +70,11 @@ jobs:
             "$RUNNER_TOOL_CACHE/CodeQL"
           df -h /
 
-      - name: L'etichetta corrisponde a pubspec.yaml
+      - name: Versione
         id: versione
-        run: |
-          v=$(sed -n 's/^version: *\([^+]*\).*/\1/p' pubspec.yaml)
-          if [ "v$v" != "$GITHUB_REF_NAME" ]; then
-            echo "::error::L'etichetta è $GITHUB_REF_NAME ma pubspec.yaml dice $v."
-            exit 1
-          fi
-          echo "numero=$v" >> "$GITHUB_OUTPUT"
+        env:
+          NUMERO: ${{ needs.controlla.outputs.numero }}
+        run: echo "numero=$NUMERO" >> "$GITHUB_OUTPUT"
 
       - name: Controlla i secrets
         env:
@@ -147,6 +177,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Avidididadi ${{ steps.versione.outputs.numero }}
+          # Su main l'etichetta non c'è ancora: la crea qui, sul commit unito.
+          tag_name: v${{ steps.versione.outputs.numero }}
+          target_commitish: ${{ github.sha }}
           body_path: note.md
           files: |
             uscita/*.apk
