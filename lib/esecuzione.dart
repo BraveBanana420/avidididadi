@@ -28,6 +28,7 @@ class Blocco {
 
   /// Il lato degli esercizi a tempo "per lato", divisi in due blocchi:
   /// [latoDestro] o [latoSinistro]; 0 se si fa con tutti e due insieme.
+  /// In un recupero, [latoSinistro] è la pausa per girarsi ([cambioLato]).
   final int lato;
   const Blocco({
     required this.tipo,
@@ -49,10 +50,20 @@ class Blocco {
   });
 
   bool get aTempo => secondi != null;
+
+  /// La pausa breve tra lato destro e lato sinistro.
+  bool get cambioLato => tipo == TipoBlocco.recupero && lato != 0;
 }
+
+/// Il titolo di un recupero: "Cambia lato" tra i due lati, se no "Recupero".
+String titoloRecupero(Blocco b) =>
+    b.cambioLato ? l10n.cambiaLato : l10n.parolaRecupero;
 
 const latoDestro = 1;
 const latoSinistro = 2;
+
+/// Secondi per girarsi dall'altro lato, tra i due blocchi di "per lato".
+const pausaCambioLato = 5;
 
 // "45 s", e in greco "45 δευτ.": i generatori scrivono nella lingua dell'app.
 final _secondi = RegExp(r'^(\d+)\s*(?:s\b|δευτ\.?)(.*)$');
@@ -119,7 +130,8 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
     final quanti = _quantita(s);
     final titolo = s.descrizione.isEmpty ? s.nome : s.descrizione;
     // "30 s per lato": due blocchi da 30 s, prima a destra e poi a sinistra,
-    // ognuno con il suo conto alla rovescia e la voce che dice il lato.
+    // ognuno con il suo conto alla rovescia e la voce che dice il lato, con
+    // in mezzo qualche secondo per girarsi.
     final perLatoS = _secondiPerLato(s);
     for (var i = 1; i <= n; i++) {
       Blocco lavoro({int lato = 0}) => Blocco(
@@ -153,6 +165,17 @@ List<Blocco> blocchiDa(List<WorkoutStep> passi) {
       if (perLatoS != null) {
         out
           ..add(lavoro(lato: latoDestro))
+          ..add(
+            Blocco(
+              tipo: TipoBlocco.recupero,
+              titolo: 'Cambia lato',
+              fase: s.fase,
+              secondi: pausaCambioLato,
+              passo: p,
+              serie: i,
+              lato: latoSinistro,
+            ),
+          )
           ..add(lavoro(lato: latoSinistro));
       } else {
         out.add(lavoro());

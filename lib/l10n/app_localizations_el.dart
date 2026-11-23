@@ -702,6 +702,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get latoSinistro => 'Αριστερή πλευρά';
 
   @override
+  String get cambiaLato => 'Αλλαγή πλευράς';
+
+  @override
+  String get cambiaLatoVoce => 'Άλλαξε πλευρά.';
+
+  @override
   String secondiPerLato(Object p0) {
     return '$p0 δευτ. ανά πλευρά';
   }

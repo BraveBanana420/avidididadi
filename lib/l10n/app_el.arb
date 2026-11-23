@@ -176,6 +176,8 @@
   "serie": "Σετ {p0} από {p1}",
   "latoDestro": "Δεξιά πλευρά",
   "latoSinistro": "Αριστερή πλευρά",
+  "cambiaLato": "Αλλαγή πλευράς",
+  "cambiaLatoVoce": "Άλλαξε πλευρά.",
   "secondiPerLato": "{p0} δευτ. ανά πλευρά",
   "ripetizioniPerLato": "{p0} ανά πλευρά",
   "poiRipetizione": "Μετά επανάληψη {p0} από {p1}",

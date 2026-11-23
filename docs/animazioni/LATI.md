@@ -40,7 +40,8 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
   `tool/genera_esercizi.py`), letto in `Esercizio.lati`.
 - `blocchiDa` (`lib/esecuzione.dart`): "30 s per lato" → due blocchi da 30 s,
   "Lato destro" e "Lato sinistro" (`Blocco.lato` = `latoDestro` / `latoSinistro`).
-  La voce dice il lato nella sua lingua (`fraseBlocco`). "8-12 per lato" (a
+  In mezzo, 5 s di pausa "Cambia lato" per girarsi. La voce dice il lato
+  nella sua lingua (`fraseBlocco`). "8-12 per lato" (a
   ripetizioni) resta un blocco solo con "Fatto".
 - Generatori: `durataMobilita()` (`lib/generatore_mobilita.dart`) usa `lati`;
   la forza scrive "N s per lato" o "8-12 per lato" e conta il doppio del tempo.
@@ -62,8 +63,9 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
    girata in orizzontale (`Transform.flip(flipX: true)` attorno ad
    `AnimazioneEsercizio`). Nel dettaglio dell'esercizio resta quella normale.
    Così si genera un video solo per esercizio.
-3. Forse **qualche secondo per cambiare lato** tra i due blocchi: oggi il
-   sinistro parte subito, annunciato dalla voce. Da decidere con l'utente.
+3. ~~Qualche secondo per cambiare lato~~: fatto. Tra i due lati c'è una pausa
+   "Cambia lato" di `pausaCambioLato` (5 s), un blocco di recupero con
+   `lato == latoSinistro` (`Blocco.cambioLato`); la voce dice "Cambia lato.".
 4. Le istruzioni del **corridore** (`Runners_Stretch`) non dicono di cambiare
    lato: aggiungere "poi cambia lato" in italiano, inglese e greco.
 

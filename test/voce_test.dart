@@ -162,6 +162,14 @@ void main() {
         fraseBlocco(destro),
         'Ora: Plank laterale. Serie 1 di 3, Lato destro, 30 secondi.',
       );
+      const cambio = Blocco(
+        tipo: TipoBlocco.recupero,
+        titolo: 'Cambia lato',
+        secondi: pausaCambioLato,
+        passo: 1,
+        lato: latoSinistro,
+      );
+      expect(fraseBlocco(cambio), 'Cambia lato.');
     });
   });
 

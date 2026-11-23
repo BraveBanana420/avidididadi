@@ -7,12 +7,11 @@
   [docs/animazioni/LATI.md](docs/animazioni/LATI.md). Gli esercizi
   con `"lati": true` in `assets/esercizi.json` (32: 13 di mobilità, 19 di
   forza) in allenamento si dividono già in "Lato destro" e "Lato sinistro",
-  ognuno con il suo tempo (`Blocco.lato`). Restano:
+  ognuno con il suo tempo (`Blocco.lato`), con 5 s di pausa "Cambia lato"
+  in mezzo. Restano:
   - generare le animazioni del lato destro, partendo dai 13 di mobilità
     (serve la chiave OpenRouter, dal PC con Remote Control);
   - nel blocco del lato sinistro mostrare la stessa animazione specchiata;
-  - forse qualche secondo di pausa per cambiare lato tra i due blocchi (oggi
-    il lato sinistro parte subito, annunciato dalla voce).
   - aggiungere "poi cambia lato" alle istruzioni del corridore
     (`Runners_Stretch`) nelle tre lingue.
 

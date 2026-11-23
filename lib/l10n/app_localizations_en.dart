@@ -696,6 +696,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get latoSinistro => 'Left side';
 
   @override
+  String get cambiaLato => 'Switch sides';
+
+  @override
+  String get cambiaLatoVoce => 'Switch sides.';
+
+  @override
   String secondiPerLato(Object p0) {
     return '$p0 s per side';
   }

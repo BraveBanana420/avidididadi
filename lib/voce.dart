@@ -128,6 +128,7 @@ String parlato(String testo) {
 
 /// Il blocco che inizia: cosa fare, quanto e a che intensità.
 String fraseBlocco(Blocco b) {
+  if (b.cambioLato) return l10nVoce.cambiaLatoVoce;
   if (b.tipo == TipoBlocco.recupero) {
     return b.secondi == null
         ? l10nVoce.recupero3

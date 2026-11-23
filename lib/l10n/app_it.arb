@@ -1106,6 +1106,14 @@
   "@latoSinistro": {
     "description": "esecuzione.dart"
   },
+  "cambiaLato": "Cambia lato",
+  "@cambiaLato": {
+    "description": "esecuzione.dart"
+  },
+  "cambiaLatoVoce": "Cambia lato.",
+  "@cambiaLatoVoce": {
+    "description": "voce.dart"
+  },
   "secondiPerLato": "{p0} s per lato",
   "@secondiPerLato": {
     "description": "generatore_forza.dart",

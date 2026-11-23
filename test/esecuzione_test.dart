@@ -58,7 +58,7 @@ void main() {
     expect(secondiDi(passo(1, 'Vasche', metri: '200')), isNull);
   });
 
-  test('"30 s per lato" in due blocchi: prima destra, poi sinistra', () {
+  test('"30 s per lato": destra, pausa per girarsi, poi sinistra', () {
     final b = blocchiDa([
       passo(1, 'Allungamento dei flessori', serie: '2', rip: '30 s per lato'),
     ]);
@@ -66,12 +66,18 @@ void main() {
     // suo conto alla rovescia.
     expect(b.map((x) => (x.tipo, x.secondi, x.lato, x.serie)), [
       (TipoBlocco.lavoro, 30, latoDestro, 1),
+      (TipoBlocco.recupero, pausaCambioLato, latoSinistro, 1),
       (TipoBlocco.lavoro, 30, latoSinistro, 1),
       (TipoBlocco.lavoro, 30, latoDestro, 2),
+      (TipoBlocco.recupero, pausaCambioLato, latoSinistro, 2),
       (TipoBlocco.lavoro, 30, latoSinistro, 2),
     ]);
     expect(b.first.dettaglio, 'Serie 1 di 2 · Lato destro · 30 s');
-    expect(dettaglioBreve(b[1]), 'Serie 1 di 2 · Lato sinistro');
+    expect(dettaglioBreve(b[2]), 'Serie 1 di 2 · Lato sinistro');
+    // La pausa si chiama "Cambia lato", non "Recupero".
+    expect(b[1].cambioLato, isTrue);
+    expect(titoloRecupero(b[1]), 'Cambia lato');
+    expect(b.where((x) => x.cambioLato).length, 2);
     expect(b.map((x) => x.passo).toSet(), {0});
   });
 
@@ -80,6 +86,7 @@ void main() {
       expect(secondiDi(passo(1, 'Stretch', rip: rip)), 60, reason: rip);
       expect(blocchiDa([passo(1, 'Stretch', rip: rip)]).map((x) => x.lato), [
         latoDestro,
+        latoSinistro,
         latoSinistro,
       ], reason: rip);
     }

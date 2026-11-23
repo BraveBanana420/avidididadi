@@ -176,6 +176,8 @@
   "serie": "Set {p0} of {p1}",
   "latoDestro": "Right side",
   "latoSinistro": "Left side",
+  "cambiaLato": "Switch sides",
+  "cambiaLatoVoce": "Switch sides.",
   "secondiPerLato": "{p0} s per side",
   "ripetizioniPerLato": "{p0} per side",
   "poiRipetizione": "Then rep {p0} of {p1}",

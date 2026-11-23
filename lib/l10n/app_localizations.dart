@@ -1156,6 +1156,18 @@ abstract class AppLocalizations {
   /// **'Lato sinistro'**
   String get latoSinistro;
 
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato'**
+  String get cambiaLato;
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato.'**
+  String get cambiaLatoVoce;
+
   /// generatore_forza.dart
   ///
   /// In it, this message translates to:

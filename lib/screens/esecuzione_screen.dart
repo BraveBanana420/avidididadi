@@ -1664,7 +1664,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(l10n.parolaRecupero, style: t.titleMedium),
+                                Text(titoloRecupero(b), style: t.titleMedium),
                                 if (b.note.isNotEmpty)
                                   Text(mostraTesto(b.note), style: t.bodySmall),
                               ],
@@ -2097,7 +2097,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           velocita: fmtVelocita(widget.sport, sensoreBici.velocita),
           km: (_metriSensore / 1000).toStringAsFixed(2).replaceAll('.', ','),
           sensoriRicordati: sensoreBici.ricordato,
-          titolo: recupero ? l10n.parolaRecupero : mostra(b.titolo),
+          titolo: recupero ? titoloRecupero(b) : mostra(b.titolo),
           dettaglio: dettaglioBreve(b),
           intensita: intensitaCon(
             b.intensita,
@@ -2235,7 +2235,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     children: [
                       Expanded(
                         child: TestoUnaRiga(
-                          recupero ? l10n.parolaRecupero : mostra(b.titolo),
+                          recupero ? titoloRecupero(b) : mostra(b.titolo),
                           style: t.titleSmall,
                         ),
                       ),
