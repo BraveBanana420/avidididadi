@@ -2,6 +2,17 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.1.0
+
+- Aggiornamenti dall'app: quando esce una versione nuova compare un avviso e si installa con un tocco, senza Obtainium (Profilo → Aggiornamenti dell'app).
+- Webhook (facoltativo, spento di serie): l'app può mandare i dati degli allenamenti a un indirizzo web scelto da te (Home Assistant, n8n, il tuo server…).
+- Esercizi animati: squat a corpo libero e leg extension, i primi del nuovo catalogo.
+- Esercizi in inglese: istruzioni riscritte come in italiano, solo con misure metriche.
+- Catalogo: il filtro "Mobilità e stretching" ora è tradotto.
+- Le novità di ogni versione anche in inglese e greco.
+- Versione dell'app in fondo al Profilo, sempre in vista.
+- All'apertura riaccetta l'informativa (aggiornamenti dell'app).
+
 ## 1.0.2
 
 - Immagini da condividere: la scritta #avidididadi ora ha il carattere del logo.

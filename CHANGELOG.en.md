@@ -2,6 +2,17 @@
 
 English translation of [CHANGELOG.md](CHANGELOG.md): same versions, same points, one line each. Greek: [CHANGELOG.el.md](CHANGELOG.el.md).
 
+## 1.1.0
+
+- Updates from the app: when a new version is out a notice appears and it installs with one tap, without Obtainium (Profile → App updates).
+- Webhook (optional, off by default): the app can send your workout data to a web address you choose (Home Assistant, n8n, your own server…).
+- Animated exercises: bodyweight squat and leg extension, the first of the new catalogue.
+- Exercises in English: instructions rewritten to match the Italian ones, metric units only.
+- Catalogue: the "Mobility and stretching" filter is now translated.
+- What's new in each version also in English and Greek.
+- App version at the bottom of the Profile, always in view.
+- On opening, accept the privacy notice again (app updates).
+
 ## 1.0.2
 
 - Images to share: the #avidididadi text now uses the logo font.
