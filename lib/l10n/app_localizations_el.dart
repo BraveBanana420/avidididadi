@@ -2472,6 +2472,11 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
+  String avidididadiVersioneBreve(Object p0) {
+    return 'Avidididadi · έκδοση $p0';
+  }
+
+  @override
   String get tuaArrampicata => 'Η αναρρίχησή σου';
 
   @override
@@ -7481,7 +7486,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get aggiornamentoAnnullato => 'Η ενημέρωση ακυρώθηκε.';
 
   @override
-  String get haiUltimaVersione => 'Έχεις ήδη την τελευταία έκδοση.';
+  String haiUltimaVersione(Object p0) {
+    return 'Έχεις ήδη την τελευταία έκδοση ($p0).';
+  }
 
   @override
   String get githubNonRisponde => 'Το GitHub δεν απαντά: δοκίμασε αργότερα.';

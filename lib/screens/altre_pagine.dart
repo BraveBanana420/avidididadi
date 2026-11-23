@@ -61,7 +61,6 @@ class DatiCollegamentiScreen extends StatelessWidget {
             icon: const Icon(Icons.gavel_rounded),
             label: Text(l10n.terminiCondizioni),
           ),
-          const _Versione(),
         ],
       ),
     );
@@ -119,12 +118,13 @@ class GlossarioScreen extends StatelessWidget {
 }
 
 /// Commit da cui è stato fatto l'APK (`--dart-define=COMMIT=...`): distingue
-/// le prove di staging senza alzare la versione.
+/// le prove di staging senza alzare la versione. Le release non lo passano.
 const _commit = String.fromEnvironment('COMMIT');
 
-/// Nome e versione dell'app, sotto informativa e termini.
-class _Versione extends StatelessWidget {
-  const _Versione();
+/// Nome e versione dell'app, in fondo al Profilo: si trova senza cercarla.
+/// Nelle release solo "1.1.0"; negli APK di prova anche build e commit.
+class VersioneApp extends StatelessWidget {
+  const VersioneApp({super.key});
 
   @override
   Widget build(BuildContext context) => FutureBuilder<PackageInfo>(
@@ -135,11 +135,13 @@ class _Versione extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.only(top: 8),
         child: Text(
-          l10n.avidididadiVersione(
-            v.version,
-            v.buildNumber,
-            _commit.isEmpty ? '' : l10n.prova(_commit),
-          ),
+          _commit.isEmpty
+              ? l10n.avidididadiVersioneBreve(v.version)
+              : l10n.avidididadiVersione(
+                  v.version,
+                  v.buildNumber,
+                  l10n.prova(_commit),
+                ),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall
               ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),

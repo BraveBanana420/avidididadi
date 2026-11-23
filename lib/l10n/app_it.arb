@@ -3633,6 +3633,15 @@
       }
     }
   },
+  "avidididadiVersioneBreve": "Avidididadi · versione {p0}",
+  "@avidididadiVersioneBreve": {
+    "description": "screens/altre_pagine.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
   "tuaArrampicata": "La tua arrampicata",
   "@tuaArrampicata": {
     "description": "screens/arrampicata_sheet.dart"
@@ -10779,9 +10788,14 @@
   "@aggiornamentoAnnullato": {
     "description": "aggiornamento.dart"
   },
-  "haiUltimaVersione": "Hai già l'ultima versione.",
+  "haiUltimaVersione": "Hai già l'ultima versione ({p0}).",
   "@haiUltimaVersione": {
-    "description": "aggiornamento.dart"
+    "description": "aggiornamento.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   },
   "githubNonRisponde": "GitHub non risponde: riprova più tardi.",
   "@githubNonRisponde": {

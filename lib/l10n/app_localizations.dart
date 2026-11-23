@@ -4108,6 +4108,12 @@ abstract class AppLocalizations {
   /// **'Avidididadi · versione {p0} ({p1}){p2}'**
   String avidididadiVersione(Object p0, Object p1, Object p2);
 
+  /// screens/altre_pagine.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Avidididadi · versione {p0}'**
+  String avidididadiVersioneBreve(Object p0);
+
   /// screens/arrampicata_sheet.dart
   ///
   /// In it, this message translates to:
@@ -12365,8 +12371,8 @@ abstract class AppLocalizations {
   /// aggiornamento.dart
   ///
   /// In it, this message translates to:
-  /// **'Hai già l\'ultima versione.'**
-  String get haiUltimaVersione;
+  /// **'Hai già l\'ultima versione ({p0}).'**
+  String haiUltimaVersione(Object p0);
 
   /// aggiornamento.dart
   ///
