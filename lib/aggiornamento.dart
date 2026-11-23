@@ -9,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'config.dart';
+import 'l10n/lingua.dart';
 import 'rete.dart';
 
 // Aggiornamenti dall'interno dell'app, senza passare da Obtainium: al massimo
@@ -78,7 +79,11 @@ class Rilascio {
 /// La release dalla risposta di GitHub, con l'APK per [abi] (es.
 /// "arm64-v8a"). Null se manca qualcosa: meglio nessun avviso che uno che
 /// non porta da nessuna parte.
-Rilascio? rilascioDa(Map<String, dynamic> j, String abi) {
+Rilascio? rilascioDa(
+  Map<String, dynamic> j,
+  String abi, {
+  String lingua = 'it',
+}) {
   if (j['draft'] == true || j['prerelease'] == true) return null;
   final tag = j['tag_name'];
   if (tag is! String || numeriVersione(tag) == null) return null;
@@ -95,18 +100,35 @@ Rilascio? rilascioDa(Map<String, dynamic> j, String abi) {
   if (apk == null || somme == null) return null;
   return Rilascio(
     versione: versione,
-    novita: novitaDa(j['body'] is String ? j['body'] as String : ''),
+    novita: novitaDa(
+      j['body'] is String ? j['body'] as String : '',
+      lingua: lingua,
+    ),
     nomeApk: nomeApk,
     apk: apk,
     somme: somme,
   );
 }
 
-/// Le righe "- ..." delle note (la sezione del CHANGELOG), senza il segno.
-List<String> novitaDa(String note) => [
-  for (final r in const LineSplitter().convert(note))
-    if (r.trimLeft().startsWith('- ')) r.trimLeft().substring(2).trim(),
-];
+/// Le righe "- ..." delle note nella [lingua] dell'app, senza il segno.
+///
+/// Le note della release (release.yml) hanno prima la sezione di
+/// CHANGELOG.md, poi quelle di CHANGELOG.en.md e CHANGELOG.el.md, ognuna
+/// dopo un segno `<!-- lingua:en -->` che su GitHub non si vede. Se la
+/// lingua manca restano le novità in italiano.
+List<String> novitaDa(String note, {String lingua = 'it'}) {
+  final perLingua = <String, List<String>>{};
+  var attuale = 'it';
+  for (final r in const LineSplitter().convert(note)) {
+    final segno = RegExp(r'^<!--\s*lingua:(\w+)\s*-->$').firstMatch(r.trim());
+    if (segno != null) {
+      attuale = segno.group(1)!;
+    } else if (r.trimLeft().startsWith('- ')) {
+      (perLingua[attuale] ??= []).add(r.trimLeft().substring(2).trim());
+    }
+  }
+  return perLingua[lingua] ?? perLingua['it'] ?? const [];
+}
 
 /// L'impronta SHA-256 di [nome] in un file come quello di `sha256sum`.
 String? impronta(String somme, String nome) {
@@ -214,7 +236,9 @@ Future<(EsitoRicerca, Rilascio?)> cercaAggiornamento({
     final abi = await _canale.invokeMethod<String>('abiTelefono') ?? '';
     final installata = (await PackageInfo.fromPlatform()).version;
     final j = jsonDecode(utf8.decode(dati));
-    final r = j is Map<String, dynamic> ? rilascioDa(j, abi) : null;
+    final r = j is Map<String, dynamic>
+        ? rilascioDa(j, abi, lingua: codiceLingua)
+        : null;
     if (r == null || !piuNuova(r.versione, installata)) {
       return (EsitoRicerca.ultima, null);
     }

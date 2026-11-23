@@ -10,8 +10,19 @@ Map<String, dynamic> release({
   'tag_name': tag,
   'draft': false,
   'prerelease': prerelease,
+  // Come lo scrive release.yml: italiano, poi inglese e greco dopo i segni.
   'body':
       '- Immagini da condividere: la scritta #avidididadi ora ha il carattere del logo.\n'
+      '\n'
+      '<!-- lingua:en -->\n'
+      '### English\n'
+      '\n'
+      '- Images to share: the #avidididadi text now uses the logo font.\n'
+      '\n'
+      '<!-- lingua:el -->\n'
+      '### Ελληνικά\n'
+      '\n'
+      '- Εικόνες για κοινοποίηση: η επιγραφή #avidididadi έχει τώρα τη γραμματοσειρά του λογότυπου.\n'
       '\n'
       'Install `Avidididadi-1.0.2-arm64-v8a.apk` on almost every recent phone.',
   'assets': [
@@ -76,6 +87,21 @@ void main() {
         rilascioDa(release(), 'armeabi-v7a')!.nomeApk,
         'Avidididadi-1.0.2-armeabi-v7a.apk',
       );
+    });
+
+    test('le novità nella lingua dell\'app', () {
+      expect(rilascioDa(release(), 'arm64-v8a', lingua: 'en')!.novita, [
+        'Images to share: the #avidididadi text now uses the logo font.',
+      ]);
+      expect(
+        rilascioDa(release(), 'arm64-v8a', lingua: 'el')!.novita.single,
+        startsWith('Εικόνες για κοινοποίηση'),
+      );
+      // Note senza traduzioni (release vecchie): restano in italiano.
+      expect(novitaDa('- Una novità.\n\nInstall `x.apk`.', lingua: 'el'), [
+        'Una novità.',
+      ]);
+      expect(novitaDa('Versione 1.0.3.', lingua: 'en'), isEmpty);
     });
 
     test('niente avviso se manca qualcosa o non è una release vera', () {
