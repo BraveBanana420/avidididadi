@@ -47,6 +47,7 @@ your animation, but don't publish new versions or other views of the avatars.
 | **Camera** | fixed: no zoom, no pan, no cuts. **Three-quarter view** (body turned about 45°, like the "Male: 3/4" avatar) for most exercises: it shows depth and the side of the movement at once. **Side** or **front view** only when the movement is unclear from three-quarters (e.g. front view for jumping jacks and lateral raises, side view for some floor exercises) |
 | **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
 | **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
+| **One side** (↔ in [EXERCISES.md](EXERCISES.md)) | the **right side** only (the side that works or stretches): the app mirrors the animation for the left. The character never switches sides in the video. Details and ready prompts (in Italian) in [LATI.md](LATI.md) |
 | **Character** | identical to the avatar images in every frame (face, hair, body, outfit). We compare them before accepting: if something changed, try again |
 
 For the correct technique, follow the exercise instructions in

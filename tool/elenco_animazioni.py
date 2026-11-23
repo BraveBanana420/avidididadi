@@ -43,6 +43,10 @@ righe = [
     "",
     "How to make them / Come farle: [README.md](README.md) · [README.it.md](README.it.md)",
     "",
+    "↔ = one side, then the other: animate the **right** side only, the app mirrors it "
+    "for the left. / Prima un lato, poi l'altro: si anima solo il lato **destro**, "
+    "l'app lo specchia per il sinistro ([LATI.md](LATI.md)).",
+    "",
 ]
 
 for p, titolo in gruppi.items():
@@ -61,6 +65,8 @@ for p, titolo in gruppi.items():
         # Alternative di gruppi: [["cavi"], ["manubri", "panca"]] = cavi / manubri + panca.
         attrezzi = " / ".join(" + ".join(g) for g in e["attrezzi"]) or "—"
         tipo = "strength" if e["tipo"] == "forza" else "mobility"
+        if e.get("lati"):
+            tipo += " ↔"
         righe.append(
             f"| {spunta} | `{e['id']}` | {e['nome_en']} | {e['nome']} | {tipo} | {attrezzi} |"
         )

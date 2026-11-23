@@ -47,6 +47,7 @@ la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
 | **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Da 3/4** (corpo girato di circa 45°, come l'avatar "Uomo: 3/4") per quasi tutti gli esercizi: si vedono insieme la profondità e il lato del movimento. **Di lato** o **di fronte** solo quando da 3/4 il movimento non si capisce bene (es. di fronte per jumping jack e alzate laterali, di lato per alcuni esercizi a terra) |
 | **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
 | **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
+| **Per lato** (↔ in [EXERCISES.md](EXERCISES.md)) | solo il **lato destro** (il lato che lavora o si allunga): l'app specchia l'animazione per il sinistro. Il personaggio non cambia lato nel video. Dettagli e richieste pronte in [LATI.md](LATI.md) |
 | **Personaggio** | uguale alle immagini degli avatar in ogni fotogramma (viso, capelli, corpo, vestiti). Li confrontiamo prima di accettarla: se qualcosa è cambiato, riprova |
 
 Per la tecnica giusta segui le istruzioni dell'esercizio in
