@@ -1147,8 +1147,38 @@ abstract class AppLocalizations {
   /// esecuzione.dart
   ///
   /// In it, this message translates to:
-  /// **'Cambia lato a metà.'**
-  String get cambiaLatoMeta;
+  /// **'Lato destro'**
+  String get latoDestro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Lato sinistro'**
+  String get latoSinistro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato'**
+  String get cambiaLato;
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato.'**
+  String get cambiaLatoVoce;
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} s per lato'**
+  String secondiPerLato(Object p0);
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} per lato'**
+  String ripetizioniPerLato(Object p0);
 
   /// esecuzione.dart
   ///

@@ -7,6 +7,8 @@ Done / Fatti: **2 / 154**. Before starting one, check the open issues so two peo
 
 How to make them / Come farle: [README.md](README.md) · [README.it.md](README.it.md)
 
+↔ = one side, then the other: animate the **right** side only, the app mirrors it for the left. / Prima un lato, poi l'altro: si anima solo il lato **destro**, l'app lo specchia per il sinistro ([LATI.md](LATI.md)).
+
 ## Priority 1 · Beginner, bodyweight / Principiante, corpo libero
 
 | | ID | English | Italiano | Type / Tipo | Equipment / Attrezzi |
@@ -14,15 +16,15 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Bodyweight_Walking_Lunge` | Bodyweight Walking Lunge | Affondi camminati | strength | — |
 | ⬜ | `Bench_Dips` | Bench Dips | Dip su panca | strength | — |
 | ⬜ | `Butt_Lift_Bridge` | Butt Lift (Bridge) | Ponte glutei | strength | — |
-| ⬜ | `Glute_Kickback` | Glute Kickback | Slanci posteriori a quattro zampe | strength | — |
-| ⬜ | `Single_Leg_Glute_Bridge` | Single Leg Glute Bridge | Ponte glutei su una gamba | strength | — |
+| ⬜ | `Glute_Kickback` | Glute Kickback | Slanci posteriori a quattro zampe | strength ↔ | — |
+| ⬜ | `Single_Leg_Glute_Bridge` | Single Leg Glute Bridge | Ponte glutei su una gamba | strength ↔ | — |
 | ⬜ | `Air_Bike` | Air Bike | Bicycle crunch | strength | — |
 | ⬜ | `Crunches` | Crunches | Crunch | strength | — |
 | ⬜ | `Dead_Bug` | Dead Bug | Dead bug | strength | — |
 | ⬜ | `Flutter_Kicks` | Flutter Kicks | Sforbiciate | strength | — |
 | ⬜ | `Plank` | Plank | Plank | strength | — |
 | ⬜ | `Reverse_Crunch` | Reverse Crunch | Crunch inverso | strength | — |
-| ⬜ | `Side_Bridge` | Side Bridge | Plank laterale | strength | — |
+| ⬜ | `Side_Bridge` | Side Bridge | Plank laterale | strength ↔ | — |
 | ⬜ | `Superman` | Superman | Superman | strength | — |
 | ⬜ | `Knee_Tuck_Jump` | Knee Tuck Jump | Salti con ginocchia al petto | strength | — |
 | ⬜ | `Mountain_Climbers` | Mountain Climbers | Mountain climber | strength | — |
@@ -34,21 +36,21 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Push-Ups_With_Feet_Elevated` | Push-Ups With Feet Elevated | Piegamenti con piedi rialzati | strength | — |
 | ⬜ | `Pushups` | Pushups | Piegamenti sulle braccia | strength | — |
 | ✅ | `Bodyweight_Squat` | Bodyweight Squat | Squat a corpo libero | strength | — |
-| ⬜ | `Ankle_Circles` | Ankle Circles | Circonduzioni delle caviglie | mobility | — |
+| ⬜ | `Ankle_Circles` | Ankle Circles | Circonduzioni delle caviglie | mobility ↔ | — |
 | ⬜ | `Arm_Circles` | Arm Circles | Circonduzioni delle braccia | mobility | — |
-| ⬜ | `Calf_Stretch_Hands_Against_Wall` | Calf Stretch Hands Against Wall | Allungamento dei polpacci al muro | mobility | — |
+| ⬜ | `Calf_Stretch_Hands_Against_Wall` | Calf Stretch Hands Against Wall | Allungamento dei polpacci al muro | mobility ↔ | — |
 | ⬜ | `Cat_Stretch` | Cat Stretch | Allungamento del gatto | mobility | — |
 | ⬜ | `Childs_Pose` | Child's Pose | Posizione del bambino | mobility | — |
 | ⬜ | `Dynamic_Chest_Stretch` | Dynamic Chest Stretch | Apertura dinamica del petto | mobility | — |
-| ⬜ | `Hip_Circles_prone` | Hip Circles (prone) | Circonduzioni dell'anca a quattro zampe | mobility | — |
-| ⬜ | `Kneeling_Hip_Flexor` | Kneeling Hip Flexor | Allungamento dei flessori dell'anca | mobility | — |
-| ⬜ | `On_Your_Side_Quad_Stretch` | On Your Side Quad Stretch | Allungamento dei quadricipiti sul fianco | mobility | — |
-| ⬜ | `Runners_Stretch` | Runner's Stretch | Allungamento del corridore | mobility | — |
-| ⬜ | `Seated_Floor_Hamstring_Stretch` | Seated Floor Hamstring Stretch | Allungamento dei femorali da seduto | mobility | — |
-| ⬜ | `Shoulder_Stretch` | Shoulder Stretch | Allungamento della spalla | mobility | — |
+| ⬜ | `Hip_Circles_prone` | Hip Circles (prone) | Circonduzioni dell'anca a quattro zampe | mobility ↔ | — |
+| ⬜ | `Kneeling_Hip_Flexor` | Kneeling Hip Flexor | Allungamento dei flessori dell'anca | mobility ↔ | — |
+| ⬜ | `On_Your_Side_Quad_Stretch` | On Your Side Quad Stretch | Allungamento dei quadricipiti sul fianco | mobility ↔ | — |
+| ⬜ | `Runners_Stretch` | Runner's Stretch | Allungamento del corridore | mobility ↔ | — |
+| ⬜ | `Seated_Floor_Hamstring_Stretch` | Seated Floor Hamstring Stretch | Allungamento dei femorali da seduto | mobility ↔ | — |
+| ⬜ | `Shoulder_Stretch` | Shoulder Stretch | Allungamento della spalla | mobility ↔ | — |
 | ⬜ | `Spinal_Stretch` | Spinal Stretch | Torsione della colonna da seduto | mobility | — |
-| ⬜ | `Standing_Soleus_And_Achilles_Stretch` | Standing Soleus And Achilles Stretch | Allungamento di soleo e tendine d'Achille | mobility | — |
-| ⬜ | `Triceps_Stretch` | Triceps Stretch | Allungamento dei tricipiti | mobility | — |
+| ⬜ | `Standing_Soleus_And_Achilles_Stretch` | Standing Soleus And Achilles Stretch | Allungamento di soleo e tendine d'Achille | mobility ↔ | — |
+| ⬜ | `Triceps_Stretch` | Triceps Stretch | Allungamento dei tricipiti | mobility ↔ | — |
 | ⬜ | `Upper_Back_Stretch` | Upper Back Stretch | Allungamento della parte alta della schiena | mobility | — |
 
 ## Priority 2 · Beginner, with equipment / Principiante, con attrezzi
@@ -56,8 +58,8 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | | ID | English | Italiano | Type / Tipo | Equipment / Attrezzi |
 |---|---|---|---|---|---|
 | ⬜ | `Dumbbell_Lunges` | Dumbbell Lunges | Affondi con manubri | strength | manubri |
-| ⬜ | `Smith_Single-Leg_Split_Squat` | Smith Single-Leg Split Squat | Affondo al multipower | strength | multipower |
-| ⬜ | `Split_Squat_with_Dumbbells` | Split Squat with Dumbbells | Split squat con manubri | strength | manubri |
+| ⬜ | `Smith_Single-Leg_Split_Squat` | Smith Single-Leg Split Squat | Affondo al multipower | strength ↔ | multipower |
+| ⬜ | `Split_Squat_with_Dumbbells` | Split Squat with Dumbbells | Split squat con manubri | strength ↔ | manubri |
 | ⬜ | `Step-up_with_Knee_Raise` | Step-up with Knee Raise | Step-up con ginocchio al petto | strength | rialzo / panca |
 | ⬜ | `Barbell_Curl` | Barbell Curl | Curl con bilanciere | strength | bilanciere |
 | ⬜ | `Cable_Hammer_Curls_-_Rope_Attachment` | Cable Hammer Curls - Rope Attachment | Curl a martello al cavo | strength | cavi / pulley |
@@ -74,10 +76,10 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Smith_Machine_Stiff-Legged_Deadlift` | Smith Machine Stiff-Legged Deadlift | Stacco a gambe tese al multipower | strength | multipower |
 | ⬜ | `Stiff-Legged_Dumbbell_Deadlift` | Stiff-Legged Dumbbell Deadlift | Stacco a gambe tese con manubri | strength | manubri |
 | ⬜ | `Cable_Crunch` | Cable Crunch | Crunch al cavo in ginocchio | strength | cavi / lat_machine |
-| ⬜ | `Dumbbell_Side_Bend` | Dumbbell Side Bend | Flessioni laterali con manubrio | strength | manubri |
+| ⬜ | `Dumbbell_Side_Bend` | Dumbbell Side Bend | Flessioni laterali con manubrio | strength ↔ | manubri |
 | ⬜ | `Exercise_Ball_Pull-In` | Exercise Ball Pull-In | Ginocchia al petto su fitball | strength | fitball |
-| ⬜ | `Pallof_Press` | Pallof Press | Pallof press | strength | cavi / elastici |
-| ⬜ | `Standing_Cable_Wood_Chop` | Standing Cable Wood Chop | Taglialegna al cavo | strength | cavi |
+| ⬜ | `Pallof_Press` | Pallof Press | Pallof press | strength ↔ | cavi / elastici |
+| ⬜ | `Standing_Cable_Wood_Chop` | Standing Cable Wood Chop | Taglialegna al cavo | strength ↔ | cavi |
 | ⬜ | `Weighted_Crunches` | Weighted Crunches | Crunch con sovraccarico | strength | palla_medica / dischi / manubri |
 | ✅ | `Leg_Extensions` | Leg Extensions | Leg extension | strength | leg_extension |
 | ⬜ | `Lying_Leg_Curls` | Lying Leg Curls | Leg curl sdraiato | strength | leg_curl |
@@ -91,13 +93,13 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Back_Flyes_-_With_Bands` | Back Flyes - With Bands | Alzate posteriori con elastico | strength | elastici |
 | ⬜ | `Band_Pull_Apart` | Band Pull Apart | Pull apart con elastico | strength | elastici |
 | ⬜ | `Dumbbell_Shrug` | Dumbbell Shrug | Scrollate con manubri | strength | manubri |
-| ⬜ | `External_Rotation_with_Band` | External Rotation with Band | Extrarotazione con elastico | strength | elastici |
+| ⬜ | `External_Rotation_with_Band` | External Rotation with Band | Extrarotazione con elastico | strength ↔ | elastici |
 | ⬜ | `Front_Dumbbell_Raise` | Front Dumbbell Raise | Alzate frontali | strength | manubri |
 | ⬜ | `Lateral_Raise_-_With_Bands` | Lateral Raise - With Bands | Alzate laterali con elastico | strength | elastici |
 | ⬜ | `Reverse_Flyes` | Reverse Flyes | Alzate posteriori a busto flesso | strength | manubri |
 | ⬜ | `Reverse_Machine_Flyes` | Reverse Machine Flyes | Pectoral inversa | strength | pectoral |
 | ⬜ | `Side_Lateral_Raise` | Side Lateral Raise | Alzate laterali | strength | manubri |
-| ⬜ | `Standing_Low-Pulley_Deltoid_Raise` | Standing Low-Pulley Deltoid Raise | Alzata laterale al cavo | strength | cavi |
+| ⬜ | `Standing_Low-Pulley_Deltoid_Raise` | Standing Low-Pulley Deltoid Raise | Alzata laterale al cavo | strength ↔ | cavi |
 | ⬜ | `Barbell_Bench_Press_-_Medium_Grip` | Barbell Bench Press - Medium Grip | Panca piana con bilanciere | strength | bilanciere + panca |
 | ⬜ | `Butterfly` | Butterfly | Pectoral machine (butterfly) | strength | pectoral |
 | ⬜ | `Cable_Crossover` | Cable Crossover | Croce ai cavi | strength | cavi |
@@ -125,7 +127,7 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Inverted_Row` | Inverted Row | Rematore inverso | strength | sbarra |
 | ⬜ | `Leverage_High_Row` | Leverage High Row | Rematore alto alla macchina | strength | rematore_macchina |
 | ⬜ | `Leverage_Iso_Row` | Leverage Iso Row | Rematore alla macchina | strength | rematore_macchina |
-| ⬜ | `One-Arm_Dumbbell_Row` | One-Arm Dumbbell Row | Rematore con manubrio a un braccio | strength | manubri |
+| ⬜ | `One-Arm_Dumbbell_Row` | One-Arm Dumbbell Row | Rematore con manubrio a un braccio | strength ↔ | manubri |
 | ⬜ | `Seated_Cable_Rows` | Seated Cable Rows | Pulley basso (rematore ai cavi) | strength | pulley |
 | ⬜ | `Suspended_Row` | Suspended Row | Rematore agli anelli o TRX | strength | trx |
 | ⬜ | `Band_Assisted_Pull-Up` | Band Assisted Pull-Up | Trazioni assistite con elastico | strength | sbarra + elastici |
@@ -146,14 +148,14 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Dumbbell_Rear_Lunge` | Dumbbell Rear Lunge | Affondi indietro con manubri | strength | manubri |
 | ⬜ | `Dumbbell_Step_Ups` | Dumbbell Step Ups | Step-up con manubri | strength | manubri + rialzo / manubri + panca |
 | ⬜ | `Barbell_Deadlift` | Barbell Deadlift | Stacco da terra | strength | bilanciere |
-| ⬜ | `Kettlebell_One-Legged_Deadlift` | Kettlebell One-Legged Deadlift | Stacco su una gamba con kettlebell | strength | kettlebell / manubri |
+| ⬜ | `Kettlebell_One-Legged_Deadlift` | Kettlebell One-Legged Deadlift | Stacco su una gamba con kettlebell | strength ↔ | kettlebell / manubri |
 | ⬜ | `One-Arm_Kettlebell_Swings` | One-Arm Kettlebell Swings | Swing con kettlebell a un braccio | strength | kettlebell |
 | ⬜ | `Romanian_Deadlift` | Romanian Deadlift | Stacco rumeno | strength | bilanciere |
 | ⬜ | `Kettlebell_Figure_8` | Kettlebell Figure 8 | Otto con kettlebell | strength | kettlebell |
-| ⬜ | `Kettlebell_Windmill` | Kettlebell Windmill | Windmill con kettlebell | strength | kettlebell |
+| ⬜ | `Kettlebell_Windmill` | Kettlebell Windmill | Windmill con kettlebell | strength ↔ | kettlebell |
 | ⬜ | `Plate_Twist` | Plate Twist | Rotazioni del busto con disco | strength | dischi |
 | ⬜ | `Russian_Twist` | Russian Twist | Russian twist | strength | — |
-| ⬜ | `One-Legged_Cable_Kickback` | One-Legged Cable Kickback | Slanci del gluteo al cavo | strength | cavi |
+| ⬜ | `One-Legged_Cable_Kickback` | One-Legged Cable Kickback | Slanci del gluteo al cavo | strength ↔ | cavi |
 | ⬜ | `Freehand_Jump_Squat` | Freehand Jump Squat | Squat jump | strength | — |
 | ⬜ | `Standing_Dumbbell_Calf_Raise` | Standing Dumbbell Calf Raise | Calf raise con manubri | strength | manubri |
 | ⬜ | `Face_Pull` | Face Pull | Face pull ai cavi | strength | cavi |
@@ -161,17 +163,17 @@ How to make them / Come farle: [README.md](README.md) · [README.it.md](README.i
 | ⬜ | `Push-Ups_-_Close_Triceps_Position` | Push-Ups - Close Triceps Position | Piegamenti a presa stretta | strength | — |
 | ⬜ | `Arnold_Dumbbell_Press` | Arnold Dumbbell Press | Arnold press | strength | manubri |
 | ⬜ | `Dumbbell_Shoulder_Press` | Dumbbell Shoulder Press | Lento avanti con manubri | strength | manubri |
-| ⬜ | `One-Arm_Kettlebell_Military_Press_To_The_Side` | One-Arm Kettlebell Military Press To The Side | Lento con kettlebell a un braccio | strength | kettlebell |
+| ⬜ | `One-Arm_Kettlebell_Military_Press_To_The_Side` | One-Arm Kettlebell Military Press To The Side | Lento con kettlebell a un braccio | strength ↔ | kettlebell |
 | ⬜ | `Kettlebell_Sumo_High_Pull` | Kettlebell Sumo High Pull | Tirata alta sumo con kettlebell | strength | kettlebell |
 | ⬜ | `Kettlebell_Thruster` | Kettlebell Thruster | Thruster con kettlebell | strength | kettlebell |
-| ⬜ | `Kettlebell_Turkish_Get-Up_Squat_style` | Kettlebell Turkish Get-Up (Squat style) | Turkish get-up | strength | kettlebell / manubri |
-| ⬜ | `One-Arm_Kettlebell_Clean` | One-Arm Kettlebell Clean | Clean con kettlebell a un braccio | strength | kettlebell |
-| ⬜ | `One-Arm_Kettlebell_Row` | One-Arm Kettlebell Row | Rematore con kettlebell | strength | kettlebell |
-| ⬜ | `Seated_One-arm_Cable_Pulley_Rows` | Seated One-arm Cable Pulley Rows | Pulley a un braccio | strength | pulley / cavi |
+| ⬜ | `Kettlebell_Turkish_Get-Up_Squat_style` | Kettlebell Turkish Get-Up (Squat style) | Turkish get-up | strength ↔ | kettlebell / manubri |
+| ⬜ | `One-Arm_Kettlebell_Clean` | One-Arm Kettlebell Clean | Clean con kettlebell a un braccio | strength ↔ | kettlebell |
+| ⬜ | `One-Arm_Kettlebell_Row` | One-Arm Kettlebell Row | Rematore con kettlebell | strength ↔ | kettlebell |
+| ⬜ | `Seated_One-arm_Cable_Pulley_Rows` | Seated One-arm Cable Pulley Rows | Pulley a un braccio | strength ↔ | pulley / cavi |
 | ⬜ | `Pelvic_Tilt_Into_Bridge` | Pelvic Tilt Into Bridge | Retroversione del bacino e ponte | mobility | — |
-| ⬜ | `Worlds_Greatest_Stretch` | World's Greatest Stretch | World's greatest stretch | mobility | — |
+| ⬜ | `Worlds_Greatest_Stretch` | World's Greatest Stretch | World's greatest stretch | mobility ↔ | — |
 | ⬜ | `Calves-SMR` | Calves-SMR | Rullo sui polpacci | mobility | rullo |
-| ⬜ | `Iliotibial_Tract-SMR` | Iliotibial Tract-SMR | Rullo sulla bandelletta ileotibiale | mobility | rullo |
-| ⬜ | `Piriformis-SMR` | Piriformis-SMR | Rullo sui glutei | mobility | rullo |
+| ⬜ | `Iliotibial_Tract-SMR` | Iliotibial Tract-SMR | Rullo sulla bandelletta ileotibiale | mobility ↔ | rullo |
+| ⬜ | `Piriformis-SMR` | Piriformis-SMR | Rullo sui glutei | mobility ↔ | rullo |
 | ⬜ | `Quadriceps-SMR` | Quadriceps-SMR | Rullo sui quadricipiti | mobility | rullo |
 | ⬜ | `Rhomboids-SMR` | Rhomboids-SMR | Rullo sulla parte alta della schiena | mobility | rullo |

@@ -184,6 +184,7 @@ const testiSalvati = <(String, String, String)>[
     'Medium reps, more volume to grow muscle.',
     'Μέτριες επαναλήψεις, περισσότερος όγκος για να μεγαλώσουν οι μύες.',
   ),
+  ('{p0} per lato', '{p0} per side', '{p0} ανά πλευρά'),
   (
     'Ripetute in salita o in pianura',
     'Intervals uphill or on the flat',
@@ -200,6 +201,7 @@ const testiSalvati = <(String, String, String)>[
     'The hardest pace you can hold to the end, steady. Better to start a bit easy and finish strong.',
     'Ο πιο δυνατός ρυθμός που μπορείς να κρατήσεις ως το τέλος, σταθερά. Καλύτερα να ξεκινήσεις λίγο χαλαρά και να τελειώσεις δυνατά.',
   ),
+  ('{p0} s per lato', '{p0} s per side', '{p0} δευτ. ανά πλευρά'),
   (
     'Sedute più lunghe del 5% per ogni passo.',
     'Sessions 5% longer for each step.',

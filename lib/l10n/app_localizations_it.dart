@@ -691,7 +691,26 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get cambiaLatoMeta => 'Cambia lato a metà.';
+  String get latoDestro => 'Lato destro';
+
+  @override
+  String get latoSinistro => 'Lato sinistro';
+
+  @override
+  String get cambiaLato => 'Cambia lato';
+
+  @override
+  String get cambiaLatoVoce => 'Cambia lato.';
+
+  @override
+  String secondiPerLato(Object p0) {
+    return '$p0 s per lato';
+  }
+
+  @override
+  String ripetizioniPerLato(Object p0) {
+    return '$p0 per lato';
+  }
 
   @override
   String poiRipetizione(Object p0, Object p1) {

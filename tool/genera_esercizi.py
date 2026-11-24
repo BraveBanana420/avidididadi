@@ -653,6 +653,44 @@ E = [
 ]
 
 
+# Esercizi da fare prima su un lato e poi sull'altro (non alternati):
+# la modalità allenamento li divide in lato destro e lato sinistro.
+LATI = {
+    'Single_Leg_Glute_Bridge',
+    'Glute_Kickback',
+    'Side_Bridge',
+    'One-Arm_Dumbbell_Row',
+    'Split_Squat_with_Dumbbells',
+    'Dumbbell_Side_Bend',
+    'Kettlebell_One-Legged_Deadlift',
+    'Kettlebell_Turkish_Get-Up_Squat_style',
+    'One-Arm_Kettlebell_Row',
+    'One-Arm_Kettlebell_Military_Press_To_The_Side',
+    'One-Arm_Kettlebell_Clean',
+    'Kettlebell_Windmill',
+    'External_Rotation_with_Band',
+    'Seated_One-arm_Cable_Pulley_Rows',
+    'Standing_Low-Pulley_Deltoid_Raise',
+    'Pallof_Press',
+    'Standing_Cable_Wood_Chop',
+    'Smith_Single-Leg_Split_Squat',
+    'One-Legged_Cable_Kickback',
+    'Worlds_Greatest_Stretch',
+    'Kneeling_Hip_Flexor',
+    'Seated_Floor_Hamstring_Stretch',
+    'Calf_Stretch_Hands_Against_Wall',
+    'Standing_Soleus_And_Achilles_Stretch',
+    'On_Your_Side_Quad_Stretch',
+    'Runners_Stretch',
+    'Hip_Circles_prone',
+    'Shoulder_Stretch',
+    'Triceps_Stretch',
+    'Ankle_Circles',
+    'Iliotibial_Tract-SMR',
+    'Piriformis-SMR',
+}
+
+
 def muscoli(lista):
     out = []
     for m in lista:
@@ -690,6 +728,7 @@ def main():
             'tipo': 'mobilita' if schema in MOBILITA else 'forza',
             'schema': schema,
             'livello': LIVELLI[e['level']],
+            **({'lati': True} if id_ in LATI else {}),
             'attrezzi': [g.split('+') for g in attrezzi.split('|')] if attrezzi else [],
             'muscoli': primari,
             'muscoli_secondari': [m for m in muscoli(e['secondaryMuscles']) if m not in primari],
@@ -698,6 +737,9 @@ def main():
             'istruzioni_el': prima.get(id_, {}).get('istruzioni_el', []),
             'immagini': e['images'],
         })
+    sconosciuti = LATI - visti
+    if sconosciuti:
+        sys.exit('LATI con id sconosciuti: ' + ', '.join(sorted(sconosciuti)))
     mancanti = [o['id'] for o in out if not all(o[k] for k in TRADOTTI)]
     if mancanti:
         print('Da tradurre (nome greco, istruzioni in inglese e greco):', ', '.join(mancanti))

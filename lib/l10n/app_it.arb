@@ -1098,9 +1098,39 @@
       }
     }
   },
-  "cambiaLatoMeta": "Cambia lato a metà.",
-  "@cambiaLatoMeta": {
+  "latoDestro": "Lato destro",
+  "@latoDestro": {
     "description": "esecuzione.dart"
+  },
+  "latoSinistro": "Lato sinistro",
+  "@latoSinistro": {
+    "description": "esecuzione.dart"
+  },
+  "cambiaLato": "Cambia lato",
+  "@cambiaLato": {
+    "description": "esecuzione.dart"
+  },
+  "cambiaLatoVoce": "Cambia lato.",
+  "@cambiaLatoVoce": {
+    "description": "voce.dart"
+  },
+  "secondiPerLato": "{p0} s per lato",
+  "@secondiPerLato": {
+    "description": "generatore_forza.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "ripetizioniPerLato": "{p0} per lato",
+  "@ripetizioniPerLato": {
+    "description": "generatore_forza.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   },
   "poiRipetizione": "Poi ripetizione {p0} di {p1}",
   "@poiRipetizione": {

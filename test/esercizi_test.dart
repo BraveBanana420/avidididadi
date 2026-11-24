@@ -58,6 +58,22 @@ void main() {
       expect(esercizi.map((e) => e.id).toSet().length, esercizi.length);
     });
 
+    test('chi dice di cambiare lato è segnato come esercizio per lato', () {
+      final cambio = RegExp(
+        r"cambia (lato|gamba|braccio|piede)|ripeti (dall'altro lato|con l'altro braccio)",
+      );
+      for (final e in esercizi) {
+        if (cambio.hasMatch(e.istruzioniIt.join(' '))) {
+          expect(e.lati, isTrue, reason: e.id);
+        }
+      }
+      // Alternati a ogni ripetizione: non si dividono in due lati.
+      final perId = {for (final e in esercizi) e.id: e};
+      for (final id in ['Dead_Bug', 'Dumbbell_Lunges', 'Spinal_Stretch']) {
+        expect(perId[id]!.lati, isFalse, reason: id);
+      }
+    });
+
     test('fattibilità in base all\'attrezzatura', () {
       Esercizio trova(String id) => esercizi.firstWhere((e) => e.id == id);
       expect(trova('Pushups').fattibile({}), isTrue);
