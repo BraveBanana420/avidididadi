@@ -149,6 +149,13 @@ ffmpeg, manda direttamente l'MP4.
   "generato con IA", e alcune condizioni vietano di toglierle. Lo teniamo in
   [`originali/`](originali/) e scriviamo strumenti, data e termini in
   [FONTI.md](FONTI.md), dove l'animazione è segnata come fatta con l'IA.
+- **La scritta sotto l'esercizio cambia da sola.** Le foto vengono da
+  free-exercise-db, e il dettaglio dell'esercizio lo dice ("Immagini da
+  free-exercise-db"). Quando un'animazione nostra prende il posto delle foto
+  (cioè l'esercizio è in `lib/animazioni_esercizi.dart`), quella scritta va
+  tolta: al suo posto l'app scrive "Animazione creata con l'intelligenza
+  artificiale per Avidididadi" (`animazioneFattaConIa`). Se un giorno arriva
+  un'animazione fatta senza IA, va cambiato anche questo testo.
 
 ## Come mandarla
 

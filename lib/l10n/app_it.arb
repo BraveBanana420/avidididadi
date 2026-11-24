@@ -5121,6 +5121,10 @@
       }
     }
   },
+  "animazioneFattaConIa": "Animazione creata con l'intelligenza artificiale per Avidididadi.",
+  "@animazioneFattaConIa": {
+    "description": "screens/catalogo_screen.dart"
+  },
   "tueSerie": "Le tue serie",
   "@tueSerie": {
     "description": "screens/catalogo_screen.dart"

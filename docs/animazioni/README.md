@@ -147,6 +147,13 @@ don't have ffmpeg, just send the MP4.
   "AI-generated", and some terms forbid removing them. We keep it in
   [`originali/`](originali/) and record tools, date and terms in
   [FONTI.md](FONTI.md), where the animation is marked as AI-made.
+- **The credit line under the exercise changes by itself.** The photos come
+  from free-exercise-db, and the exercise page says so ("Images from
+  free-exercise-db"). When one of our animations replaces the photos (that
+  is, the exercise is in `lib/animazioni_esercizi.dart`), that line must go:
+  instead, the app says "Animation made with artificial intelligence for
+  Avidididadi" (`animazioneFattaConIa`). If an animation made without AI
+  ever arrives, this text must change too.
 
 ## How to send it
 
