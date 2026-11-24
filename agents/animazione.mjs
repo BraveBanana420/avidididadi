@@ -231,7 +231,9 @@ async function credito() {
 /** Si ferma prima di spendere se il tetto della chiave non basta. */
 async function controllaCredito(serve) {
   const c = await credito();
-  if (c.rimasto != null && c.rimasto < serve + 0.05) throw new Error(`Sulla chiave dei video restano ${c.rimasto.toFixed(2)} $, ne servono circa ${serve.toFixed(2)}: alza il tetto su openrouter.ai/settings/keys`);
+  // OpenRouter rifiuta immagini e video (errore 402) se sulla chiave resta meno di 1 $.
+  const minimo = Math.max(serve + 0.05, 1);
+  if (c.rimasto != null && c.rimasto < minimo) throw new Error(`Sulla chiave dei video restano ${c.rimasto.toFixed(2)} $: OpenRouter vuole almeno 1 $ rimasto per immagini e video (qui ne servono circa ${serve.toFixed(2)}). Alza il tetto su openrouter.ai/settings/keys`);
   return c;
 }
 async function attendi429(fn) {

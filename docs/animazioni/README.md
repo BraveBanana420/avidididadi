@@ -58,7 +58,9 @@ recipe number (`RICETTA` in the script) goes up and the new one is used.
 - **[ffmpeg](https://ffmpeg.org/download.html) 8** or newer (on Windows:
   `winget install Gyan.FFmpeg`, then reopen the terminal).
 - **An OpenRouter account with some credits** and a **key with a spending
-  limit** (for example $1), created at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  limit** (for example $2), created at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  OpenRouter only makes images and videos while **at least $1** is left on the
+  key: with a $2 limit you can spend about $1, that is 4-6 exercises.
   Set it in the terminal, **not** in a file of the repo:
   - Windows (PowerShell): `$env:OPENROUTER_VIDEO_KEY = "sk-or-..."`
   - macOS / Linux: `export OPENROUTER_VIDEO_KEY="sk-or-..."`

@@ -13,7 +13,6 @@ const animazioniEsercizi = <String, String>{
   'Kneeling_Hip_Flexor': 'kneeling_hip_flexor.webp',
   'Bodyweight_Walking_Lunge': 'bodyweight_walking_lunge.webp',
   'Seated_Floor_Hamstring_Stretch': 'seated_floor_hamstring_stretch.webp',
-  'Childs_Pose': 'childs_pose.webp',
   'Runners_Stretch': 'runners_stretch.webp',
 };
 
@@ -21,7 +20,6 @@ const animazioniEsercizi = <String, String>{
 /// allungamenti in cui si resta fermi ("tipo": "posizione" in richieste.json).
 /// Anche questo elenco lo aggiorna "integra".
 const posizioniFerme = <String>{
-  'Childs_Pose',
   'Runners_Stretch',
 };
 

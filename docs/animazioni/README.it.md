@@ -58,7 +58,9 @@ numero della ricetta (`RICETTA` nello script) e si usa quella nuova.
 - **[ffmpeg](https://ffmpeg.org/download.html) 8** o più recente (su Windows:
   `winget install Gyan.FFmpeg`, poi riapri il terminale).
 - **Un account OpenRouter con qualche credito** e una **chiave con un tetto di
-  spesa** (per esempio 1 $), creata in [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  spesa** (per esempio 2 $), creata in [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  OpenRouter fa immagini e video solo se sulla chiave resta **almeno 1 $**: con
+  un tetto di 2 $ puoi spendere circa 1 $, cioè 4-6 esercizi.
   Mettila nel terminale, **non** in un file della repo:
   - Windows (PowerShell): `$env:OPENROUTER_VIDEO_KEY = "sk-or-..."`
   - macOS / Linux: `export OPENROUTER_VIDEO_KEY="sk-or-..."`
