@@ -82,6 +82,9 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
      indietro (la coscia verso la telecamera è troppo scorciata);
    - due mezzi giri uniti (Seedance fino al punto più alto + un video dal punto
      alto alla partenza): si ferma a metà e la scarpa cambia.
+     Seconda prova con "dal primo fotogramma il ginocchio va subito avanti,
+     non sale e non va indietro": il ginocchio va avanti e giù, ma il giro
+     unito (tagliando la parte ferma) non convince ancora.
    Da provare: una vista da dietro e di lato (l'apertura laterale si vede nel
    piano dell'immagine), un testo fisso diverso per i movimenti circolari, o
    un modello video nuovo. Riferimento del movimento: un giro ogni ~2 s
