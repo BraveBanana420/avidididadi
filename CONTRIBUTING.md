@@ -15,9 +15,15 @@ are both fine (le issue e le PR in italiano vanno benissimo).
 
 ## Exercise animations (no coding needed)
 
-You can make the short looping animations of the exercises, with the two project
-avatars: see the [guide](docs/animazioni/README.md) ([italiano](docs/animazioni/README.it.md))
-and the [list of exercises](docs/animazioni/EXERCISES.md).
+You can make the short looping animations of the exercises with the **project
+recipe**: one script (`agents/animazione.mjs`), the project avatar, the
+approved requests in `docs/animazioni/richieste.json` and your own OpenRouter
+credits (about $0.15–0.25 per exercise). Everyone uses the same recipe,
+unchanged, so all the animations look alike: animations made another way
+can't be accepted. You can also just propose the request for a new exercise,
+which costs nothing. See the [guide](docs/animazioni/README.md)
+([italiano](docs/animazioni/README.it.md)) and the
+[list of exercises](docs/animazioni/EXERCISES.md).
 
 ## Branches
 

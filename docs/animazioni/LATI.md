@@ -53,11 +53,10 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
 ## Da fare
 
 1. **Animazioni del lato destro**, partendo dai 13 di mobilità qui sotto (sono
-   a tempo, quindi quelli dove il problema si sente di più). Stesso metodo
-   delle prime due (vedi [FONTI.md](FONTI.md)): immagine di partenza con Nano
-   Banana dagli avatar, video con Seedance 2.0 Mini, tutto tramite l'API di
-   OpenRouter (crediti a pagamento), con `agents/animazione.mjs`. La chiave
-   OpenRouter è sul PC: si lavora da lì con Remote Control.
+   a tempo, quindi quelli dove il problema si sente di più), con la ricetta
+   unica di [README.it.md](README.it.md) (`agents/animazione.mjs`). Le
+   richieste approvate sono in [`richieste.json`](richieste.json): ci sono
+   tutte tranne `Worlds_Greatest_Stretch`.
    **Fatto (24/11):** `Kneeling_Hip_Flexor`, da 3/4 invece che di lato (si
    vedono insieme l'anca che si allunga e il busto dritto). Il video spostava
    la telecamera alla fine: tagliato al fotogramma 68, dove torna uguale al
@@ -83,28 +82,16 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
   tenuta) di un lato solo, che finisce nella posizione di partenza.
 - Inquadratura: di solito 3/4 o di lato, con il lato destro ben visibile.
 
-## Richieste pronte (mobilità, lato destro)
+## Richieste (mobilità, lato destro)
 
-Da usare con i modelli di [README.it.md](README.it.md): `<EXERCISE NAME>` e
-`<the movement…>` sono qui sotto. Per gli stretching "tenuti", il movimento è
-l'entrata lenta nella posizione, una breve tenuta e il ritorno, così il giro
-si chiude.
+Vista, posizione di partenza e movimento di 12 dei 13 di mobilità sono in
+[`richieste.json`](richieste.json), l'unico posto da cui li legge lo script
+(lì sono scritti per intero, in inglese, con il lato destro).
 
-| ID | Inquadratura | Posizione di partenza | Movimento (lato destro) |
-|---|---|---|---|
-| `Kneeling_Hip_Flexor` | di lato | kneeling on a mat, right knee down, left foot forward with the knee at 90° | shifts the hips slowly forward until the front of the right hip stretches, holds, comes back |
-| `Worlds_Greatest_Stretch` | 3/4 | deep lunge with the right foot forward, left knee close to the floor | places the right hand on the floor, rotates the torso lifting the left arm to the ceiling, brings it back, then straightens the right leg moving the hips back, and returns to the lunge (da controllare: le istruzioni dell'app dicono la mano "dal lato della gamba anteriore") |
-| `Seated_Floor_Hamstring_Stretch` | 3/4 | seated, right leg straight, left foot against the inside of the right thigh | hinges forward from the hips towards the right ankle, holds, sits back up |
-| `Calf_Stretch_Hands_Against_Wall` | di lato | hands on a wall, left foot forward, right foot back with the leg straight and heel down | pushes the hips towards the wall keeping the right heel down, holds, comes back |
-| `Standing_Soleus_And_Achilles_Stretch` | di lato | standing, left foot forward, right foot back, both heels down | bends both knees shifting the weight onto the right (back) leg, holds, straightens |
-| `On_Your_Side_Quad_Stretch` | di lato | lying on the left side, left leg bent in front for balance | bends the right leg, grabs the right foot with the right hand, pushes the hip forward, holds, releases |
-| `Runners_Stretch` | di lato | from standing, left leg steps back, hands on the floor beside the right foot | keeps the right heel down, lifts the hips straightening the right leg, then bends it back |
-| `Hip_Circles_prone` | 3/4 | on all fours | lifts the bent right knee and draws one wide slow circle, then puts it back down |
-| `Shoulder_Stretch` | di fronte | standing | brings the straight right arm across the chest, holds it close with the left hand, releases |
-| `Triceps_Stretch` | 3/4 | standing | puts the right hand behind the head, the left hand gently pulls the right elbow, releases |
-| `Ankle_Circles` | 3/4 | standing, right foot slightly lifted | rotates the right ankle in one slow wide circle, puts the foot back down |
-| `Iliotibial_Tract-SMR` | di lato | lying on the right side, foam roller under the outer right thigh, on the right forearm, left foot on the floor | rolls slowly from the hip to the knee and back |
-| `Piriformis-SMR` | 3/4 | seated on a foam roller, right ankle crossed over the left knee | leans towards the right side and rolls slowly over the right glute, and back |
+Manca solo **`Worlds_Greatest_Stretch`** (3/4, affondo profondo con il piede
+destro avanti), da controllare prima di approvarlo: la proposta era "mano destra
+a terra, busto che ruota alzando il braccio sinistro", ma le istruzioni
+dell'app dicono la mano "dal lato della gamba anteriore".
 
 ## Gli altri esercizi per lato (forza)
 

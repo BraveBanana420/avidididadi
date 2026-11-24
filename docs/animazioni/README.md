@@ -2,151 +2,194 @@
 
 **English** · [Italiano](README.it.md)
 
-Every exercise in the app can show a short looping animation: in the exercise
-details and during the guided workout. We are starting **from scratch**: for now
-every exercise shows two photos. **You can help without writing any code.**
+Every exercise in the app can show a short looping animation, on the exercise
+page and during the guided workout. For now almost all of them still show two
+photos: **you can help even if you can't code**.
 
-The list of exercises, with the ones already done: [EXERCISES.md](EXERCISES.md).
-Start from *Priority 1*: they are the ones almost every plan uses.
+All the animations must look like **the same drawing**, whoever makes them.
+That's why there is **a single recipe**, the same for everyone, and it doesn't
+change: the script [`agents/animazione.mjs`](../../agents/animazione.mjs) with
+the approved requests in [`richieste.json`](richieste.json). We can't accept
+animations made any other way (other tools, other prompts, manual
+conversions), even beautiful ones.
 
-## The style in one line
+| Squat | Leg extension | Kneeling hip flexor |
+|---|---|---|
+| <img src="../../assets/exercises/animated/bodyweight_squat.webp" width="240" alt="Bodyweight squat"> | <img src="../../assets/exercises/animated/leg_extensions.webp" width="240" alt="Leg extension on the machine"> | <img src="../../assets/exercises/animated/kneeling_hip_flexor.webp" width="240" alt="Kneeling hip flexor stretch"> |
 
-Same character, same light grey background, fixed camera, one slow repetition
-that loops without a jump. The first accepted animations will become the
-examples for the next ones.
+## Three ways to help
 
-## The two avatars
+1. **Make an animation** with the recipe, using your own OpenRouter credits
+   (**$0.15 to $0.25** per exercise, about $0.15 more if a second video is
+   needed). Start from the 🟢 exercises in [EXERCISES.md](EXERCISES.md): they
+   already have an approved request. You need a computer and a few terminal
+   commands, copied from below.
+2. **Propose the request** for a ⬜ exercise (free): in an issue, write the
+   view, the starting position and the movement (see
+   [Exercise without a request](#exercise-without-a-request)). Once we approve
+   it, the exercise becomes 🟢 and anyone can make it.
+3. **A donation** on [Ko-fi](https://ko-fi.com/avidididadi), if you have no
+   time but want to support the project.
 
-Use one of these two characters, **exactly as they are** (face, hair, body,
-outfit). One animation = one character. Pick the one you prefer.
+## The recipe (it doesn't change)
 
-| Male: front | Male: 3/4 | Male: side | Male: back | Male: T-pose | Female: front |
-|---|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Male avatar, front"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Male avatar, three-quarter"> | <img src="avatar/male_side.jpg" width="140" alt="Male avatar, side"> | <img src="avatar/male_back.jpg" width="140" alt="Male avatar, back"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Male avatar, T-pose"> | <img src="avatar/female_front.jpg" width="140" alt="Female avatar, front"> |
+| | Always like this |
+|---|---|
+| **Character** | the project's male avatar ([`avatar/`](avatar/)), identical in every frame |
+| **View, start and movement** | only from [`richieste.json`](richieste.json), approved by the project |
+| **Starting image** | the avatar itself (exercises that start standing), or **Nano Banana 2.1** (Google) from the avatars, with a fixed prompt |
+| **Video** | **Seedance 2.0 Mini** (ByteDance), 480p, 4 s, no audio, seed 42, first and last frame = the starting image, with a fixed prompt |
+| **Where** | the [OpenRouter](https://openrouter.ai) API, with your own key |
+| **WebP** | 640 × 320, background `#D9D9DB`, even lighting, 15-24 fps, 2-3 s, at most 300 KB (400 KB with equipment): the script does it and picks the smoothest version within the limit |
 
-Outfit: black sleeveless top (sports bra for the female avatar) with red side
-panels, black leggings with red stripes (black shorts on top for the male), black
-wrist wraps, black shoes with red details.
+The script writes the prompts, not you. Don't change the script,
+`richieste.json` or the settings: the `controlla` command notices, and we run
+it again on the files you send, with our own copy.
+Only the project changes the script and the requests. When they change, the
+recipe number (`RICETTA` in the script) goes up and the new one is used.
 
-**Style**: a hand-drawn digital illustration, like the avatars: clean dark
-outlines, soft shading, smooth colours. **Not** a photo and **not** a realistic
-3D render: all the animations must look like the same drawing.
+## What you need
 
-The avatar images are provided only by the project: use them as the reference for
-your animation, but don't publish new versions or other views of the avatars.
+- **A copy of the repo**, from the `staging` branch: `git clone -b staging https://github.com/BraveBanana420/avidididadi.git`,
+  or *Code → Download ZIP* on GitHub after choosing the `staging` branch.
+  Update it before starting an exercise, so you have the current recipe and requests.
+- **[Node.js](https://nodejs.org) 18** or newer.
+- **[ffmpeg](https://ffmpeg.org/download.html) 8** or newer (on Windows:
+  `winget install Gyan.FFmpeg`, then reopen the terminal).
+- **An OpenRouter account with some credits** and a **key with a spending
+  limit** (for example $1), created at [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  Set it in the terminal, **not** in a file of the repo:
+  - Windows (PowerShell): `$env:OPENROUTER_VIDEO_KEY = "sk-or-..."`
+  - macOS / Linux: `export OPENROUTER_VIDEO_KEY="sk-or-..."`
 
-## Rules for every animation
+  The key doesn't end up in any file you send. Never write it in an issue.
+
+Run every command from the repo folder. `node agents/animazione.mjs credito`
+tells you what's left on the key; the script stops by itself before spending
+if the credit isn't enough.
+
+## Step by step
+
+Example with `Shoulder_Stretch`: use your exercise's ID instead.
+`../work/Shoulder_Stretch` is the work folder, next to the repo and not inside
+it, so it can't end up in git by mistake: the script creates it.
+
+**0. Choose and book it.** Pick a 🟢 exercise from [EXERCISES.md](EXERCISES.md),
+check there's no open issue for it yet and open one with the **Exercise
+animation / Animazione esercizio** form. Then look at the request and its cost:
+
+```sh
+node agents/animazione.mjs richiesta --esercizio Shoulder_Stretch
+```
+
+**1. Starting image.**
+
+```sh
+node agents/animazione.mjs partenza ../work/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+If the exercise starts standing it's free: the image is the avatar. Otherwise
+Nano Banana makes 2 (`partenza_1.jpg`, `partenza_2.jpg`, about $0.09). Open them
+and pick the best: character identical to the avatar (face, beard, hair,
+outfit, black leggings **without** stripes), right position, right side (see
+[One side](#rules-we-check-by-eye)), equipment without brands, everything
+inside the image. If none is good you may run the command once more; if it
+still isn't, say so in the issue instead of spending more.
+
+**2. Video.** (1-3 minutes, about $0.15)
+
+```sh
+node agents/animazione.mjs video ../work/Shoulder_Stretch --esercizio Shoulder_Stretch --immagine partenza_1.jpg
+```
+
+Open `anteprima-video.jpg` (6 frames) and, if you like, `video.mp4`. Check
+that the technique is right, that the character stays the same from start to
+end and that it stays **drawn** until the last frame. Sometimes it turns into
+realistic 3D halfway through: then throw it away. To try again run the same
+command: it costs another video. After two wrong videos, stop and say so in the issue.
+
+**3. WebP.**
+
+```sh
+node agents/animazione.mjs converti ../work/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+Look at `anteprima-webp.png`. If the script warns that the loop may jump
+(usually the camera moves in the last frames), find the frame that looks like
+the first again and redo it with `--fine <number>`. Also add `--accelera 1` if
+it's already 2-3 seconds long that way.
+
+**4. Check.**
+
+```sh
+node agents/animazione.mjs controlla ../work/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+It must end with "All good". Every `NO` line says what's wrong.
+
+**5. Send it.** Zip **the whole folder** (`../work/Shoulder_Stretch`) and drag the
+ZIP into the issue, together with the text printed by `controlla`. It holds the
+original video, the starting image, the prompts sent to the models and
+`meta.json`: we need them to check it. If the ZIP is over 25 MB, leave out
+`partenza_2.jpg` and the previews.
+
+Know Git? You can also open a pull request against `staging` after running
+`node agents/animazione.mjs integra ../work/Shoulder_Stretch --esercizio Shoulder_Stretch --autore <your GitHub name>`
+(it also needs Python): it puts the WebP, the original video, the recipe and
+the sources in the right places and updates [EXERCISES.md](EXERCISES.md).
+Don't change anything else in the PR.
+
+We run `controlla` again on your files, look at the animation and, if it's
+good, add it to the app with your name in [FONTI.md](FONTI.md).
+
+## Exercise without a request
+
+For a ⬜ exercise, open the issue and write, **in English**:
+
+- **View**: `tre_quarti` (body turned about 45°: the view for almost every
+  exercise), `lato` (side) or `fronte` (front), only if the movement isn't
+  clear from 3/4 (for example from the front for lateral raises);
+- **Start**: `avatar` if the exercise starts standing with no equipment, otherwise `genera`;
+- **Pose** (only with `genera`): the starting position in full sentences,
+  starting with "He…", with the equipment and, for one-side exercises, which
+  side is down or forward;
+- **Movement**: a single slow repetition, with "he" as the subject, and ending in the
+  starting position.
+
+Take a cue from the requests already in [`richieste.json`](richieste.json) and
+from the exercise instructions in [`assets/esercizi.json`](../../assets/esercizi.json)
+(field `istruzioni_en`). **Don't spend anything until we approve it**: we add
+it to `richieste.json`, and from there it holds for everyone.
+
+## Rules we check by eye
+
+The script takes care of format, background, size and loop. These you judge
+by looking at the previews, and then we check them:
 
 | | |
 |---|---|
-| **Final file** | animated WebP, **640 × 320 px** (2:1), **15–24 fps** (more is smoother: 24 if the size allows), **2–3 seconds**, infinite loop, no audio, **max 300 KB** (**400 KB** for exercises with equipment or machines, which have more detail) |
-| **What you send** | the WebP, or an MP4 video: we can convert it |
-| **Style** | drawn like the avatars (dark outlines, soft shading) **from the first to the last frame**. Video tools often drift towards a realistic 3D look halfway through the movement: if it happens, throw the video away and try again |
-| **Background** | plain light grey (about `#D9D9DB`), a slightly lighter floor, soft studio light |
-| **Nothing else** | no text, logo, watermark, gym or other people. Equipment only if the exercise needs it, in matte black or dark grey |
-| **Camera** | fixed: no zoom, no pan, no cuts. **Three-quarter view** (body turned about 45°, like the "Male: 3/4" avatar) for most exercises: it shows depth and the side of the movement at once. **Side** or **front view** only when the movement is unclear from three-quarters (e.g. front view for jumping jacks and lateral raises, side view for some floor exercises) |
-| **Framing** | the whole body and the equipment always inside the frame, with a little margin; feet near the bottom |
-| **Movement** | **one full repetition**, slow and controlled, with correct technique. It ends exactly in the starting position, so the loop is seamless |
-| **One side** (↔ in [EXERCISES.md](EXERCISES.md)) | the **right side** only (the side that works or stretches): the app mirrors the animation for the left. The character never switches sides in the video. Details and ready prompts (in Italian) in [LATI.md](LATI.md) |
-| **Character** | identical to the avatar images in every frame (face, hair, body, outfit). We compare them before accepting: if something changed, try again |
-
-For the correct technique, follow the exercise instructions in
-[`assets/esercizi.json`](../../assets/esercizi.json) (field `istruzioni_en`), the
-same ones the app shows.
-
-## How to make it
-
-Every animation is a **2D video made from the avatar images**: first a still image
-of the avatar in the starting position of the exercise, then an image-to-video
-tool that animates it. The avatars were made this way, so the style stays the
-same. No 3D models are needed. Any image or video tool is fine, as long as its
-terms let you publish the result (see [License and rights](#license-and-rights-important)).
-
-Why the extra image? An image-to-video tool uses the picture you give it as the
-**first frame**: starting from the standing avatar, the video would show the
-character getting into position, and the loop would not close. Some video tools
-can instead take the avatar as a **character reference** and generate the exercise
-directly: that's fine too, as long as the character stays identical and the
-result follows the rules.
-
-### 1. Starting image (e.g. Nano Banana / Gemini)
-
-Upload the avatar images (three-quarter, front and side) and ask for the starting
-position. If the exercise starts standing, the three-quarter avatar can already be
-the starting image: widen it to 16:9 with the same background and go to step 2.
-Prompts work best in English:
-
-```text
-Use the attached character exactly as he is: same face, hair, body and outfit
-(black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same drawing style:
-hand-drawn digital illustration with clean dark outlines and soft cel shading,
-not photorealistic, not a 3D render.
-Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen in the same three-quarter view as the attached image
-<or: from the side / from the front>.
-Full body visible with some margin, plain light grey background (#D9D9DB) with a
-slightly lighter floor, soft studio light. No text, no logo, no other objects
-<except: EQUIPMENT in matte black>. Wide 2:1 image.
-```
-
-For the female avatar, replace "he" and the outfit with "she" and "black sports
-bra with red details, black leggings with red stripes, ...".
-
-### 2. Animation (an image-to-video tool, e.g. Dreamina, Kling, Runway, Veo)
-
-Give it the starting image. If the tool lets you choose a **first and last frame**,
-use the same image for both: the loop will be seamless.
-
-```text
-The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, anatomically correct movement.
-The character, outfit and background stay exactly as in the image. Keep exactly
-the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
-every frame: the character must never turn photorealistic or 3D-rendered.
-The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
-loops seamlessly. No text.
-```
-
-Generate a few versions and keep the one with the best technique: hands, feet and
-joints must not bend in strange ways.
-
-### 3. Conversion to WebP (optional)
-
-If you have [ffmpeg](https://ffmpeg.org/), cut the best repetition (`-ss` is where
-it starts, `-t` how long it lasts) and convert:
-
-```sh
-ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
-  -c:v libwebp -quality 75 -compression_level 6 -loop 0 exercise_id.webp
-```
-
-If the file is over the limit, lower `-quality` (e.g. 60), use `fps=20` or `fps=15`, or shorten `-t`. If you
-don't have ffmpeg, just send the MP4.
+| **Style** | drawn like the avatars (dark outlines, soft shading, flat colours) **from the first to the last frame**: no photo, no realistic 3D |
+| **Character** | identical to the avatar in every frame: face, beard, hair, body, outfit (black tank top with red side panels, black shorts over black leggings, black wrist wraps, black shoes with red soles) |
+| **Movement** | one full repetition, slow and controlled, with the right technique: hands, feet and joints don't bend in strange ways |
+| **Framing** | still: no zoom, no camera moves, no cuts; the whole body and equipment always inside |
+| **Nothing else** | no text, logos, watermarks, gyms or other people. Equipment only if the exercise needs it, matte black or dark grey |
+| **One side** (↔ in [EXERCISES.md](EXERCISES.md)) | only the **right side** (the one that works or stretches): the app mirrors the animation for the left. The character doesn't switch sides in the video. Details in [LATI.md](LATI.md) |
 
 ## License and rights (important)
 
 - Animations are published under **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)**
-  (public domain, like the exercise photos), so anyone can reuse them. The two
-  avatars are CC0 too.
-- Send only things **you made**. Never use clips, frames or characters taken from
-  other apps, websites, videos or games, and never real people.
-- If you use an AI tool, check that its terms let you publish the result in an
-  open-source project (some free plans don't, or add a watermark), and **say which
-  tools and which plan you used** (free or paid). If you are not sure, ask in the
-  issue before sending: we would rather wait than publish something we may not use.
-- **Send the terms too**, for every tool you used (the image one and the video
-  one): the link to its terms of service and, if they are separate, to the plan
-  page, plus a screenshot or PDF of the part about who owns the results and
-  whether you can publish or use them commercially, and the date you made the
-  animation (terms change over time). We read them before accepting the
-  animation; if they don't allow it, we can't publish it, even if it's beautiful.
-- If the animation is made with AI, **send the original video too**, exactly as the
-  tool produced it, without converting it: it often carries credentials saying
-  "AI-generated", and some terms forbid removing them. We keep it in
-  [`originali/`](originali/) and record tools, date and terms in
-  [FONTI.md](FONTI.md), where the animation is marked as AI-made.
+  (public domain, like the exercise photos), so anyone can reuse them. The
+  avatars are CC0 too. By sending one, you agree to publish it this way.
+- We have already read the terms of both models (see [FONTI.md](FONTI.md)):
+  whoever made the result owns it and can publish it, as long as it's labelled
+  as AI-made and the credentials aren't removed from the video. So you don't
+  need to send us any terms: just use the recipe as it is.
+- The **original video** stays in [`originali/`](originali/) exactly as it came
+  out, because it carries the "AI-generated" credentials (C2PA). Tools, date
+  and author go in [FONTI.md](FONTI.md), where the animation is marked as AI-made.
+- Use only the project's avatar: never characters, frames or clips taken from
+  other apps, websites, videos or games, and never real people. Only the
+  project provides the avatar images: don't publish new versions or other views of them.
 - **The credit line under the exercise changes by itself.** The photos come
   from free-exercise-db, and the exercise page says so ("Images from
   free-exercise-db"). When one of our animations replaces the photos (that
@@ -155,21 +198,4 @@ don't have ffmpeg, just send the MP4.
   Avidididadi" (`animazioneFattaConIa`). If an animation made without AI
   ever arrives, this text must change too.
 
-## How to send it
-
-1. Check [EXERCISES.md](EXERCISES.md) and the open issues, so two people don't make
-   the same exercise.
-2. Open an issue with the **Exercise animation** template, saying which exercise
-   you are working on.
-3. When it's ready, drag the WebP or MP4 into the issue (max 10 MB), together with
-   the terms of the tools you used.
-4. We check the animation and the terms, then add it to the app.
-
-Comfortable with Git? Open a pull request against `staging` instead:
-
-- add the file to `assets/exercises/animated/`, named after the exercise ID in
-  lowercase (`Bodyweight_Walking_Lunge` → `bodyweight_walking_lunge.webp`);
-- add a line to `animazioniEsercizi` in `lib/animazioni_esercizi.dart`;
-- run `python tool/elenco_animazioni.py` to update [EXERCISES.md](EXERCISES.md).
-
-Thank you! 💪
+Thanks! 💪

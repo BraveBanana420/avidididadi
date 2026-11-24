@@ -84,4 +84,40 @@ void main() {
       contains('- $cartellaAnimazioni'),
     );
   });
+
+  test('le richieste approvate sono complete e di esercizi del catalogo', () {
+    // agents/animazione.mjs prende vista, partenza, posa e movimento solo da
+    // qui: una voce sbagliata fermerebbe chi fa l'animazione.
+    final esercizi = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).cast<Map<String, dynamic>>();
+    final ids = esercizi.map((e) => e['id']).toSet();
+    final richieste =
+        (jsonDecode(File('docs/animazioni/richieste.json').readAsStringSync())
+                as Map<String, dynamic>)['esercizi']
+            as Map<String, dynamic>;
+    for (final MapEntry(:key, :value) in richieste.entries) {
+      final r = value as Map<String, dynamic>;
+      expect(ids, contains(key));
+      expect(['tre_quarti', 'lato', 'fronte'], contains(r['vista']));
+      expect(['avatar', 'genera'], contains(r['partenza']), reason: key);
+      expect(r['movimento'], matches(RegExp(r'\bhe\b')), reason: key);
+      expect(
+        r['approvata'],
+        matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')),
+        reason: key,
+      );
+      if (r['partenza'] == 'genera') {
+        expect(r['posa'], startsWith('He '), reason: key);
+      } else {
+        // L'avatar è a corpo libero: con un attrezzo l'immagine va generata.
+        final e = esercizi.firstWhere((x) => x['id'] == key);
+        expect(e['attrezzi'], isEmpty, reason: key);
+      }
+    }
+    // Ogni animazione nell'app si può rifare con la stessa ricetta.
+    for (final id in animazioniEsercizi.keys) {
+      expect(richieste.keys, contains(id));
+    }
+  });
 }

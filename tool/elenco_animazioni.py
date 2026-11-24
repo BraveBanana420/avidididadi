@@ -1,5 +1,6 @@
 """Scrive docs/animazioni/EXERCISES.md: gli esercizi del catalogo, divisi per
-priorità, con quelli che hanno già un'animazione spuntati.
+priorità, con quelli che hanno già un'animazione spuntati e quelli che hanno
+una richiesta approvata (docs/animazioni/richieste.json) segnati come pronti.
 
 Da rilanciare dopo aver aggiunto un'animazione:
     python tool/elenco_animazioni.py
@@ -16,6 +17,10 @@ esercizi = json.loads((radice / "assets/esercizi.json").read_text(encoding="utf-
 mappa = (radice / "lib/animazioni_esercizi.dart").read_text(encoding="utf-8")
 blocco = re.search(r"animazioniEsercizi\s*=\s*<String, String>\{(.*?)\};", mappa, re.S)
 fatti = set(re.findall(r"'([^']+)'\s*:", blocco.group(1))) if blocco else set()
+
+# Gli id con una richiesta approvata: si possono fare subito.
+richieste = radice / "docs/animazioni/richieste.json"
+pronti = set(json.loads(richieste.read_text(encoding="utf-8"))["esercizi"]) if richieste.exists() else set()
 
 
 def priorita(e):
@@ -39,7 +44,11 @@ righe = [
     "Generato da `tool/elenco_animazioni.py`: non modificarlo a mano.",
     "",
     f"Done / Fatti: **{len(fatti)} / {len(esercizi)}**. "
+    f"Ready to make / Pronti da fare: **{len(pronti - fatti)}**. "
     "Before starting one, check the open issues so two people don't make the same animation.",
+    "",
+    "✅ done / fatta · 🟢 approved request, ready to make / richiesta approvata, si può fare · "
+    "⬜ no request yet: propose one in the issue first / niente richiesta: prima proponila nella issue",
     "",
     "How to make them / Come farle: [README.md](README.md) · [README.it.md](README.it.md)",
     "",
@@ -61,7 +70,7 @@ for p, titolo in gruppi.items():
         "|---|---|---|---|---|---|",
     ]
     for e in scelti:
-        spunta = "✅" if e["id"] in fatti else "⬜"
+        spunta = "✅" if e["id"] in fatti else "🟢" if e["id"] in pronti else "⬜"
         # Alternative di gruppi: [["cavi"], ["manubri", "panca"]] = cavi / manubri + panca.
         attrezzi = " / ".join(" + ".join(g) for g in e["attrezzi"]) or "—"
         tipo = "strength" if e["tipo"] == "forza" else "mobility"

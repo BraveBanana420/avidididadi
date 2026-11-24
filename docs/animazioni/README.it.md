@@ -2,153 +2,195 @@
 
 [English](README.md) · **Italiano**
 
-Ogni esercizio dell'app può mostrare una breve animazione che si ripete: nel
-dettaglio dell'esercizio e durante l'allenamento guidato. Partiamo **da zero**: per
-ora ogni esercizio mostra due foto. **Puoi aiutare senza scrivere codice.**
+Ogni esercizio dell'app può mostrare una breve animazione che si ripete, nel
+dettaglio dell'esercizio e durante l'allenamento guidato. Per ora quasi tutti
+mostrano ancora due foto: **puoi aiutare anche senza saper programmare**.
 
-L'elenco degli esercizi, con quelli già fatti: [EXERCISES.md](EXERCISES.md).
-Parti dalla *Priorità 1*: sono quelli che usa quasi ogni piano.
+Le animazioni devono sembrare tutte **lo stesso disegno**, chiunque le faccia.
+Per questo c'è **una sola ricetta**, uguale per tutti e che non si cambia: lo
+script [`agents/animazione.mjs`](../../agents/animazione.mjs) con le richieste
+approvate in [`richieste.json`](richieste.json). Animazioni fatte in un altro
+modo (altri strumenti, altre richieste, conversioni a mano) non possiamo
+accettarle, anche se sono belle.
 
-## Lo stile in una riga
+| Squat | Leg extension | Flessori dell'anca |
+|---|---|---|
+| <img src="../../assets/exercises/animated/bodyweight_squat.webp" width="240" alt="Squat a corpo libero"> | <img src="../../assets/exercises/animated/leg_extensions.webp" width="240" alt="Leg extension alla macchina"> | <img src="../../assets/exercises/animated/kneeling_hip_flexor.webp" width="240" alt="Flessori dell'anca in ginocchio"> |
 
-Stesso personaggio, stesso fondo grigio chiaro, inquadratura ferma, una
-ripetizione lenta che ricomincia senza scatti. Le prime animazioni accettate
-faranno da esempio per le successive.
+## Tre modi per aiutare
 
-## I due avatar
+1. **Fare un'animazione** con la ricetta, usando i tuoi crediti OpenRouter
+   (da **0,15 a 0,25 $** a esercizio, circa 0,15 $ in più se serve un secondo
+   video). Si parte dagli esercizi 🟢 di [EXERCISES.md](EXERCISES.md): hanno già
+   una richiesta approvata. Servono un computer e qualche comando nel terminale,
+   copiati da qui sotto.
+2. **Proporre la richiesta** per un esercizio ⬜ (non costa niente): in una issue
+   scrivi da dove si guarda, la posizione di partenza e il movimento (vedi
+   [Esercizio senza richiesta](#esercizio-senza-richiesta)). Quando la
+   approviamo, l'esercizio diventa 🟢 e chiunque può farlo.
+3. **Una donazione** su [Ko-fi](https://ko-fi.com/avidididadi), se non hai tempo
+   ma vuoi sostenere il progetto.
 
-Usa uno di questi due personaggi, **esattamente com'è** (viso, capelli, corpo,
-vestiti). Un'animazione = un personaggio. Scegli quello che preferisci.
+## La ricetta (non si cambia)
 
-| Uomo: davanti | Uomo: 3/4 | Uomo: lato | Uomo: dietro | Uomo: posa a T | Donna: davanti |
-|---|---|---|---|---|---|
-| <img src="avatar/male_front.jpg" width="140" alt="Avatar uomo, davanti"> | <img src="avatar/male_three_quarter.jpg" width="140" alt="Avatar uomo, tre quarti"> | <img src="avatar/male_side.jpg" width="140" alt="Avatar uomo, lato"> | <img src="avatar/male_back.jpg" width="140" alt="Avatar uomo, dietro"> | <img src="avatar/male_t_pose.jpg" width="140" alt="Avatar uomo, posa a T"> | <img src="avatar/female_front.jpg" width="140" alt="Avatar donna, davanti"> |
+| | Sempre così |
+|---|---|
+| **Personaggio** | l'avatar uomo del progetto ([`avatar/`](avatar/)), identico in ogni fotogramma |
+| **Vista, partenza e movimento** | solo da [`richieste.json`](richieste.json), approvate dal progetto |
+| **Immagine di partenza** | l'avatar stesso (esercizi che partono in piedi), oppure **Nano Banana 2.1** (Google) dagli avatar, con un testo fisso |
+| **Video** | **Seedance 2.0 Mini** (ByteDance), 480p, 4 s, senza audio, seed 42, primo e ultimo fotogramma = l'immagine di partenza, con un testo fisso |
+| **Dove** | l'API di [OpenRouter](https://openrouter.ai), con la tua chiave |
+| **WebP** | 640 × 320, fondo `#D9D9DB`, luce uniformata, 15-24 fps, 2-3 s, al massimo 300 KB (400 KB con attrezzi): lo fa lo script, sceglie da solo il più fluido che sta nel limite |
 
-Vestiti: canotta nera (top sportivo per la donna) con inserti rossi sui fianchi,
-leggings neri con righe rosse (sopra, pantaloncini neri per l'uomo), fasce nere ai
-polsi, scarpe nere con dettagli rossi.
+I testi mandati ai modelli li scrive lo script, non tu. Non modificare lo
+script, `richieste.json` o le impostazioni: il comando `controlla` se ne
+accorge, e noi lo rilanciamo sui file che mandi con la nostra copia.
+Lo script e le richieste li cambia solo il progetto. Quando cambiano, sale il
+numero della ricetta (`RICETTA` nello script) e si usa quella nuova.
 
-**Stile**: illustrazione digitale disegnata, come gli avatar: contorni scuri
-netti, ombre morbide, colori uniformi. **Non** una foto e **non** un 3D
-realistico: tutte le animazioni devono sembrare lo stesso disegno.
+## Cosa ti serve
 
-Le immagini degli avatar le fornisce solo il progetto: usale come riferimento per
-la tua animazione, ma non pubblicare nuove versioni o altre viste degli avatar.
+- **Una copia della repo**, dal ramo `staging`: `git clone -b staging https://github.com/BraveBanana420/avidididadi.git`,
+  oppure *Code → Download ZIP* da GitHub, scegliendo prima il ramo `staging`.
+  Prima di iniziare un esercizio aggiornala, così hai la ricetta e le richieste attuali.
+- **[Node.js](https://nodejs.org) 18** o più recente.
+- **[ffmpeg](https://ffmpeg.org/download.html) 8** o più recente (su Windows:
+  `winget install Gyan.FFmpeg`, poi riapri il terminale).
+- **Un account OpenRouter con qualche credito** e una **chiave con un tetto di
+  spesa** (per esempio 1 $), creata in [openrouter.ai/settings/keys](https://openrouter.ai/settings/keys).
+  Mettila nel terminale, **non** in un file della repo:
+  - Windows (PowerShell): `$env:OPENROUTER_VIDEO_KEY = "sk-or-..."`
+  - macOS / Linux: `export OPENROUTER_VIDEO_KEY="sk-or-..."`
 
-## Regole per ogni animazione
+  La chiave non finisce in nessun file che mandi. Non scriverla mai in una issue.
+
+Tutti i comandi si lanciano dalla cartella della repo. `node agents/animazione.mjs credito`
+ti dice quanto resta sulla chiave; lo script si ferma da solo prima di
+spendere se il credito non basta.
+
+## Passo per passo
+
+Esempio con `Shoulder_Stretch`: al suo posto metti l'ID del tuo esercizio.
+`../lavoro/Shoulder_Stretch` è la cartella di lavoro, accanto alla repo e non
+dentro, così non finisce in git per sbaglio: lo script la crea da solo.
+
+**0. Scegli e prenota.** Prendi un esercizio 🟢 da [EXERCISES.md](EXERCISES.md),
+controlla che non ci sia già una issue aperta e aprine una con il modulo
+**Exercise animation / Animazione esercizio**. Poi guarda la richiesta e quanto costa:
+
+```sh
+node agents/animazione.mjs richiesta --esercizio Shoulder_Stretch
+```
+
+**1. Immagine di partenza.**
+
+```sh
+node agents/animazione.mjs partenza ../lavoro/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+Se l'esercizio parte in piedi è gratis: l'immagine è l'avatar. Altrimenti
+Nano Banana ne fa 2 (`partenza_1.jpg`, `partenza_2.jpg`, circa 0,09 $). Aprile e
+scegli la migliore: personaggio identico all'avatar (viso, barba, capelli,
+vestiti, leggings neri **senza** righe), posizione giusta, il lato giusto (vedi
+[Per lato](#regole-che-guardiamo-a-occhio)), attrezzo senza marchi, tutto dentro
+l'immagine. Se nessuna va bene puoi rilanciare il comando una volta; se ancora
+non va, scrivilo nella issue invece di spendere ancora.
+
+**2. Video.** (1-3 minuti, circa 0,15 $)
+
+```sh
+node agents/animazione.mjs video ../lavoro/Shoulder_Stretch --esercizio Shoulder_Stretch --immagine partenza_1.jpg
+```
+
+Apri `anteprima-video.jpg` (6 fotogrammi) e, se vuoi, `video.mp4`. Controlla
+che la tecnica sia giusta, che il personaggio sia uguale dall'inizio alla fine
+e che resti **disegnato** fino all'ultimo fotogramma. A volte a metà diventa un
+3D realistico: in quel caso scartalo. Per riprovare rilancia lo stesso comando:
+costa un altro video. Dopo due video sbagliati fermati e scrivilo nella issue.
+
+**3. WebP.**
+
+```sh
+node agents/animazione.mjs converti ../lavoro/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+Guarda `anteprima-webp.png`. Se lo script avvisa che il giro potrebbe saltare
+(di solito la telecamera si sposta negli ultimi fotogrammi), trova il
+fotogramma che torna uguale al primo e rifai con `--fine <numero>`. Aggiungi
+anche `--accelera 1` se così dura già 2-3 secondi.
+
+**4. Controllo.**
+
+```sh
+node agents/animazione.mjs controlla ../lavoro/Shoulder_Stretch --esercizio Shoulder_Stretch
+```
+
+Deve finire con "Tutto a posto". Ogni riga `NO` dice cosa non va.
+
+**5. Mandala.** Comprimi **tutta la cartella** (`../lavoro/Shoulder_Stretch`) in
+uno ZIP e trascinalo nella issue, insieme al testo stampato da `controlla`.
+Dentro ci sono il video originale, l'immagine di partenza, i testi mandati ai
+modelli e `meta.json`: ci servono per controllarla. Se lo ZIP supera i 25 MB,
+lascia fuori `partenza_2.jpg` e le anteprime.
+
+Sai usare Git? Puoi anche aprire una pull request verso `staging` dopo aver lanciato
+`node agents/animazione.mjs integra ../lavoro/Shoulder_Stretch --esercizio Shoulder_Stretch --autore <il tuo nome GitHub>`
+(ci vuole anche Python): mette WebP, video originale, ricetta e fonti al
+posto giusto e aggiorna [EXERCISES.md](EXERCISES.md). Nella PR non cambiare
+nient'altro.
+
+Noi rilanciamo `controlla` sui tuoi file, guardiamo l'animazione e, se va
+bene, la mettiamo nell'app con il tuo nome in [FONTI.md](FONTI.md).
+
+## Esercizio senza richiesta
+
+Per un esercizio ⬜ apri la issue e scrivi, **in inglese** (i modelli lo capiscono meglio):
+
+- **Vista**: `tre_quarti` (corpo girato di circa 45°: è quella di quasi tutti gli
+  esercizi), `lato` o `fronte` (solo se da 3/4 il movimento non si capisce bene,
+  per esempio di fronte per le alzate laterali);
+- **Partenza**: `avatar` se l'esercizio parte in piedi a corpo libero, altrimenti `genera`;
+- **Posa** (solo con `genera`): la posizione di partenza in frasi complete, che
+  iniziano con "He…", con gli attrezzi e, per gli esercizi per lato, quale lato
+  è giù o avanti;
+- **Movimento**: una sola ripetizione lenta, con "he" come soggetto, che finisce nella
+  posizione di partenza.
+
+Prendi spunto dalle richieste che ci sono già in [`richieste.json`](richieste.json)
+e dalle istruzioni dell'esercizio in [`assets/esercizi.json`](../../assets/esercizi.json)
+(campo `istruzioni_en`). **Non spendere niente finché non la approviamo**: la
+aggiungiamo noi a `richieste.json`, e da lì vale per tutti.
+
+## Regole che guardiamo a occhio
+
+Lo script pensa a formato, fondo, peso e giro. Queste invece le giudichi tu
+guardando le anteprime, e poi le controlliamo noi:
 
 | | |
 |---|---|
-| **File finale** | WebP animato, **640 × 320 px** (2:1), **15–24 fotogrammi al secondo** (più sono, più è fluida: 24 se il peso lo permette), **2–3 secondi**, ripetizione infinita, senza audio, **al massimo 300 KB** (**400 KB** per gli esercizi con attrezzi o macchine, che hanno più dettagli) |
-| **Cosa mandi** | il WebP, oppure un video MP4: lo convertiamo noi |
-| **Stile** | disegnato come gli avatar (contorni scuri, ombre morbide) **dal primo all'ultimo fotogramma**. Gli strumenti video tendono a passare a un 3D realistico a metà movimento: se succede, scarta il video e riprova |
-| **Fondo** | grigio chiaro uniforme (circa `#D9D9DB`), pavimento appena più chiaro, luce morbida da studio |
+| **Stile** | disegnato come gli avatar (contorni scuri, ombre morbide, colori uniformi) **dal primo all'ultimo fotogramma**: niente foto né 3D realistico |
+| **Personaggio** | uguale all'avatar in ogni fotogramma: viso, barba, capelli, corpo, vestiti (canotta nera con inserti rossi, pantaloncini neri sopra leggings neri, fasce nere ai polsi, scarpe nere con suola rossa) |
+| **Movimento** | una ripetizione completa, lenta e controllata, con la tecnica giusta: mani, piedi e articolazioni non si piegano in modo strano |
+| **Inquadratura** | ferma: niente zoom, movimenti o tagli; tutto il corpo e gli attrezzi sempre dentro |
 | **Nient'altro** | niente scritte, loghi, filigrane, palestre o altre persone. Attrezzi solo se l'esercizio li richiede, neri o grigio scuro opachi |
-| **Inquadratura** | ferma: niente zoom, movimenti o tagli. **Da 3/4** (corpo girato di circa 45°, come l'avatar "Uomo: 3/4") per quasi tutti gli esercizi: si vedono insieme la profondità e il lato del movimento. **Di lato** o **di fronte** solo quando da 3/4 il movimento non si capisce bene (es. di fronte per jumping jack e alzate laterali, di lato per alcuni esercizi a terra) |
-| **Spazio** | tutto il corpo e gli attrezzi sempre dentro, con un po' di margine; piedi vicini al bordo in basso |
-| **Movimento** | **una ripetizione completa**, lenta e controllata, con la tecnica giusta. Finisce esattamente nella posizione di partenza, così il giro è continuo |
-| **Per lato** (↔ in [EXERCISES.md](EXERCISES.md)) | solo il **lato destro** (il lato che lavora o si allunga): l'app specchia l'animazione per il sinistro. Il personaggio non cambia lato nel video. Dettagli e richieste pronte in [LATI.md](LATI.md) |
-| **Personaggio** | uguale alle immagini degli avatar in ogni fotogramma (viso, capelli, corpo, vestiti). Li confrontiamo prima di accettarla: se qualcosa è cambiato, riprova |
-
-Per la tecnica giusta segui le istruzioni dell'esercizio in
-[`assets/esercizi.json`](../../assets/esercizi.json) (campo `istruzioni`), le
-stesse che mostra l'app.
-
-## Come farla
-
-Ogni animazione è un **video 2D che parte dalle immagini degli avatar**: prima
-un'immagine ferma dell'avatar nella posizione di partenza dell'esercizio, poi uno
-strumento da immagine a video che la anima. Gli avatar sono nati così, e lo stile
-resta uguale. Non servono modelli 3D. Va bene qualsiasi strumento per immagini e
-video, purché le sue condizioni permettano di pubblicare il risultato (vedi
-[Licenza e diritti](#licenza-e-diritti-importante)).
-
-Perché serve l'immagine in più? Uno strumento da immagine a video usa la foto che
-gli dai come **primo fotogramma**: partendo dall'avatar in piedi, il video
-mostrerebbe il personaggio che si mette in posizione, e il giro non si
-chiuderebbe. Alcuni strumenti video possono invece usare l'avatar come
-**riferimento del personaggio** e creare direttamente l'esercizio: va bene anche
-così, purché il personaggio resti identico e il risultato rispetti le regole.
-
-### 1. Immagine di partenza (es. Nano Banana / Gemini)
-
-Carica le immagini dell'avatar (3/4, davanti e lato) e chiedi la posizione di partenza.
-Se l'esercizio parte in piedi, l'avatar da 3/4 può già essere la posizione di
-partenza: allargalo a 16:9 con lo stesso fondo e passa al punto 2.
-Le richieste funzionano meglio in inglese, quindi lasciale così:
-
-```text
-Use the attached character exactly as he is: same face, hair, body and outfit
-(black sleeveless top with red side panels, black shorts over black leggings with
-red stripes, black wrist wraps, black shoes with red details), same drawing style:
-hand-drawn digital illustration with clean dark outlines and soft cel shading,
-not photorealistic, not a 3D render.
-Show him in the starting position of: <EXERCISE NAME> (<one line from the
-instructions>), seen in the same three-quarter view as the attached image
-<or: from the side / from the front>.
-Full body visible with some margin, plain light grey background (#D9D9DB) with a
-slightly lighter floor, soft studio light. No text, no logo, no other objects
-<except: EQUIPMENT in matte black>. Wide 2:1 image.
-```
-
-Per la donna sostituisci "he" e i vestiti con "she" e "black sports bra with red
-details, black leggings with red stripes, ...".
-
-### 2. Animazione (uno strumento da immagine a video, es. Dreamina, Kling, Runway, Veo)
-
-Dagli l'immagine di partenza. Se lo strumento permette di scegliere il **primo e
-l'ultimo fotogramma**, usa la stessa immagine per tutti e due: il giro sarà continuo.
-
-```text
-The character performs one slow, controlled repetition of <EXERCISE NAME>:
-<the movement in one or two lines>. Correct technique, anatomically correct movement.
-The character, outfit and background stay exactly as in the image. Keep exactly
-the same hand-drawn illustration style (clean dark outlines, soft cel shading) in
-every frame: the character must never turn photorealistic or 3D-rendered.
-The camera is completely still: no zoom, no pan, no cuts. The movement ends exactly in the starting position, so the video
-loops seamlessly. No text.
-```
-
-Fanne qualche versione e tieni quella con la tecnica migliore: mani, piedi e
-articolazioni non devono piegarsi in modo strano.
-
-### 3. Conversione in WebP (facoltativa)
-
-Se hai [ffmpeg](https://ffmpeg.org/), taglia la ripetizione migliore (`-ss` è dove
-inizia, `-t` quanto dura) e converti:
-
-```sh
-ffmpeg -ss 0.5 -t 2.0 -i video.mp4 -an \
-  -vf "fps=24,scale=640:320:force_original_aspect_ratio=increase,crop=640:320" \
-  -c:v libwebp -quality 75 -compression_level 6 -loop 0 id_esercizio.webp
-```
-
-Se il file supera il limite abbassa `-quality` (es. 60), usa `fps=20` o `fps=15`, oppure accorcia `-t`. Se non hai
-ffmpeg, manda direttamente l'MP4.
+| **Per lato** (↔ in [EXERCISES.md](EXERCISES.md)) | solo il **lato destro** (quello che lavora o si allunga): l'app specchia l'animazione per il sinistro. Il personaggio non cambia lato nel video. Dettagli in [LATI.md](LATI.md) |
 
 ## Licenza e diritti (importante)
 
 - Le animazioni sono pubblicate con licenza **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/deed.it)**
-  (pubblico dominio, come le foto degli esercizi): chiunque può riusarle. Anche i
-  due avatar sono CC0.
-- Manda solo cose **fatte da te**. Mai spezzoni, fotogrammi o personaggi presi da
-  altre app, siti, video o giochi, e mai persone vere.
-- Se usi uno strumento di intelligenza artificiale, controlla che le sue condizioni
-  permettano di pubblicare il risultato in un progetto open source (alcuni piani
-  gratuiti no, o aggiungono una filigrana) e **scrivi quali strumenti e quale piano
-  hai usato** (gratuito o a pagamento). Se non sei sicuro, chiedi nella issue prima
-  di mandarla: meglio aspettare che pubblicare qualcosa che non si può usare.
-- **Manda anche le condizioni**, per ogni strumento usato (quello per l'immagine e
-  quello per il video): il link alle condizioni d'uso e, se è separata, alla pagina
-  del piano, più uno screenshot o un PDF della parte che dice di chi sono i
-  risultati e se si possono pubblicare o usare per scopi commerciali, e la data in
-  cui hai fatto l'animazione (le condizioni cambiano nel tempo). Le leggiamo prima
-  di accettarla: se non lo permettono non possiamo pubblicarla, anche se è bellissima.
-- Se l'animazione è fatta con l'IA, **manda anche il video originale** così com'è
-  uscito dallo strumento, senza convertirlo: spesso contiene le credenziali che dicono
-  "generato con IA", e alcune condizioni vietano di toglierle. Lo teniamo in
-  [`originali/`](originali/) e scriviamo strumenti, data e termini in
-  [FONTI.md](FONTI.md), dove l'animazione è segnata come fatta con l'IA.
+  (pubblico dominio, come le foto degli esercizi): chiunque può riusarle. Anche gli
+  avatar sono CC0. Mandandone una, accetti di pubblicarla così.
+- Le condizioni dei due modelli le abbiamo già lette noi (vedi
+  [FONTI.md](FONTI.md)): chi ha fatto il risultato ne è il proprietario e può
+  pubblicarlo, purché si dica che è fatto con l'IA e non si tolgano le
+  credenziali dal video. Per questo non devi mandarci le condizioni, ma solo
+  usare la ricetta così com'è.
+- Il **video originale** resta in [`originali/`](originali/) così com'è uscito,
+  perché contiene le credenziali "generato con IA" (C2PA). Strumenti, data e
+  autore vanno in [FONTI.md](FONTI.md), dove l'animazione è segnata come fatta con l'IA.
+- Usa solo l'avatar del progetto: mai personaggi, fotogrammi o spezzoni presi
+  da altre app, siti, video o giochi, e mai persone vere. Le immagini degli
+  avatar le fornisce solo il progetto: non pubblicarne nuove versioni o altre viste.
 - **La scritta sotto l'esercizio cambia da sola.** Le foto vengono da
   free-exercise-db, e il dettaglio dell'esercizio lo dice ("Immagini da
   free-exercise-db"). Quando un'animazione nostra prende il posto delle foto
@@ -156,22 +198,5 @@ ffmpeg, manda direttamente l'MP4.
   tolta: al suo posto l'app scrive "Animazione creata con l'intelligenza
   artificiale per Avidididadi" (`animazioneFattaConIa`). Se un giorno arriva
   un'animazione fatta senza IA, va cambiato anche questo testo.
-
-## Come mandarla
-
-1. Guarda [EXERCISES.md](EXERCISES.md) e le issue aperte, per non fare in due lo
-   stesso esercizio.
-2. Apri una issue con il modulo **Exercise animation / Animazione esercizio**,
-   scrivendo su quale esercizio stai lavorando.
-3. Quando è pronta, trascina il WebP o l'MP4 nella issue (al massimo 10 MB),
-   insieme alle condizioni degli strumenti usati.
-4. Noi controlliamo l'animazione e le condizioni, poi la aggiungiamo all'app.
-
-Sai usare Git? Apri invece una pull request verso `staging`:
-
-- aggiungi il file in `assets/exercises/animated/`, con l'ID dell'esercizio in
-  minuscolo (`Bodyweight_Walking_Lunge` → `bodyweight_walking_lunge.webp`);
-- aggiungi una riga in `animazioniEsercizi` in `lib/animazioni_esercizi.dart`;
-- lancia `python tool/elenco_animazioni.py` per aggiornare [EXERCISES.md](EXERCISES.md).
 
 Grazie! 💪

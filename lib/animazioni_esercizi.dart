@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 /// Animazioni WebP degli esercizi, al posto dei due fotogrammi alternati.
-/// Per aggiungerne una: copia il file .webp in assets/exercises/animated/ e
-/// aggiungi qui una riga "id dell'esercizio: nome del file" (regole in
-/// docs/animazioni/README.md). Solo quelle fatte con gli avatar del progetto
+/// Si fanno solo con la ricetta unica (agents/animazione.mjs e
+/// docs/animazioni/richieste.json): il suo comando "integra" copia il .webp in
+/// assets/exercises/animated/ e aggiunge qui la riga "id dell'esercizio: nome
+/// del file" (guida in docs/animazioni/README.md). Solo quelle fatte con gli avatar del progetto
 /// e con licenza CC0; da dove viene ognuna è scritto in docs/animazioni/FONTI.md.
 const animazioniEsercizi = <String, String>{
   'Bodyweight_Squat': 'bodyweight_squat.webp',

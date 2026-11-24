@@ -1,5 +1,5 @@
 name: Exercise animation / Animazione esercizio
-description: Make or send an exercise animation / Crea o manda l'animazione di un esercizio
+description: Make an exercise animation with the project recipe, or propose the request for a new exercise / Fai l'animazione di un esercizio con la ricetta del progetto, o proponi la richiesta per un esercizio nuovo
 title: "Animation: <exercise ID>"
 labels: ["animation", "help wanted"]
 body:
@@ -7,62 +7,49 @@ body:
     attributes:
       value: |
         Read the guide first / Prima leggi la guida: [English](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/README.md) · [Italiano](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/README.it.md).
-        Open this issue when you **start**, so nobody else makes the same exercise. Attach the file later in a comment.
-        Apri la issue quando **inizi**, così nessun altro fa lo stesso esercizio. Il file lo alleghi dopo in un commento.
+        **Only animations made with the project recipe** (`agents/animazione.mjs` and `docs/animazioni/richieste.json`, unchanged) can be accepted. Open this issue when you **start**, so nobody else makes the same exercise.
+        **Si accettano solo animazioni fatte con la ricetta del progetto** (`agents/animazione.mjs` e `docs/animazioni/richieste.json`, senza modifiche). Apri la issue quando **inizi**, così nessun altro fa lo stesso esercizio.
   - type: input
     id: esercizio
     attributes:
       label: Exercise ID / ID dell'esercizio
-      description: From / Da [EXERCISES.md](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/EXERCISES.md), e.g. `Bodyweight_Walking_Lunge`
+      description: From / Da [EXERCISES.md](https://github.com/BraveBanana420/avidididadi/blob/staging/docs/animazioni/EXERCISES.md), e.g. `Shoulder_Stretch`
     validations:
       required: true
   - type: dropdown
-    id: avatar
+    id: cosa
     attributes:
-      label: Avatar
+      label: What are you doing? / Cosa fai?
       options:
-        - Male / Uomo
-        - Female / Donna
-    validations:
-      required: true
-  - type: dropdown
-    id: vista
-    attributes:
-      label: View / Vista
-      options:
-        - Side / Lato
-        - Front / Davanti
-        - Three-quarter / Tre quarti
+        - "I make the animation (🟢 exercise, approved request) / Faccio l'animazione (esercizio 🟢, richiesta approvata)"
+        - "I propose the request (⬜ exercise): I won't spend anything until it's approved / Propongo la richiesta (esercizio ⬜): non spendo niente finché non è approvata"
     validations:
       required: true
   - type: textarea
-    id: strumenti
+    id: richiesta
     attributes:
-      label: Tools and plans used / Strumenti e piani usati
-      description: For the image and for the video, with the plan (free / paid). / Per l'immagine e per il video, con il piano (gratuito / a pagamento).
+      label: Proposed request (only for ⬜ exercises) / Richiesta proposta (solo per gli esercizi ⬜)
+      description: In English. See "Exercise without a request" in the guide. / In inglese. Vedi "Esercizio senza richiesta" nella guida.
       placeholder: |
-        Image / Immagine: ... (free plan / piano gratuito)
-        Video: ... (paid plan "..." / piano a pagamento "...")
-    validations:
-      required: true
-  - type: textarea
-    id: condizioni
-    attributes:
-      label: Terms of the tools / Condizioni degli strumenti
-      description: |
-        For every tool: link to the terms of service (and to the plan page, if separate), a screenshot or PDF of the part about who owns the results and whether they can be published or used commercially, and the date you made the animation. You can add it later, but we need it before accepting.
-        Per ogni strumento: link alle condizioni d'uso (e alla pagina del piano, se separata), screenshot o PDF della parte su chi possiede i risultati e se si possono pubblicare o usare per scopi commerciali, e la data in cui hai fatto l'animazione. Puoi aggiungerle dopo, ma servono prima di accettarla.
+        vista: tre_quarti | lato | fronte
+        partenza: avatar | genera
+        posa: He ... (only with "genera")
+        movimento: he ... (one slow repetition, back to the starting position)
   - type: textarea
     id: file
     attributes:
-      label: File (WebP or MP4) / File (WebP o MP4)
-      description: Drag it here when it's ready (max 10 MB). You can also leave it empty and add it later. / Trascinalo qui quando è pronto, o aggiungilo dopo.
+      label: Files / File
+      description: |
+        When it's ready: the ZIP of the whole work folder (max 25 MB) and the text printed by `node agents/animazione.mjs controlla`. You can leave it empty now and add it later in a comment. Never paste your API key.
+        Quando è pronta: lo ZIP di tutta la cartella di lavoro (al massimo 25 MB) e il testo stampato da `node agents/animazione.mjs controlla`. Puoi lasciarlo vuoto e aggiungerlo dopo in un commento. Non incollare mai la tua chiave.
   - type: checkboxes
-    id: diritti
+    id: regole
     attributes:
-      label: Rights / Diritti
+      label: Rules / Regole
       options:
-        - label: I made it myself, with the project avatars, and it contains no material from other apps, websites, videos, games or real people. / L'ho fatta io, con gli avatar del progetto, senza materiale di altre app, siti, video, giochi o persone vere.
+        - label: I use the recipe as it is, from the current `staging`, without changing the script, the requests or the settings. / Uso la ricetta così com'è, dallo `staging` attuale, senza cambiare lo script, le richieste o le impostazioni.
           required: true
-        - label: The terms of the tools I used let me publish it, and I release it under CC0 1.0 (public domain). / Le condizioni degli strumenti usati mi permettono di pubblicarla, e la rilascio con licenza CC0 1.0 (pubblico dominio).
+        - label: The costs are on my own OpenRouter account, and I stop and ask here after two failed videos. / I costi sono sul mio account OpenRouter, e dopo due video sbagliati mi fermo e chiedo qui.
+          required: true
+        - label: I release what I send under CC0 1.0 (public domain), labelled as AI-made, with the original video. / Rilascio quello che mando con licenza CC0 1.0 (pubblico dominio), segnato come fatto con l'IA, con il video originale.
           required: true
