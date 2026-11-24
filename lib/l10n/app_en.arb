@@ -2050,5 +2050,15 @@
   "aggiornamentoAnnullato": "Update cancelled.",
   "haiUltimaVersione": "You already have the latest version ({p0}).",
   "githubNonRisponde": "GitHub isn't responding: try again later.",
-  "aggiornamentiPrivacy": "Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone's IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates."
+  "aggiornamentiPrivacy": "Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone's IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates.",
+  "piuCambiInsieme": "Several changes at once",
+  "piuCambiSpiegazione": "This reply changes several things: you can see each one below. They are applied all together, in this order: new plan, changes, workouts.",
+  "applicaTutto": "Apply all",
+  "tuttoApplicato": "All applied: you'll find it in the calendar.",
+  "pianoDaCorreggerePrima": "The new plan has some problems (see below): ask for a fix before applying everything.",
+  "fattoRiassunto": "Done: {p0}.",
+  "partePiano": "new plan with {p0} sessions",
+  "parteModifiche": "{p0} plan changes",
+  "parteAllenamenti": "{p0} workouts in the calendar",
+  "parteArrampicata": "{p0} climbing workouts"
 }

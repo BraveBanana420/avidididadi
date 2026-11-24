@@ -7515,4 +7515,46 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get aggiornamentiPrivacy =>
       'Μία φορά τη μέρα, όταν ανοίγει, η εφαρμογή ρωτά το GitHub (api.github.com) ποια είναι η τελευταία έκδοση που δημοσιεύτηκε. Αν πατήσεις Ενημέρωση, κατεβάζει το APK από το GitHub στην προσωρινή της μνήμη, ελέγχει ότι είναι ίδιο με αυτό που δημοσιεύτηκε, το δίνει στο πρόγραμμα εγκατάστασης του Android και το διαγράφει: στο τηλέφωνο δεν μένουν αρχεία. Το GitHub λαμβάνει τη διεύθυνση IP του τηλεφώνου και την έκδοση που ζητήθηκε, τίποτα άλλο. Μπορείς να απενεργοποιήσεις τον έλεγχο από το Προφίλ, στο Ενημερώσεις εφαρμογής.';
+
+  @override
+  String get piuCambiInsieme => 'Πολλές αλλαγές μαζί';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'Αυτή η απάντηση αλλάζει πολλά πράγματα: παρακάτω τα βλέπεις ένα ένα. Εφαρμόζονται όλα μαζί, με αυτή τη σειρά: νέο πλάνο, αλλαγές, προπονήσεις.';
+
+  @override
+  String get applicaTutto => 'Εφαρμογή όλων';
+
+  @override
+  String get tuttoApplicato => 'Όλα εφαρμόστηκαν: θα τα βρεις στο ημερολόγιο.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'Το νέο πλάνο έχει κάποια προβλήματα (τα βλέπεις παρακάτω): ζήτα να διορθωθεί πριν τα εφαρμόσεις όλα.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Έγινε: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'νέο πλάνο με $p0 προπονήσεις';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 αλλαγές στο πλάνο';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 προπονήσεις στο ημερολόγιο';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 προπονήσεις αναρρίχησης';
+  }
 }

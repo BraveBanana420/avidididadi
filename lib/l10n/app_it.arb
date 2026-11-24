@@ -10834,5 +10834,70 @@
   "aggiornamentiPrivacy": "Una volta al giorno, all'apertura, l'app chiede a GitHub (api.github.com) qual è l'ultima versione pubblicata. Se tocchi Aggiorna, scarica l'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l'indirizzo IP del telefono e la versione chiesta, nient'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell'app.",
   "@aggiornamentiPrivacy": {
     "description": "aggiornamento.dart"
+  },
+  "piuCambiInsieme": "Più cambi insieme",
+  "@piuCambiInsieme": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "piuCambiSpiegazione": "Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest'ordine: piano nuovo, modifiche, allenamenti.",
+  "@piuCambiSpiegazione": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "applicaTutto": "Applica tutto",
+  "@applicaTutto": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "tuttoApplicato": "Tutto applicato: lo trovi nel calendario.",
+  "@tuttoApplicato": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "pianoDaCorreggerePrima": "Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.",
+  "@pianoDaCorreggerePrima": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "fattoRiassunto": "Fatto: {p0}.",
+  "@fattoRiassunto": {
+    "description": "screens/schede_proposte.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "partePiano": "piano nuovo con {p0} sedute",
+  "@partePiano": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteModifiche": "{p0} modifiche al piano",
+  "@parteModifiche": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteAllenamenti": "{p0} allenamenti nel calendario",
+  "@parteAllenamenti": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteArrampicata": "{p0} allenamenti di arrampicata",
+  "@parteArrampicata": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   }
 }

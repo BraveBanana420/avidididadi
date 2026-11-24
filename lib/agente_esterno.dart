@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'assistente.dart';
@@ -79,19 +78,20 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
   if (codice.isEmpty || validi.isEmpty) {
     throw FormatException(l10n.codiceNellaRispostaNon);
   }
-  final interno = validi.last[2]!
-      .replaceAll(RegExp(r'```[a-zA-Z]*'), '')
-      .trim();
-  final Object? j;
-  try {
-    j = jsonDecode(interno);
-  } on FormatException {
-    throw FormatException(l10n.bloccoNonLeggibileChiedi);
+  // Tutti i blocchi con il codice giusto diventano una proposta sola: se
+  // l'agente ne scrive due (togliere una seduta e un allenamento preciso),
+  // basta incollare la risposta una volta.
+  final lette = <RispostaAgente>[];
+  for (final m in validi) {
+    final Map<dynamic, dynamic> j;
+    try {
+      j = jsonBlocco(m[2]!);
+    } on FormatException {
+      throw FormatException(l10n.bloccoNonLeggibileChiedi);
+    }
+    lette.add(rispostaDaJson(j));
   }
-  if (j is! Map) {
-    throw FormatException(l10n.bloccoNonLeggibileChiedi);
-  }
-  return rispostaDaJson(j);
+  return unisciRisposte(lette);
 }
 
 /// Esito dei controlli su un piano nuovo: se ci sono problemi non si applica.

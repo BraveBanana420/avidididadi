@@ -7482,4 +7482,46 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get aggiornamentiPrivacy =>
       'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.';
+
+  @override
+  String get piuCambiInsieme => 'Più cambi insieme';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti.';
+
+  @override
+  String get applicaTutto => 'Applica tutto';
+
+  @override
+  String get tuttoApplicato => 'Tutto applicato: lo trovi nel calendario.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Fatto: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'piano nuovo con $p0 sedute';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 modifiche al piano';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 allenamenti nel calendario';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 allenamenti di arrampicata';
+  }
 }

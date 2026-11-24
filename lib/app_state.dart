@@ -1686,7 +1686,15 @@ class AppState extends ChangeNotifier {
   Future<int> applicaProposta(MessaggioChat m) async {
     final proposta = m.proposta;
     if (proposta == null || m.applicata) return 0;
-    final esito = valutaProposta(piano, proposta, DateTime.now());
+    final n = await _applicaModifiche(proposta);
+    if (n == 0) return 0;
+    m.applicata = true;
+    notifyListeners();
+    return n;
+  }
+
+  Future<int> _applicaModifiche(List<Modifica> modifiche) async {
+    final esito = valutaProposta(piano, modifiche, DateTime.now());
     if (esito.accettate.isEmpty) return 0;
     piano = esito.piano;
     await Storage.writePiano(piano);
@@ -1694,9 +1702,35 @@ class AppState extends ChangeNotifier {
     await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
-    m.applicata = true;
-    notifyListeners();
     return esito.accettate.length;
+  }
+
+  /// Una risposta che cambia più cose insieme, applicata con un tocco solo:
+  /// prima il piano nuovo, poi le modifiche, poi gli allenamenti precisi e
+  /// l'arrampicata. Ogni parte si ricontrolla sul piano di quel momento.
+  /// Restituisce il riassunto per l'avviso (vuoto se non è cambiato niente).
+  Future<String> applicaTutto(RispostaAgente r, {MessaggioChat? da}) async {
+    final fatto = <String>[];
+    if (r.piano case final p?) {
+      final n = await applicaPianoAgente(p, da: da);
+      if (n > 0) fatto.add(l10n.partePiano(n));
+    }
+    if (r.modifiche case final m?) {
+      final n = await _applicaModifiche(m);
+      if (n > 0) fatto.add(l10n.parteModifiche(n));
+    }
+    if (r.allenamenti case final a?) {
+      final n = await applicaAllenamentiAgente(a, da: da);
+      if (n > 0) fatto.add(l10n.parteAllenamenti(n));
+    }
+    if (r.arrampicata case final a?) {
+      final (salvati, _) = await applicaProposteArrampicata(a, da: da);
+      if (salvati > 0) fatto.add(l10n.parteArrampicata(salvati));
+    }
+    _segnaApplicata(da);
+    if (da == null) propostaAgente?.applicata = true;
+    notifyListeners();
+    return fatto.join(', ');
   }
 
   /// FC a riposo misurata (da Health Connect, vedi recupero); 0 = sconosciuta.

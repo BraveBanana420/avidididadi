@@ -407,17 +407,21 @@ const settimaneMaxPiano = 16;
 /// l'assistente nella sua app: cambiare sedute, un piano nuovo, allenamenti
 /// passo per passo. [apri] e [chiudi] sono i segni attorno al JSON.
 String formatoProposte(String apri, String chiudi) =>
-    '''```
+    '''Metti TUTTO quello che cambi in UN SOLO blocco: le chiavi "modifiche", "piano", "allenamenti" e "arrampicata" possono stare insieme nello stesso JSON. Per esempio togliere una seduta, allungarne un'altra e mettere un allenamento preciso è un blocco solo, così l'utente copia una volta sola.
+```
 $apri
 {"modifiche": [
   {"azione": "cambia", "data": "AAAA-MM-GG", "sport": "Corsa", "durata_min": 40, "tipo": "Lento", "motivo": "..."},
   {"azione": "sposta", "data": "AAAA-MM-GG", "sport": "Forza", "nuova_data": "AAAA-MM-GG", "motivo": "..."},
+  {"azione": "scambia", "data": "AAAA-MM-GG", "sport": "Corsa", "nuova_data": "AAAA-MM-GG", "con_sport": "Bici", "motivo": "..."},
   {"azione": "rimuovi", "data": "AAAA-MM-GG", "sport": "Bici", "motivo": "..."},
   {"azione": "aggiungi", "data": "AAAA-MM-GG", "sport": "Nuoto", "durata_min": 45, "tipo": "Tecnica", "fascia": "Mattina", "motivo": "..."}
-]}
+],
+ "allenamenti": [ ...come sotto... ]}
 $chiudi
 ```
-Per un piano nuovo, che sostituisce il calendario da quella data in poi (al massimo $settimaneMaxPiano settimane), usa invece:
+Le azioni: "cambia" cambia durata (per allungare o accorciare), tipo o fascia di una seduta; "sposta" la porta in un giorno libero per quello sport; "scambia" inverte due sedute: quella di "sport" in "data" va in "nuova_data" e quella di "con_sport" (se manca, lo stesso sport) in "nuova_data" va in "data"; "rimuovi" la toglie; "aggiungi" ne mette una nuova. Per sostituire una seduta con uno sport diverso usa "rimuovi" e "aggiungi"; per sostituirla con un allenamento preciso dello stesso sport basta "allenamenti". L'app applica in ordine: piano nuovo, poi modifiche, poi allenamenti.
+Per un piano nuovo, che sostituisce il calendario da quella data in poi (al massimo $settimaneMaxPiano settimane), usa:
 ```
 $apri
 {"piano": {"da": "AAAA-MM-GG", "motivo": "...", "sedute": [
@@ -457,6 +461,36 @@ class RispostaAgente {
     this.arrampicata,
     this.motivo = '',
   });
+
+  /// Quante cose diverse propone (modifiche, piano, allenamenti, arrampicata):
+  /// con più di una si applicano tutte insieme.
+  int get parti => [
+    modifiche,
+    piano,
+    allenamenti,
+    arrampicata,
+  ].where((x) => x != null).length;
+}
+
+/// Una risposta con più blocchi diventa una proposta sola: le liste si
+/// sommano, del piano nuovo vale l'ultimo. Così basta un copia-incolla.
+RispostaAgente unisciRisposte(List<RispostaAgente> risposte) {
+  List<T>? somma<T>(Iterable<List<T>?> liste) {
+    final tutte = [for (final l in liste) ?l].expand((l) => l).toList();
+    return tutte.isEmpty ? null : tutte;
+  }
+
+  final motivi = {
+    for (final r in risposte)
+      if (r.motivo.isNotEmpty) r.motivo,
+  };
+  return RispostaAgente(
+    modifiche: somma(risposte.map((r) => r.modifiche)),
+    piano: risposte.map((r) => r.piano).nonNulls.lastOrNull,
+    allenamenti: somma(risposte.map((r) => r.allenamenti)),
+    arrampicata: somma(risposte.map((r) => r.arrampicata)),
+    motivo: motivi.join(' '),
+  );
 }
 
 /// Un piano nuovo proposto dall'agente, ancora da controllare.
@@ -467,64 +501,82 @@ class PianoAgente {
   const PianoAgente(this.da, this.motivo, this.sedute);
 }
 
-/// Le proposte in un blocco JSON (modifiche, piano nuovo o allenamenti).
-/// Lancia [FormatException] con un messaggio semplice se non va bene.
+/// Le proposte in un blocco JSON: modifiche, piano nuovo, allenamenti e
+/// arrampicata, anche più d'una insieme. Lancia [FormatException] con un
+/// messaggio semplice se non va bene.
 RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
   final arrampicata = j['arrampicata'];
-  if (arrampicata is List) {
-    return RispostaAgente(
-      arrampicata: proposteArrampicata(arrampicata, DateTime.now()),
-    );
-  }
   final allenamenti = j['allenamenti'];
+  final piano = j['piano'];
+  final listaModifiche = j['modifiche'];
+
+  List<AllenamentoAgente>? lista;
+  var motivo = '';
   if (allenamenti is List) {
-    final lista = [
+    lista = [
       for (final a in allenamenti)
         if (a is Map) allenamentoDa(Map<String, dynamic>.from(a)),
     ];
     if (lista.isEmpty) {
       throw FormatException(l10n.nelBloccoNonCi2);
     }
-    final motivi = {
+    motivo = {
       for (final a in allenamenti)
         if (a is Map && '${a['motivo'] ?? ''}'.trim().isNotEmpty)
           '${a['motivo']}'.trim(),
-    };
-    return RispostaAgente(allenamenti: lista, motivo: motivi.join(' '));
+    }.join(' ');
   }
-  final piano = j['piano'];
+
+  PianoAgente? pianoNuovo;
   if (piano is Map) {
     final da = parseData('${piano['da'] ?? ''}');
     final sedute = piano['sedute'];
     if (da == null || sedute is! List) {
       throw FormatException(l10n.nelPianoMancanoData);
     }
-    return RispostaAgente(
-      piano: PianoAgente(da, '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(), [
+    pianoNuovo = PianoAgente(
+      da,
+      '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(),
+      [
         for (final s in sedute)
           if (s is Map) Map<String, dynamic>.from(s),
-      ]),
+      ],
     );
   }
-  final lista = j['modifiche'];
+
   final modifiche = [
-    if (lista is List)
-      for (final x in lista)
+    if (listaModifiche is List)
+      for (final x in listaModifiche)
         if (x is Map) ?Modifica.da(Map<String, dynamic>.from(x)),
   ];
-  if (modifiche.isEmpty) {
+  final conModifiche = listaModifiche is List && listaModifiche.isNotEmpty;
+  if (conModifiche && modifiche.isEmpty) {
     throw FormatException(l10n.nelBloccoNonCi3);
   }
-  return RispostaAgente(modifiche: modifiche);
+
+  final r = RispostaAgente(
+    modifiche: modifiche.isEmpty ? null : modifiche,
+    piano: pianoNuovo,
+    allenamenti: lista,
+    arrampicata: arrampicata is List
+        ? proposteArrampicata(arrampicata, DateTime.now())
+        : null,
+    motivo: motivo,
+  );
+  if (r.parti == 0) throw FormatException(l10n.nelBloccoNonCi3);
+  return r;
 }
 
-enum Azione { cambia, sposta, rimuovi, aggiungi }
+enum Azione { cambia, sposta, scambia, rimuovi, aggiungi }
 
 class Modifica {
   final Azione azione;
   final DateTime data;
   final String sport;
   final DateTime? nuovaData;
+
+  /// Con "scambia": lo sport della seduta di [nuovaData] (vuoto = lo stesso).
+  final String conSport;
   final int? durataMin;
   final String tipo;
   final String fascia;
@@ -534,6 +586,7 @@ class Modifica {
     required this.data,
     required this.sport,
     this.nuovaData,
+    this.conSport = '',
     this.durataMin,
     this.tipo = '',
     this.fascia = '',
@@ -553,6 +606,7 @@ class Modifica {
       data: data,
       sport: sport,
       nuovaData: parseData('${m['nuova_data'] ?? ''}'),
+      conSport: normSport('${m['con_sport'] ?? ''}'),
       durataMin: durata is num ? durata.round() : int.tryParse('$durata'),
       tipo: '${m['tipo'] ?? ''}'.trim(),
       fascia: '${m['fascia'] ?? ''}'.trim(),
@@ -566,36 +620,43 @@ final _json = RegExp(
   r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata)"[\s\S]*\})\s*```',
 );
 
-/// Separa il testo della risposta dalla proposta: modifiche, piano nuovo o
-/// allenamenti. [errore] dice perché un blocco c'era ma non si legge.
+/// Separa il testo della risposta dalle proposte: modifiche, piano nuovo,
+/// allenamenti. Se l'assistente ne scrive più blocchi si uniscono in una
+/// proposta sola. [errore] dice perché un blocco c'era ma non si legge.
 ({String testo, RispostaAgente? proposta, String? errore}) leggiProposta(
   String risposta,
 ) {
-  final m = _blocco.firstMatch(risposta) ?? _json.firstMatch(risposta);
-  if (m == null) return (testo: risposta.trim(), proposta: null, errore: null);
-  final testo = risposta.replaceRange(m.start, m.end, '').trim();
-  final Object? j;
-  try {
-    j = jsonDecode(m.group(1)!.replaceAll(RegExp(r'```[a-zA-Z]*'), '').trim());
-  } on FormatException {
-    return (
-      testo: testo,
-      proposta: null,
-      errore: l10n.propostaNonLeggibileChiedi,
-    );
+  var blocchi = _blocco.allMatches(risposta).toList();
+  if (blocchi.isEmpty) blocchi = [?_json.firstMatch(risposta)];
+  if (blocchi.isEmpty) {
+    return (testo: risposta.trim(), proposta: null, errore: null);
   }
-  if (j is! Map) {
-    return (
-      testo: testo,
-      proposta: null,
-      errore: l10n.propostaNonLeggibileChiedi,
-    );
+  var testo = risposta;
+  for (final m in blocchi.reversed) {
+    testo = testo.replaceRange(m.start, m.end, '');
   }
+  testo = testo.trim();
   try {
-    return (testo: testo, proposta: rispostaDaJson(j), errore: null);
+    final lette = [
+      for (final m in blocchi) rispostaDaJson(jsonBlocco(m.group(1)!)),
+    ];
+    return (testo: testo, proposta: unisciRisposte(lette), errore: null);
   } on FormatException catch (e) {
     return (testo: testo, proposta: null, errore: e.message);
   }
+}
+
+/// Il JSON dentro un blocco (senza i segni ``` attorno). Lancia
+/// [FormatException] con un messaggio semplice se non si legge.
+Map<dynamic, dynamic> jsonBlocco(String interno) {
+  final Object? j;
+  try {
+    j = jsonDecode(interno.replaceAll(RegExp(r'```[a-zA-Z]*'), '').trim());
+  } on FormatException {
+    throw FormatException(l10n.propostaNonLeggibileChiedi);
+  }
+  if (j is! Map) throw FormatException(l10n.propostaNonLeggibileChiedi);
+  return j;
 }
 
 /// Solo le modifiche alle sedute (null se non ce ne sono).
@@ -682,6 +743,24 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
         return l10n.cGiaSedutaGiorno(m.sport);
       }
       p[i] = _copia(p[i], data: n, note: _nota(m));
+    case Azione.scambia:
+      if (i < 0) return l10n.quelGiornoNonC(m.sport);
+      final n = m.nuovaData;
+      if (n == null || n.isBefore(oggi) || n == m.data) {
+        return l10n.nuovaDataMancanteO;
+      }
+      final altro = m.conSport.isEmpty ? m.sport : m.conSport;
+      final j = p.indexWhere((r) => r.data == n && stessoSport(r.sport, altro));
+      if (j < 0) return l10n.quelGiornoNonC(altro);
+      // Se gli sport sono diversi, nessuno dei due deve trovare il suo doppione.
+      if (!stessoSport(altro, m.sport) &&
+          (p.any((r) => r.data == n && stessoSport(r.sport, m.sport)) ||
+              p.any((r) => r.data == m.data && stessoSport(r.sport, altro)))) {
+        return l10n.cGiaSedutaGiorno(m.sport);
+      }
+      final a = p[i], b = p[j];
+      p[i] = _copia(a, data: n, note: _nota(m));
+      p[j] = _copia(b, data: m.data, note: _nota(m));
     case Azione.rimuovi:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
       p.removeAt(i);
@@ -772,6 +851,9 @@ String descriviModifica(Modifica m, List<PianoRiga> piano) {
     Azione.rimuovi => l10n.tolta(dove, r == null ? '' : ' (${_seduta(r)})'),
     Azione.sposta =>
       '$dove → ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)}',
+    Azione.scambia =>
+      '$dove ⇄ ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)} '
+          '${m.conSport.isEmpty ? m.sport : m.conSport}',
     Azione.cambia =>
       '$dove: ${r == null ? '?' : _seduta(r)} → '
           '${[if (m.tipo.isNotEmpty) m.tipo else if (r != null && r.tipo.isNotEmpty) r.tipo, '${m.durataMin ?? r?.durataMin ?? 0} min'].join(' ')}',
