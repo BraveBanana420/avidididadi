@@ -61,8 +61,9 @@
       "vista": "tre_quarti",
       "partenza": "genera",
       "posa": "He is on all fours on a thin matte dark grey exercise mat: hands under the shoulders, knees under the hips, back flat, looking at the floor. This is the starting position of hip circles for the right hip.",
-      "movimento": "starting with the right knee on the mat next to the left knee, and keeping the right knee bent at 90 degrees the whole time, he draws one wide, slow circle with the right knee: first he lifts it backwards and up behind the hip, then opens it out to the side to the farthest point of the circle, with the thigh raised sideways at hip height, then brings it forward towards the right elbow and down, closing the circle with the right knee back on the mat next to the left knee. The thigh and the lower leg move together as one piece: the right foot never kicks back or forward.",
-      "approvata": "2026-11-24"
+      "movimento": "keeping the back flat, the arms straight and still and the right knee bent at 90 degrees the whole time, he draws slow, continuous, complete circles with the right knee, one after the other, each in about two seconds, always in the same direction: the knee moves backwards and up behind the hip, opens out to the side to the farthest point of the circle, with the thigh raised sideways at hip height and the lower leg horizontal with the foot pointing backwards, then comes forward close to the right elbow and goes down next to the left knee, and straight on into the next circle. The thigh and the lower leg move together as one piece.",
+      "approvata": "2026-11-24",
+      "ultimo_fotogramma": false
     },
     "Shoulder_Stretch": {
       "vista": "fronte",
@@ -114,8 +115,9 @@
       "vista": "fronte",
       "partenza": "genera",
       "posa": "He stands upright facing the viewer, feet hip-width apart, both arms held straight out to the sides at shoulder height, palms facing down, elbows straight: a T shape.",
-      "movimento": "keeping both arms completely straight, like two rigid sticks, with the elbows locked the whole time, he rotates them only from the shoulders so that each hand draws three small, slow forward circles in the air, all the same size, about 40 cm across, the arms staying out to the sides at shoulder height; then he stops with the arms straight out to the sides as in the starting T position.",
-      "approvata": "2026-11-24"
+      "movimento": "keeping both arms completely straight out to the sides at shoulder height, elbows locked, shoulders level and the body still, he rotates the arms from the shoulders so that each hand draws small, quick, continuous circles in the air, about 25 cm across, about one circle per second: up, backwards, down and forwards, always the same size and in the same direction, one circle after the other without stopping.",
+      "approvata": "2026-11-24",
+      "ultimo_fotogramma": false
     },
     "Worlds_Greatest_Stretch": {
       "vista": "tre_quarti",

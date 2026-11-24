@@ -32,9 +32,25 @@ const API = 'https://openrouter.ai/api/v1';
  */
 const RICETTA = 1;
 const MODELLO_IMMAGINE = 'google/gemini-nano-banana-2.1';
-const MODELLO_VIDEO = 'bytedance/seedance-2.0-mini';
-/** Impostazioni fisse del video: 480p basta per 640x320 e costa poco; il seed fisso rende i risultati più simili. */
-const IMPOSTAZIONI_VIDEO = { resolution: '480p', aspect_ratio: '16:9', duration: 4, generate_audio: false, seed: 42 };
+/**
+ * Modelli video della ricetta, con impostazioni fisse. Di norma Seedance (480p
+ * basta per 640x320 e costa poco; il seed fisso rende i risultati più simili).
+ * Per ora solo Seedance: Veo 3.1 Lite e Wan 3.0, provati il 24/11 sulle
+ * circonduzioni, non facevano meglio. Un altro modello si aggiunge qui e si
+ * sceglie per esercizio con "video" in richieste.json.
+ */
+const MODELLI_VIDEO = {
+  seedance: { modello: 'bytedance/seedance-2.0-mini', nome: 'Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed")', impostazioni: { resolution: '480p', aspect_ratio: '16:9', duration: 4, generate_audio: false, seed: 42 } },
+};
+const videoDi = (r) => MODELLI_VIDEO[r?.video || 'seedance'];
+/**
+ * Fotogrammi imposti al video: di norma il primo e l'ultimo uguali (il giro si
+ * chiude). Con "ultimo_fotogramma": false solo il primo: per i movimenti
+ * circolari, che con l'ultimo imposto tornano indietro per la stessa strada;
+ * il giro si chiude poi tagliando con converti --fine.
+ */
+const fotogrammiDi = (r) => (r?.ultimo_fotogramma === false ? ['first_frame'] : ['first_frame', 'last_frame']);
+const fotogrammiVideo = (pv) => pv?.fotogrammi ?? ['first_frame', 'last_frame'];
 /** Costi indicativi (22/11/2026): servono solo per il controllo prima di spendere. */
 const COSTO = { immagine: 0.045, video: 0.15 };
 /** Fondo delle animazioni nell'app (sfondoAnimazioni in lib/animazioni_esercizi.dart). */
@@ -92,7 +108,7 @@ const limiteKb = (e) => (conAttrezzi(e) ? 400 : 300);
 function richiesta(id) {
   const r = leggiJson(path.join(RADICE, 'docs', 'animazioni', 'richieste.json'), {}).esercizi?.[id];
   if (!r) throw new Error(`${id} has no approved request yet in docs/animazioni/richieste.json: propose one in an "Exercise animation" issue and wait for the ok before spending. / ${id} non ha ancora una richiesta approvata: proponila nella issue e aspetta l'ok prima di spendere.`);
-  const tipoOk = r.tipo === undefined || ['animazione', 'posizione'].includes(r.tipo);
+  const tipoOk = (r.tipo === undefined || ['animazione', 'posizione'].includes(r.tipo)) && (r.video === undefined || r.video in MODELLI_VIDEO);
   if (!tipoOk || !VISTE[r.vista] || !['avatar', 'genera'].includes(r.partenza) || (!ferma(r) && !r.movimento) || (r.partenza === 'genera' && !r.posa)) throw new Error(`Richiesta di ${id} incompleta in docs/animazioni/richieste.json`);
   return r;
 }
@@ -132,7 +148,7 @@ function verificheFerma(dir, e, r, { v, ok, ko, pp, pv, ultimo, leggi }) {
     v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
   }
   if (daVideo) {
-    v(pv?.modello === MODELLO_VIDEO && JSON.stringify(pv?.impostazioni) === JSON.stringify(IMPOSTAZIONI_VIDEO) && impronta(pv?.richiesta) === impronta(r), 'frame of a recipe video / fotogramma di un video della ricetta');
+    v(pv?.modello === videoDi(r).modello && JSON.stringify(pv?.impostazioni) === JSON.stringify(videoDi(r).impostazioni) && impronta(pv?.richiesta) === impronta(r) && JSON.stringify(fotogrammiVideo(pv)) === JSON.stringify(fotogrammiDi(r)), 'frame of a recipe video / fotogramma di un video della ricetta');
     v(stessoTesto(leggi('prompt-video.txt'), promptVideo(r)), 'video prompt not changed / richiesta del video non cambiata');
     v(fs.existsSync(path.join(dir, 'video.mp4')), 'original video.mp4 present / c\'è il video originale');
   }
@@ -168,7 +184,7 @@ function verifiche(dir, e) {
     v(pp?.modello === MODELLO_IMMAGINE, `start image made with ${MODELLO_IMMAGINE} / immagine di partenza fatta con ${MODELLO_IMMAGINE}`);
     v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
   } else v(pp?.fonte === `avatar ${VISTE[r.vista].avatar} allargato a 16:9`, `start image = the avatar ${VISTE[r.vista].avatar} / immagine di partenza = l'avatar`);
-  v(pv?.modello === MODELLO_VIDEO && JSON.stringify(pv?.impostazioni) === JSON.stringify(IMPOSTAZIONI_VIDEO), `video made with ${MODELLO_VIDEO}, ${IMPOSTAZIONI_VIDEO.resolution}, ${IMPOSTAZIONI_VIDEO.duration} s, seed ${IMPOSTAZIONI_VIDEO.seed} / video con modello e impostazioni fisse`);
+  v(pv?.modello === videoDi(r).modello && JSON.stringify(pv?.impostazioni) === JSON.stringify(videoDi(r).impostazioni) && JSON.stringify(fotogrammiVideo(pv)) === JSON.stringify(fotogrammiDi(r)), `video made with ${videoDi(r).modello}, ${videoDi(r).impostazioni.resolution}, ${videoDi(r).impostazioni.duration} s, seed ${videoDi(r).impostazioni.seed} / video con modello e impostazioni fisse`);
   v(stessoTesto(leggi('prompt-video.txt'), promptVideo(r)), 'video prompt not changed / richiesta del video non cambiata');
   v(fs.existsSync(path.join(dir, 'video.mp4')) && fs.existsSync(path.join(dir, 'partenza_scelta.jpg')), 'original video.mp4 and partenza_scelta.jpg present, as they came out / ci sono il video originale e l\'immagine di partenza');
   const webp = path.join(dir, `${nomeFile(e.id)}.webp`);
@@ -259,7 +275,7 @@ const comandi = {
   async richiesta(a) {
     const e = esercizio(a.esercizio);
     const r = richiesta(e.id);
-    stampa(`${e.id} (${e.nome_en}), approvata il ${r.approvata}\nVista: ${r.vista}\nPartenza: ${r.partenza === 'avatar' ? "l'avatar stesso (gratis)" : `generata con Nano Banana (~${(2 * COSTO.immagine).toFixed(2)} $ per 2 prove)\nPosa: ${r.posa}`}\nMovimento: ${r.movimento}\nVideo: Seedance 2.0 Mini, ~${COSTO.video.toFixed(2)} $ a prova\nLimite del WebP: ${limiteKb(e)} KB`);
+    stampa(`${e.id} (${e.nome_en}), approvata il ${r.approvata}\nVista: ${r.vista}\nPartenza: ${r.partenza === 'avatar' ? "l'avatar stesso (gratis)" : `generata con Nano Banana (~${(2 * COSTO.immagine).toFixed(2)} $ per 2 prove)\nPosa: ${r.posa}`}\nMovimento: ${r.movimento}\nVideo: ${videoDi(r).nome}, ~${COSTO.video.toFixed(2)} $ a prova\nLimite del WebP: ${limiteKb(e)} KB`);
   },
 
   /** Immagine di partenza 16:9: l'avatar allargato (gratis) o generata con Nano Banana. */
@@ -325,7 +341,7 @@ const comandi = {
     const r = await attendi429(() => fetch(`${API}/videos`, {
       method: 'POST',
       headers: H,
-      body: JSON.stringify({ model: MODELLO_VIDEO, prompt, frame_images: [frame('first_frame'), frame('last_frame')], ...IMPOSTAZIONI_VIDEO }),
+      body: JSON.stringify({ model: videoDi(ric).modello, prompt, frame_images: fotogrammiDi(ric).map(frame), ...videoDi(ric).impostazioni }),
     }));
     const t = await r.text();
     if (!r.ok) throw new Error(`Video rifiutato: ${r.status} ${t.slice(0, 400)}`);
@@ -339,7 +355,7 @@ const comandi = {
         const v = await fetch(`${API}/videos/${job.id}/content?index=0`, { headers: H });
         fs.writeFileSync(path.join(dir, 'video.mp4'), Buffer.from(await v.arrayBuffer()));
         fs.copyFileSync(img, path.join(dir, 'partenza_scelta.jpg'));
-        const tot = aggiungiMeta(dir, { passo: 'video', esercizio: e.id, richiesta: ric, modello: MODELLO_VIDEO, impostazioni: IMPOSTAZIONI_VIDEO, immagine: path.basename(img), costo: s.usage?.cost ?? 0 });
+        const tot = aggiungiMeta(dir, { passo: 'video', esercizio: e.id, richiesta: ric, modello: videoDi(ric).modello, impostazioni: videoDi(ric).impostazioni, fotogrammi: fotogrammiDi(ric), immagine: path.basename(img), costo: s.usage?.cost ?? 0 });
         // Anteprima: 6 fotogrammi per giudicare tecnica e personaggio.
         ffmpeg(['-i', path.join(dir, 'video.mp4'), '-vf', "select='not(mod(n\\,19))',scale=-2:240,tile=3x2", '-frames:v', '1', '-fps_mode', 'vfr', path.join(dir, 'anteprima-video.jpg')]);
         return stampa(`Fatto in ${Math.round((Date.now() - t0) / 1000)} s, spesa ${(s.usage?.cost ?? 0).toFixed(3)} $ (in tutto ${tot.costo.toFixed(3)} $). Anteprima: ${path.join(dir, 'anteprima-video.jpg')}`);
@@ -508,12 +524,12 @@ const comandi = {
       const autore = typeof a.autore === 'string' ? `made by ${a.autore.replace(/[|`]/g, '')} with the project recipe · ` : '';
       const pf = p.ferma || {};
       const descrizione = fissa
-        ? `still image · ${String(pf.fonte).startsWith('video') ? `frame ${pf.fonte.replace(/\D+/g, '')} of a video made with Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API from that start frame` : 'the start frame itself'} · ffmpeg: background to \`#D9D9DB\`, ${pf.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}`
+        ? `still image · ${String(pf.fonte).startsWith('video') ? `frame ${pf.fonte.replace(/\D+/g, '')} of a video made with ${videoDi(richiesta(e.id)).nome} via the OpenRouter API from that start frame` : 'the start frame itself'} · ffmpeg: background to \`#D9D9DB\`, ${pf.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}`
         : null;
       const originale = conVideo ? `[\`${nome}.mp4\`](originali/${nome}.mp4), ` : '';
       const riga = descrizione
         ? `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · ${descrizione} | ${new Date().toISOString().slice(0, 10)} | ${originale}[start frame](originali/${nome}_primo.jpg) |`
-        : `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, ${tempo}, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
+        : `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · video: ${videoDi(richiesta(e.id)).nome} via the OpenRouter API, ${fotogrammiDi(richiesta(e.id)).length === 2 ? 'first and last frame = start frame' : 'first frame = start frame, loop closed by cutting'} · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, ${tempo}, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
       // In fondo alla tabella delle animazioni (la prima che inizia con "| File | Exercise").
       const eol = testo.includes('\r\n') ? '\r\n' : '\n';
       const righe = testo.split(/\r?\n/);

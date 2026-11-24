@@ -67,9 +67,25 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
    braccio destro in alto, 2 s ferma in alto, poi torna per la stessa strada
    con `--andata 26`; la mano esce un po' in alto). Le istruzioni dell'app sono
    state corrette allo stesso modo (mano opposta alla gamba avanti).
-   **Ancora da fare:** `Hip_Circles_prone`: Seedance fa avanti e indietro
-   (una mezzaluna) invece del giro completo del ginocchio; da riprovare con
-   un'altra vista o un altro modello.
+   **In pausa: le circonduzioni** (`Hip_Circles_prone`, e `Arm_Circles` che
+   non è per lato ma ha lo stesso problema). Il ginocchio (o la mano) deve fare
+   un giro completo e continuo; i modelli fanno invece un avanti e indietro
+   sulla stessa mezzaluna. Provato il 24/11, circa 1,6 $ in tutto:
+   - Seedance con primo = ultimo fotogramma (3 volte): mezzaluna. Anche il
+     testo fisso della ricetta ("una ripetizione… finisce nella posizione di
+     partenza") spinge a tornare per la stessa strada;
+   - Veo 3.1 Lite e Wan 3.0: calcio indietro / braccia su e giù;
+   - Seedance senza ultimo fotogramma (`"ultimo_fotogramma": false`): giri di
+     fila, ma ancora non il cerchio giusto; per le braccia disegna scie bianche;
+   - fotogrammi chiave con Nano Banana (partenza, dietro, lato, avanti): il
+     punto "di lato" visto da 3/4 davanti esce sempre con la gamba tesa
+     indietro (la coscia verso la telecamera è troppo scorciata);
+   - due mezzi giri uniti (Seedance fino al punto più alto + un video dal punto
+     alto alla partenza): si ferma a metà e la scarpa cambia.
+   Da provare: una vista da dietro e di lato (l'apertura laterale si vede nel
+   piano dell'immagine), un testo fisso diverso per i movimenti circolari, o
+   un modello video nuovo. Riferimento del movimento: un giro ogni ~2 s
+   (anca) o ~1 s (braccia), ginocchio sempre a 90°, braccia sempre tese.
 2. ~~Lato sinistro = animazione specchiata~~: fatto. Nel blocco con
    `lato == latoSinistro` (e nella pausa "Cambia lato" prima), l'allenamento
    guidato mostra la stessa animazione girata in orizzontale
