@@ -2739,8 +2739,8 @@
       }
     }
   },
-  "cadenzaScendiSotto": "Cadenza {p0}, scendi sotto {p1}.",
-  "@cadenzaScendiSotto": {
+  "cadenzaScendiA": "Cadenza {p0}, scendi a {p1}.",
+  "@cadenzaScendiA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2751,8 +2751,8 @@
       }
     }
   },
-  "cadenzaSaliSopra": "Cadenza {p0}, sali sopra {p1}.",
-  "@cadenzaSaliSopra": {
+  "cadenzaSaliA": "Cadenza {p0}, sali a {p1}.",
+  "@cadenzaSaliA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2793,8 +2793,8 @@
       }
     }
   },
-  "wattScendiSotto": "{p0} watt, scendi sotto {p1}.",
-  "@wattScendiSotto": {
+  "wattScendiA": "{p0} watt, scendi a {p1}.",
+  "@wattScendiA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2805,8 +2805,8 @@
       }
     }
   },
-  "wattSaliSopra": "{p0} watt, sali sopra {p1}.",
-  "@wattSaliSopra": {
+  "wattSaliA": "{p0} watt, sali a {p1}.",
+  "@wattSaliA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {

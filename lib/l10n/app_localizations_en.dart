@@ -1854,13 +1854,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Cadence $p0, go below $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Cadence $p0, go down to $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Cadence $p0, go above $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Cadence $p0, go up to $p1.';
   }
 
   @override
@@ -1874,13 +1874,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 watts, go below $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 watts, go down to $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 watts, go above $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 watts, go up to $p1.';
   }
 
   @override

@@ -1871,13 +1871,13 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Συχνότητα $p0, κατέβα κάτω από $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Συχνότητα $p0, κατέβα στις $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Συχνότητα $p0, ανέβα πάνω από $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Συχνότητα $p0, ανέβα στις $p1.';
   }
 
   @override
@@ -1891,13 +1891,13 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 βατ, κατέβα κάτω από $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 βατ, κατέβα στα $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 βατ, ανέβα πάνω από $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 βατ, ανέβα στα $p1.';
   }
 
   @override

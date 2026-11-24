@@ -3115,14 +3115,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, scendi sotto {p1}.'**
-  String cadenzaScendiSotto(Object p0, Object p1);
+  /// **'Cadenza {p0}, scendi a {p1}.'**
+  String cadenzaScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, sali sopra {p1}.'**
-  String cadenzaSaliSopra(Object p0, Object p1);
+  /// **'Cadenza {p0}, sali a {p1}.'**
+  String cadenzaSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
@@ -3139,14 +3139,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, scendi sotto {p1}.'**
-  String wattScendiSotto(Object p0, Object p1);
+  /// **'{p0} watt, scendi a {p1}.'**
+  String wattScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, sali sopra {p1}.'**
-  String wattSaliSopra(Object p0, Object p1);
+  /// **'{p0} watt, sali a {p1}.'**
+  String wattSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
