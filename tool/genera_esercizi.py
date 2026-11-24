@@ -386,7 +386,7 @@ E = [
     # --- Mobilità
     ('Worlds_Greatest_Stretch', 'World\'s greatest stretch', '', 'mobilita', [
         'Fai un affondo in avanti con il ginocchio posteriore vicino a terra e resta 10-20 secondi.',
-        'Appoggia a terra la mano dal lato della gamba anteriore e ruota il busto portando l\'altro braccio verso il soffitto.',
+        'Appoggia a terra la mano opposta alla gamba anteriore e ruota il busto verso la gamba anteriore, portando l\'altro braccio teso verso il soffitto.',
         'Infine distendi la gamba anteriore portando il bacino indietro per allungare i femorali, poi cambia lato.']),
     ('Cat_Stretch', 'Allungamento del gatto', '', 'mobilita', [
         'A quattro zampe, mani sotto le spalle e ginocchia sotto le anche.',

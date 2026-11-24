@@ -1,0 +1,126 @@
+{
+  "esercizio": "Worlds_Greatest_Stretch",
+  "ricetta": 1,
+  "autore": null,
+  "prompt_partenza": "Use the attached character exactly as he is: same face, hair, beard, body proportions and outfit exactly as in the attached images (black sleeveless top with red side panels, black shorts with red side panels over plain black leggings, black wrist wraps, black shoes with red soles), same drawing style (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours, like the attached avatar images. Not a photo, not a photorealistic or 3D render).\nShow him in the starting position of: WORLD'S GREATEST STRETCH. He is in a deep lunge on a thin matte dark grey exercise mat: the RIGHT foot is forward and flat with the right knee bent right above the ankle, the LEFT leg is stretched back with the left knee just above the mat, both hands on the mat on the inside of the right foot. This is the starting position of the world's greatest stretch for the right side.\nSeen in the same three-quarter view as the first attached image: the body is turned about 45 degrees, facing towards the left side of the image.\nFull body visible with some margin, in the centre of the image, feet near the bottom. Plain light grey background (#D9D9DB) with a slightly lighter floor, soft studio light, soft shadow on the floor. No other objects, no other people, no text. Wide 16:9 image.",
+  "prompt_video": "The character performs one slow, controlled repetition: keeping the left hand on the mat and the hips low, he rotates the torso towards the right leg and lifts the straight right arm up towards the ceiling, following the hand with his eyes, holds for a moment and brings the right hand back to the mat; then he moves the hips back and straightens the right leg, toes up, and bends it again returning to the deep lunge. The movement ends exactly in the starting pose. Correct technique, anatomically correct movement. The character, outfit, equipment and plain grey background stay exactly as in the image. Keep exactly the same drawing style as the image in every frame (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours. Not a photo, not a photorealistic or 3D render): the character must never turn photorealistic or 3D-rendered. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.",
+  "passi": [
+    {
+      "passo": "partenza",
+      "esercizio": "Worlds_Greatest_Stretch",
+      "richiesta": {
+        "vista": "tre_quarti",
+        "partenza": "genera",
+        "posa": "He is in a deep lunge on a thin matte dark grey exercise mat: the RIGHT foot is forward and flat with the right knee bent right above the ankle, the LEFT leg is stretched back with the left knee just above the mat, both hands on the mat on the inside of the right foot. This is the starting position of the world's greatest stretch for the right side.",
+        "movimento": "keeping the left hand on the mat and the hips low, he rotates the torso towards the right leg and lifts the straight right arm up towards the ceiling, following the hand with his eyes, holds for a moment and brings the right hand back to the mat; then he moves the hips back and straightens the right leg, toes up, and bends it again returning to the deep lunge.",
+        "approvata": "2026-11-24"
+      },
+      "modello": "google/gemini-nano-banana-2.1",
+      "fonte": "google/gemini-nano-banana-2.1 (OpenRouter) dagli avatar",
+      "costo": 0.0851775,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:03:49.230Z"
+    },
+    {
+      "passo": "video",
+      "esercizio": "Worlds_Greatest_Stretch",
+      "richiesta": {
+        "vista": "tre_quarti",
+        "partenza": "genera",
+        "posa": "He is in a deep lunge on a thin matte dark grey exercise mat: the RIGHT foot is forward and flat with the right knee bent right above the ankle, the LEFT leg is stretched back with the left knee just above the mat, both hands on the mat on the inside of the right foot. This is the starting position of the world's greatest stretch for the right side.",
+        "movimento": "keeping the left hand on the mat and the hips low, he rotates the torso towards the right leg and lifts the straight right arm up towards the ceiling, following the hand with his eyes, holds for a moment and brings the right hand back to the mat; then he moves the hips back and straightens the right leg, toes up, and bends it again returning to the deep lunge.",
+        "approvata": "2026-11-24"
+      },
+      "modello": "bytedance/seedance-2.0-mini",
+      "impostazioni": {
+        "resolution": "480p",
+        "aspect_ratio": "16:9",
+        "duration": 4,
+        "generate_audio": false,
+        "seed": 42
+      },
+      "immagine": "partenza_1.jpg",
+      "costo": 0.142079,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:05:53.447Z"
+    },
+    {
+      "passo": "converti",
+      "file": "worlds_greatest_stretch.webp",
+      "fps": 20,
+      "q": 55,
+      "kb": 290,
+      "intero": true,
+      "fine": 57,
+      "accelera": 1,
+      "pausa": {
+        "n": 30,
+        "s": 2
+      },
+      "limite_kb": 300,
+      "giro_ssim": 0.875816,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:19:25.218Z"
+    },
+    {
+      "passo": "converti",
+      "file": "worlds_greatest_stretch.webp",
+      "fps": 20,
+      "q": 55,
+      "kb": 296,
+      "intero": true,
+      "fine": 58,
+      "accelera": 1,
+      "pausa": {
+        "n": 30,
+        "s": 2
+      },
+      "limite_kb": 300,
+      "giro_ssim": 0.896182,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:20:03.879Z"
+    },
+    {
+      "passo": "converti",
+      "file": "worlds_greatest_stretch.webp",
+      "fps": 20,
+      "q": 45,
+      "kb": 268,
+      "intero": true,
+      "fine": 59,
+      "accelera": 1,
+      "pausa": {
+        "n": 30,
+        "s": 2
+      },
+      "limite_kb": 300,
+      "giro_ssim": 0.878821,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:20:50.331Z"
+    },
+    {
+      "passo": "converti",
+      "file": "worlds_greatest_stretch.webp",
+      "fps": 24,
+      "q": 45,
+      "kb": 294,
+      "intero": true,
+      "fine": null,
+      "andata": 26,
+      "accelera": 1,
+      "pausa": {
+        "n": 26,
+        "s": 2
+      },
+      "limite_kb": 300,
+      "giro_ssim": 0.969566,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:22:18.823Z"
+    }
+  ],
+  "costo": 0.2273
+}

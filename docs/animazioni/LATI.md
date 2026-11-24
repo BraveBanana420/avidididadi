@@ -55,12 +55,21 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
 1. **Animazioni del lato destro**, partendo dai 13 di mobilità qui sotto (sono
    a tempo, quindi quelli dove il problema si sente di più), con la ricetta
    unica di [README.it.md](README.it.md) (`agents/animazione.mjs`). Le
-   richieste approvate sono in [`richieste.json`](richieste.json): ci sono
-   tutte tranne `Worlds_Greatest_Stretch`.
+   richieste approvate sono in [`richieste.json`](richieste.json), tutte e 13.
    **Fatto (24/11):** `Kneeling_Hip_Flexor`, da 3/4 invece che di lato (si
    vedono insieme l'anca che si allunga e il busto dritto). Il video spostava
    la telecamera alla fine: tagliato al fotogramma 68, dove torna uguale al
    primo (`converti --fine 68 --accelera 1`).
+   **Fatti (24/11), scelti tra i più proposti dai generatori:**
+   `Seated_Floor_Hamstring_Stretch` (2 s fermo piegato in avanti,
+   `--pausa 50:2`), `Runners_Stretch` (immagine ferma, tipo "posizione"),
+   `Worlds_Greatest_Stretch` (solo la rotazione, mano sinistra a terra e
+   braccio destro in alto, 2 s ferma in alto, poi torna per la stessa strada
+   con `--andata 26`; la mano esce un po' in alto). Le istruzioni dell'app sono
+   state corrette allo stesso modo (mano opposta alla gamba avanti).
+   **Ancora da fare:** `Hip_Circles_prone`: Seedance fa avanti e indietro
+   (una mezzaluna) invece del giro completo del ginocchio; da riprovare con
+   un'altra vista o un altro modello.
 2. ~~Lato sinistro = animazione specchiata~~: fatto. Nel blocco con
    `lato == latoSinistro` (e nella pausa "Cambia lato" prima), l'allenamento
    guidato mostra la stessa animazione girata in orizzontale
@@ -84,14 +93,9 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
 
 ## Richieste (mobilità, lato destro)
 
-Vista, posizione di partenza e movimento di 12 dei 13 di mobilità sono in
+Vista, posizione di partenza e movimento dei 13 di mobilità sono in
 [`richieste.json`](richieste.json), l'unico posto da cui li legge lo script
 (lì sono scritti per intero, in inglese, con il lato destro).
-
-Manca solo **`Worlds_Greatest_Stretch`** (3/4, affondo profondo con il piede
-destro avanti), da controllare prima di approvarlo: la proposta era "mano destra
-a terra, busto che ruota alzando il braccio sinistro", ma le istruzioni
-dell'app dicono la mano "dal lato della gamba anteriore".
 
 ## Gli altri esercizi per lato (forza)
 

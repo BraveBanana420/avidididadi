@@ -15,6 +15,7 @@ const animazioniEsercizi = <String, String>{
   'Seated_Floor_Hamstring_Stretch': 'seated_floor_hamstring_stretch.webp',
   'Runners_Stretch': 'runners_stretch.webp',
   'Childs_Pose': 'childs_pose.webp',
+  'Worlds_Greatest_Stretch': 'worlds_greatest_stretch.webp',
 };
 
 /// Esercizi della mappa che hanno un'immagine ferma invece di un video: gli
