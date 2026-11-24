@@ -7,7 +7,7 @@
 //   node agents/animazione.mjs credito
 //   node agents/animazione.mjs partenza <cartella> --esercizio <ID> [--vista tre_quarti|lato|fronte] [--avatar | --quante 2 --posa "..."]
 //   node agents/animazione.mjs video <cartella> --immagine <file> --movimento "..."
-//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio]
+//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio] [--fine N] [--accelera 1]
 //   node agents/animazione.mjs integra <cartella> --esercizio <ID> --repo <cartella della repo>
 //
 // Regole delle animazioni: docs/animazioni/README.md.
@@ -226,10 +226,15 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
     const intero = a.intero ? true : a.taglio ? false : conAttrezzi(e);
     const limite = limiteKb(e);
     const uscita = path.join(dir, `${nomeFile(e.id)}.webp`);
+    // --fine N: il video finisce al fotogramma N (dove torna uguale al primo:
+    // a volte il modello muove la telecamera alla fine e il giro salterebbe).
+    // --accelera: 0.75 di norma (4 s diventano 3); 1 per lasciarlo com'è.
+    const fine = Number(a.fine || 0);
+    const accelera = Number(a.accelera || 0.75);
     const prove = [[24, 75], [24, 65], [24, 55], [24, 45], [20, 55], [20, 45], [15, 55], [15, 45]];
     let scelta = null;
     for (const [fps, q] of prove) {
-      await codifica(ingresso, uscita, { fps, q, intero });
+      await codifica(ingresso, uscita, { fps, q, intero, fine, accelera });
       const kb = Math.round(fs.statSync(uscita).size / 1024);
       stampa(`  ${fps} fps, qualità ${q}: ${kb} KB`);
       if (kb <= limite) {
@@ -240,7 +245,7 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
     if (!scelta) throw new Error(`Anche a 15 fps e qualità 45 supera ${limite} KB: accorcia il movimento o rigenera`);
     const ssim = giro(uscita);
     ffmpeg(['-i', uscita, '-vf', "select='not(mod(n\\,12))',tile=3x2", '-frames:v', '1', '-fps_mode', 'vfr', path.join(dir, 'anteprima-webp.png')]);
-    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, limite_kb: limite, giro_ssim: ssim, costo: 0 });
+    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, fine: fine || null, accelera, limite_kb: limite, giro_ssim: ssim, costo: 0 });
     stampa(`${uscita}: ${scelta.kb} KB (limite ${limite}), ${scelta.fps} fps, qualità ${scelta.q}, ${intero ? 'fotogramma intero' : 'taglio 2:1'}; primo/ultimo fotogramma simili al ${(ssim * 100).toFixed(1)}%${ssim < 0.95 ? ' ⚠️ il giro potrebbe saltare' : ''}. Anteprima: ${path.join(dir, 'anteprima-webp.png')}`);
   },
 
@@ -279,7 +284,9 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
       const p = Object.fromEntries(m.passi.map((x) => [x.passo, x]));
       const partenza = p.partenza?.fonte?.startsWith('avatar') ? `start frame: ${p.partenza.fonte.replace('allargato a', 'widened to')}` : `start frame: Nano Banana 2.1 (Google) via the OpenRouter API, paid credits, from the project avatars`;
       const c = p.converti || {};
-      const riga = `| \`${nome}.webp\` | \`${e.id}\` | AI · ${partenza} · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, sped up to 3 s, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
+      const accelera = c.accelera ?? 0.75;
+      const tempo = [c.fine ? `cut at frame ${c.fine}, where it matches the first` : '', accelera !== 1 ? `sped up ×${(1 / accelera).toFixed(2)}` : 'not sped up'].filter(Boolean).join(', ');
+      const riga = `| \`${nome}.webp\` | \`${e.id}\` | AI · ${partenza} · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, ${tempo}, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
       // In fondo alla tabella delle animazioni (la prima che inizia con "| File | Exercise").
       const eol = testo.includes('\r\n') ? '\r\n' : '\n';
       const righe = testo.split(/\r?\n/);
@@ -297,7 +304,7 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
 };
 
 /** Luce uguale in ogni fotogramma (i video scuriscono piano piano) e fondo a #D9D9DB. */
-function codifica(ingresso, uscita, { fps, q, intero }) {
+function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 }) {
   const { w: W, h: H, fps: fpsIn } = sonda(ingresso);
   const dim = W * H * 3;
   const wIn = 2 * Math.round((320 * W) / H / 2);
@@ -307,7 +314,7 @@ function codifica(ingresso, uscita, { fps, q, intero }) {
   const adatta = intero
     ? `format=rgb24,scale=${wIn}:320,split=3[c][l][r];[l]crop=2:320:0:0,scale=${sx}:320[ls];[r]crop=2:320:${wIn - 2}:0,scale=${dx}:320[rs];[ls][c][rs]hstack=3`
     : 'crop=iw:iw/2,scale=640:320';
-  const filtri = `setpts=0.75*PTS,fps=${fps},${adatta}`;
+  const filtri = `setpts=${accelera}*PTS,fps=${fps},${adatta}`;
   const fondo = (f) => {
     // Mediana di quattro riquadri sul bordo (in alto e a metà dei lati): solo fondo.
     const medie = [[8, 8], [W - 48, 8], [8, Math.floor(H / 3)], [W - 48, Math.floor(H / 3)]].map(([x0, y0]) => {
@@ -325,7 +332,7 @@ function codifica(ingresso, uscita, { fps, q, intero }) {
     const enc = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${W}x${H}`, '-r', fpsIn, '-i', '-', '-an', '-vf', filtri, '-c:v', 'libwebp_anim', '-quality', String(q), '-compression_level', '6', '-loop', '0', uscita]);
     let errore = '';
     enc.stderr.on('data', (d) => (errore += d));
-    let buf = Buffer.alloc(0), rif = null, base = null;
+    let buf = Buffer.alloc(0), rif = null, base = null, letti = 0;
     const curva = (v) => {
       const p = [[0, 0], [128, 128], [rif, FONDO], [255, 255]];
       for (let k = 1; k < p.length; k++) if (v <= p[k][0]) return p[k - 1][1] + ((v - p[k - 1][0]) * (p[k][1] - p[k - 1][1])) / (p[k][0] - p[k - 1][0]);
@@ -336,6 +343,8 @@ function codifica(ingresso, uscita, { fps, q, intero }) {
       while (buf.length >= dim) {
         const f = Buffer.from(buf.subarray(0, dim));
         buf = buf.subarray(dim);
+        // Dopo il fotogramma di chiusura del giro non serve altro.
+        if (fine && letti++ > fine) continue;
         const b = fondo(f);
         if (rif === null) rif = b;
         const lut = new Uint8Array(256);

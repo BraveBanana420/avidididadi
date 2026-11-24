@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 const animazioniEsercizi = <String, String>{
   'Bodyweight_Squat': 'bodyweight_squat.webp',
   'Leg_Extensions': 'leg_extensions.webp',
+  'Kneeling_Hip_Flexor': 'kneeling_hip_flexor.webp',
 };
 
 /// Cartella delle animazioni negli asset dell'app.

@@ -56,13 +56,18 @@ mountain climber, torsione della colonna…) non c'entrano: lì il timer va bene
    a tempo, quindi quelli dove il problema si sente di più). Stesso metodo
    delle prime due (vedi [FONTI.md](FONTI.md)): immagine di partenza con Nano
    Banana dagli avatar, video con Seedance 2.0 Mini, tutto tramite l'API di
-   OpenRouter (crediti a pagamento). La chiave OpenRouter è sul PC: si lavora
-   da lì con Remote Control.
-2. **Lato sinistro = animazione specchiata.** Nel blocco con
-   `lato == latoSinistro`, l'allenamento guidato mostra la stessa animazione
-   girata in orizzontale (`Transform.flip(flipX: true)` attorno ad
-   `AnimazioneEsercizio`). Nel dettaglio dell'esercizio resta quella normale.
-   Così si genera un video solo per esercizio.
+   OpenRouter (crediti a pagamento), con `agents/animazione.mjs`. La chiave
+   OpenRouter è sul PC: si lavora da lì con Remote Control.
+   **Fatto (24/11):** `Kneeling_Hip_Flexor`, da 3/4 invece che di lato (si
+   vedono insieme l'anca che si allunga e il busto dritto). Il video spostava
+   la telecamera alla fine: tagliato al fotogramma 68, dove torna uguale al
+   primo (`converti --fine 68 --accelera 1`).
+2. ~~Lato sinistro = animazione specchiata~~: fatto. Nel blocco con
+   `lato == latoSinistro` (e nella pausa "Cambia lato" prima), l'allenamento
+   guidato mostra la stessa animazione girata in orizzontale
+   (`_AnteprimaEsercizio(specchio: true)`, con `Transform.flip`). Nel
+   dettaglio dell'esercizio resta quella normale. Così si genera un video solo
+   per esercizio.
 3. ~~Qualche secondo per cambiare lato~~: fatto. Tra i due lati c'è una pausa
    "Cambia lato" di `pausaCambioLato` (5 s), un blocco di recupero con
    `lato == latoSinistro` (`Blocco.cambioLato`); la voce dice "Cambia lato.".

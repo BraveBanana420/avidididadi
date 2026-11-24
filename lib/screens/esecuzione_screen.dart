@@ -1687,6 +1687,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       _AnteprimaEsercizio(
                                         esercizio: esercizio!,
                                         larghezza: 112,
+                                        specchio: b.lato == latoSinistro,
                                       ),
                                       const SizedBox(width: 14),
                                     ],
@@ -1788,6 +1789,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                   _AnteprimaEsercizio(
                                     esercizio: esercizioPoi!,
                                     larghezza: 84,
+                                    specchio: prossimo.lato == latoSinistro,
                                   )
                                 else
                                   const IconaQuadrata(
@@ -1830,6 +1832,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 da: const Offset(24, 0),
                                 child: _AnteprimaEsercizio(
                                   esercizio: esercizio!,
+                                  specchio: b.lato == latoSinistro,
                                 ),
                               ),
                             ),
@@ -3134,11 +3137,20 @@ bool _conAnteprima(Esercizio? e) =>
 class _AnteprimaEsercizio extends StatelessWidget {
   final Esercizio esercizio;
   final double? larghezza;
-  const _AnteprimaEsercizio({required this.esercizio, this.larghezza});
+
+  /// Lato sinistro di un esercizio per lato: le animazioni mostrano il lato
+  /// destro, quindi qui si girano in orizzontale (un video solo per esercizio).
+  final bool specchio;
+  const _AnteprimaEsercizio({
+    required this.esercizio,
+    this.larghezza,
+    this.specchio = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final e = esercizio;
+    Widget girata(Widget w) => Transform.flip(flipX: specchio, child: w);
     return Semantics(
       button: true,
       label: l10n.guardaMovimento(e.nome),
@@ -3149,7 +3161,9 @@ class _AnteprimaEsercizio extends StatelessWidget {
             title: Text(e.nome),
             content: SizedBox(
               width: double.maxFinite,
-              child: AnimazioneEsercizio(id: e.id, immagini: e.immagini),
+              child: girata(
+                AnimazioneEsercizio(id: e.id, immagini: e.immagini),
+              ),
             ),
             actions: [
               TextButton(
@@ -3161,10 +3175,12 @@ class _AnteprimaEsercizio extends StatelessWidget {
         ),
         child: SizedBox(
           width: larghezza,
-          child: AnimazioneEsercizio(
-            id: e.id,
-            immagini: e.immagini,
-            mini: larghezza != null,
+          child: girata(
+            AnimazioneEsercizio(
+              id: e.id,
+              immagini: e.immagini,
+              mini: larghezza != null,
+            ),
           ),
         ),
       ),
