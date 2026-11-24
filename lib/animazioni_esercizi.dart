@@ -10,6 +10,9 @@ const animazioniEsercizi = <String, String>{
   'Bodyweight_Squat': 'bodyweight_squat.webp',
   'Leg_Extensions': 'leg_extensions.webp',
   'Kneeling_Hip_Flexor': 'kneeling_hip_flexor.webp',
+  'Bodyweight_Walking_Lunge': 'bodyweight_walking_lunge.webp',
+  'Hip_Circles_prone': 'hip_circles_prone.webp',
+  'Seated_Floor_Hamstring_Stretch': 'seated_floor_hamstring_stretch.webp',
 };
 
 /// Cartella delle animazioni negli asset dell'app.

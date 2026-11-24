@@ -95,6 +95,19 @@
       "posa": "He sits on a foam roller placed under the glutes, hands on the floor behind him, the LEFT foot flat on the floor with the knee bent, the RIGHT ankle crossed over the left knee. This is the starting position of a foam roller piriformis release for the right glute.",
       "movimento": "he leans slightly towards the right side and rolls slowly back and forth over the right glute, a short distance, then comes back to the starting position.",
       "approvata": "2026-11-23"
+    },
+    "Childs_Pose": {
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He kneels on a thin matte dark grey exercise mat, sitting back on his heels, knees slightly apart, torso upright, hands resting on the thighs.",
+      "movimento": "he slowly bends forward from the hips, sliding both hands along the mat far in front of him until the arms are stretched out and his forehead is close to the mat, holds for a moment breathing slowly, then slowly walks the hands back and returns to the upright kneeling position.",
+      "approvata": "2026-11-24"
+    },
+    "Bodyweight_Walking_Lunge": {
+      "vista": "tre_quarti",
+      "partenza": "avatar",
+      "movimento": "he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together.",
+      "approvata": "2026-11-24"
     }
   }
 }
