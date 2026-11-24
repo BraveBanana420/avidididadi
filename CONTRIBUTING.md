@@ -6,7 +6,7 @@ are both fine (le issue e le PR in italiano vanno benissimo).
 ## Before you start
 
 - For a bug, open an issue with the **Bug report** template: app version
-  (Profile → Data and connections, at the bottom), phone and Android version,
+  (at the very bottom of the Profile page), phone and Android version,
   steps to reproduce.
 - For a new feature, open a **Feature request** first, so we can agree on the
   idea before you write code.

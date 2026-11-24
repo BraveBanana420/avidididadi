@@ -28,7 +28,7 @@ body:
     id: versione
     attributes:
       label: App version / Versione dell'app
-      description: Profile → Data and connections, at the bottom (e.g. "version 0.1.0 (32)").
+      description: At the very bottom of the Profile page, e.g. "Avidididadi · version 1.1.0" (test versions also show a commit, e.g. "(36) · test a1b2c3d"). / In fondo alla pagina del Profilo, es. "Avidididadi · versione 1.1.0" (le versioni di prova mostrano anche il commit).
     validations:
       required: true
   - type: input
