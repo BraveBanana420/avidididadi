@@ -14,6 +14,7 @@ const animazioniEsercizi = <String, String>{
   'Bodyweight_Walking_Lunge': 'bodyweight_walking_lunge.webp',
   'Seated_Floor_Hamstring_Stretch': 'seated_floor_hamstring_stretch.webp',
   'Runners_Stretch': 'runners_stretch.webp',
+  'Childs_Pose': 'childs_pose.webp',
 };
 
 /// Esercizi della mappa che hanno un'immagine ferma invece di un video: gli
@@ -21,6 +22,7 @@ const animazioniEsercizi = <String, String>{
 /// Anche questo elenco lo aggiorna "integra".
 const posizioniFerme = <String>{
   'Runners_Stretch',
+  'Childs_Pose',
 };
 
 /// Cartella delle animazioni negli asset dell'app.

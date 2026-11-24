@@ -8,7 +8,7 @@
 //   node agents/animazione.mjs richiesta --esercizio <ID>
 //   node agents/animazione.mjs partenza <cartella> --esercizio <ID> [--quante 2]
 //   node agents/animazione.mjs video <cartella> --esercizio <ID> [--immagine partenza_N.jpg]
-//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio] [--fine N] [--accelera 1] [--pausa N:S]
+//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio] [--fine N | --andata N] [--accelera 1] [--pausa N:S]
 //   node agents/animazione.mjs ferma <cartella> --esercizio <ID> [--immagine partenza_N.jpg | --fotogramma N]
 //   node agents/animazione.mjs controlla <cartella> --esercizio <ID>
 //   node agents/animazione.mjs integra <cartella> --esercizio <ID> [--repo <cartella>] [--autore <nome>]
@@ -115,6 +115,8 @@ function promptVideo(r) {
 }
 /** Le parti della richiesta che cambiano immagine e video (non il tipo né la data di approvazione). */
 const impronta = (r) => JSON.stringify([r?.vista, r?.partenza, r?.posa ?? null, r?.movimento ?? null]);
+/** L'immagine di partenza non dipende dal movimento: si può riusare se cambia solo quello. */
+const improntaPartenza = (r) => JSON.stringify([r?.vista, r?.partenza, r?.posa ?? null]);
 const stessoTesto = (a, b) => String(a).replace(/\r\n/g, '\n').trim() === String(b).replace(/\r\n/g, '\n').trim();
 
 /** Verifiche di una posizione ferma: immagine di partenza (o fotogramma del video della ricetta) e WebP fisso. */
@@ -124,7 +126,7 @@ function verificheFerma(dir, e, r, { v, ok, ko, pp, pv, ultimo, leggi }) {
   v(pp && pf, 'meta.json has the steps partenza and ferma / meta.json ha i passi partenza e ferma');
   v([pp, pf, ...(daVideo ? [pv] : [])].every((x) => x?.ricetta === RICETTA), `made with the current recipe (${RICETTA}) / fatta con la ricetta attuale`);
   v(pp?.esercizio === e.id && pf?.esercizio === e.id, `every step is for ${e.id} / ogni passo è di ${e.id}`);
-  v(impronta(pp?.richiesta) === impronta(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
+  v(improntaPartenza(pp?.richiesta) === improntaPartenza(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
   if (r.partenza === 'genera') {
     v(pp?.modello === MODELLO_IMMAGINE, `image made with ${MODELLO_IMMAGINE} / immagine fatta con ${MODELLO_IMMAGINE}`);
     v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
@@ -161,7 +163,7 @@ function verifiche(dir, e) {
   v(pp && pv && pc, 'meta.json has the steps partenza, video and converti / meta.json ha i passi partenza, video e converti');
   v([pp, pv, pc].every((x) => x?.ricetta === RICETTA), `made with the current recipe (${RICETTA}): update your copy of the repo if not / fatta con la ricetta attuale (${RICETTA})`);
   v(pp?.esercizio === e.id && pv?.esercizio === e.id && pc?.file === `${nomeFile(e.id)}.webp`, `every step is for ${e.id} / ogni passo è di ${e.id}`);
-  v(impronta(pp?.richiesta) === impronta(r) && impronta(pv?.richiesta) === impronta(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
+  v(improntaPartenza(pp?.richiesta) === improntaPartenza(r) && impronta(pv?.richiesta) === impronta(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
   if (r.partenza === 'genera') {
     v(pp?.modello === MODELLO_IMMAGINE, `start image made with ${MODELLO_IMMAGINE} / immagine di partenza fatta con ${MODELLO_IMMAGINE}`);
     v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
@@ -368,10 +370,15 @@ const comandi = {
     const mp = typeof a.pausa === 'string' ? a.pausa.match(/^(\d+):(\d+(?:\.\d+)?)$/) : null;
     if (a.pausa && !mp) throw new Error('--pausa vuole fotogramma:secondi, es. 50:2');
     const pausa = mp ? { n: Number(mp[1]), s: Number(mp[2]) } : null;
+    // --andata N: va fino al fotogramma N e torna indietro per la stessa
+    // strada, così l'ultimo fotogramma è il primo e il giro non salta (per i
+    // movimenti che tornano come sono andati, es. un braccio che sale e scende).
+    const andata = Number(a.andata || 0);
+    if (andata && a.fine) throw new Error('--andata e --fine insieme non servono: --andata taglia già');
     const prove = [[24, 75], [24, 65], [24, 55], [24, 45], [20, 55], [20, 45], [15, 55], [15, 45]];
     let scelta = null;
     for (const [fps, q] of prove) {
-      await codifica(ingresso, uscita, { fps, q, intero, fine, accelera, pausa });
+      await codifica(ingresso, uscita, { fps, q, intero, fine: andata || fine, accelera, pausa, andata: !!andata });
       const kb = Math.round(fs.statSync(uscita).size / 1024);
       stampa(`  ${fps} fps, qualità ${q}: ${kb} KB`);
       if (kb <= limite) {
@@ -382,7 +389,7 @@ const comandi = {
     if (!scelta) throw new Error(`Anche a 15 fps e qualità 45 supera ${limite} KB: accorcia il movimento o rigenera`);
     const ssim = giro(uscita);
     ffmpeg(['-i', uscita, '-vf', "select='not(mod(n\\,12))',tile=3x2", '-frames:v', '1', '-fps_mode', 'vfr', path.join(dir, 'anteprima-webp.png')]);
-    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, fine: fine || null, accelera, pausa, limite_kb: limite, giro_ssim: ssim, costo: 0 });
+    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, fine: fine || null, andata: andata || null, accelera, pausa, limite_kb: limite, giro_ssim: ssim, costo: 0 });
     stampa(`${uscita}: ${scelta.kb} KB (limite ${limite}), ${scelta.fps} fps, qualità ${scelta.q}, ${intero ? 'fotogramma intero' : 'taglio 2:1'}; primo/ultimo fotogramma simili al ${(ssim * 100).toFixed(1)}%${ssim < 0.95 ? ' ⚠️ il giro potrebbe saltare' : ''}. Anteprima: ${path.join(dir, 'anteprima-webp.png')}`);
   },
 
@@ -497,7 +504,7 @@ const comandi = {
       const partenza = p.partenza?.fonte?.startsWith('avatar') ? `start frame: ${p.partenza.fonte.replace('allargato a', 'widened to')}` : `start frame: Nano Banana 2.1 (Google) via the OpenRouter API, paid credits, from the project avatars`;
       const c = p.converti || {};
       const accelera = c.accelera ?? 0.75;
-      const tempo = [c.fine ? `cut at frame ${c.fine}, where it matches the first` : '', accelera !== 1 ? `sped up ×${(1 / accelera).toFixed(2)}` : 'not sped up', c.pausa ? `held still for ${c.pausa.s} s at frame ${c.pausa.n}` : ''].filter(Boolean).join(', ');
+      const tempo = [c.fine ? `cut at frame ${c.fine}, where it matches the first` : '', c.andata ? `played up to frame ${c.andata} and back the same way` : '', accelera !== 1 ? `sped up ×${(1 / accelera).toFixed(2)}` : 'not sped up', c.pausa ? `held still for ${c.pausa.s} s at frame ${c.pausa.n}` : ''].filter(Boolean).join(', ');
       const autore = typeof a.autore === 'string' ? `made by ${a.autore.replace(/[|`]/g, '')} with the project recipe · ` : '';
       const pf = p.ferma || {};
       const descrizione = fissa
@@ -524,7 +531,7 @@ const comandi = {
 };
 
 /** Luce uguale in ogni fotogramma (i video scuriscono piano piano) e fondo a #D9D9DB. */
-function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75, fermo = false, pausa = null }) {
+function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75, fermo = false, pausa = null, andata = false }) {
   const { w: W, h: H, fps: fpsIn } = sonda(ingresso);
   const dim = W * H * 3;
   const wIn = 2 * Math.round((320 * W) / H / 2);
@@ -556,6 +563,7 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75,
     let buf = Buffer.alloc(0), rif = null, base = null, letti = 0;
     const [fa, fb = 1] = String(fpsIn).split('/').map(Number);
     const ripeti = pausa ? Math.round((pausa.s * fa) / fb / accelera) : 0;
+    const memoria = [];
     const curva = (v) => {
       const p = [[0, 0], [128, 128], [rif, FONDO], [255, 255]];
       for (let k = 1; k < p.length; k++) if (v <= p[k][0]) return p[k - 1][1] + ((v - p[k - 1][0]) * (p[k][1] - p[k - 1][1])) / (p[k][0] - p[k - 1][0]);
@@ -585,9 +593,14 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75,
         }
         enc.stdin.write(f);
         if (pausa && indice === pausa.n) for (let j = 0; j < ripeti; j++) enc.stdin.write(f);
+        if (andata) memoria.push(f);
       }
     });
-    dec.on('close', () => enc.stdin.end());
+    dec.on('close', () => {
+      // Il ritorno: gli stessi fotogrammi al contrario, senza ripetere l'ultimo né il primo.
+      for (let i = memoria.length - 2; i >= 1; i--) enc.stdin.write(memoria[i]);
+      enc.stdin.end();
+    });
     enc.on('close', (c) => (c === 0 ? ok() : ko(new Error(`codifica WebP: ${errore.slice(0, 300)}`))));
   });
 }
