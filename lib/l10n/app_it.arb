@@ -5125,6 +5125,10 @@
   "@animazioneFattaConIa": {
     "description": "screens/catalogo_screen.dart"
   },
+  "immagineFattaConIa": "Immagine creata con l'intelligenza artificiale per Avidididadi.",
+  "@immagineFattaConIa": {
+    "description": "screens/catalogo_screen.dart"
+  },
   "tueSerie": "Le tue serie",
   "@tueSerie": {
     "description": "screens/catalogo_screen.dart"

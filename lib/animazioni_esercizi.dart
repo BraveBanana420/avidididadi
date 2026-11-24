@@ -4,15 +4,25 @@ import 'package:flutter/material.dart';
 /// Si fanno solo con la ricetta unica (agents/animazione.mjs e
 /// docs/animazioni/richieste.json): il suo comando "integra" copia il .webp in
 /// assets/exercises/animated/ e aggiunge qui la riga "id dell'esercizio: nome
-/// del file" (guida in docs/animazioni/README.md). Solo quelle fatte con gli avatar del progetto
-/// e con licenza CC0; da dove viene ognuna è scritto in docs/animazioni/FONTI.md.
+/// del file" (guida in docs/animazioni/README.md). Solo quelle fatte con gli
+/// avatar del progetto e con licenza CC0; da dove viene ognuna è scritto in
+/// docs/animazioni/FONTI.md.
 const animazioniEsercizi = <String, String>{
   'Bodyweight_Squat': 'bodyweight_squat.webp',
   'Leg_Extensions': 'leg_extensions.webp',
   'Kneeling_Hip_Flexor': 'kneeling_hip_flexor.webp',
   'Bodyweight_Walking_Lunge': 'bodyweight_walking_lunge.webp',
-  'Hip_Circles_prone': 'hip_circles_prone.webp',
   'Seated_Floor_Hamstring_Stretch': 'seated_floor_hamstring_stretch.webp',
+  'Childs_Pose': 'childs_pose.webp',
+  'Runners_Stretch': 'runners_stretch.webp',
+};
+
+/// Esercizi della mappa che hanno un'immagine ferma invece di un video: gli
+/// allungamenti in cui si resta fermi ("tipo": "posizione" in richieste.json).
+/// Anche questo elenco lo aggiorna "integra".
+const posizioniFerme = <String>{
+  'Childs_Pose',
+  'Runners_Stretch',
 };
 
 /// Cartella delle animazioni negli asset dell'app.

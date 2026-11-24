@@ -73,6 +73,25 @@
       "costo": 0,
       "ricetta": 1,
       "quando": "2026-11-24T19:54:59.662Z"
+    },
+    {
+      "passo": "converti",
+      "file": "seated_floor_hamstring_stretch.webp",
+      "fps": 15,
+      "q": 55,
+      "kb": 271,
+      "intero": true,
+      "fine": null,
+      "accelera": 0.75,
+      "pausa": {
+        "n": 50,
+        "s": 2
+      },
+      "limite_kb": 300,
+      "giro_ssim": 0.955013,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:08:41.909Z"
     }
   ],
   "costo": 0.2267

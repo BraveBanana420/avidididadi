@@ -37,6 +37,7 @@ accettarle, anche se sono belle.
 |---|---|
 | **Personaggio** | l'avatar uomo del progetto ([`avatar/`](avatar/)), identico in ogni fotogramma |
 | **Vista, partenza e movimento** | solo da [`richieste.json`](richieste.json), approvate dal progetto |
+| **Tipo** | **animazione** (un video che si ripete) oppure **posizione** (`"tipo": "posizione"`): un'immagine ferma, per gli allungamenti in cui si resta fermi, che si vedono meglio così e costano meno |
 | **Immagine di partenza** | l'avatar stesso (esercizi che partono in piedi), oppure **Nano Banana 2.1** (Google) dagli avatar, con un testo fisso |
 | **Video** | **Seedance 2.0 Mini** (ByteDance), 480p, 4 s, senza audio, seed 42, primo e ultimo fotogramma = l'immagine di partenza, con un testo fisso |
 | **Dove** | l'API di [OpenRouter](https://openrouter.ai), con la tua chiave |
@@ -117,7 +118,13 @@ node agents/animazione.mjs converti ../lavoro/Shoulder_Stretch --esercizio Shoul
 Guarda `anteprima-webp.png`. Se lo script avvisa che il giro potrebbe saltare
 (di solito la telecamera si sposta negli ultimi fotogrammi), trova il
 fotogramma che torna uguale al primo e rifai con `--fine <numero>`. Aggiungi
-anche `--accelera 1` se così dura già 2-3 secondi.
+anche `--accelera 1` se così dura già 2-3 secondi. Negli allungamenti tenuti puoi
+fermare la posizione per qualche secondo con `--pausa <fotogramma>:<secondi>`
+(al massimo 3 s, es. `--pausa 50:2`), così si capisce che lì si resta.
+
+Se la richiesta è di tipo **posizione** salta il video: dopo il passo 1
+lancia `node agents/animazione.mjs ferma ../lavoro/<ID> --esercizio <ID> --immagine partenza_1.jpg`
+(con l'immagine che hai scelto), poi vai al passo 4. Costa solo l'immagine.
 
 **4. Controllo.**
 
@@ -146,6 +153,8 @@ bene, la mettiamo nell'app con il tuo nome in [FONTI.md](FONTI.md).
 
 Per un esercizio ⬜ apri la issue e scrivi, **in inglese** (i modelli lo capiscono meglio):
 
+- **Tipo**: `animazione` se c'è un movimento da vedere, `posizione` se si resta
+  fermi (allora la posa è la posizione tenuta e il movimento non serve);
 - **Vista**: `tre_quarti` (corpo girato di circa 45°: è quella di quasi tutti gli
   esercizi), `lato` o `fronte` (solo se da 3/4 il movimento non si capisce bene,
   per esempio di fronte per le alzate laterali);

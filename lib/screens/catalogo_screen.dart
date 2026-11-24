@@ -256,9 +256,11 @@ class EsercizioScreen extends StatelessWidget {
             ),
           const SizedBox(height: 16),
           Text(
-            animazioneDi(e.id) != null
-                ? l10n.animazioneFattaConIa
-                : l10n.immaginiFreeExerciseDb(e.nomeEn),
+            animazioneDi(e.id) == null
+                ? l10n.immaginiFreeExerciseDb(e.nomeEn)
+                : posizioniFerme.contains(e.id)
+                ? l10n.immagineFattaConIa
+                : l10n.animazioneFattaConIa,
             style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],

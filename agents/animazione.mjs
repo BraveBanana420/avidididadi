@@ -8,7 +8,8 @@
 //   node agents/animazione.mjs richiesta --esercizio <ID>
 //   node agents/animazione.mjs partenza <cartella> --esercizio <ID> [--quante 2]
 //   node agents/animazione.mjs video <cartella> --esercizio <ID> [--immagine partenza_N.jpg]
-//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio] [--fine N] [--accelera 1]
+//   node agents/animazione.mjs converti <cartella> --esercizio <ID> [--intero | --taglio] [--fine N] [--accelera 1] [--pausa N:S]
+//   node agents/animazione.mjs ferma <cartella> --esercizio <ID> [--immagine partenza_N.jpg | --fotogramma N]
 //   node agents/animazione.mjs controlla <cartella> --esercizio <ID>
 //   node agents/animazione.mjs integra <cartella> --esercizio <ID> [--repo <cartella>] [--autore <nome>]
 //
@@ -91,9 +92,15 @@ const limiteKb = (e) => (conAttrezzi(e) ? 400 : 300);
 function richiesta(id) {
   const r = leggiJson(path.join(RADICE, 'docs', 'animazioni', 'richieste.json'), {}).esercizi?.[id];
   if (!r) throw new Error(`${id} has no approved request yet in docs/animazioni/richieste.json: propose one in an "Exercise animation" issue and wait for the ok before spending. / ${id} non ha ancora una richiesta approvata: proponila nella issue e aspetta l'ok prima di spendere.`);
-  if (!VISTE[r.vista] || !['avatar', 'genera'].includes(r.partenza) || !r.movimento || (r.partenza === 'genera' && !r.posa)) throw new Error(`Richiesta di ${id} incompleta in docs/animazioni/richieste.json`);
+  const tipoOk = r.tipo === undefined || ['animazione', 'posizione'].includes(r.tipo);
+  if (!tipoOk || !VISTE[r.vista] || !['avatar', 'genera'].includes(r.partenza) || (!ferma(r) && !r.movimento) || (r.partenza === 'genera' && !r.posa)) throw new Error(`Richiesta di ${id} incompleta in docs/animazioni/richieste.json`);
   return r;
 }
+/**
+ * Tipo "posizione": un'immagine ferma invece del video, per gli allungamenti
+ * in cui si resta fermi (si vede meglio e costa meno). La posa è quella tenuta.
+ */
+const ferma = (r) => r.tipo === 'posizione';
 
 function promptPartenza(e, r) {
   const attrezzi = conAttrezzi(e) ? ` The equipment (${e.attrezzi.map((g) => g.join(' + ')).join(' or ')}) is simple and clean, matte black and dark grey, no logos, no text, no brand.` : '';
@@ -106,7 +113,40 @@ Full body${conAttrezzi(e) ? ' and the whole equipment' : ''} visible with some m
 function promptVideo(r) {
   return `The character performs one slow, controlled repetition: ${r.movimento} The movement ends exactly in the starting pose. Correct technique, anatomically correct movement. The character, outfit, equipment and plain grey background stay exactly as in the image. Keep exactly the same drawing style as the image in every frame (${STILE.replace(', like the attached avatar images', '')}): the character must never turn photorealistic or 3D-rendered. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.`;
 }
+/** Le parti della richiesta che cambiano immagine e video (non il tipo né la data di approvazione). */
+const impronta = (r) => JSON.stringify([r?.vista, r?.partenza, r?.posa ?? null, r?.movimento ?? null]);
 const stessoTesto = (a, b) => String(a).replace(/\r\n/g, '\n').trim() === String(b).replace(/\r\n/g, '\n').trim();
+
+/** Verifiche di una posizione ferma: immagine di partenza (o fotogramma del video della ricetta) e WebP fisso. */
+function verificheFerma(dir, e, r, { v, ok, ko, pp, pv, ultimo, leggi }) {
+  const pf = ultimo('ferma');
+  const daVideo = String(pf?.fonte).startsWith('video');
+  v(pp && pf, 'meta.json has the steps partenza and ferma / meta.json ha i passi partenza e ferma');
+  v([pp, pf, ...(daVideo ? [pv] : [])].every((x) => x?.ricetta === RICETTA), `made with the current recipe (${RICETTA}) / fatta con la ricetta attuale`);
+  v(pp?.esercizio === e.id && pf?.esercizio === e.id, `every step is for ${e.id} / ogni passo è di ${e.id}`);
+  v(impronta(pp?.richiesta) === impronta(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
+  if (r.partenza === 'genera') {
+    v(pp?.modello === MODELLO_IMMAGINE, `image made with ${MODELLO_IMMAGINE} / immagine fatta con ${MODELLO_IMMAGINE}`);
+    v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
+  }
+  if (daVideo) {
+    v(pv?.modello === MODELLO_VIDEO && JSON.stringify(pv?.impostazioni) === JSON.stringify(IMPOSTAZIONI_VIDEO) && impronta(pv?.richiesta) === impronta(r), 'frame of a recipe video / fotogramma di un video della ricetta');
+    v(stessoTesto(leggi('prompt-video.txt'), promptVideo(r)), 'video prompt not changed / richiesta del video non cambiata');
+    v(fs.existsSync(path.join(dir, 'video.mp4')), 'original video.mp4 present / c\'è il video originale');
+  }
+  v(fs.existsSync(path.join(dir, 'partenza_scelta.jpg')), 'partenza_scelta.jpg present / c\'è l\'immagine di partenza');
+  const webp = path.join(dir, `${nomeFile(e.id)}.webp`);
+  if (!fs.existsSync(webp)) {
+    ko.push(`${path.basename(webp)} missing: run "ferma" / manca il WebP: lancia "ferma"`);
+    return { ok, ko };
+  }
+  const s = sonda(webp);
+  const kb = Math.round(fs.statSync(webp).size / 1024);
+  v(s.w === 640 && s.h === 320, `WebP 640×320 (${s.w}×${s.h})`);
+  v(s.n === 1, `still image, one frame (${s.n}) / immagine ferma`);
+  v(kb <= limiteKb(e), `${kb} KB, limit ${limiteKb(e)} KB / limite di peso`);
+  return { ok, ko };
+}
 
 /** Le verifiche di "controlla": ogni voce va in ok o in ko, con una frase in inglese e in italiano. */
 function verifiche(dir, e) {
@@ -117,10 +157,11 @@ function verifiche(dir, e) {
   const ultimo = (passo) => m.passi.filter((x) => x.passo === passo).at(-1);
   const [pp, pv, pc] = ['partenza', 'video', 'converti'].map(ultimo);
   const leggi = (f) => (fs.existsSync(path.join(dir, f)) ? fs.readFileSync(path.join(dir, f), 'utf8') : null);
+  if (ferma(r)) return verificheFerma(dir, e, r, { v, ok, ko, pp, pv, ultimo, leggi });
   v(pp && pv && pc, 'meta.json has the steps partenza, video and converti / meta.json ha i passi partenza, video e converti');
   v([pp, pv, pc].every((x) => x?.ricetta === RICETTA), `made with the current recipe (${RICETTA}): update your copy of the repo if not / fatta con la ricetta attuale (${RICETTA})`);
   v(pp?.esercizio === e.id && pv?.esercizio === e.id && pc?.file === `${nomeFile(e.id)}.webp`, `every step is for ${e.id} / ogni passo è di ${e.id}`);
-  v(JSON.stringify(pp?.richiesta) === JSON.stringify(r) && JSON.stringify(pv?.richiesta) === JSON.stringify(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
+  v(impronta(pp?.richiesta) === impronta(r) && impronta(pv?.richiesta) === impronta(r), 'request identical to docs/animazioni/richieste.json / richiesta uguale a richieste.json');
   if (r.partenza === 'genera') {
     v(pp?.modello === MODELLO_IMMAGINE, `start image made with ${MODELLO_IMMAGINE} / immagine di partenza fatta con ${MODELLO_IMMAGINE}`);
     v(stessoTesto(leggi('prompt-partenza.txt'), promptPartenza(e, r)), 'image prompt not changed / richiesta dell\'immagine non cambiata');
@@ -135,10 +176,12 @@ function verifiche(dir, e) {
   }
   const s = sonda(webp);
   const kb = Math.round(fs.statSync(webp).size / 1024);
-  const durata = pc?.fps ? s.n / pc.fps : 0;
+  const durata = durataWebp(webp);
   v(s.w === 640 && s.h === 320, `WebP 640×320 (${s.w}×${s.h})`);
   v(pc?.fps >= 15 && pc?.fps <= 24, `15-24 fps (${pc?.fps})`);
-  v(durata >= 2 && durata <= 3.25, `2-3 s long (${durata.toFixed(1)} s) / dura 2-3 s`);
+  const pausa = pc?.pausa?.s || 0;
+  v(pausa <= 3, `hold pause at most 3 s (${pausa} s) / pausa al massimo 3 s`);
+  v(durata >= 2 && durata <= 3.25 + pausa, `2-3 s long${pausa ? ` plus the ${pausa} s hold` : ''} (${durata.toFixed(1)} s) / dura 2-3 s${pausa ? ' più la pausa' : ''}`);
   v(kb <= limiteKb(e), `${kb} KB, limit ${limiteKb(e)} KB / limite di peso`);
   const ssim = giro(webp);
   v(ssim >= 0.95, `first and last frame ${(ssim * 100).toFixed(1)}% alike, at least 95%: otherwise the loop jumps (try "converti --fine N") / il giro non salta`);
@@ -155,6 +198,15 @@ function sonda(f) {
   const r = spawnSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-count_frames', '-show_entries', 'stream=width,height,r_frame_rate,nb_read_frames', '-of', 'json', f], { encoding: 'utf8' });
   const s = JSON.parse(r.stdout).streams[0];
   return { w: s.width, h: s.height, fps: s.r_frame_rate, n: Number(s.nb_read_frames) };
+}
+/**
+ * Durata vera di un WebP animato: il codificatore unisce i fotogrammi uguali
+ * (la pausa) in uno più lungo, quindi contarli non basta.
+ */
+function durataWebp(f) {
+  const r = spawnSync('ffmpeg', ['-hide_banner', '-i', f, '-f', 'null', '-'], { encoding: 'utf8' });
+  const t = [...r.stderr.matchAll(/time=(\d+):(\d+):([\d.]+)/g)].at(-1);
+  return t ? Number(t[1]) * 3600 + Number(t[2]) * 60 + Number(t[3]) : 0;
 }
 /** Somiglianza (SSIM) tra primo e ultimo fotogramma: vicino a 1 = il giro non salta. */
 function giro(f) {
@@ -260,6 +312,7 @@ const comandi = {
     if (pp?.esercizio !== e.id) throw new Error(`In ${dir} non c'è l'immagine di partenza di ${e.id}: prima "partenza"`);
     const img = path.resolve(dir, a.immagine || 'partenza_1.jpg');
     if (!fs.existsSync(img)) throw new Error(`Immagine di partenza non trovata: ${img}`);
+    if (!ric.movimento) throw new Error(`${e.id} è una posizione ferma: niente video, usa "ferma --immagine"`);
     await controllaCredito(COSTO.video);
     const prompt = promptVideo(ric);
     fs.writeFileSync(path.join(dir, 'prompt-video.txt'), prompt);
@@ -296,6 +349,7 @@ const comandi = {
   async converti(a) {
     const dir = path.resolve(a._[0] || '.');
     const e = esercizio(a.esercizio);
+    if (ferma(richiesta(e.id))) throw new Error(`${e.id} è una posizione ferma: usa "ferma"`);
     const ingresso = path.join(dir, 'video.mp4');
     if (!fs.existsSync(ingresso)) throw new Error('Manca video.mp4: prima "video"');
     // Con attrezzi di solito serve tutto il fotogramma (16:9 rimpicciolito); a corpo libero basta il taglio 2:1.
@@ -307,10 +361,15 @@ const comandi = {
     // --accelera: 0.75 di norma (4 s diventano 3); 1 per lasciarlo com'è.
     const fine = Number(a.fine || 0);
     const accelera = Number(a.accelera || 0.75);
+    // --pausa N:S: negli allungamenti tenuti il fotogramma N (la posizione
+    // tenuta) resta fermo S secondi, così si vede che lì si resta.
+    const mp = typeof a.pausa === 'string' ? a.pausa.match(/^(\d+):(\d+(?:\.\d+)?)$/) : null;
+    if (a.pausa && !mp) throw new Error('--pausa vuole fotogramma:secondi, es. 50:2');
+    const pausa = mp ? { n: Number(mp[1]), s: Number(mp[2]) } : null;
     const prove = [[24, 75], [24, 65], [24, 55], [24, 45], [20, 55], [20, 45], [15, 55], [15, 45]];
     let scelta = null;
     for (const [fps, q] of prove) {
-      await codifica(ingresso, uscita, { fps, q, intero, fine, accelera });
+      await codifica(ingresso, uscita, { fps, q, intero, fine, accelera, pausa });
       const kb = Math.round(fs.statSync(uscita).size / 1024);
       stampa(`  ${fps} fps, qualità ${q}: ${kb} KB`);
       if (kb <= limite) {
@@ -321,8 +380,49 @@ const comandi = {
     if (!scelta) throw new Error(`Anche a 15 fps e qualità 45 supera ${limite} KB: accorcia il movimento o rigenera`);
     const ssim = giro(uscita);
     ffmpeg(['-i', uscita, '-vf', "select='not(mod(n\\,12))',tile=3x2", '-frames:v', '1', '-fps_mode', 'vfr', path.join(dir, 'anteprima-webp.png')]);
-    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, fine: fine || null, accelera, limite_kb: limite, giro_ssim: ssim, costo: 0 });
+    aggiungiMeta(dir, { passo: 'converti', file: path.basename(uscita), ...scelta, intero, fine: fine || null, accelera, pausa, limite_kb: limite, giro_ssim: ssim, costo: 0 });
     stampa(`${uscita}: ${scelta.kb} KB (limite ${limite}), ${scelta.fps} fps, qualità ${scelta.q}, ${intero ? 'fotogramma intero' : 'taglio 2:1'}; primo/ultimo fotogramma simili al ${(ssim * 100).toFixed(1)}%${ssim < 0.95 ? ' ⚠️ il giro potrebbe saltare' : ''}. Anteprima: ${path.join(dir, 'anteprima-webp.png')}`);
+  },
+
+  /**
+   * Posizione ferma: un WebP fisso 640x320 dall'immagine di partenza scelta
+   * (--immagine partenza_N.jpg, la via normale) o da un fotogramma del video
+   * della ricetta (--fotogramma N), con lo stesso fondo e la stessa luce delle animazioni.
+   */
+  async ferma(a) {
+    const dir = path.resolve(a._[0] || '.');
+    const e = esercizio(a.esercizio);
+    if (!ferma(richiesta(e.id))) throw new Error(`${e.id} non è una posizione ferma in richieste.json: usa "video" e "converti"`);
+    const pp = meta(dir).passi.filter((x) => x.passo === 'partenza').at(-1);
+    if (pp?.esercizio !== e.id) throw new Error(`In ${dir} non c'è l'immagine di partenza di ${e.id}: prima "partenza"`);
+    let sorgente, fonte;
+    if (a.fotogramma !== undefined) {
+      if (!fs.existsSync(path.join(dir, 'video.mp4'))) throw new Error('--fotogramma vuole il video.mp4 della ricetta');
+      const n = Number(a.fotogramma);
+      sorgente = path.join(dir, 'fermo.png');
+      ffmpeg(['-i', path.join(dir, 'video.mp4'), '-vf', `select='eq(n\\,${n})'`, '-frames:v', '1', '-fps_mode', 'vfr', sorgente]);
+      fonte = `video, fotogramma ${n}`;
+    } else {
+      sorgente = path.resolve(dir, a.immagine || 'partenza_1.jpg');
+      if (!fs.existsSync(sorgente)) throw new Error(`Immagine non trovata: ${sorgente}`);
+      fs.copyFileSync(sorgente, path.join(dir, 'partenza_scelta.jpg'));
+      fonte = path.basename(sorgente);
+    }
+    const intero = a.intero ? true : a.taglio ? false : true;
+    const limite = limiteKb(e);
+    const uscita = path.join(dir, `${nomeFile(e.id)}.webp`);
+    let scelta = null;
+    for (const q of [85, 75, 65, 55]) {
+      await codifica(sorgente, uscita, { fps: 1, q, intero, fermo: true });
+      const kb = Math.round(fs.statSync(uscita).size / 1024);
+      if (kb <= limite) {
+        scelta = { q, kb };
+        break;
+      }
+    }
+    if (!scelta) throw new Error(`Anche a qualità 55 supera ${limite} KB`);
+    aggiungiMeta(dir, { passo: 'ferma', esercizio: e.id, file: path.basename(uscita), fonte, intero, ...scelta, limite_kb: limite, costo: 0 });
+    stampa(`${uscita}: ${scelta.kb} KB, qualità ${scelta.q}, ${intero ? 'fotogramma intero' : 'taglio 2:1'}, da ${fonte}`);
   },
 
   /**
@@ -352,8 +452,10 @@ const comandi = {
     const orig = path.join(repo, 'docs', 'animazioni', 'originali');
     fs.mkdirSync(orig, { recursive: true });
     fs.copyFileSync(webp, path.join(repo, 'assets', 'exercises', 'animated', `${nome}.webp`));
-    fs.copyFileSync(path.join(dir, 'video.mp4'), path.join(orig, `${nome}.mp4`));
+    const conVideo = fs.existsSync(path.join(dir, 'video.mp4'));
+    if (conVideo) fs.copyFileSync(path.join(dir, 'video.mp4'), path.join(orig, `${nome}.mp4`));
     fs.copyFileSync(path.join(dir, 'partenza_scelta.jpg'), path.join(orig, `${nome}_primo.jpg`));
+    const fissa = ferma(richiesta(e.id));
     // Come è stata fatta: richiesta, modelli, impostazioni e i testi mandati ai modelli.
     const leggi = (f) => (fs.existsSync(path.join(dir, f)) ? fs.readFileSync(path.join(dir, f), 'utf8') : null);
     scriviJson(path.join(orig, `${nome}.json`), { esercizio: e.id, ricetta: RICETTA, autore: a.autore || null, prompt_partenza: leggi('prompt-partenza.txt'), prompt_video: leggi('prompt-video.txt'), ...m });
@@ -370,6 +472,20 @@ const comandi = {
       else righe.splice(righe.indexOf('};', inizio), 0, `  '${e.id}': '${nome}.webp',`);
       fs.writeFileSync(dart, righe.join(eol));
     }
+    // Le posizioni ferme anche nel loro elenco: sotto l'esercizio l'app scrive "Immagine", non "Animazione".
+    if (fissa) {
+      const codice2 = fs.readFileSync(dart, 'utf8');
+      const eol = codice2.includes('\r\n') ? '\r\n' : '\n';
+      const righe = codice2.split(/\r?\n/);
+      const inizio = righe.findIndex((r) => r.startsWith('const posizioniFerme = <String>{'));
+      if (inizio < 0) throw new Error('Elenco posizioniFerme non trovato in lib/animazioni_esercizi.dart');
+      const fineSet = righe[inizio].endsWith('{};') ? inizio : righe.indexOf('};', inizio);
+      if (!righe.slice(inizio, fineSet + 1).some((r) => r.includes(`'${e.id}'`))) {
+        if (righe[inizio].endsWith('{};')) righe.splice(inizio, 1, 'const posizioniFerme = <String>{', `  '${e.id}',`, '};');
+        else righe.splice(fineSet, 0, `  '${e.id}',`);
+        fs.writeFileSync(dart, righe.join(eol));
+      }
+    }
 
     // Riga in FONTI.md: strumenti, data e video originale.
     const fonti = path.join(repo, 'docs', 'animazioni', 'FONTI.md');
@@ -379,9 +495,16 @@ const comandi = {
       const partenza = p.partenza?.fonte?.startsWith('avatar') ? `start frame: ${p.partenza.fonte.replace('allargato a', 'widened to')}` : `start frame: Nano Banana 2.1 (Google) via the OpenRouter API, paid credits, from the project avatars`;
       const c = p.converti || {};
       const accelera = c.accelera ?? 0.75;
-      const tempo = [c.fine ? `cut at frame ${c.fine}, where it matches the first` : '', accelera !== 1 ? `sped up ×${(1 / accelera).toFixed(2)}` : 'not sped up'].filter(Boolean).join(', ');
+      const tempo = [c.fine ? `cut at frame ${c.fine}, where it matches the first` : '', accelera !== 1 ? `sped up ×${(1 / accelera).toFixed(2)}` : 'not sped up', c.pausa ? `held still for ${c.pausa.s} s at frame ${c.pausa.n}` : ''].filter(Boolean).join(', ');
       const autore = typeof a.autore === 'string' ? `made by ${a.autore.replace(/[|`]/g, '')} with the project recipe · ` : '';
-      const riga = `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, ${tempo}, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
+      const pf = p.ferma || {};
+      const descrizione = fissa
+        ? `still image · ${String(pf.fonte).startsWith('video') ? `frame ${pf.fonte.replace(/\D+/g, '')} of a video made with Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API from that start frame` : 'the start frame itself'} · ffmpeg: background to \`#D9D9DB\`, ${pf.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}`
+        : null;
+      const originale = conVideo ? `[\`${nome}.mp4\`](originali/${nome}.mp4), ` : '';
+      const riga = descrizione
+        ? `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · ${descrizione} | ${new Date().toISOString().slice(0, 10)} | ${originale}[start frame](originali/${nome}_primo.jpg) |`
+        : `| \`${nome}.webp\` | \`${e.id}\` | AI · ${autore}${partenza} · video: Seedance 2.0 Mini (ByteDance, provider BytePlus "Seed") via the OpenRouter API, first and last frame = start frame · ffmpeg: exposure evened out frame by frame, background to \`#D9D9DB\`, ${c.intero ? 'whole 16:9 frame fitted in 640×320' : '2:1 crop, 640×320'}, ${tempo}, ${c.fps} fps | ${new Date().toISOString().slice(0, 10)} | [\`${nome}.mp4\`](originali/${nome}.mp4), [start frame](originali/${nome}_primo.jpg) |`;
       // In fondo alla tabella delle animazioni (la prima che inizia con "| File | Exercise").
       const eol = testo.includes('\r\n') ? '\r\n' : '\n';
       const righe = testo.split(/\r?\n/);
@@ -399,7 +522,7 @@ const comandi = {
 };
 
 /** Luce uguale in ogni fotogramma (i video scuriscono piano piano) e fondo a #D9D9DB. */
-function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 }) {
+function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75, fermo = false, pausa = null }) {
   const { w: W, h: H, fps: fpsIn } = sonda(ingresso);
   const dim = W * H * 3;
   const wIn = 2 * Math.round((320 * W) / H / 2);
@@ -409,7 +532,7 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 
   const adatta = intero
     ? `format=rgb24,scale=${wIn}:320,split=3[c][l][r];[l]crop=2:320:0:0,scale=${sx}:320[ls];[r]crop=2:320:${wIn - 2}:0,scale=${dx}:320[rs];[ls][c][rs]hstack=3`
     : 'crop=iw:iw/2,scale=640:320';
-  const filtri = `setpts=${accelera}*PTS,fps=${fps},${adatta}`;
+  const filtri = fermo ? adatta : `setpts=${accelera}*PTS,fps=${fps},${adatta}`;
   const fondo = (f) => {
     // Mediana di quattro riquadri sul bordo (in alto e a metà dei lati): solo fondo.
     const medie = [[8, 8], [W - 48, 8], [8, Math.floor(H / 3)], [W - 48, Math.floor(H / 3)]].map(([x0, y0]) => {
@@ -424,10 +547,13 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 
   };
   return new Promise((ok, ko) => {
     const dec = spawn('ffmpeg', ['-v', 'error', '-i', ingresso, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-']);
-    const enc = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${W}x${H}`, '-r', fpsIn, '-i', '-', '-an', '-vf', filtri, '-c:v', 'libwebp_anim', '-quality', String(q), '-compression_level', '6', '-loop', '0', uscita]);
+    const formato = fermo ? ['-c:v', 'libwebp', '-frames:v', '1'] : ['-c:v', 'libwebp_anim', '-loop', '0'];
+    const enc = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${W}x${H}`, '-r', fermo ? '1' : fpsIn, '-i', '-', '-an', '-vf', filtri, ...formato, '-quality', String(q), '-compression_level', '6', uscita]);
     let errore = '';
     enc.stderr.on('data', (d) => (errore += d));
     let buf = Buffer.alloc(0), rif = null, base = null, letti = 0;
+    const [fa, fb = 1] = String(fpsIn).split('/').map(Number);
+    const ripeti = pausa ? Math.round((pausa.s * fa) / fb / accelera) : 0;
     const curva = (v) => {
       const p = [[0, 0], [128, 128], [rif, FONDO], [255, 255]];
       for (let k = 1; k < p.length; k++) if (v <= p[k][0]) return p[k - 1][1] + ((v - p[k - 1][0]) * (p[k][1] - p[k - 1][1])) / (p[k][0] - p[k - 1][0]);
@@ -439,7 +565,8 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 
         const f = Buffer.from(buf.subarray(0, dim));
         buf = buf.subarray(dim);
         // Dopo il fotogramma di chiusura del giro non serve altro.
-        if (fine && letti++ > fine) continue;
+        const indice = letti++;
+        if (fine && indice > fine) continue;
         const b = fondo(f);
         if (rif === null) rif = b;
         const lut = new Uint8Array(256);
@@ -455,6 +582,7 @@ function codifica(ingresso, uscita, { fps, q, intero, fine = 0, accelera = 0.75 
           }
         }
         enc.stdin.write(f);
+        if (pausa && indice === pausa.n) for (let j = 0; j < ripeti; j++) enc.stdin.write(f);
       }
     });
     dec.on('close', () => enc.stdin.end());

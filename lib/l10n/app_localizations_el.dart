@@ -3524,6 +3524,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Κινούμενη εικόνα φτιαγμένη με τεχνητή νοημοσύνη για το Avidididadi.';
 
   @override
+  String get immagineFattaConIa =>
+      'Εικόνα φτιαγμένη με τεχνητή νοημοσύνη για το Avidididadi.';
+
+  @override
   String get tueSerie => 'Τα σετ σου';
 
   @override

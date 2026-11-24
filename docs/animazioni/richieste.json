@@ -50,6 +50,7 @@
       "approvata": "2026-11-23"
     },
     "Runners_Stretch": {
+      "tipo": "posizione",
       "vista": "lato",
       "partenza": "genera",
       "posa": "He is in a low lunge: the RIGHT foot is forward and flat on the floor with the right knee bent, the LEFT leg is stretched back with the knee off the floor, both hands on the floor on either side of the right foot. This is the starting position of a runner's stretch for the right leg.",
@@ -60,8 +61,8 @@
       "vista": "tre_quarti",
       "partenza": "genera",
       "posa": "He is on all fours on a thin matte dark grey exercise mat: hands under the shoulders, knees under the hips, back flat, looking at the floor. This is the starting position of hip circles for the right hip.",
-      "movimento": "keeping the back flat and the arms straight, he lifts the bent right knee off the mat and draws one wide, slow circle with it (forward, out to the side, back), then puts the right knee back down on the mat.",
-      "approvata": "2026-11-23"
+      "movimento": "keeping the right knee bent at 90 degrees the whole time, so the right foot always stays behind the knee and never moves forward, he lifts the right knee off the mat and draws one wide, slow circle with the knee: forward towards the right elbow, up and out to the side, back behind the hip and down, then puts the right knee back on the mat. The thigh and the lower leg move together as one piece.",
+      "approvata": "2026-11-24"
     },
     "Shoulder_Stretch": {
       "vista": "fronte",
@@ -97,6 +98,7 @@
       "approvata": "2026-11-23"
     },
     "Childs_Pose": {
+      "tipo": "posizione",
       "vista": "lato",
       "partenza": "genera",
       "posa": "He kneels on a thin matte dark grey exercise mat, sitting back on his heels, knees slightly apart, torso upright, hands resting on the thighs.",
@@ -107,6 +109,19 @@
       "vista": "tre_quarti",
       "partenza": "avatar",
       "movimento": "he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together.",
+      "approvata": "2026-11-24"
+    },
+    "Arm_Circles": {
+      "vista": "tre_quarti",
+      "partenza": "avatar",
+      "movimento": "he raises both arms straight out to the sides to shoulder height, palms facing down, and draws three slow forward circles with both straight arms at the same time, all the same size, about 40 cm across, then lowers the arms back to his sides.",
+      "approvata": "2026-11-24"
+    },
+    "Worlds_Greatest_Stretch": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He is in a deep lunge on a thin matte dark grey exercise mat: the RIGHT foot is forward and flat with the right knee bent right above the ankle, the LEFT leg is stretched back with the left knee just above the mat, both hands on the mat on the inside of the right foot. This is the starting position of the world's greatest stretch for the right side.",
+      "movimento": "keeping the left hand on the mat and the hips low, he rotates the torso towards the right leg and lifts the straight right arm up towards the ceiling, following the hand with his eyes, holds for a moment and brings the right hand back to the mat; then he moves the hips back and straightens the right leg, toes up, and bends it again returning to the deep lunge.",
       "approvata": "2026-11-24"
     }
   }

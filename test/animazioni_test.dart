@@ -27,8 +27,9 @@ void main() {
       expect(f.existsSync(), isTrue, reason: file);
       final dati = f.readAsBytesSync();
       expect(String.fromCharCodes(dati.sublist(8, 12)), 'WEBP');
-      // Il blocco ANIM c'è solo nei WebP animati.
-      expect(String.fromCharCodes(dati).contains('ANIM'), isTrue, reason: file);
+      // Il blocco ANIM c'è solo nei WebP animati (non nelle posizioni ferme).
+      final fermo = posizioniFerme.any((id) => animazioniEsercizi[id] == file);
+      expect(String.fromCharCodes(dati).contains('ANIM'), !fermo, reason: file);
     }
   });
 
@@ -70,7 +71,9 @@ void main() {
     for (final file in animazioniEsercizi.values) {
       final nome = file.replaceAll('.webp', '');
       expect(
-        File('docs/animazioni/originali/$nome.mp4').existsSync(),
+        // Le posizioni ferme possono venire solo dall'immagine di partenza.
+        File('docs/animazioni/originali/$nome.mp4').existsSync() ||
+            File('docs/animazioni/originali/${nome}_primo.jpg').existsSync(),
         isTrue,
         reason: file,
       );
@@ -101,7 +104,19 @@ void main() {
       expect(ids, contains(key));
       expect(['tre_quarti', 'lato', 'fronte'], contains(r['vista']));
       expect(['avatar', 'genera'], contains(r['partenza']), reason: key);
-      expect(r['movimento'], matches(RegExp(r'\bhe\b')), reason: key);
+      // "posizione" = immagine ferma: il movimento serve solo se c'è un video.
+      expect([null, 'animazione', 'posizione'], contains(r['tipo']));
+      if (r['tipo'] != 'posizione' || r['movimento'] != null) {
+        expect(r['movimento'], matches(RegExp(r'\bhe\b')), reason: key);
+      }
+      // L'app scrive "Immagine" o "Animazione" secondo posizioniFerme.
+      if (animazioniEsercizi.containsKey(key)) {
+        expect(
+          posizioniFerme.contains(key),
+          r['tipo'] == 'posizione',
+          reason: key,
+        );
+      }
       expect(
         r['approvata'],
         matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')),

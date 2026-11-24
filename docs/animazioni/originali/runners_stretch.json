@@ -1,0 +1,120 @@
+{
+  "esercizio": "Runners_Stretch",
+  "ricetta": 1,
+  "autore": null,
+  "prompt_partenza": "Use the attached character exactly as he is: same face, hair, beard, body proportions and outfit exactly as in the attached images (black sleeveless top with red side panels, black shorts with red side panels over plain black leggings, black wrist wraps, black shoes with red soles), same drawing style (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours, like the attached avatar images. Not a photo, not a photorealistic or 3D render).\nShow him in the starting position of: RUNNER'S STRETCH. He is in a low lunge: the RIGHT foot is forward and flat on the floor with the right knee bent, the LEFT leg is stretched back with the knee off the floor, both hands on the floor on either side of the right foot. This is the starting position of a runner's stretch for the right leg.\nSeen seen from the side, like the attached side view, facing left.\nFull body visible with some margin, in the centre of the image, feet near the bottom. Plain light grey background (#D9D9DB) with a slightly lighter floor, soft studio light, soft shadow on the floor. No other objects, no other people, no text. Wide 16:9 image.",
+  "prompt_video": "The character performs one slow, controlled repetition: keeping the hands on the floor and the right heel down, he slowly lifts his hips and straightens the right leg until the back of the right thigh stretches, holds for a moment, then slowly bends the right knee back into the low lunge. The movement ends exactly in the starting pose. Correct technique, anatomically correct movement. The character, outfit, equipment and plain grey background stay exactly as in the image. Keep exactly the same drawing style as the image in every frame (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours. Not a photo, not a photorealistic or 3D render): the character must never turn photorealistic or 3D-rendered. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.",
+  "passi": [
+    {
+      "passo": "partenza",
+      "esercizio": "Runners_Stretch",
+      "richiesta": {
+        "vista": "lato",
+        "partenza": "genera",
+        "posa": "He is in a low lunge: the RIGHT foot is forward and flat on the floor with the right knee bent, the LEFT leg is stretched back with the knee off the floor, both hands on the floor on either side of the right foot. This is the starting position of a runner's stretch for the right leg.",
+        "movimento": "keeping the hands on the floor and the right heel down, he slowly lifts his hips and straightens the right leg until the back of the right thigh stretches, holds for a moment, then slowly bends the right knee back into the low lunge.",
+        "approvata": "2026-11-23"
+      },
+      "modello": "google/gemini-nano-banana-2.1",
+      "fonte": "google/gemini-nano-banana-2.1 (OpenRouter) dagli avatar",
+      "costo": 0.0846345,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:43:25.097Z"
+    },
+    {
+      "passo": "video",
+      "esercizio": "Runners_Stretch",
+      "richiesta": {
+        "vista": "lato",
+        "partenza": "genera",
+        "posa": "He is in a low lunge: the RIGHT foot is forward and flat on the floor with the right knee bent, the LEFT leg is stretched back with the knee off the floor, both hands on the floor on either side of the right foot. This is the starting position of a runner's stretch for the right leg.",
+        "movimento": "keeping the hands on the floor and the right heel down, he slowly lifts his hips and straightens the right leg until the back of the right thigh stretches, holds for a moment, then slowly bends the right knee back into the low lunge.",
+        "approvata": "2026-11-23"
+      },
+      "modello": "bytedance/seedance-2.0-mini",
+      "impostazioni": {
+        "resolution": "480p",
+        "aspect_ratio": "16:9",
+        "duration": 4,
+        "generate_audio": false,
+        "seed": 42
+      },
+      "immagine": "partenza_1.jpg",
+      "costo": 0.142079,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:45:54.777Z"
+    },
+    {
+      "passo": "converti",
+      "file": "runners_stretch.webp",
+      "fps": 15,
+      "q": 45,
+      "kb": 278,
+      "intero": true,
+      "fine": 74,
+      "accelera": 1,
+      "limite_kb": 300,
+      "giro_ssim": 0.916059,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:52:41.459Z"
+    },
+    {
+      "passo": "converti",
+      "file": "runners_stretch.webp",
+      "fps": 15,
+      "q": 45,
+      "kb": 283,
+      "intero": true,
+      "fine": 75,
+      "accelera": 1,
+      "limite_kb": 300,
+      "giro_ssim": 0.91948,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:56:56.055Z"
+    },
+    {
+      "passo": "converti",
+      "file": "runners_stretch.webp",
+      "fps": 15,
+      "q": 45,
+      "kb": 289,
+      "intero": true,
+      "fine": 77,
+      "accelera": 1,
+      "limite_kb": 300,
+      "giro_ssim": 0.902546,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:58:06.358Z"
+    },
+    {
+      "passo": "ferma",
+      "esercizio": "Runners_Stretch",
+      "file": "runners_stretch.webp",
+      "fonte": "video, fotogramma 36",
+      "intero": true,
+      "q": 85,
+      "kb": 13,
+      "limite_kb": 300,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:06:55.309Z"
+    },
+    {
+      "passo": "ferma",
+      "esercizio": "Runners_Stretch",
+      "file": "runners_stretch.webp",
+      "fonte": "video, fotogramma 0",
+      "intero": true,
+      "q": 85,
+      "kb": 11,
+      "limite_kb": 300,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:06:55.613Z"
+    }
+  ],
+  "costo": 0.2267
+}

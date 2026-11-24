@@ -3504,6 +3504,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Animazione creata con l\'intelligenza artificiale per Avidididadi.';
 
   @override
+  String get immagineFattaConIa =>
+      'Immagine creata con l\'intelligenza artificiale per Avidididadi.';
+
+  @override
   String get tueSerie => 'Le tue serie';
 
   @override

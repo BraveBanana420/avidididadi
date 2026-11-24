@@ -37,6 +37,7 @@ conversions), even beautiful ones.
 |---|---|
 | **Character** | the project's male avatar ([`avatar/`](avatar/)), identical in every frame |
 | **View, start and movement** | only from [`richieste.json`](richieste.json), approved by the project |
+| **Type** | **animation** (a looping video) or **position** (`"tipo": "posizione"`): a still image, for stretches where you hold still, which look clearer that way and cost less |
 | **Starting image** | the avatar itself (exercises that start standing), or **Nano Banana 2.1** (Google) from the avatars, with a fixed prompt |
 | **Video** | **Seedance 2.0 Mini** (ByteDance), 480p, 4 s, no audio, seed 42, first and last frame = the starting image, with a fixed prompt |
 | **Where** | the [OpenRouter](https://openrouter.ai) API, with your own key |
@@ -117,7 +118,13 @@ node agents/animazione.mjs converti ../work/Shoulder_Stretch --esercizio Shoulde
 Look at `anteprima-webp.png`. If the script warns that the loop may jump
 (usually the camera moves in the last frames), find the frame that looks like
 the first again and redo it with `--fine <number>`. Also add `--accelera 1` if
-it's already 2-3 seconds long that way.
+it's already 2-3 seconds long that way. For held stretches you can hold the
+position still for a few seconds with `--pausa <frame>:<seconds>` (at most
+3 s, e.g. `--pausa 50:2`), so it's clear you stay there.
+
+If the request is a **position**, skip the video: after step 1 run
+`node agents/animazione.mjs ferma ../work/<ID> --esercizio <ID> --immagine partenza_1.jpg`
+(with the image you chose), then go to step 4. It only costs the image.
 
 **4. Check.**
 
@@ -146,6 +153,8 @@ good, add it to the app with your name in [FONTI.md](FONTI.md).
 
 For a ⬜ exercise, open the issue and write, **in English**:
 
+- **Type**: `animazione` if there is a movement to show, `posizione` if you
+  hold still (then the pose is the held position and no movement is needed);
 - **View**: `tre_quarti` (body turned about 45°: the view for almost every
   exercise), `lato` (side) or `fronte` (front), only if the movement isn't
   clear from 3/4 (for example from the front for lateral raises);

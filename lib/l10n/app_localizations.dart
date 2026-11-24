@@ -5821,6 +5821,12 @@ abstract class AppLocalizations {
   /// screens/catalogo_screen.dart
   ///
   /// In it, this message translates to:
+  /// **'Immagine creata con l\'intelligenza artificiale per Avidididadi.'**
+  String get immagineFattaConIa;
+
+  /// screens/catalogo_screen.dart
+  ///
+  /// In it, this message translates to:
   /// **'Le tue serie'**
   String get tueSerie;
 
