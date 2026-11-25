@@ -1147,8 +1147,38 @@ abstract class AppLocalizations {
   /// esecuzione.dart
   ///
   /// In it, this message translates to:
-  /// **'Cambia lato a metà.'**
-  String get cambiaLatoMeta;
+  /// **'Lato destro'**
+  String get latoDestro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Lato sinistro'**
+  String get latoSinistro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato'**
+  String get cambiaLato;
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato.'**
+  String get cambiaLatoVoce;
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} s per lato'**
+  String secondiPerLato(Object p0);
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} per lato'**
+  String ripetizioniPerLato(Object p0);
 
   /// esecuzione.dart
   ///
@@ -3085,14 +3115,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, scendi sotto {p1}.'**
-  String cadenzaScendiSotto(Object p0, Object p1);
+  /// **'Cadenza {p0}, scendi a {p1}.'**
+  String cadenzaScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, sali sopra {p1}.'**
-  String cadenzaSaliSopra(Object p0, Object p1);
+  /// **'Cadenza {p0}, sali a {p1}.'**
+  String cadenzaSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
@@ -3109,14 +3139,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, scendi sotto {p1}.'**
-  String wattScendiSotto(Object p0, Object p1);
+  /// **'{p0} watt, scendi a {p1}.'**
+  String wattScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, sali sopra {p1}.'**
-  String wattSaliSopra(Object p0, Object p1);
+  /// **'{p0} watt, sali a {p1}.'**
+  String wattSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
@@ -5781,6 +5811,18 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Immagini da free-exercise-db ({p0}).'**
   String immaginiFreeExerciseDb(Object p0);
+
+  /// screens/catalogo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Animazione creata con l\'intelligenza artificiale per Avidididadi.'**
+  String get animazioneFattaConIa;
+
+  /// screens/catalogo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Immagine creata con l\'intelligenza artificiale per Avidididadi.'**
+  String get immagineFattaConIa;
 
   /// screens/catalogo_screen.dart
   ///
@@ -12386,6 +12428,66 @@ abstract class AppLocalizations {
   /// **'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.'**
   String get aggiornamentiPrivacy;
 
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Più cambi insieme'**
+  String get piuCambiInsieme;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti, scheda di forza.'**
+  String get piuCambiSpiegazione;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Applica tutto'**
+  String get applicaTutto;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto applicato: lo trovi nel calendario.'**
+  String get tuttoApplicato;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.'**
+  String get pianoDaCorreggerePrima;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Fatto: {p0}.'**
+  String fattoRiassunto(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'piano nuovo con {p0} sedute'**
+  String partePiano(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} modifiche al piano'**
+  String parteModifiche(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} allenamenti nel calendario'**
+  String parteAllenamenti(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} allenamenti di arrampicata'**
+  String parteArrampicata(Object p0);
+
   /// forza_agente.dart
   ///
   /// In it, this message translates to:
@@ -12505,6 +12607,12 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Scheda salvata: le sedute di forza seguono i suoi esercizi.'**
   String get forzaSchedaSalvata;
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'la scheda di forza \"{p0}\"'**
+  String parteForza(Object p0);
 }
 
 class _AppLocalizationsDelegate

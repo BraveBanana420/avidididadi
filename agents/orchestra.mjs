@@ -403,8 +403,17 @@ const FILE_ANIMAZIONE = ['assets/exercises/animated/', 'docs/animazioni/', 'lib/
  */
 function stimaDollari(piano) {
   let d = 0;
-  for (const t of piano.tasks.filter((x) => x.animazione)) for (const e of t.esercizi || []) d += 0.15 + (e.partenza === 'genera' ? 0.1 : 0);
+  for (const t of piano.tasks.filter((x) => x.animazione)) for (const e of t.esercizi || []) d += 0.15 + (richiestaAnimazione(e).partenza === 'genera' ? 0.1 : 0);
   return Math.round(d * 100) / 100;
+}
+
+/**
+ * La richiesta di un esercizio da animare: quella del piano se ne porta una
+ * nuova (con "movimento"), altrimenti quella approvata in richieste.json.
+ */
+function richiestaAnimazione(e) {
+  if (e.movimento) return { vista: e.vista || 'tre_quarti', partenza: e.partenza, posa: e.posa, movimento: e.movimento, nuova: true };
+  return leggiJson(path.join(REPO, 'docs', 'animazioni', 'richieste.json'), {}).esercizi?.[e.id] || {};
 }
 
 function chiTask(t) {
@@ -435,7 +444,10 @@ function pianoMarkdown(s, piano, stima, dollari = 0, credito = null) {
     else if (t.claude) righe.push(`- **Lo fa Claude** (${t.perche_claude || 'compito delicato'})`);
     else if (t.animazione) {
       righe.push('- **Animazioni** (Claude con `agents/animazione.mjs`, crediti a pagamento):');
-      for (const e of t.esercizi || []) righe.push(`  - \`${e.id}\`, vista ${e.vista || 'tre_quarti'}, partenza: ${e.partenza === 'genera' ? 'generata con Nano Banana' : "dall'avatar"}. Movimento: ${e.movimento}`);
+      for (const e of t.esercizi || []) {
+        const r = richiestaAnimazione(e);
+        righe.push(`  - \`${e.id}\`${r.nuova ? ' (**richiesta nuova**, da approvare: va in `docs/animazioni/richieste.json`)' : ' (richiesta già approvata)'}, vista ${r.vista}, partenza: ${r.partenza === 'genera' ? `generata con Nano Banana. Posa: ${r.posa}` : "dall'avatar"}. Movimento: ${r.movimento}`);
+      }
     }
     else righe.push(`- **Modello:** \`${t.modello}\` (riserva: \`${t.riserva}\`)`);
     righe.push('');
@@ -794,13 +806,17 @@ const comandi = {
       if (t.animazione) {
         t.file = FILE_ANIMAZIONE;
         const catalogo = new Set((leggiJson(path.join(REPO, 'assets', 'esercizi.json')) || []).map((e) => e.id));
-        if (!t.esercizi?.length) bloccanti.push(`${t.id}: un task animazione vuole "esercizi": [{ id, vista, partenza, movimento }]`);
+        if (!t.esercizi?.length) bloccanti.push(`${t.id}: un task animazione vuole "esercizi": [{ id }] (più vista, partenza, posa e movimento solo per una richiesta nuova)`);
         for (const e of t.esercizi || []) {
           if (!catalogo.has(e.id)) bloccanti.push(`${t.id}: ${e.id} non è in assets/esercizi.json`);
-          if (!['avatar', 'genera'].includes(e.partenza)) bloccanti.push(`${t.id}: ${e.id} vuole "partenza": "avatar" (parte in piedi) o "genera"`);
-          if (e.partenza === 'genera' && !e.posa) bloccanti.push(`${t.id}: ${e.id} con partenza "genera" vuole "posa" (in inglese)`);
-          if (e.vista && !['tre_quarti', 'lato', 'fronte'].includes(e.vista)) bloccanti.push(`${t.id}: ${e.id} ha una vista sconosciuta (${e.vista})`);
-          if (!e.movimento) bloccanti.push(`${t.id}: ${e.id} vuole "movimento" (una ripetizione, in inglese)`);
+          const r = richiestaAnimazione(e);
+          if (!r.movimento) {
+            bloccanti.push(`${t.id}: ${e.id} non ha una richiesta approvata in docs/animazioni/richieste.json: aggiungi al piano vista, partenza, posa e movimento`);
+            continue;
+          }
+          if (!['avatar', 'genera'].includes(r.partenza)) bloccanti.push(`${t.id}: ${e.id} vuole "partenza": "avatar" (parte in piedi) o "genera"`);
+          if (r.partenza === 'genera' && !r.posa) bloccanti.push(`${t.id}: ${e.id} con partenza "genera" vuole "posa" (in inglese)`);
+          if (!['tre_quarti', 'lato', 'fronte'].includes(r.vista)) bloccanti.push(`${t.id}: ${e.id} ha una vista sconosciuta (${r.vista})`);
         }
         if (piano.tasks.filter((x) => x.animazione).length > 1) bloccanti.push('Metti tutte le animazioni in un solo task: toccano gli stessi file e andrebbero in conflitto');
         if (!process.env.OPENROUTER_VIDEO_KEY) bloccanti.push(`${t.id}: manca OPENROUTER_VIDEO_KEY (la chiave con il tetto di spesa per immagini e video)`);

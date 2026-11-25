@@ -2,6 +2,19 @@
 
 ## Da fare / da ricordare
 
+- [ ] **Animazioni degli esercizi per lato** (dal 23/11/2026). Analisi
+  completa, regola e richieste pronte in
+  [docs/animazioni/LATI.md](docs/animazioni/LATI.md). Gli esercizi
+  con `"lati": true` in `assets/esercizi.json` (32: 13 di mobilità, 19 di
+  forza) in allenamento si dividono già in "Lato destro" e "Lato sinistro",
+  ognuno con il suo tempo (`Blocco.lato`), con 5 s di pausa "Cambia lato"
+  in mezzo. Restano:
+  - generare le animazioni del lato destro, partendo dai 13 di mobilità
+    (serve la chiave OpenRouter, dal PC con Remote Control);
+  - nel blocco del lato sinistro mostrare la stessa animazione specchiata;
+  - aggiungere "poi cambia lato" alle istruzioni del corridore
+    (`Runners_Stretch`) nelle tre lingue.
+
 - [x] **Progressione: scegliere tra durata e intensità.** (fatto il 23/10/2026:
   Crea piano → "Quando le sedute ti sembrano facili", per ogni sport)
   Oggi, dopo un feedback "facile", corsa, nuoto e bici allungano le sedute

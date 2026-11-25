@@ -696,7 +696,26 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get cambiaLatoMeta => 'Άλλαξε πλευρά στη μέση.';
+  String get latoDestro => 'Δεξιά πλευρά';
+
+  @override
+  String get latoSinistro => 'Αριστερή πλευρά';
+
+  @override
+  String get cambiaLato => 'Αλλαγή πλευράς';
+
+  @override
+  String get cambiaLatoVoce => 'Άλλαξε πλευρά.';
+
+  @override
+  String secondiPerLato(Object p0) {
+    return '$p0 δευτ. ανά πλευρά';
+  }
+
+  @override
+  String ripetizioniPerLato(Object p0) {
+    return '$p0 ανά πλευρά';
+  }
 
   @override
   String poiRipetizione(Object p0, Object p1) {
@@ -1852,13 +1871,13 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Συχνότητα $p0, κατέβα κάτω από $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Συχνότητα $p0, κατέβα στις $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Συχνότητα $p0, ανέβα πάνω από $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Συχνότητα $p0, ανέβα στις $p1.';
   }
 
   @override
@@ -1872,13 +1891,13 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 βατ, κατέβα κάτω από $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 βατ, κατέβα στα $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 βατ, ανέβα πάνω από $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 βατ, ανέβα στα $p1.';
   }
 
   @override
@@ -3499,6 +3518,14 @@ class AppLocalizationsEl extends AppLocalizations {
   String immaginiFreeExerciseDb(Object p0) {
     return 'Εικόνες από το free-exercise-db ($p0).';
   }
+
+  @override
+  String get animazioneFattaConIa =>
+      'Κινούμενη εικόνα φτιαγμένη με τεχνητή νοημοσύνη για το Avidididadi.';
+
+  @override
+  String get immagineFattaConIa =>
+      'Εικόνα φτιαγμένη με τεχνητή νοημοσύνη για το Avidididadi.';
 
   @override
   String get tueSerie => 'Τα σετ σου';
@@ -7498,6 +7525,48 @@ class AppLocalizationsEl extends AppLocalizations {
       'Μία φορά τη μέρα, όταν ανοίγει, η εφαρμογή ρωτά το GitHub (api.github.com) ποια είναι η τελευταία έκδοση που δημοσιεύτηκε. Αν πατήσεις Ενημέρωση, κατεβάζει το APK από το GitHub στην προσωρινή της μνήμη, ελέγχει ότι είναι ίδιο με αυτό που δημοσιεύτηκε, το δίνει στο πρόγραμμα εγκατάστασης του Android και το διαγράφει: στο τηλέφωνο δεν μένουν αρχεία. Το GitHub λαμβάνει τη διεύθυνση IP του τηλεφώνου και την έκδοση που ζητήθηκε, τίποτα άλλο. Μπορείς να απενεργοποιήσεις τον έλεγχο από το Προφίλ, στο Ενημερώσεις εφαρμογής.';
 
   @override
+  String get piuCambiInsieme => 'Πολλές αλλαγές μαζί';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'Αυτή η απάντηση αλλάζει πολλά πράγματα: παρακάτω τα βλέπεις ένα ένα. Εφαρμόζονται όλα μαζί, με αυτή τη σειρά: νέο πλάνο, αλλαγές, προπονήσεις, πρόγραμμα δύναμης.';
+
+  @override
+  String get applicaTutto => 'Εφαρμογή όλων';
+
+  @override
+  String get tuttoApplicato => 'Όλα εφαρμόστηκαν: θα τα βρεις στο ημερολόγιο.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'Το νέο πλάνο έχει κάποια προβλήματα (τα βλέπεις παρακάτω): ζήτα να διορθωθεί πριν τα εφαρμόσεις όλα.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Έγινε: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'νέο πλάνο με $p0 προπονήσεις';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 αλλαγές στο πλάνο';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 προπονήσεις στο ημερολόγιο';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 προπονήσεις αναρρίχησης';
+  }
+
+  @override
   String forzaEsercizioSconosciuto(Object p0, Object p1) {
     return '$p0: η άσκηση \"$p1\" δεν υπάρχει στην εφαρμογή. Χρησιμοποίησε ένα id από τη λίστα των ασκήσεων, ή μόνο \"nome\" για μια άσκηση γραμμένη με το χέρι.';
   }
@@ -7593,4 +7662,9 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get forzaSchedaSalvata =>
       'Το πρόγραμμα αποθηκεύτηκε: οι προπονήσεις δύναμης ακολουθούν τις ασκήσεις του.';
+
+  @override
+  String parteForza(Object p0) {
+    return 'το πρόγραμμα δύναμης \"$p0\"';
+  }
 }

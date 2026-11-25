@@ -128,6 +128,7 @@ String parlato(String testo) {
 
 /// Il blocco che inizia: cosa fare, quanto e a che intensità.
 String fraseBlocco(Blocco b) {
+  if (b.cambioLato) return l10nVoce.cambiaLatoVoce;
   if (b.tipo == TipoBlocco.recupero) {
     return b.secondi == null
         ? l10nVoce.recupero3
@@ -137,13 +138,24 @@ String fraseBlocco(Blocco b) {
     // Il nome del blocco è salvato in italiano: si dice nella lingua
     // della voce, se è tra quelli noti.
     l10nVoce.ora(gradiParlati(nomePerVoce(b.titolo))),
-    if (b.dettaglio.isNotEmpty) parlato(b.dettaglio),
+    if (b.dettaglio.isNotEmpty) parlato(_latoPerVoce(b)),
     // Intensità e obiettivo sono scritti in italiano nei dati.
     if (b.intensita.isNotEmpty) parlato(testoPerVoce(b.intensita)),
     if (b.obiettivo2.isNotEmpty) parlato(testoPerVoce(b.obiettivo2)),
   ];
   return '${pezzi.map((p) => p.trim().replaceAll(RegExp(r'[.\s]+$'), '')).join('. ')}.';
 }
+
+/// Il dettaglio del blocco con "Lato destro" o "Lato sinistro" nella lingua
+/// della voce: il dettaglio è scritto nella lingua dell'app.
+String _latoPerVoce(Blocco b) => switch (b.lato) {
+  latoDestro => b.dettaglio.replaceFirst(l10n.latoDestro, l10nVoce.latoDestro),
+  latoSinistro => b.dettaglio.replaceFirst(
+    l10n.latoSinistro,
+    l10nVoce.latoSinistro,
+  ),
+  _ => b.dettaglio,
+};
 
 /// La zona chiesta dall'esercizio ("zona 4", "Z2"), se c'è.
 int? zonaObiettivo(String intensita) {

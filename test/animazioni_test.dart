@@ -27,8 +27,9 @@ void main() {
       expect(f.existsSync(), isTrue, reason: file);
       final dati = f.readAsBytesSync();
       expect(String.fromCharCodes(dati.sublist(8, 12)), 'WEBP');
-      // Il blocco ANIM c'è solo nei WebP animati.
-      expect(String.fromCharCodes(dati).contains('ANIM'), isTrue, reason: file);
+      // Il blocco ANIM c'è solo nei WebP animati (non nelle posizioni ferme).
+      final fermo = posizioniFerme.any((id) => animazioniEsercizi[id] == file);
+      expect(String.fromCharCodes(dati).contains('ANIM'), !fermo, reason: file);
     }
   });
 
@@ -70,7 +71,9 @@ void main() {
     for (final file in animazioniEsercizi.values) {
       final nome = file.replaceAll('.webp', '');
       expect(
-        File('docs/animazioni/originali/$nome.mp4').existsSync(),
+        // Le posizioni ferme possono venire solo dall'immagine di partenza.
+        File('docs/animazioni/originali/$nome.mp4').existsSync() ||
+            File('docs/animazioni/originali/${nome}_primo.jpg').existsSync(),
         isTrue,
         reason: file,
       );
@@ -83,5 +86,53 @@ void main() {
       File('pubspec.yaml').readAsStringSync(),
       contains('- $cartellaAnimazioni'),
     );
+  });
+
+  test('le richieste approvate sono complete e di esercizi del catalogo', () {
+    // agents/animazione.mjs prende vista, partenza, posa e movimento solo da
+    // qui: una voce sbagliata fermerebbe chi fa l'animazione.
+    final esercizi = (jsonDecode(
+      File('assets/esercizi.json').readAsStringSync(),
+    ) as List).cast<Map<String, dynamic>>();
+    final ids = esercizi.map((e) => e['id']).toSet();
+    final richieste =
+        (jsonDecode(File('docs/animazioni/richieste.json').readAsStringSync())
+                as Map<String, dynamic>)['esercizi']
+            as Map<String, dynamic>;
+    for (final MapEntry(:key, :value) in richieste.entries) {
+      final r = value as Map<String, dynamic>;
+      expect(ids, contains(key));
+      expect(['tre_quarti', 'lato', 'fronte'], contains(r['vista']));
+      expect(['avatar', 'genera'], contains(r['partenza']), reason: key);
+      // "posizione" = immagine ferma: il movimento serve solo se c'è un video.
+      expect([null, 'animazione', 'posizione'], contains(r['tipo']));
+      if (r['tipo'] != 'posizione' || r['movimento'] != null) {
+        expect(r['movimento'], matches(RegExp(r'\bhe\b')), reason: key);
+      }
+      // L'app scrive "Immagine" o "Animazione" secondo posizioniFerme.
+      if (animazioniEsercizi.containsKey(key)) {
+        expect(
+          posizioniFerme.contains(key),
+          r['tipo'] == 'posizione',
+          reason: key,
+        );
+      }
+      expect(
+        r['approvata'],
+        matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')),
+        reason: key,
+      );
+      if (r['partenza'] == 'genera') {
+        expect(r['posa'], startsWith('He '), reason: key);
+      } else {
+        // L'avatar è a corpo libero: con un attrezzo l'immagine va generata.
+        final e = esercizi.firstWhere((x) => x['id'] == key);
+        expect(e['attrezzi'], isEmpty, reason: key);
+      }
+    }
+    // Ogni animazione nell'app si può rifare con la stessa ricetta.
+    for (final id in animazioniEsercizi.keys) {
+      expect(richieste.keys, contains(id));
+    }
   });
 }

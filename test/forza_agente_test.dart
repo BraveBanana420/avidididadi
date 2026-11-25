@@ -209,7 +209,7 @@ void main() {
         catalogo: catalogo,
       );
       expect(r.forza?.fasi, hasLength(3));
-      expect(r.motivo, contains('piegamenti'));
+      expect(r.forza?.motivo, contains('piegamenti'));
     });
 
     test('anche dalla chat del coach', () {
@@ -220,6 +220,25 @@ void main() {
       );
       expect(r.errore, isNull);
       expect(r.proposta?.forza?.nome, 'Forza graduale');
+    });
+
+    test('insieme ad altri cambi diventa una proposta sola', () {
+      const codice = 'AVD-K7Q2XM';
+      String blocco(Object j) =>
+          '<avidididadi codice="$codice">${jsonEncode(j)}</avidididadi>';
+      final r = leggiRispostaAgente(
+        'Tolgo la corsa di lunedì e ti preparo la scheda.\n'
+        '${blocco({
+          'modifiche': [
+            {'azione': 'rimuovi', 'data': isoData(lunedi), 'sport': 'Corsa'},
+          ],
+        })}\n${blocco({'forza': graduale})}',
+        codice,
+        catalogo: catalogo,
+      );
+      expect(r.parti, 2);
+      expect(r.modifiche, hasLength(1));
+      expect(r.forza?.fasi, hasLength(3));
     });
 
     test('il formato spiega il blocco con gli id degli esercizi', () {

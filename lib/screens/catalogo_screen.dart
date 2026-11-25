@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../animazioni_esercizi.dart';
 import '../app_state.dart';
 import '../esercizi.dart';
 import '../figura.dart';
@@ -255,7 +256,11 @@ class EsercizioScreen extends StatelessWidget {
             ),
           const SizedBox(height: 16),
           Text(
-            l10n.immaginiFreeExerciseDb(e.nomeEn),
+            animazioneDi(e.id) == null
+                ? l10n.immaginiFreeExerciseDb(e.nomeEn)
+                : posizioniFerme.contains(e.id)
+                ? l10n.immagineFattaConIa
+                : l10n.animazioneFattaConIa,
             style: t.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],

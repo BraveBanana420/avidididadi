@@ -691,7 +691,26 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get cambiaLatoMeta => 'Cambia lato a metà.';
+  String get latoDestro => 'Lato destro';
+
+  @override
+  String get latoSinistro => 'Lato sinistro';
+
+  @override
+  String get cambiaLato => 'Cambia lato';
+
+  @override
+  String get cambiaLatoVoce => 'Cambia lato.';
+
+  @override
+  String secondiPerLato(Object p0) {
+    return '$p0 s per lato';
+  }
+
+  @override
+  String ripetizioniPerLato(Object p0) {
+    return '$p0 per lato';
+  }
 
   @override
   String poiRipetizione(Object p0, Object p1) {
@@ -1841,13 +1860,13 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Cadenza $p0, scendi sotto $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Cadenza $p0, scendi a $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Cadenza $p0, sali sopra $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Cadenza $p0, sali a $p1.';
   }
 
   @override
@@ -1861,13 +1880,13 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 watt, scendi sotto $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 watt, scendi a $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 watt, sali sopra $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 watt, sali a $p1.';
   }
 
   @override
@@ -3479,6 +3498,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String immaginiFreeExerciseDb(Object p0) {
     return 'Immagini da free-exercise-db ($p0).';
   }
+
+  @override
+  String get animazioneFattaConIa =>
+      'Animazione creata con l\'intelligenza artificiale per Avidididadi.';
+
+  @override
+  String get immagineFattaConIa =>
+      'Immagine creata con l\'intelligenza artificiale per Avidididadi.';
 
   @override
   String get tueSerie => 'Le tue serie';
@@ -7465,6 +7492,48 @@ class AppLocalizationsIt extends AppLocalizations {
       'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.';
 
   @override
+  String get piuCambiInsieme => 'Più cambi insieme';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti, scheda di forza.';
+
+  @override
+  String get applicaTutto => 'Applica tutto';
+
+  @override
+  String get tuttoApplicato => 'Tutto applicato: lo trovi nel calendario.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Fatto: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'piano nuovo con $p0 sedute';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 modifiche al piano';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 allenamenti nel calendario';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 allenamenti di arrampicata';
+  }
+
+  @override
   String forzaEsercizioSconosciuto(Object p0, Object p1) {
     return '$p0: l\'esercizio \"$p1\" non c\'è nell\'app. Usa un id della lista degli esercizi, oppure solo \"nome\" per un esercizio scritto a mano.';
   }
@@ -7560,4 +7629,9 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get forzaSchedaSalvata =>
       'Scheda salvata: le sedute di forza seguono i suoi esercizi.';
+
+  @override
+  String parteForza(Object p0) {
+    return 'la scheda di forza \"$p0\"';
+  }
 }

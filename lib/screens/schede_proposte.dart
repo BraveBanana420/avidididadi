@@ -29,8 +29,11 @@ class SchedaAllenamenti extends StatelessWidget {
   final String motivo;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaAllenamenti({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.allenamenti,
     required this.motivo,
@@ -96,7 +99,7 @@ class SchedaAllenamenti extends StatelessWidget {
               ),
             if (messaggio?.applicata ?? state.rispostaApplicata)
               Text(l10n.messoNelCalendario)
-            else
+            else if (conPulsante)
               FilledButton.icon(
                 onPressed: passati == allenamenti.length
                     ? null
@@ -134,8 +137,11 @@ class SchedaPiano extends StatelessWidget {
   final PianoAgente piano;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaPiano({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.piano,
     this.messaggio,
@@ -221,7 +227,7 @@ class SchedaPiano extends StatelessWidget {
                     icon: const Icon(Icons.copy_rounded),
                     label: Text(l10n.copiaProblemi(app)),
                   ),
-              ] else
+              ] else if (conPulsante)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: FilledButton.icon(
@@ -260,8 +266,11 @@ class SchedaArrampicata extends StatelessWidget {
   final List<PropostaArrampicata> proposte;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaArrampicata({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.proposte,
     this.messaggio,
@@ -322,7 +331,7 @@ class SchedaArrampicata extends StatelessWidget {
             if (passate > 0) Text(l10n.datePassateNonVanno, style: t.bodySmall),
             if (messaggio?.applicata ?? state.rispostaApplicata)
               Text(l10n.salvato)
-            else
+            else if (conPulsante)
               FilledButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
@@ -358,6 +367,70 @@ class SchedaArrampicata extends StatelessWidget {
   }
 }
 
+/// Una risposta che cambia più cose (per esempio togliere una seduta e
+/// mettere un allenamento preciso): un pulsante solo le applica tutte, così
+/// non si rischia di applicarne metà.
+class SchedaApplicaTutto extends StatelessWidget {
+  final AppState state;
+  final RispostaAgente risposta;
+  final MessaggioChat?
+  messaggio; // dalla chat del coach; null: assistente esterno
+  const SchedaApplicaTutto({
+    super.key,
+    required this.state,
+    required this.risposta,
+    this.messaggio,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final applicata = messaggio?.applicata ?? state.rispostaApplicata;
+    final pianoKo =
+        risposta.piano != null &&
+        !state.valutaPianoDa(risposta.piano!).applicabile;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(l10n.piuCambiInsieme, style: t.titleSmall),
+            Text(l10n.piuCambiSpiegazione, style: t.bodySmall),
+            if (applicata)
+              Text(l10n.tuttoApplicato)
+            else if (pianoKo)
+              Text(l10n.pianoDaCorreggerePrima, style: t.bodySmall)
+            else
+              FilledButton.icon(
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final fatto = await state.applicaTutto(
+                    risposta,
+                    da: messaggio,
+                  );
+                  messenger.showSnackBar(
+                    avviso(
+                      content: Text(
+                        fatto.isEmpty
+                            ? l10n.nienteApplicarePianoCambiato
+                            : l10n.fattoRiassunto(fatto),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.done_all_rounded),
+                label: Text(l10n.applicaTutto),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Anteprima della scheda di forza graduale dell'assistente: fasi con le
 /// date, giorni ed esercizi, cosa prende il posto di cosa e conferma.
 class SchedaForza extends StatelessWidget {
@@ -370,7 +443,12 @@ class SchedaForza extends StatelessWidget {
     required this.state,
     required this.proposta,
     this.messaggio,
+    this.conPulsante = true,
   });
+
+  /// Falso quando la scheda fa parte di una risposta con più cambi: si
+  /// applica con il pulsante "Applica tutto".
+  final bool conPulsante;
 
   @override
   Widget build(BuildContext context) {
@@ -435,7 +513,7 @@ class SchedaForza extends StatelessWidget {
               ),
             if (messaggio?.applicata ?? state.rispostaApplicata)
               Text(l10n.salvato)
-            else
+            else if (conPulsante)
               FilledButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);

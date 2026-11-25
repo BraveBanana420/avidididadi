@@ -767,6 +767,7 @@
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "gluteal"
@@ -802,6 +803,7 @@
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "gluteal"
@@ -907,6 +909,7 @@
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "abs",
@@ -1610,6 +1613,7 @@
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "manubri"
@@ -2012,6 +2016,7 @@
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "manubri"
@@ -2212,6 +2217,7 @@
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "manubri"
@@ -2292,6 +2298,7 @@
   "tipo": "forza",
   "schema": "cerniera",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -2335,6 +2342,7 @@
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -2382,6 +2390,7 @@
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -2421,6 +2430,7 @@
   "tipo": "forza",
   "schema": "spinta_verticale",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -2460,6 +2470,7 @@
   "tipo": "forza",
   "schema": "total_body",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -2502,6 +2513,7 @@
   "tipo": "forza",
   "schema": "core",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "kettlebell"
@@ -3156,6 +3168,7 @@
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "elastici"
@@ -3424,6 +3437,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "hamstring"
@@ -3435,17 +3449,17 @@
   ],
   "istruzioni": [
    "Fai un affondo in avanti con il ginocchio posteriore vicino a terra e resta 10-20 secondi.",
-   "Appoggia a terra la mano dal lato della gamba anteriore e ruota il busto portando l'altro braccio verso il soffitto.",
+   "Appoggia a terra la mano opposta alla gamba anteriore e ruota il busto verso la gamba anteriore, portando l'altro braccio teso verso il soffitto.",
    "Infine distendi la gamba anteriore portando il bacino indietro per allungare i femorali, poi cambia lato."
   ],
   "istruzioni_en": [
    "Step forward into a lunge with your back knee close to the floor and hold for 10-20 seconds.",
-   "Place the hand on the side of your front leg on the floor and rotate your torso, bringing the other arm towards the ceiling.",
+   "Place the hand opposite your front leg on the floor and rotate your torso towards the front leg, bringing the other arm straight up towards the ceiling.",
    "Finally, straighten your front leg moving your hips back to stretch your hamstrings, then switch sides."
   ],
   "istruzioni_el": [
    "Κάνε μια προβολή μπροστά με το πίσω γόνατο κοντά στο πάτωμα και μείνε 10-20 δευτερόλεπτα.",
-   "Ακούμπησε στο πάτωμα το χέρι από την πλευρά του μπροστινού ποδιού και γύρνα τον κορμό φέρνοντας το άλλο χέρι προς το ταβάνι.",
+   "Ακούμπησε στο πάτωμα το χέρι από την αντίθετη πλευρά του μπροστινού ποδιού και γύρνα τον κορμό προς το μπροστινό πόδι, φέρνοντας το άλλο χέρι τεντωμένο προς το ταβάνι.",
    "Τέλος τέντωσε το μπροστινό πόδι φέρνοντας τη λεκάνη πίσω για να τεντώσεις τους οπίσθιους μηριαίους, μετά άλλαξε πλευρά."
   ],
   "immagini": [
@@ -3533,6 +3547,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "quadriceps"
@@ -3566,6 +3581,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "hamstring"
@@ -3601,6 +3617,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "calves"
@@ -3634,6 +3651,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "calves"
@@ -3667,6 +3685,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "quadriceps"
@@ -3700,6 +3719,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "hamstring"
@@ -3735,6 +3755,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "gluteal"
@@ -3873,6 +3894,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "deltoids"
@@ -3906,6 +3928,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "triceps"
@@ -4011,6 +4034,7 @@
   "tipo": "mobilita",
   "schema": "mobilita",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [],
   "muscoli": [
    "calves"
@@ -4118,6 +4142,7 @@
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "rullo"
@@ -4192,6 +4217,7 @@
   "tipo": "mobilita",
   "schema": "rullo",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "rullo"
@@ -4468,6 +4494,7 @@
   "tipo": "forza",
   "schema": "trazione_orizzontale",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "pulley"
@@ -4897,6 +4924,7 @@
   "tipo": "forza",
   "schema": "spalle",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "cavi"
@@ -5174,6 +5202,7 @@
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "cavi"
@@ -5219,6 +5248,7 @@
   "tipo": "forza",
   "schema": "core",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "cavi"
@@ -5502,6 +5532,7 @@
   "tipo": "forza",
   "schema": "affondo",
   "livello": "principiante",
+  "lati": true,
   "attrezzi": [
    [
     "multipower"
@@ -5811,6 +5842,7 @@
   "tipo": "forza",
   "schema": "isolamento_gambe",
   "livello": "intermedio",
+  "lati": true,
   "attrezzi": [
    [
     "cavi"

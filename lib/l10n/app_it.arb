@@ -1098,9 +1098,39 @@
       }
     }
   },
-  "cambiaLatoMeta": "Cambia lato a metà.",
-  "@cambiaLatoMeta": {
+  "latoDestro": "Lato destro",
+  "@latoDestro": {
     "description": "esecuzione.dart"
+  },
+  "latoSinistro": "Lato sinistro",
+  "@latoSinistro": {
+    "description": "esecuzione.dart"
+  },
+  "cambiaLato": "Cambia lato",
+  "@cambiaLato": {
+    "description": "esecuzione.dart"
+  },
+  "cambiaLatoVoce": "Cambia lato.",
+  "@cambiaLatoVoce": {
+    "description": "voce.dart"
+  },
+  "secondiPerLato": "{p0} s per lato",
+  "@secondiPerLato": {
+    "description": "generatore_forza.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "ripetizioniPerLato": "{p0} per lato",
+  "@ripetizioniPerLato": {
+    "description": "generatore_forza.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   },
   "poiRipetizione": "Poi ripetizione {p0} di {p1}",
   "@poiRipetizione": {
@@ -2709,8 +2739,8 @@
       }
     }
   },
-  "cadenzaScendiSotto": "Cadenza {p0}, scendi sotto {p1}.",
-  "@cadenzaScendiSotto": {
+  "cadenzaScendiA": "Cadenza {p0}, scendi a {p1}.",
+  "@cadenzaScendiA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2721,8 +2751,8 @@
       }
     }
   },
-  "cadenzaSaliSopra": "Cadenza {p0}, sali sopra {p1}.",
-  "@cadenzaSaliSopra": {
+  "cadenzaSaliA": "Cadenza {p0}, sali a {p1}.",
+  "@cadenzaSaliA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2763,8 +2793,8 @@
       }
     }
   },
-  "wattScendiSotto": "{p0} watt, scendi sotto {p1}.",
-  "@wattScendiSotto": {
+  "wattScendiA": "{p0} watt, scendi a {p1}.",
+  "@wattScendiA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -2775,8 +2805,8 @@
       }
     }
   },
-  "wattSaliSopra": "{p0} watt, sali sopra {p1}.",
-  "@wattSaliSopra": {
+  "wattSaliA": "{p0} watt, sali a {p1}.",
+  "@wattSaliA": {
     "description": "potenza.dart",
     "placeholders": {
       "p0": {
@@ -5090,6 +5120,14 @@
         "type": "Object"
       }
     }
+  },
+  "animazioneFattaConIa": "Animazione creata con l'intelligenza artificiale per Avidididadi.",
+  "@animazioneFattaConIa": {
+    "description": "screens/catalogo_screen.dart"
+  },
+  "immagineFattaConIa": "Immagine creata con l'intelligenza artificiale per Avidididadi.",
+  "@immagineFattaConIa": {
+    "description": "screens/catalogo_screen.dart"
   },
   "tueSerie": "Le tue serie",
   "@tueSerie": {
@@ -10805,6 +10843,71 @@
   "@aggiornamentiPrivacy": {
     "description": "aggiornamento.dart"
   },
+  "piuCambiInsieme": "Più cambi insieme",
+  "@piuCambiInsieme": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "piuCambiSpiegazione": "Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest'ordine: piano nuovo, modifiche, allenamenti, scheda di forza.",
+  "@piuCambiSpiegazione": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "applicaTutto": "Applica tutto",
+  "@applicaTutto": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "tuttoApplicato": "Tutto applicato: lo trovi nel calendario.",
+  "@tuttoApplicato": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "pianoDaCorreggerePrima": "Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.",
+  "@pianoDaCorreggerePrima": {
+    "description": "screens/schede_proposte.dart"
+  },
+  "fattoRiassunto": "Fatto: {p0}.",
+  "@fattoRiassunto": {
+    "description": "screens/schede_proposte.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "partePiano": "piano nuovo con {p0} sedute",
+  "@partePiano": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteModifiche": "{p0} modifiche al piano",
+  "@parteModifiche": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteAllenamenti": "{p0} allenamenti nel calendario",
+  "@parteAllenamenti": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "parteArrampicata": "{p0} allenamenti di arrampicata",
+  "@parteArrampicata": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
   "forzaEsercizioSconosciuto": "{p0}: l'esercizio \"{p1}\" non c'è nell'app. Usa un id della lista degli esercizi, oppure solo \"nome\" per un esercizio scritto a mano.",
   "@forzaEsercizioSconosciuto": {
     "description": "forza_agente.dart",
@@ -10986,5 +11089,14 @@
   "forzaSchedaSalvata": "Scheda salvata: le sedute di forza seguono i suoi esercizi.",
   "@forzaSchedaSalvata": {
     "description": "forza_agente.dart"
+  },
+  "parteForza": "la scheda di forza \"{p0}\"",
+  "@parteForza": {
+    "description": "app_state.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
   }
 }

@@ -54,6 +54,38 @@ void main() {
       expect(testo, 'Ciao');
       expect(estraiProposta('Solo testo').$2, isNull);
     });
+
+    test('un blocco con modifiche e allenamenti insieme si legge tutto', () {
+      final r = leggiProposta('''Sabato riposa, venerdì ripetute.
+<proposta>
+{"modifiche": [{"azione": "rimuovi", "data": "2026-10-24", "sport": "Corsa"}],
+ "allenamenti": [{"data": "2026-10-23", "sport": "Bici", "tipo": "Intervalli",
+   "nome": "VO2max 5x4", "passi": [
+     {"fase": "riscaldamento", "minuti": 10, "intensita": "55-65%"},
+     {"fase": "principale", "ripeti": 5, "minuti": 4, "intensita": "106-112%", "recupero_s": 180},
+     {"fase": "defaticamento", "minuti": 10, "intensita": "zona 1"}]}]}
+</proposta>''');
+      expect(r.errore, isNull);
+      expect(r.testo, 'Sabato riposa, venerdì ripetute.');
+      expect(r.proposta!.parti, 2);
+      expect(r.proposta!.modifiche!.single.azione, Azione.rimuovi);
+      expect(r.proposta!.allenamenti!.single.nome, 'VO2max 5x4');
+    });
+
+    test('due blocchi nella stessa risposta diventano una proposta sola', () {
+      final r = leggiProposta(
+        '''Prima togliamo la forza:
+<proposta>{"modifiche": [{"azione": "rimuovi", "data": "2026-10-23", "sport": "Forza"}]}</proposta>
+poi allunghiamo il lungo:
+<proposta>{"modifiche": [{"azione": "cambia", "data": "2026-10-24", "sport": "Corsa", "durata_min": 100}]}</proposta>''',
+      );
+      expect(r.testo, 'Prima togliamo la forza:\n\npoi allunghiamo il lungo:');
+      expect(r.proposta!.parti, 1);
+      expect(r.proposta!.modifiche!.map((m) => m.azione), [
+        Azione.rimuovi,
+        Azione.cambia,
+      ]);
+    });
   });
 
   group('controlli sulla proposta', () {
@@ -117,6 +149,59 @@ void main() {
         m(Azione.aggiungi, 6, 'Corsa', min: 30),
       ], oggi);
       expect(e.scartate.single.$2, contains('riposo'));
+    });
+
+    test('scambiare due sedute di sport diversi tra due giorni', () {
+      // La forza del venerdì e il lungo del sabato si invertono.
+      final e = valutaProposta(piano, [
+        Modifica(
+          azione: Azione.scambia,
+          data: lunedi.add(const Duration(days: 4)),
+          sport: 'Forza',
+          nuovaData: lunedi.add(const Duration(days: 5)),
+          conSport: 'Corsa',
+        ),
+      ], oggi);
+      expect(e.scartate, isEmpty);
+      String sportDi(int g) => e.piano
+          .where((x) => x.data == lunedi.add(Duration(days: g)))
+          .map((x) => x.sport)
+          .join();
+      expect(sportDi(4), 'Corsa');
+      expect(sportDi(5), 'Forza');
+      final lungo = e.piano.firstWhere((x) => x.tipo == 'Lungo');
+      expect(lungo.durataMin, 90); // si sposta com'è
+      expect(
+        descriviModifica(e.accettate.single, piano),
+        'Ven 23/10 Forza ⇄ Sab 24/10 Corsa',
+      );
+    });
+
+    test('scambia senza la seduta dall\'altra parte viene scartato', () {
+      final e = valutaProposta(piano, [
+        Modifica(
+          azione: Azione.scambia,
+          data: lunedi.add(const Duration(days: 4)),
+          sport: 'Forza',
+          nuovaData: lunedi.add(const Duration(days: 6)), // domenica libera
+        ),
+      ], oggi);
+      expect(e.accettate, isEmpty);
+      expect(e.scartate.single.$2, "quel giorno non c'è una seduta di Forza");
+    });
+
+    test('il JSON di "scambia" si legge con con_sport', () {
+      final m = Modifica.da({
+        'azione': 'scambia',
+        'data': '2026-10-23',
+        'sport': 'forza',
+        'nuova_data': '2026-10-24',
+        'con_sport': 'corsa',
+      })!;
+      expect(
+        (m.azione, m.sport, m.conSport),
+        (Azione.scambia, 'Forza', 'Corsa'),
+      );
     });
 
     test('spostare una seduta in un giorno libero', () {

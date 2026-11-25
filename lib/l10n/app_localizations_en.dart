@@ -690,7 +690,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cambiaLatoMeta => 'Switch sides halfway.';
+  String get latoDestro => 'Right side';
+
+  @override
+  String get latoSinistro => 'Left side';
+
+  @override
+  String get cambiaLato => 'Switch sides';
+
+  @override
+  String get cambiaLatoVoce => 'Switch sides.';
+
+  @override
+  String secondiPerLato(Object p0) {
+    return '$p0 s per side';
+  }
+
+  @override
+  String ripetizioniPerLato(Object p0) {
+    return '$p0 per side';
+  }
 
   @override
   String poiRipetizione(Object p0, Object p1) {
@@ -1835,13 +1854,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Cadence $p0, go below $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Cadence $p0, go down to $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Cadence $p0, go above $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Cadence $p0, go up to $p1.';
   }
 
   @override
@@ -1855,13 +1874,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 watts, go below $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 watts, go down to $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 watts, go above $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 watts, go up to $p1.';
   }
 
   @override
@@ -3467,6 +3486,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String immaginiFreeExerciseDb(Object p0) {
     return 'Images from free-exercise-db ($p0).';
   }
+
+  @override
+  String get animazioneFattaConIa =>
+      'Animation made with artificial intelligence for Avidididadi.';
+
+  @override
+  String get immagineFattaConIa =>
+      'Image made with artificial intelligence for Avidididadi.';
 
   @override
   String get tueSerie => 'Your sets';
@@ -7438,6 +7465,48 @@ class AppLocalizationsEn extends AppLocalizations {
       'Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone\'s IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates.';
 
   @override
+  String get piuCambiInsieme => 'Several changes at once';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'This reply changes several things: you can see each one below. They are applied all together, in this order: new plan, changes, workouts, strength plan.';
+
+  @override
+  String get applicaTutto => 'Apply all';
+
+  @override
+  String get tuttoApplicato => 'All applied: you\'ll find it in the calendar.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'The new plan has some problems (see below): ask for a fix before applying everything.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Done: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'new plan with $p0 sessions';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 plan changes';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 workouts in the calendar';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 climbing workouts';
+  }
+
+  @override
   String forzaEsercizioSconosciuto(Object p0, Object p1) {
     return '$p0: the exercise \"$p1\" isn\'t in the app. Use an id from the exercise list, or just \"nome\" for a hand-written exercise.';
   }
@@ -7533,4 +7602,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get forzaSchedaSalvata =>
       'Plan saved: strength sessions now follow its exercises.';
+
+  @override
+  String parteForza(Object p0) {
+    return 'the strength plan \"$p0\"';
+  }
 }

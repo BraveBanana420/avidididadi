@@ -41,6 +41,40 @@ void main() {
     expect(secondi, inInclusiveRange(12 * 60, 24 * 60));
   });
 
+  test('per lato solo gli esercizi da fare su un lato e poi sull\'altro', () {
+    final perId = {for (final e in catalogo) e.id: e};
+    // Su un lato: anche le circonduzioni dell'anca e il rullo sui glutei.
+    for (final id in [
+      'Kneeling_Hip_Flexor',
+      'Hip_Circles_prone',
+      'Piriformis-SMR',
+    ]) {
+      expect(durataMobilita(perId[id]!), '30 s per lato', reason: id);
+    }
+    // Con tutti e due i lati insieme: lo stesso minuto, senza cambio lato.
+    for (final id in ['Cat_Stretch', 'Childs_Pose', 'Quadriceps-SMR']) {
+      expect(durataMobilita(perId[id]!), '60 s', reason: id);
+    }
+    expect(durataMobilita(perId['Arm_Circles']!), '30 s');
+    final s = sedutaMobilita(
+      esercizi: catalogo,
+      attrezzatura: const {'rullo': []},
+      data: lunedi,
+      minuti: 30,
+      focus: 'Anche e gambe',
+    );
+    for (final x in s) {
+      expect(
+        x.ripetizioni.contains('per lato'),
+        perId[x.esercizio]!.lati,
+        reason: x.esercizio,
+      );
+    }
+    // Le circonduzioni scaldano: vengono prima di tutto il resto.
+    final circ = [for (final x in s) x.esercizio.contains('Circles')];
+    expect(circ, [...circ]..sort((a, b) => (b ? 1 : 0) - (a ? 1 : 0)));
+  });
+
   test('nel piano: dopo la corsa tocca alle gambe, poi le zone ruotano', () {
     PianoRiga r(int g, String sport) => PianoRiga(
       data: lunedi.add(Duration(days: g)),

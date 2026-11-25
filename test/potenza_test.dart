@@ -84,8 +84,8 @@ void main() {
     });
 
     test('la frase dice il limite da rispettare', () {
-      expect(frasePotenza(160, 2, 1, zp), '160 watt, scendi sotto 150.');
-      expect(frasePotenza(170, 4, -1, zp), '170 watt, sali sopra 181.');
+      expect(frasePotenza(160, 2, 1, zp), '160 watt, scendi a 150.');
+      expect(frasePotenza(170, 4, -1, zp), '170 watt, sali a 181.');
     });
 
     test('media degli ultimi 3 secondi', () {
@@ -283,7 +283,7 @@ void main() {
       expect(versoRange(230, (181, 210), zp), 1);
       expect(versoRange(170, (181, 210), zp), -1);
       expect(versoRange(80, (111, 150), zp), 0);
-      expect(fraseRange(230, (181, 210), 1), '230 watt, scendi sotto 210.');
+      expect(fraseRange(230, (181, 210), 1), '230 watt, scendi a 210.');
     });
 
     test('le % del piano mostrano anche i watt', () {
@@ -398,8 +398,24 @@ void main() {
       expect(versoCadenza(80, r), -1);
       expect(versoCadenza(95, r), 1);
       expect(versoCadenza(0, r), 0);
-      expect(fraseCadenza(80, r, -1), 'Cadenza 80, sali sopra 85.');
+      expect(fraseCadenza(80, r, -1), 'Cadenza 80, sali a 85.');
     });
+
+    test(
+      'cadenza fuori: la voce dice il bordo da raggiungere, non "sotto"',
+      () {
+        // Caso reale: obiettivo 95 rpm, a 100 "scendi sotto 95" faceva scavalcare.
+        final r = rangeCadenza('95 rpm')!;
+        expect(
+          fraseCadenza(100, r, versoCadenza(100, r)),
+          'Cadenza 100, scendi a 95.',
+        );
+        expect(
+          fraseCadenza(90, r, versoCadenza(90, r)),
+          'Cadenza 90, sali a 95.',
+        );
+      },
+    );
 
     test('200 W e 85-90 rpm arrivano a intervals.icu, anche senza FTP', () {
       final p = WorkoutStep(
