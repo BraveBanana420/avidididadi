@@ -5043,7 +5043,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get soloSeAttiviTu =>
-      'Μόνο αν τον ενεργοποιήσεις, ο βοηθός στέλνει μια περίληψη των προπονήσεών σου (προπονήσεις των τελευταίων 4 εβδομάδων, αξιολογήσεις, αποκατάσταση, ζώνες παλμών και FTP ποδηλάτου, πρόγραμμα των επόμενων 14 ημερών) στην υπηρεσία που διαλέγεις: Anthropic, OpenAI, Google ή Ollama στον υπολογιστή σου. Όνομα, φωτογραφία και διαδρομές GPS δεν στέλνονται ποτέ· ηλικία, φύλο και βάρος μόνο αν το επιτρέψεις. Πριν τον ενεργοποιήσεις μπορείς να δεις ακριβώς τι στέλνεται. Το κλειδί API μένει κρυπτογραφημένο στο κινητό. Για τις υπηρεσίες στο internet ισχύουν οι δικοί τους όροι απορρήτου και τυχόν κόστη της συνδρομής σου.';
+      'Μόνο αν τον ενεργοποιήσεις, ο βοηθός στέλνει μια περίληψη των προπονήσεών σου (προπονήσεις των τελευταίων 4 εβδομάδων, αξιολογήσεις, αποκατάσταση, ζώνες παλμών και FTP ποδηλάτου, πρόγραμμα των επόμενων 14 ημερών, σετ δύναμης των τελευταίων 6 εβδομάδων, εξοπλισμός και προγράμματα δύναμης) στην υπηρεσία που διαλέγεις: Anthropic, OpenAI, Google ή Ollama στον υπολογιστή σου. Όνομα, φωτογραφία και διαδρομές GPS δεν στέλνονται ποτέ· ηλικία, φύλο και βάρος μόνο αν το επιτρέψεις. Πριν τον ενεργοποιήσεις μπορείς να δεις ακριβώς τι στέλνεται. Το κλειδί API μένει κρυπτογραφημένο στο κινητό. Για τις υπηρεσίες στο internet ισχύουν οι δικοί τους όροι απορρήτου και τυχόν κόστη της συνδρομής σου.';
 
   @override
   String get assistenteNellaTuaApp => 'Βοηθός στην εφαρμογή σου (προαιρετικό)';
@@ -7496,4 +7496,101 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get aggiornamentiPrivacy =>
       'Μία φορά τη μέρα, όταν ανοίγει, η εφαρμογή ρωτά το GitHub (api.github.com) ποια είναι η τελευταία έκδοση που δημοσιεύτηκε. Αν πατήσεις Ενημέρωση, κατεβάζει το APK από το GitHub στην προσωρινή της μνήμη, ελέγχει ότι είναι ίδιο με αυτό που δημοσιεύτηκε, το δίνει στο πρόγραμμα εγκατάστασης του Android και το διαγράφει: στο τηλέφωνο δεν μένουν αρχεία. Το GitHub λαμβάνει τη διεύθυνση IP του τηλεφώνου και την έκδοση που ζητήθηκε, τίποτα άλλο. Μπορείς να απενεργοποιήσεις τον έλεγχο από το Προφίλ, στο Ενημερώσεις εφαρμογής.';
+
+  @override
+  String forzaEsercizioSconosciuto(Object p0, Object p1) {
+    return '$p0: η άσκηση \"$p1\" δεν υπάρχει στην εφαρμογή. Χρησιμοποίησε ένα id από τη λίστα των ασκήσεων, ή μόνο \"nome\" για μια άσκηση γραμμένη με το χέρι.';
+  }
+
+  @override
+  String forzaEsercizioSenzaNome(Object p0) {
+    return '$p0: μια άσκηση δεν έχει ούτε id ούτε όνομα.';
+  }
+
+  @override
+  String forzaSerieNonValide(Object p0) {
+    return '$p0: τα σετ πρέπει να είναι από 1 έως 10 και η ανάπαυση από 0 έως 600 δευτερόλεπτα.';
+  }
+
+  @override
+  String forzaGiornoN(Object p0) {
+    return 'Ημέρα $p0';
+  }
+
+  @override
+  String forzaGiornoNonValido(Object p0) {
+    return '$p0: χρειάζονται οι ημέρες της εβδομάδας (1 = Δευτέρα) και από 1 έως 20 ασκήσεις.';
+  }
+
+  @override
+  String get schedaForzaGraduale => 'Σταδιακό πρόγραμμα δύναμης';
+
+  @override
+  String forzaServonoFasi(Object p0) {
+    return 'Το πρόγραμμα δύναμης χρειάζεται από 1 έως $p0 φάσεις, η καθεμία με εβδομάδες, ημέρες και ασκήσεις.';
+  }
+
+  @override
+  String forzaFaseN(Object p0) {
+    return 'Φάση $p0';
+  }
+
+  @override
+  String forzaInizioNonValido(Object p0) {
+    return '$p0: η ημερομηνία έναρξης δεν είναι έγκυρη (χρειάζεται ΕΕΕΕ-ΜΜ-ΗΗ).';
+  }
+
+  @override
+  String forzaIniziaPrimaDiOggi(Object p0) {
+    return '$p0: ξεκινά πριν από σήμερα.';
+  }
+
+  @override
+  String forzaFasiSovrapposte(Object p0) {
+    return '$p0: ξεκινά πριν τελειώσει η προηγούμενη φάση.';
+  }
+
+  @override
+  String forzaSettimaneNonValide(Object p0, Object p1) {
+    return '$p0: οι εβδομάδες πρέπει να είναι από 1 έως $p1.';
+  }
+
+  @override
+  String forzaGiorniNonValidi(Object p0) {
+    return '$p0: χρειάζονται από 1 έως 7 ημέρες προπόνησης.';
+  }
+
+  @override
+  String forzaGiornoDoppio(Object p0, Object p1) {
+    return '$p0: η ημέρα $p1 είναι σε δύο ημέρες του προγράμματος.';
+  }
+
+  @override
+  String forzaTroppoLunga(Object p0) {
+    return 'Το πρόγραμμα κρατά πάνω από $p0 εβδομάδες.';
+  }
+
+  @override
+  String forzaDalAl(Object p0, Object p1) {
+    return 'από $p0 έως $p1';
+  }
+
+  @override
+  String forzaAccorciate(Object p0) {
+    return 'Τα τρέχοντα προγράμματα δύναμης τελειώνουν την προηγούμενη μέρα: $p0.';
+  }
+
+  @override
+  String forzaTolte(Object p0) {
+    return 'Παίρνει τη θέση του: $p0.';
+  }
+
+  @override
+  String forzaAggiungeGiorni(Object p0) {
+    return 'Στην τυπική εβδομάδα δεν υπάρχει δύναμη την ημέρα $p0: θα προστεθεί δίπλα σε ό,τι υπάρχει ήδη.';
+  }
+
+  @override
+  String get forzaSchedaSalvata =>
+      'Το πρόγραμμα αποθηκεύτηκε: οι προπονήσεις δύναμης ακολουθούν τις ασκήσεις του.';
 }

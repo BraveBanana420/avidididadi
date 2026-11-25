@@ -22,6 +22,7 @@ import 'dati_live.dart';
 import 'esercizi.dart';
 import 'esporta.dart';
 import 'feedback.dart';
+import 'forza_agente.dart';
 import 'generator.dart';
 import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
@@ -1292,6 +1293,16 @@ class AppState extends ChangeNotifier {
     blocchi: _blocchiContesto,
     potenze: potenzeMigliori,
     nuotate: nuotate,
+    forza: attivitaScelta('Forza')
+        ? righeForzaAssistente(
+            oggi: DateTime.now(),
+            catalogo: esercizi,
+            attrezzatura: attrezzatura,
+            serie: serieFatte,
+            schede: schede,
+            settimana: settimana,
+          )
+        : const [],
   );
 
   /// I blocchi delle sedute recenti per il messaggio all'assistente.
@@ -1381,7 +1392,7 @@ class AppState extends ChangeNotifier {
         istruzioniAssistente(contestoAssistente),
         storia,
       );
-      final r = leggiProposta(risposta);
+      final r = leggiProposta(risposta, catalogo: esercizi);
       final p = r.proposta;
       chat = [
         ...chat,
@@ -1392,6 +1403,7 @@ class AppState extends ChangeNotifier {
           piano: p?.piano,
           allenamenti: p?.allenamenti,
           arrampicata: p?.arrampicata,
+          forza: p?.forza,
           motivo: p?.motivo ?? '',
           errore: r.errore,
         ),
@@ -1476,7 +1488,11 @@ class AppState extends ChangeNotifier {
   void riceviDaAgente(String testo) {
     if (!assistente.esterno) return;
     try {
-      rispostaAgente = leggiRispostaAgente(testo, assistente.codiceEsterno);
+      rispostaAgente = leggiRispostaAgente(
+        testo,
+        assistente.codiceEsterno,
+        catalogo: esercizi,
+      );
       final m = rispostaAgente!.modifiche;
       propostaAgente = m == null ? null : MessaggioChat(false, '', proposta: m);
       erroreAgente = null;
@@ -3127,6 +3143,35 @@ class AppState extends ChangeNotifier {
     await _salvaSchede();
     await _aggiornaForza();
     await _aggiornaEndurance(); // le schede di corsa, bici e nuoto
+    notifyListeners();
+  }
+
+  /// Salva la scheda di forza graduale dell'assistente: le sue fasi prendono
+  /// il posto delle schede di forza negli stessi giorni, e i giorni della
+  /// settimana senza forza la ricevono accanto a quello che c'è già.
+  Future<void> applicaPropostaForza(
+    PropostaForza p, {
+    MessaggioChat? da,
+  }) async {
+    schede = conPropostaForza(schede, p).schede;
+    await _salvaSchede();
+    final mancanti = giorniSenzaForza(settimana, p);
+    if (mancanti.isNotEmpty) {
+      final prima = [...settimana];
+      var nuova = settimana;
+      for (final d in mancanti) {
+        nuova = conSportNelGiorno(
+          nuova,
+          d,
+          'Forza',
+          sostituisci: false,
+        ).settimana;
+      }
+      settimana = nuova;
+      await salvaSettimana(prima: prima);
+    }
+    await _aggiornaForza();
+    _segnaApplicata(da);
     notifyListeners();
   }
 

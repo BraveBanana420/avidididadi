@@ -330,6 +330,11 @@ class _Fumetto extends StatelessWidget {
                   messaggio: m,
                 ),
               ),
+            if (m.forza case final f?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaForza(state: state, proposta: f, messaggio: m),
+              ),
             if (m.piano case final p?)
               Padding(
                 padding: const EdgeInsets.only(top: 4),

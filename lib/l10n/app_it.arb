@@ -7291,7 +7291,7 @@
   "@assistenteFacoltativo2": {
     "description": "screens/privacy_screen.dart"
   },
-  "soloSeAttiviTu": "Solo se lo attivi tu, l'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.",
+  "soloSeAttiviTu": "Solo se lo attivi tu, l'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni, serie di forza delle ultime 6 settimane, attrezzatura e schede di forza) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.",
   "@soloSeAttiviTu": {
     "description": "screens/privacy_screen.dart"
   },
@@ -10804,5 +10804,187 @@
   "aggiornamentiPrivacy": "Una volta al giorno, all'apertura, l'app chiede a GitHub (api.github.com) qual è l'ultima versione pubblicata. Se tocchi Aggiorna, scarica l'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l'indirizzo IP del telefono e la versione chiesta, nient'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell'app.",
   "@aggiornamentiPrivacy": {
     "description": "aggiornamento.dart"
+  },
+  "forzaEsercizioSconosciuto": "{p0}: l'esercizio \"{p1}\" non c'è nell'app. Usa un id della lista degli esercizi, oppure solo \"nome\" per un esercizio scritto a mano.",
+  "@forzaEsercizioSconosciuto": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaEsercizioSenzaNome": "{p0}: un esercizio non ha né id né nome.",
+  "@forzaEsercizioSenzaNome": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaSerieNonValide": "{p0}: le serie devono essere da 1 a 10 e il recupero da 0 a 600 secondi.",
+  "@forzaSerieNonValide": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaGiornoN": "Giorno {p0}",
+  "@forzaGiornoN": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaGiornoNonValido": "{p0}: servono i giorni della settimana (1 = lunedì) e da 1 a 20 esercizi.",
+  "@forzaGiornoNonValido": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "schedaForzaGraduale": "Scheda di forza graduale",
+  "@schedaForzaGraduale": {
+    "description": "forza_agente.dart"
+  },
+  "forzaServonoFasi": "Nella scheda di forza servono da 1 a {p0} fasi, ognuna con settimane, giorni ed esercizi.",
+  "@forzaServonoFasi": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaFaseN": "Fase {p0}",
+  "@forzaFaseN": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaInizioNonValido": "{p0}: la data d'inizio non è valida (serve AAAA-MM-GG).",
+  "@forzaInizioNonValido": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaIniziaPrimaDiOggi": "{p0}: comincia prima di oggi.",
+  "@forzaIniziaPrimaDiOggi": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaFasiSovrapposte": "{p0}: comincia prima che finisca la fase precedente.",
+  "@forzaFasiSovrapposte": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaSettimaneNonValide": "{p0}: le settimane devono essere da 1 a {p1}.",
+  "@forzaSettimaneNonValide": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaGiorniNonValidi": "{p0}: servono da 1 a 7 giorni di allenamento.",
+  "@forzaGiorniNonValidi": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaGiornoDoppio": "{p0}: {p1} è in due giorni della scheda.",
+  "@forzaGiornoDoppio": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaTroppoLunga": "La scheda dura più di {p0} settimane.",
+  "@forzaTroppoLunga": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaDalAl": "dal {p0} al {p1}",
+  "@forzaDalAl": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaAccorciate": "Le schede di forza in corso finiscono il giorno prima: {p0}.",
+  "@forzaAccorciate": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaTolte": "Prende il posto di: {p0}.",
+  "@forzaTolte": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaAggiungeGiorni": "Nella settimana tipo la forza non c'è di {p0}: la aggiungo accanto a quello che c'è già.",
+  "@forzaAggiungeGiorni": {
+    "description": "forza_agente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      }
+    }
+  },
+  "forzaSchedaSalvata": "Scheda salvata: le sedute di forza seguono i suoi esercizi.",
+  "@forzaSchedaSalvata": {
+    "description": "forza_agente.dart"
   }
 }

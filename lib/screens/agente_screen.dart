@@ -230,6 +230,8 @@ class PannelloAgente extends StatelessWidget {
           SchedaPiano(state: state, piano: p),
         if (state.rispostaAgente?.arrampicata case final a?)
           SchedaArrampicata(state: state, proposte: a),
+        if (state.rispostaAgente?.forza case final f?)
+          SchedaForza(state: state, proposta: f),
         if (state.rispostaAgente?.allenamenti case final a?)
           SchedaAllenamenti(
             state: state,
