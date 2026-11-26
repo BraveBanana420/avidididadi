@@ -2,6 +2,17 @@
 
 English translation of [CHANGELOG.md](CHANGELOG.md): same versions, same points, one line each. Greek: [CHANGELOG.el.md](CHANGELOG.el.md).
 
+## 1.2.0
+
+- Strength: the assistant prepares progressive plans (phases of a few weeks) with the app's exercises, starting from the sets you actually did.
+- Assistant: a single reply can change several things at once (remove a session, add a workout or a plan) and is applied with "Apply all".
+- Exercises per side: during the workout the right and left side are separate, with 5 seconds to switch side.
+- New animated exercises: walking lunges, kneeling hip flexor, seated hamstring stretch, runner's stretch, child's pose and world's greatest stretch.
+- Animated exercises: they now say the animations are made with AI.
+- Voice on the bike: "go down to 95" and "go up to 85" instead of "below" and "above".
+- Sessions with imported steps: moving or changing them no longer loses the steps.
+- On opening, accept the privacy notice again (strength sets, equipment and strength plans also go to the assistant).
+
 ## 1.1.0
 
 - Updates from the app: when a new version is out a notice appears and it installs with one tap, without Obtainium (Profile → App updates).

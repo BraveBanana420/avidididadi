@@ -2,6 +2,17 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## 1.2.0
+
+- Forza: l'assistente prepara schede graduali (fasi di qualche settimana) con gli esercizi dell'app, partendo dalle serie che hai fatto davvero.
+- Assistente: una sola risposta può cambiare più cose insieme (togliere una seduta, aggiungere un allenamento o una scheda) e si applica con "Applica tutto".
+- Esercizi per lato: in allenamento lato destro e lato sinistro sono separati, con 5 secondi per cambiare lato.
+- Nuovi esercizi animati: affondi in camminata, flessori dell'anca in ginocchio, femorali da seduto, allungamento del corridore, posizione del bambino e World's greatest stretch.
+- Esercizi animati: si dice che le animazioni sono fatte con l'IA.
+- Voce in bici: "scendi a 95" e "sali a 85" invece di "sotto" e "sopra".
+- Sedute con i passi importati: se le sposti o le cambi non perdono più i passi.
+- All'apertura riaccetta l'informativa (all'assistente vanno anche serie di forza, attrezzatura e schede di forza).
+
 ## 1.1.0
 
 - Aggiornamenti dall'app: quando esce una versione nuova compare un avviso e si installa con un tocco, senza Obtainium (Profilo → Aggiornamenti dell'app).
