@@ -5056,7 +5056,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get soloSeAttiviTu =>
-      'Solo se lo attivi tu, l\'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.';
+      'Solo se lo attivi tu, l\'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni, serie di forza delle ultime 6 settimane, attrezzatura e schede di forza) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.';
 
   @override
   String get assistenteNellaTuaApp => 'Assistente nella tua app (facoltativo)';
@@ -7508,7 +7508,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get piuCambiSpiegazione =>
-      'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti.';
+      'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti, scheda di forza.';
 
   @override
   String get applicaTutto => 'Applica tutto';
@@ -7543,5 +7543,107 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String parteArrampicata(Object p0) {
     return '$p0 allenamenti di arrampicata';
+  }
+
+  @override
+  String forzaEsercizioSconosciuto(Object p0, Object p1) {
+    return '$p0: l\'esercizio \"$p1\" non c\'è nell\'app. Usa un id della lista degli esercizi, oppure solo \"nome\" per un esercizio scritto a mano.';
+  }
+
+  @override
+  String forzaEsercizioSenzaNome(Object p0) {
+    return '$p0: un esercizio non ha né id né nome.';
+  }
+
+  @override
+  String forzaSerieNonValide(Object p0) {
+    return '$p0: le serie devono essere da 1 a 10 e il recupero da 0 a 600 secondi.';
+  }
+
+  @override
+  String forzaGiornoN(Object p0) {
+    return 'Giorno $p0';
+  }
+
+  @override
+  String forzaGiornoNonValido(Object p0) {
+    return '$p0: servono i giorni della settimana (1 = lunedì) e da 1 a 20 esercizi.';
+  }
+
+  @override
+  String get schedaForzaGraduale => 'Scheda di forza graduale';
+
+  @override
+  String forzaServonoFasi(Object p0) {
+    return 'Nella scheda di forza servono da 1 a $p0 fasi, ognuna con settimane, giorni ed esercizi.';
+  }
+
+  @override
+  String forzaFaseN(Object p0) {
+    return 'Fase $p0';
+  }
+
+  @override
+  String forzaInizioNonValido(Object p0) {
+    return '$p0: la data d\'inizio non è valida (serve AAAA-MM-GG).';
+  }
+
+  @override
+  String forzaIniziaPrimaDiOggi(Object p0) {
+    return '$p0: comincia prima di oggi.';
+  }
+
+  @override
+  String forzaFasiSovrapposte(Object p0) {
+    return '$p0: comincia prima che finisca la fase precedente.';
+  }
+
+  @override
+  String forzaSettimaneNonValide(Object p0, Object p1) {
+    return '$p0: le settimane devono essere da 1 a $p1.';
+  }
+
+  @override
+  String forzaGiorniNonValidi(Object p0) {
+    return '$p0: servono da 1 a 7 giorni di allenamento.';
+  }
+
+  @override
+  String forzaGiornoDoppio(Object p0, Object p1) {
+    return '$p0: $p1 è in due giorni della scheda.';
+  }
+
+  @override
+  String forzaTroppoLunga(Object p0) {
+    return 'La scheda dura più di $p0 settimane.';
+  }
+
+  @override
+  String forzaDalAl(Object p0, Object p1) {
+    return 'dal $p0 al $p1';
+  }
+
+  @override
+  String forzaAccorciate(Object p0) {
+    return 'Le schede di forza in corso finiscono il giorno prima: $p0.';
+  }
+
+  @override
+  String forzaTolte(Object p0) {
+    return 'Prende il posto di: $p0.';
+  }
+
+  @override
+  String forzaAggiungeGiorni(Object p0) {
+    return 'Nella settimana tipo la forza non c\'è di $p0: la aggiungo accanto a quello che c\'è già.';
+  }
+
+  @override
+  String get forzaSchedaSalvata =>
+      'Scheda salvata: le sedute di forza seguono i suoi esercizi.';
+
+  @override
+  String parteForza(Object p0) {
+    return 'la scheda di forza \"$p0\"';
   }
 }

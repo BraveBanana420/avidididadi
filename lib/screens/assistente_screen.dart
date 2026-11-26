@@ -288,6 +288,7 @@ class _Fumetto extends StatelessWidget {
       piano: m.piano,
       allenamenti: m.allenamenti,
       arrampicata: m.arrampicata,
+      forza: m.forza,
       motivo: m.motivo,
     );
     return Align(
@@ -350,6 +351,16 @@ class _Fumetto extends StatelessWidget {
                 child: SchedaArrampicata(
                   state: state,
                   proposte: a,
+                  messaggio: m,
+                  conPulsante: tutta.parti < 2,
+                ),
+              ),
+            if (m.forza case final f?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaForza(
+                  state: state,
+                  proposta: f,
                   messaggio: m,
                   conPulsante: tutta.parti < 2,
                 ),

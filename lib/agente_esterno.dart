@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'assistente.dart';
 import 'carico.dart';
+import 'esercizi.dart';
 import 'models.dart';
 import 'l10n/lingua.dart';
 
@@ -67,7 +68,11 @@ final _blocco = RegExp(
 
 /// Legge il blocco nella risposta incollata o condivisa. Lancia
 /// [FormatException] con un messaggio semplice se non va bene.
-RispostaAgente leggiRispostaAgente(String testo, String codice) {
+RispostaAgente leggiRispostaAgente(
+  String testo,
+  String codice, {
+  List<Esercizio> catalogo = const [],
+}) {
   final blocchi = _blocco.allMatches(testo).toList();
   if (blocchi.isEmpty) {
     throw FormatException(l10n.nellaRispostaNonC);
@@ -89,7 +94,7 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
     } on FormatException {
       throw FormatException(l10n.bloccoNonLeggibileChiedi);
     }
-    lette.add(rispostaDaJson(j));
+    lette.add(rispostaDaJson(j, catalogo: catalogo));
   }
   return unisciRisposte(lette);
 }

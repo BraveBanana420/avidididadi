@@ -53,7 +53,9 @@ The app is available in Italian, English and Greek.
 - **Maps**: MapLibre + OpenFreeMap, themed; GPX import; offline area around a
   route.
 - **Coach** (optional): Claude, GPT or Gemini with your API key, Ollama on your
-  PC, or your assistant's own app with a link code.
+  PC, or your assistant's own app with a link code. The assistant can also
+  write progressive strength plans (phases of a few weeks) with exercises
+  from the app's catalog, starting from the sets you actually logged.
 - **Climbing**: routes, problems and grades for each session; hand-written or
   assistant-written workouts.
 - **More**: exercise catalog with animations, muscle map, home screen widget,

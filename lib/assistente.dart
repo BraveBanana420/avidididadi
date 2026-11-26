@@ -6,6 +6,8 @@ import 'feedback.dart';
 import 'intervalli.dart';
 import 'allenamento_agente.dart';
 import 'allenamento_arrampicata.dart';
+import 'esercizi.dart';
+import 'forza_agente.dart';
 import 'modifica_sessione.dart';
 import 'models.dart';
 import 'obiettivo.dart';
@@ -110,6 +112,7 @@ class MessaggioChat {
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
   final List<PropostaArrampicata>? arrampicata;
+  final PropostaForza? forza;
   final String motivo;
   final String? errore; // la proposta c'era ma non si legge
   bool applicata = false;
@@ -120,6 +123,7 @@ class MessaggioChat {
     this.piano,
     this.allenamenti,
     this.arrampicata,
+    this.forza,
     this.motivo = '',
     this.errore,
   });
@@ -149,6 +153,7 @@ String contestoAllenamento({
   Map<String, List<IntervalloFatto>> blocchi = const {},
   List<PotenzaMigliore> potenze = const [],
   List<SedutaNuoto> nuotate = const [],
+  List<String> forza = const [],
 }) {
   final o = soloData(oggi);
   final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
@@ -273,6 +278,12 @@ String contestoAllenamento({
         r.fascia.toLowerCase(),
       ].join(', '),
     );
+  }
+  if (forza.isNotEmpty) {
+    b.writeln('\nForza:');
+    for (final r in forza) {
+      b.writeln(r);
+    }
   }
   return b.toString().trim();
 }
@@ -444,6 +455,7 @@ $chiudi
 ```
 "durata_min" (facoltativa) è la durata totale, utile se ci sono passi a distanza. Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). "secondario" (facoltativo) è il secondo obiettivo del passo: in bici la cadenza ("85-90 rpm"), altrimenti quello che serve. L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
 ${formatoArrampicata(apri, chiudi)}
+${formatoForza(apri, chiudi)}
 Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi, Test FTP; nuoto: Tecnica, Soglia, Test (passo critico: 400 e 200 m al massimo); bici: Uscita, Intervalli, Uscita lunga, Test FTP (i passi del test li prepara l'app: non più di uno ogni 4 settimane, meglio dopo una settimana leggera, al posto di una seduta dura); fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
 Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Con {"piano"} i passi delle sedute li prepara l'app da tipo e durata; se vuoi passi precisi, per esempio con i passi gara della persona, manda quelle sedute con {"allenamenti"}.''';
 
@@ -453,22 +465,25 @@ class RispostaAgente {
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
   final List<PropostaArrampicata>? arrampicata;
+  final PropostaForza? forza;
   final String motivo; // perché l'assistente propone gli allenamenti
   const RispostaAgente({
     this.modifiche,
     this.piano,
     this.allenamenti,
     this.arrampicata,
+    this.forza,
     this.motivo = '',
   });
 
-  /// Quante cose diverse propone (modifiche, piano, allenamenti, arrampicata):
-  /// con più di una si applicano tutte insieme.
+  /// Quante cose diverse propone (modifiche, piano, allenamenti, arrampicata,
+  /// scheda di forza): con più di una si applicano tutte insieme.
   int get parti => [
     modifiche,
     piano,
     allenamenti,
     arrampicata,
+    forza,
   ].where((x) => x != null).length;
 }
 
@@ -489,6 +504,7 @@ RispostaAgente unisciRisposte(List<RispostaAgente> risposte) {
     piano: risposte.map((r) => r.piano).nonNulls.lastOrNull,
     allenamenti: somma(risposte.map((r) => r.allenamenti)),
     arrampicata: somma(risposte.map((r) => r.arrampicata)),
+    forza: risposte.map((r) => r.forza).nonNulls.lastOrNull,
     motivo: motivi.join(' '),
   );
 }
@@ -502,10 +518,15 @@ class PianoAgente {
 }
 
 /// Le proposte in un blocco JSON: modifiche, piano nuovo, allenamenti e
-/// arrampicata, anche più d'una insieme. Lancia [FormatException] con un
-/// messaggio semplice se non va bene.
-RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
+/// arrampicata, scheda di forza, anche più d'una insieme. Con il [catalogo]
+/// gli esercizi della scheda di forza devono essere dell'app. Lancia
+/// [FormatException] con un messaggio semplice se non va bene.
+RispostaAgente rispostaDaJson(
+  Map<dynamic, dynamic> j, {
+  List<Esercizio> catalogo = const [],
+}) {
   final arrampicata = j['arrampicata'];
+  final forza = j['forza'];
   final allenamenti = j['allenamenti'];
   final piano = j['piano'];
   final listaModifiche = j['modifiche'];
@@ -560,6 +581,9 @@ RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
     allenamenti: lista,
     arrampicata: arrampicata is List
         ? proposteArrampicata(arrampicata, DateTime.now())
+        : null,
+    forza: forza is Map
+        ? propostaForzaDa(forza, oggi: DateTime.now(), catalogo: catalogo)
         : null,
     motivo: motivo,
   );
@@ -617,15 +641,16 @@ class Modifica {
 
 final _blocco = RegExp(r'<proposta>([\s\S]*?)</proposta>');
 final _json = RegExp(
-  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata)"[\s\S]*\})\s*```',
+  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata|forza)"[\s\S]*\})\s*```',
 );
 
 /// Separa il testo della risposta dalle proposte: modifiche, piano nuovo,
 /// allenamenti. Se l'assistente ne scrive più blocchi si uniscono in una
 /// proposta sola. [errore] dice perché un blocco c'era ma non si legge.
 ({String testo, RispostaAgente? proposta, String? errore}) leggiProposta(
-  String risposta,
-) {
+  String risposta, {
+  List<Esercizio> catalogo = const [],
+}) {
   var blocchi = _blocco.allMatches(risposta).toList();
   if (blocchi.isEmpty) blocchi = [?_json.firstMatch(risposta)];
   if (blocchi.isEmpty) {
@@ -638,7 +663,8 @@ final _json = RegExp(
   testo = testo.trim();
   try {
     final lette = [
-      for (final m in blocchi) rispostaDaJson(jsonBlocco(m.group(1)!)),
+      for (final m in blocchi)
+        rispostaDaJson(jsonBlocco(m.group(1)!), catalogo: catalogo),
     ];
     return (testo: testo, proposta: unisciRisposte(lette), errore: null);
   } on FormatException catch (e) {
