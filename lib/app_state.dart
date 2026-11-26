@@ -139,16 +139,7 @@ class AppState extends ChangeNotifier {
       for (final r in await Storage.readPiano())
         r.tipo.isNotEmpty || tipoPredefinito(r.data, r.sport).isEmpty
             ? r
-            : PianoRiga(
-                data: r.data,
-                fascia: r.fascia,
-                sport: r.sport,
-                tipo: tipoPredefinito(r.data, r.sport),
-                durataMin: r.durataMin,
-                distanzaKm: r.distanzaKm,
-                intensita: r.intensita,
-                note: r.note,
-              ),
+            : r.copia(tipo: tipoPredefinito(r.data, r.sport)),
     ];
     settimana = settimanaDiPartenza(
       await Storage.readSettimana(),
@@ -230,6 +221,17 @@ class AppState extends ChangeNotifier {
           if (WorkoutStep.da(ta, r) case final w?)
             if (!(_dataAgente(w.id)?.isBefore(daTenere) ?? true)) w,
     ];
+    // Le sedute importate prima che si salvasse l'origine.
+    final conOrigine = conOrigineImportata(
+      piano,
+      allenamentiAgente,
+      soloData(DateTime.now()),
+    );
+    if (conOrigine.where((r) => r.importata).length !=
+        piano.where((r) => r.importata).length) {
+      piano = conOrigine;
+      await Storage.writePiano(piano);
+    }
 
     final tp = await Storage.readTabella('programma.csv');
     programma = tp == null
@@ -686,6 +688,7 @@ class AppState extends ChangeNotifier {
     bool daRifare(DateTime d) =>
         !d.isBefore(oggi) &&
         !valutate.contains(d) &&
+        !_importata(d, 'Forza') &&
         (generatore || coperti.contains(d));
     DateTime? dataDi(String id) =>
         parseData(id.substring(prefissoForza.length));
@@ -973,16 +976,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  PianoRiga _conTipo(PianoRiga r, String tipo) => PianoRiga(
-    data: r.data,
-    fascia: r.fascia,
-    sport: r.sport,
-    tipo: tipo,
-    durataMin: r.durataMin,
-    distanzaKm: r.distanzaKm,
-    intensita: r.intensita,
-    note: r.note,
-  );
+  PianoRiga _conTipo(PianoRiga r, String tipo) => r.copia(tipo: tipo);
 
   /// Rigenera le sedute preparate di corsa, nuoto, bici e mobilità.
   Future<int> _aggiornaEndurance() async =>
@@ -1009,7 +1003,8 @@ class AppState extends ChangeNotifier {
         : const PianoMobilita([], [], {});
     bool fatta(DateTime d) =>
         sessioni.any((s) => s.data == d && stessoSport(s.sport, sportMobilita));
-    bool daRifare(DateTime d) => !d.isBefore(oggi) && !fatta(d);
+    bool daRifare(DateTime d) =>
+        !d.isBefore(oggi) && !fatta(d) && !_importata(d, sportMobilita);
     DateTime dataDi(String id) =>
         parseData(id.substring(prefissoMobilita.length)) ?? oggi;
     workout = [
@@ -1126,7 +1121,7 @@ class AppState extends ChangeNotifier {
         sessioni.any((s) => s.data == d && stessoSport(s.sport, sport)) ||
         feedback.any((f) => f.di(d, sport));
     bool daRifare(DateTime d, String sport) =>
-        !d.isBefore(oggi) && !svolta(d, sport);
+        !d.isBefore(oggi) && !svolta(d, sport) && !_importata(d, sport);
     DateTime dataDi(String id) =>
         parseData(id.substring(id.indexOf('_') + 1)) ?? oggi;
     // Scelto per le sedute preparate, oppure coperto da una scheda.
@@ -1633,6 +1628,11 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Una seduta con i passi importati: i generatori non la toccano.
+  bool _importata(DateTime d, String sport) => piano.any(
+    (r) => r.data == d && stessoSport(r.sport, sport) && r.importata,
+  );
+
   bool _haAllenamentoAgente(DateTime d, String sport) {
     final id = idAllenamentoAgente(d, sport);
     return allenamentiAgente.any((w) => w.id == id);
@@ -1712,6 +1712,18 @@ class AppState extends ChangeNotifier {
   Future<int> _applicaModifiche(List<Modifica> modifiche) async {
     final esito = valutaProposta(piano, modifiche, DateTime.now());
     if (esito.accettate.isEmpty) return 0;
+    // I passi importati seguono la seduta spostata (e se ne vanno con quella
+    // tolta o cambiata di tipo), prima di cambiare il piano.
+    final passi = passiDopoModifiche(allenamentiAgente, piano, esito.accettate);
+    if (passi.length != allenamentiAgente.length ||
+        !passi.every((w) => allenamentiAgente.contains(w))) {
+      allenamentiAgente = passi;
+      await Storage.write(
+        fileAllenamentiAgente,
+        workoutHeader,
+        allenamentiAgente.map((w) => w.toRow()).toList(),
+      );
+    }
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();

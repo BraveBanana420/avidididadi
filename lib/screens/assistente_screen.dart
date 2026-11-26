@@ -435,6 +435,29 @@ class SchedaProposta extends StatelessWidget {
                     child: Text(m.motivo, style: t.bodySmall),
                   ),
               ],
+              // Un cambio di tipo che toglie i passi importati: lo si dice
+              // prima di applicare.
+              for (final (m, testo) in esito.avvisi)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 18,
+                        color: scheme.error,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${descriviModifica(m, state.piano).split(':').first}: $testo',
+                          style: t.bodySmall?.copyWith(color: scheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               if (esito.scartate.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(

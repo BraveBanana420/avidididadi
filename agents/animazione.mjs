@@ -499,16 +499,19 @@ const comandi = {
     }
     // Le posizioni ferme anche nel loro elenco: sotto l'esercizio l'app scrive "Immagine", non "Animazione".
     if (fissa) {
+      // L'elenco può essere su una riga o su più righe (dart format mette su
+      // una riga quelli corti): si rilegge e si riscrive come farebbe lui.
       const codice2 = fs.readFileSync(dart, 'utf8');
       const eol = codice2.includes('\r\n') ? '\r\n' : '\n';
-      const righe = codice2.split(/\r?\n/);
-      const inizio = righe.findIndex((r) => r.startsWith('const posizioniFerme = <String>{'));
-      if (inizio < 0) throw new Error('Elenco posizioniFerme non trovato in lib/animazioni_esercizi.dart');
-      const fineSet = righe[inizio].endsWith('{};') ? inizio : righe.indexOf('};', inizio);
-      if (!righe.slice(inizio, fineSet + 1).some((r) => r.includes(`'${e.id}'`))) {
-        if (righe[inizio].endsWith('{};')) righe.splice(inizio, 1, 'const posizioniFerme = <String>{', `  '${e.id}',`, '};');
-        else righe.splice(fineSet, 0, `  '${e.id}',`);
-        fs.writeFileSync(dart, righe.join(eol));
+      const re = /const posizioniFerme = <String>\{([^}]*)\};/;
+      const trovato = codice2.match(re);
+      if (!trovato) throw new Error('Elenco posizioniFerme non trovato in lib/animazioni_esercizi.dart');
+      const ids = [...trovato[1].matchAll(/'([^']+)'/g)].map((x) => x[1]);
+      if (!ids.includes(e.id)) {
+        ids.push(e.id);
+        const corta = `const posizioniFerme = <String>{${ids.map((x) => `'${x}'`).join(', ')}};`;
+        const testo = corta.length <= 80 ? corta : ['const posizioniFerme = <String>{', ...ids.map((x) => `  '${x}',`), '};'].join(eol);
+        fs.writeFileSync(dart, codice2.replace(re, testo));
       }
     }
 

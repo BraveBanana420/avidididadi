@@ -92,6 +92,7 @@ const pianoHeader = [
   'target_distanza_km',
   'intensita',
   'note',
+  'origine',
 ];
 const sessioniHeader = [
   'id_sessione',
@@ -284,6 +285,11 @@ class Slot {
 }
 
 /// Una sessione del piano generato.
+/// Da dove vengono i passi di una seduta: [origineImportato] se sono quelli
+/// precisi arrivati dall'assistente (blocco "allenamenti") o dalla raccolta
+/// di arrampicata; vuoto se li prepara l'app (generati o predefiniti).
+const origineImportato = 'importato';
+
 class PianoRiga {
   final DateTime data;
   final String fascia;
@@ -294,6 +300,10 @@ class PianoRiga {
   final String intensita;
   final String note;
 
+  /// [origineImportato] o vuoto (= generato). Colonna in fondo a piano.csv:
+  /// le righe vecchie, senza, valgono come generate.
+  final String origine;
+
   const PianoRiga({
     required this.data,
     required this.fascia,
@@ -303,7 +313,32 @@ class PianoRiga {
     this.distanzaKm = '',
     this.intensita = '',
     this.note = '',
+    this.origine = '',
   });
+
+  /// I passi sono quelli importati: i generatori non li toccano.
+  bool get importata => origine == origineImportato;
+
+  /// La stessa seduta con qualche campo diverso (l'origine resta, se non la
+  /// si cambia).
+  PianoRiga copia({
+    DateTime? data,
+    String? fascia,
+    String? tipo,
+    int? durataMin,
+    String? note,
+    String? origine,
+  }) => PianoRiga(
+    data: data ?? this.data,
+    fascia: fascia ?? this.fascia,
+    sport: sport,
+    tipo: tipo ?? this.tipo,
+    durataMin: durataMin ?? this.durataMin,
+    distanzaKm: distanzaKm,
+    intensita: intensita,
+    note: note ?? this.note,
+    origine: origine ?? this.origine,
+  );
 
   List<String> toRow() => [
     isoData(data),
@@ -314,6 +349,7 @@ class PianoRiga {
     distanzaKm,
     intensita,
     note,
+    origine,
   ];
 
   factory PianoRiga.fromRow(List<String> r) {
@@ -327,6 +363,7 @@ class PianoRiga {
       distanzaKm: g(5),
       intensita: g(6),
       note: g(7),
+      origine: g(8) == origineImportato ? origineImportato : '',
     );
   }
 }
@@ -523,6 +560,27 @@ class WorkoutStep {
     this.kg = '',
     this.obiettivo2 = '',
   });
+
+  /// Lo stesso passo sotto un altro id (es. la seduta spostata a un altro giorno).
+  WorkoutStep conId(String nuovo) => WorkoutStep(
+    id: nuovo,
+    sport: sport,
+    nome: nome,
+    durataTot: durataTot,
+    ordine: ordine,
+    fase: fase,
+    descrizione: descrizione,
+    serie: serie,
+    ripetizioni: ripetizioni,
+    distanzaM: distanzaM,
+    durataMin: durataMin,
+    intensita: intensita,
+    recuperoS: recuperoS,
+    note: note,
+    esercizio: esercizio,
+    kg: kg,
+    obiettivo2: obiettivo2,
+  );
 
   List<String> toRow() => [
     id,

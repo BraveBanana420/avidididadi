@@ -150,6 +150,18 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     final children = <Widget>[
       Text(dataLunga(data), style: t.titleMedium),
       if (riga.isNotEmpty) Text(riga),
+      // Passi importati dall'assistente: l'app non li rigenera.
+      if (previsto?.importata ?? false)
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Tooltip(
+            message: l10n.passiPersonalizzatiSpiegazione,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [PillolaPulse(l10n.personalizzato)],
+            ),
+          ),
+        ),
       const SizedBox(height: 12),
     ];
 

@@ -5824,6 +5824,24 @@ abstract class AppLocalizations {
   /// **'Immagine creata con l\'intelligenza artificiale per Avidididadi.'**
   String get immagineFattaConIa;
 
+  /// assistente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} → {p1}: i passi personalizzati verranno sostituiti da quelli preparati dall\'app.'**
+  String passiPersonalizzatiSostituiti(Object p0, Object p1);
+
+  /// screens/workout_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Personalizzato'**
+  String get personalizzato;
+
+  /// screens/workout_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Passi precisi arrivati dall\'assistente: l\'app non li cambia.'**
+  String get passiPersonalizzatiSpiegazione;
+
   /// screens/catalogo_screen.dart
   ///
   /// In it, this message translates to:
