@@ -1,0 +1,61 @@
+{
+  "esercizio": "Bodyweight_Walking_Lunge",
+  "ricetta": 1,
+  "autore": null,
+  "prompt_partenza": null,
+  "prompt_video": "The character performs one slow, controlled repetition: he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together. The movement ends exactly in the starting pose. Correct technique, anatomically correct movement. The character, outfit, equipment and plain grey background stay exactly as in the image. Keep exactly the same drawing style as the image in every frame (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours. Not a photo, not a photorealistic or 3D render): the character must never turn photorealistic or 3D-rendered. The camera is completely still: no zoom, no pan, no cuts. The video loops seamlessly. No text, no other people.",
+  "passi": [
+    {
+      "passo": "partenza",
+      "esercizio": "Bodyweight_Walking_Lunge",
+      "richiesta": {
+        "vista": "tre_quarti",
+        "partenza": "avatar",
+        "movimento": "he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together.",
+        "approvata": "2026-11-24"
+      },
+      "fonte": "avatar male_three_quarter.jpg allargato a 16:9",
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:43:09.973Z"
+    },
+    {
+      "passo": "video",
+      "esercizio": "Bodyweight_Walking_Lunge",
+      "richiesta": {
+        "vista": "tre_quarti",
+        "partenza": "avatar",
+        "movimento": "he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together.",
+        "approvata": "2026-11-24"
+      },
+      "modello": "bytedance/seedance-2.0-mini",
+      "impostazioni": {
+        "resolution": "480p",
+        "aspect_ratio": "16:9",
+        "duration": 4,
+        "generate_audio": false,
+        "seed": 42
+      },
+      "immagine": "partenza_1.jpg",
+      "costo": 0.142079,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:45:30.736Z"
+    },
+    {
+      "passo": "converti",
+      "file": "bodyweight_walking_lunge.webp",
+      "fps": 24,
+      "q": 65,
+      "kb": 271,
+      "intero": false,
+      "fine": null,
+      "accelera": 0.75,
+      "limite_kb": 300,
+      "giro_ssim": 0.979557,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T19:51:04.336Z"
+    }
+  ],
+  "costo": 0.1421
+}

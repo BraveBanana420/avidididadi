@@ -1664,7 +1664,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(l10n.parolaRecupero, style: t.titleMedium),
+                                Text(titoloRecupero(b), style: t.titleMedium),
                                 if (b.note.isNotEmpty)
                                   Text(mostraTesto(b.note), style: t.bodySmall),
                               ],
@@ -1687,6 +1687,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                       _AnteprimaEsercizio(
                                         esercizio: esercizio!,
                                         larghezza: 112,
+                                        specchio: b.lato == latoSinistro,
                                       ),
                                       const SizedBox(width: 14),
                                     ],
@@ -1788,6 +1789,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                   _AnteprimaEsercizio(
                                     esercizio: esercizioPoi!,
                                     larghezza: 84,
+                                    specchio: prossimo.lato == latoSinistro,
                                   )
                                 else
                                   const IconaQuadrata(
@@ -1830,6 +1832,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                                 da: const Offset(24, 0),
                                 child: _AnteprimaEsercizio(
                                   esercizio: esercizio!,
+                                  specchio: b.lato == latoSinistro,
                                 ),
                               ),
                             ),
@@ -2097,7 +2100,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
           velocita: fmtVelocita(widget.sport, sensoreBici.velocita),
           km: (_metriSensore / 1000).toStringAsFixed(2).replaceAll('.', ','),
           sensoriRicordati: sensoreBici.ricordato,
-          titolo: recupero ? l10n.parolaRecupero : mostra(b.titolo),
+          titolo: recupero ? titoloRecupero(b) : mostra(b.titolo),
           dettaglio: dettaglioBreve(b),
           intensita: intensitaCon(
             b.intensita,
@@ -2235,7 +2238,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
                     children: [
                       Expanded(
                         child: TestoUnaRiga(
-                          recupero ? l10n.parolaRecupero : mostra(b.titolo),
+                          recupero ? titoloRecupero(b) : mostra(b.titolo),
                           style: t.titleSmall,
                         ),
                       ),
@@ -3134,11 +3137,20 @@ bool _conAnteprima(Esercizio? e) =>
 class _AnteprimaEsercizio extends StatelessWidget {
   final Esercizio esercizio;
   final double? larghezza;
-  const _AnteprimaEsercizio({required this.esercizio, this.larghezza});
+
+  /// Lato sinistro di un esercizio per lato: le animazioni mostrano il lato
+  /// destro, quindi qui si girano in orizzontale (un video solo per esercizio).
+  final bool specchio;
+  const _AnteprimaEsercizio({
+    required this.esercizio,
+    this.larghezza,
+    this.specchio = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final e = esercizio;
+    Widget girata(Widget w) => Transform.flip(flipX: specchio, child: w);
     return Semantics(
       button: true,
       label: l10n.guardaMovimento(e.nome),
@@ -3149,7 +3161,9 @@ class _AnteprimaEsercizio extends StatelessWidget {
             title: Text(e.nome),
             content: SizedBox(
               width: double.maxFinite,
-              child: AnimazioneEsercizio(id: e.id, immagini: e.immagini),
+              child: girata(
+                AnimazioneEsercizio(id: e.id, immagini: e.immagini),
+              ),
             ),
             actions: [
               TextButton(
@@ -3161,10 +3175,12 @@ class _AnteprimaEsercizio extends StatelessWidget {
         ),
         child: SizedBox(
           width: larghezza,
-          child: AnimazioneEsercizio(
-            id: e.id,
-            immagini: e.immagini,
-            mini: larghezza != null,
+          child: girata(
+            AnimazioneEsercizio(
+              id: e.id,
+              immagini: e.immagini,
+              mini: larghezza != null,
+            ),
           ),
         ),
       ),

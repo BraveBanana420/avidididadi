@@ -6,6 +6,8 @@ import 'feedback.dart';
 import 'intervalli.dart';
 import 'allenamento_agente.dart';
 import 'allenamento_arrampicata.dart';
+import 'esercizi.dart';
+import 'forza_agente.dart';
 import 'modifica_sessione.dart';
 import 'models.dart';
 import 'obiettivo.dart';
@@ -110,6 +112,7 @@ class MessaggioChat {
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
   final List<PropostaArrampicata>? arrampicata;
+  final PropostaForza? forza;
   final String motivo;
   final String? errore; // la proposta c'era ma non si legge
   bool applicata = false;
@@ -120,6 +123,7 @@ class MessaggioChat {
     this.piano,
     this.allenamenti,
     this.arrampicata,
+    this.forza,
     this.motivo = '',
     this.errore,
   });
@@ -149,6 +153,7 @@ String contestoAllenamento({
   Map<String, List<IntervalloFatto>> blocchi = const {},
   List<PotenzaMigliore> potenze = const [],
   List<SedutaNuoto> nuotate = const [],
+  List<String> forza = const [],
 }) {
   final o = soloData(oggi);
   final b = StringBuffer()..writeln('Oggi: ${_gg(o)}');
@@ -273,6 +278,12 @@ String contestoAllenamento({
         r.fascia.toLowerCase(),
       ].join(', '),
     );
+  }
+  if (forza.isNotEmpty) {
+    b.writeln('\nForza:');
+    for (final r in forza) {
+      b.writeln(r);
+    }
   }
   return b.toString().trim();
 }
@@ -407,17 +418,21 @@ const settimaneMaxPiano = 16;
 /// l'assistente nella sua app: cambiare sedute, un piano nuovo, allenamenti
 /// passo per passo. [apri] e [chiudi] sono i segni attorno al JSON.
 String formatoProposte(String apri, String chiudi) =>
-    '''```
+    '''Metti TUTTO quello che cambi in UN SOLO blocco: le chiavi "modifiche", "piano", "allenamenti" e "arrampicata" possono stare insieme nello stesso JSON. Per esempio togliere una seduta, allungarne un'altra e mettere un allenamento preciso è un blocco solo, così l'utente copia una volta sola.
+```
 $apri
 {"modifiche": [
   {"azione": "cambia", "data": "AAAA-MM-GG", "sport": "Corsa", "durata_min": 40, "tipo": "Lento", "motivo": "..."},
   {"azione": "sposta", "data": "AAAA-MM-GG", "sport": "Forza", "nuova_data": "AAAA-MM-GG", "motivo": "..."},
+  {"azione": "scambia", "data": "AAAA-MM-GG", "sport": "Corsa", "nuova_data": "AAAA-MM-GG", "con_sport": "Bici", "motivo": "..."},
   {"azione": "rimuovi", "data": "AAAA-MM-GG", "sport": "Bici", "motivo": "..."},
   {"azione": "aggiungi", "data": "AAAA-MM-GG", "sport": "Nuoto", "durata_min": 45, "tipo": "Tecnica", "fascia": "Mattina", "motivo": "..."}
-]}
+],
+ "allenamenti": [ ...come sotto... ]}
 $chiudi
 ```
-Per un piano nuovo, che sostituisce il calendario da quella data in poi (al massimo $settimaneMaxPiano settimane), usa invece:
+Le azioni: "cambia" cambia durata (per allungare o accorciare), tipo o fascia di una seduta; "sposta" la porta in un giorno libero per quello sport; "scambia" inverte due sedute: quella di "sport" in "data" va in "nuova_data" e quella di "con_sport" (se manca, lo stesso sport) in "nuova_data" va in "data"; "rimuovi" la toglie; "aggiungi" ne mette una nuova. Per sostituire una seduta con uno sport diverso usa "rimuovi" e "aggiungi"; per sostituirla con un allenamento preciso dello stesso sport basta "allenamenti". L'app applica in ordine: piano nuovo, poi modifiche, poi allenamenti.
+Per un piano nuovo, che sostituisce il calendario da quella data in poi (al massimo $settimaneMaxPiano settimane), usa:
 ```
 $apri
 {"piano": {"da": "AAAA-MM-GG", "motivo": "...", "sedute": [
@@ -440,6 +455,7 @@ $chiudi
 ```
 "durata_min" (facoltativa) è la durata totale, utile se ci sono passi a distanza. Nei passi: "minuti" (oppure "metri"), "ripeti" e "recupero_s" (secondi tra una ripetizione e l'altra) se si ripete. "intensita": in bici una % dell'FTP ("88-94%"), dei watt ("200-220 W") o una zona ("zona 2"); i recuperi in bici sono al 45-55% se non dici altro. Nella corsa una zona o un passo ("passo 5:00/km"); nel nuoto un passo ("passo 1:50/100 m"). "secondario" (facoltativo) è il secondo obiettivo del passo: in bici la cadenza ("85-90 rpm"), altrimenti quello che serve. L'allenamento prende il posto della seduta dello stesso sport in quel giorno; con un rullo smart l'app gli manda i watt di ogni passo. Al massimo 40 passi e 5 ore.
 ${formatoArrampicata(apri, chiudi)}
+${formatoForza(apri, chiudi)}
 Regole: solo date da oggi in poi; sport tra Corsa, Nuoto, Bici, Forza e Mobilità; tipi di corsa: Lento, Lungo, Fartlek, Tempo run, Ripetute, Ritmo gara, Allunghi, Test FTP; nuoto: Tecnica, Soglia, Test (passo critico: 400 e 200 m al massimo); bici: Uscita, Intervalli, Uscita lunga, Test FTP (i passi del test li prepara l'app: non più di uno ogni 4 settimane, meglio dopo una settimana leggera, al posto di una seduta dura); fasce: Mattina, Pranzo, Pomeriggio, Sera; durata tra 10 e 300 minuti.
 Ogni settimana (da lunedì) almeno un giorno di riposo; i minuti di una settimana al massimo il 10% in più della settimana più impegnativa fino a quel momento. Con {"piano"} i passi delle sedute li prepara l'app da tipo e durata; se vuoi passi precisi, per esempio con i passi gara della persona, manda quelle sedute con {"allenamenti"}.''';
 
@@ -449,14 +465,48 @@ class RispostaAgente {
   final PianoAgente? piano;
   final List<AllenamentoAgente>? allenamenti;
   final List<PropostaArrampicata>? arrampicata;
+  final PropostaForza? forza;
   final String motivo; // perché l'assistente propone gli allenamenti
   const RispostaAgente({
     this.modifiche,
     this.piano,
     this.allenamenti,
     this.arrampicata,
+    this.forza,
     this.motivo = '',
   });
+
+  /// Quante cose diverse propone (modifiche, piano, allenamenti, arrampicata,
+  /// scheda di forza): con più di una si applicano tutte insieme.
+  int get parti => [
+    modifiche,
+    piano,
+    allenamenti,
+    arrampicata,
+    forza,
+  ].where((x) => x != null).length;
+}
+
+/// Una risposta con più blocchi diventa una proposta sola: le liste si
+/// sommano, del piano nuovo vale l'ultimo. Così basta un copia-incolla.
+RispostaAgente unisciRisposte(List<RispostaAgente> risposte) {
+  List<T>? somma<T>(Iterable<List<T>?> liste) {
+    final tutte = [for (final l in liste) ?l].expand((l) => l).toList();
+    return tutte.isEmpty ? null : tutte;
+  }
+
+  final motivi = {
+    for (final r in risposte)
+      if (r.motivo.isNotEmpty) r.motivo,
+  };
+  return RispostaAgente(
+    modifiche: somma(risposte.map((r) => r.modifiche)),
+    piano: risposte.map((r) => r.piano).nonNulls.lastOrNull,
+    allenamenti: somma(risposte.map((r) => r.allenamenti)),
+    arrampicata: somma(risposte.map((r) => r.arrampicata)),
+    forza: risposte.map((r) => r.forza).nonNulls.lastOrNull,
+    motivo: motivi.join(' '),
+  );
 }
 
 /// Un piano nuovo proposto dall'agente, ancora da controllare.
@@ -467,64 +517,90 @@ class PianoAgente {
   const PianoAgente(this.da, this.motivo, this.sedute);
 }
 
-/// Le proposte in un blocco JSON (modifiche, piano nuovo o allenamenti).
-/// Lancia [FormatException] con un messaggio semplice se non va bene.
-RispostaAgente rispostaDaJson(Map<dynamic, dynamic> j) {
+/// Le proposte in un blocco JSON: modifiche, piano nuovo, allenamenti e
+/// arrampicata, scheda di forza, anche più d'una insieme. Con il [catalogo]
+/// gli esercizi della scheda di forza devono essere dell'app. Lancia
+/// [FormatException] con un messaggio semplice se non va bene.
+RispostaAgente rispostaDaJson(
+  Map<dynamic, dynamic> j, {
+  List<Esercizio> catalogo = const [],
+}) {
   final arrampicata = j['arrampicata'];
-  if (arrampicata is List) {
-    return RispostaAgente(
-      arrampicata: proposteArrampicata(arrampicata, DateTime.now()),
-    );
-  }
+  final forza = j['forza'];
   final allenamenti = j['allenamenti'];
+  final piano = j['piano'];
+  final listaModifiche = j['modifiche'];
+
+  List<AllenamentoAgente>? lista;
+  var motivo = '';
   if (allenamenti is List) {
-    final lista = [
+    lista = [
       for (final a in allenamenti)
         if (a is Map) allenamentoDa(Map<String, dynamic>.from(a)),
     ];
     if (lista.isEmpty) {
       throw FormatException(l10n.nelBloccoNonCi2);
     }
-    final motivi = {
+    motivo = {
       for (final a in allenamenti)
         if (a is Map && '${a['motivo'] ?? ''}'.trim().isNotEmpty)
           '${a['motivo']}'.trim(),
-    };
-    return RispostaAgente(allenamenti: lista, motivo: motivi.join(' '));
+    }.join(' ');
   }
-  final piano = j['piano'];
+
+  PianoAgente? pianoNuovo;
   if (piano is Map) {
     final da = parseData('${piano['da'] ?? ''}');
     final sedute = piano['sedute'];
     if (da == null || sedute is! List) {
       throw FormatException(l10n.nelPianoMancanoData);
     }
-    return RispostaAgente(
-      piano: PianoAgente(da, '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(), [
+    pianoNuovo = PianoAgente(
+      da,
+      '${piano['motivo'] ?? j['motivo'] ?? ''}'.trim(),
+      [
         for (final s in sedute)
           if (s is Map) Map<String, dynamic>.from(s),
-      ]),
+      ],
     );
   }
-  final lista = j['modifiche'];
+
   final modifiche = [
-    if (lista is List)
-      for (final x in lista)
+    if (listaModifiche is List)
+      for (final x in listaModifiche)
         if (x is Map) ?Modifica.da(Map<String, dynamic>.from(x)),
   ];
-  if (modifiche.isEmpty) {
+  final conModifiche = listaModifiche is List && listaModifiche.isNotEmpty;
+  if (conModifiche && modifiche.isEmpty) {
     throw FormatException(l10n.nelBloccoNonCi3);
   }
-  return RispostaAgente(modifiche: modifiche);
+
+  final r = RispostaAgente(
+    modifiche: modifiche.isEmpty ? null : modifiche,
+    piano: pianoNuovo,
+    allenamenti: lista,
+    arrampicata: arrampicata is List
+        ? proposteArrampicata(arrampicata, DateTime.now())
+        : null,
+    forza: forza is Map
+        ? propostaForzaDa(forza, oggi: DateTime.now(), catalogo: catalogo)
+        : null,
+    motivo: motivo,
+  );
+  if (r.parti == 0) throw FormatException(l10n.nelBloccoNonCi3);
+  return r;
 }
 
-enum Azione { cambia, sposta, rimuovi, aggiungi }
+enum Azione { cambia, sposta, scambia, rimuovi, aggiungi }
 
 class Modifica {
   final Azione azione;
   final DateTime data;
   final String sport;
   final DateTime? nuovaData;
+
+  /// Con "scambia": lo sport della seduta di [nuovaData] (vuoto = lo stesso).
+  final String conSport;
   final int? durataMin;
   final String tipo;
   final String fascia;
@@ -534,6 +610,7 @@ class Modifica {
     required this.data,
     required this.sport,
     this.nuovaData,
+    this.conSport = '',
     this.durataMin,
     this.tipo = '',
     this.fascia = '',
@@ -553,6 +630,7 @@ class Modifica {
       data: data,
       sport: sport,
       nuovaData: parseData('${m['nuova_data'] ?? ''}'),
+      conSport: normSport('${m['con_sport'] ?? ''}'),
       durataMin: durata is num ? durata.round() : int.tryParse('$durata'),
       tipo: '${m['tipo'] ?? ''}'.trim(),
       fascia: '${m['fascia'] ?? ''}'.trim(),
@@ -563,39 +641,48 @@ class Modifica {
 
 final _blocco = RegExp(r'<proposta>([\s\S]*?)</proposta>');
 final _json = RegExp(
-  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata)"[\s\S]*\})\s*```',
+  r'```(?:json)?\s*(\{[\s\S]*?"(?:modifiche|piano|allenamenti|arrampicata|forza)"[\s\S]*\})\s*```',
 );
 
-/// Separa il testo della risposta dalla proposta: modifiche, piano nuovo o
-/// allenamenti. [errore] dice perché un blocco c'era ma non si legge.
+/// Separa il testo della risposta dalle proposte: modifiche, piano nuovo,
+/// allenamenti. Se l'assistente ne scrive più blocchi si uniscono in una
+/// proposta sola. [errore] dice perché un blocco c'era ma non si legge.
 ({String testo, RispostaAgente? proposta, String? errore}) leggiProposta(
-  String risposta,
-) {
-  final m = _blocco.firstMatch(risposta) ?? _json.firstMatch(risposta);
-  if (m == null) return (testo: risposta.trim(), proposta: null, errore: null);
-  final testo = risposta.replaceRange(m.start, m.end, '').trim();
-  final Object? j;
-  try {
-    j = jsonDecode(m.group(1)!.replaceAll(RegExp(r'```[a-zA-Z]*'), '').trim());
-  } on FormatException {
-    return (
-      testo: testo,
-      proposta: null,
-      errore: l10n.propostaNonLeggibileChiedi,
-    );
+  String risposta, {
+  List<Esercizio> catalogo = const [],
+}) {
+  var blocchi = _blocco.allMatches(risposta).toList();
+  if (blocchi.isEmpty) blocchi = [?_json.firstMatch(risposta)];
+  if (blocchi.isEmpty) {
+    return (testo: risposta.trim(), proposta: null, errore: null);
   }
-  if (j is! Map) {
-    return (
-      testo: testo,
-      proposta: null,
-      errore: l10n.propostaNonLeggibileChiedi,
-    );
+  var testo = risposta;
+  for (final m in blocchi.reversed) {
+    testo = testo.replaceRange(m.start, m.end, '');
   }
+  testo = testo.trim();
   try {
-    return (testo: testo, proposta: rispostaDaJson(j), errore: null);
+    final lette = [
+      for (final m in blocchi)
+        rispostaDaJson(jsonBlocco(m.group(1)!), catalogo: catalogo),
+    ];
+    return (testo: testo, proposta: unisciRisposte(lette), errore: null);
   } on FormatException catch (e) {
     return (testo: testo, proposta: null, errore: e.message);
   }
+}
+
+/// Il JSON dentro un blocco (senza i segni ``` attorno). Lancia
+/// [FormatException] con un messaggio semplice se non si legge.
+Map<dynamic, dynamic> jsonBlocco(String interno) {
+  final Object? j;
+  try {
+    j = jsonDecode(interno.replaceAll(RegExp(r'```[a-zA-Z]*'), '').trim());
+  } on FormatException {
+    throw FormatException(l10n.propostaNonLeggibileChiedi);
+  }
+  if (j is! Map) throw FormatException(l10n.propostaNonLeggibileChiedi);
+  return j;
 }
 
 /// Solo le modifiche alle sedute (null se non ce ne sono).
@@ -612,7 +699,16 @@ class EsitoProposta {
   final List<Modifica> accettate;
   final List<(Modifica, String)> scartate;
   final List<PianoRiga> piano;
-  const EsitoProposta(this.accettate, this.scartate, this.piano);
+
+  /// Modifiche accettate che tolgono i passi importati di una seduta (un
+  /// "cambia" con un tipo diverso): la scheda lo dice prima di applicare.
+  final List<(Modifica, String)> avvisi;
+  const EsitoProposta(
+    this.accettate,
+    this.scartate,
+    this.piano, {
+    this.avvisi = const [],
+  });
 }
 
 PianoRiga _copia(
@@ -622,15 +718,14 @@ PianoRiga _copia(
   String? tipo,
   String? fascia,
   String? note,
-}) => PianoRiga(
-  data: data ?? r.data,
-  fascia: fascia ?? r.fascia,
-  sport: r.sport,
-  tipo: tipo ?? r.tipo,
-  durataMin: durata ?? r.durataMin,
-  distanzaKm: r.distanzaKm,
-  intensita: r.intensita,
-  note: note ?? r.note,
+  String? origine,
+}) => r.copia(
+  data: data,
+  durataMin: durata,
+  tipo: tipo,
+  fascia: fascia,
+  note: note,
+  origine: origine,
 );
 
 /// Le righe toccate dall'assistente lo dicono nelle note: così il generatore
@@ -667,12 +762,15 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
       );
     case Azione.cambia:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
+      // I passi importati restano, a meno che cambi il tipo: allora la
+      // seduta torna a quelli preparati dall'app.
       p[i] = _copia(
         p[i],
         durata: d,
         tipo: m.tipo.isEmpty ? null : m.tipo,
         fascia: fasce.contains(m.fascia) ? m.fascia : null,
         note: _nota(m),
+        origine: perdePassiImportati(p[i], m) ? '' : null,
       );
     case Azione.sposta:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
@@ -682,11 +780,90 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
         return l10n.cGiaSedutaGiorno(m.sport);
       }
       p[i] = _copia(p[i], data: n, note: _nota(m));
+    case Azione.scambia:
+      if (i < 0) return l10n.quelGiornoNonC(m.sport);
+      final n = m.nuovaData;
+      if (n == null || n.isBefore(oggi) || n == m.data) {
+        return l10n.nuovaDataMancanteO;
+      }
+      final altro = m.conSport.isEmpty ? m.sport : m.conSport;
+      final j = p.indexWhere((r) => r.data == n && stessoSport(r.sport, altro));
+      if (j < 0) return l10n.quelGiornoNonC(altro);
+      // Se gli sport sono diversi, nessuno dei due deve trovare il suo doppione.
+      if (!stessoSport(altro, m.sport) &&
+          (p.any((r) => r.data == n && stessoSport(r.sport, m.sport)) ||
+              p.any((r) => r.data == m.data && stessoSport(r.sport, altro)))) {
+        return l10n.cGiaSedutaGiorno(m.sport);
+      }
+      final a = p[i], b = p[j];
+      p[i] = _copia(a, data: n, note: _nota(m));
+      p[j] = _copia(b, data: m.data, note: _nota(m));
     case Azione.rimuovi:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
       p.removeAt(i);
   }
   return null;
+}
+
+/// Un "cambia" con un tipo diverso su una seduta con i passi importati:
+/// quei passi non vanno più bene e la seduta torna a quelli dell'app.
+bool perdePassiImportati(PianoRiga r, Modifica m) =>
+    m.azione == Azione.cambia &&
+    r.importata &&
+    m.tipo.isNotEmpty &&
+    m.tipo.toLowerCase() != r.tipo.toLowerCase();
+
+/// I passi importati dopo le modifiche accettate: con "sposta" e "scambia"
+/// seguono la seduta al giorno nuovo (l'id contiene data e sport), con
+/// "rimuovi" e con un "cambia" che cambia tipo si tolgono. [prima] è il piano
+/// prima delle modifiche.
+List<WorkoutStep> passiDopoModifiche(
+  List<WorkoutStep> passi,
+  List<PianoRiga> prima,
+  List<Modifica> accettate,
+) {
+  var p = [...passi];
+  var piano = [...prima];
+  final oggi = DateTime(2000);
+  for (final m in accettate) {
+    final da = idAllenamentoAgente(m.data, m.sport);
+    final riga = piano
+        .where((r) => r.data == m.data && stessoSport(r.sport, m.sport))
+        .firstOrNull;
+    switch (m.azione) {
+      case Azione.sposta:
+        final a = idAllenamentoAgente(m.nuovaData!, m.sport);
+        p = [
+          for (final w in p.where((w) => w.id != a))
+            w.id == da ? w.conId(a) : w,
+        ];
+      case Azione.scambia:
+        final altro = m.conSport.isEmpty ? m.sport : m.conSport;
+        final b = idAllenamentoAgente(m.nuovaData!, altro);
+        final aNuovo = idAllenamentoAgente(m.nuovaData!, m.sport);
+        final bNuovo = idAllenamentoAgente(m.data, altro);
+        p = [
+          for (final w in p)
+            w.id == da
+                ? w.conId(aNuovo)
+                : w.id == b
+                ? w.conId(bNuovo)
+                : w,
+        ];
+      case Azione.rimuovi:
+        p = [...p.where((w) => w.id != da)];
+      case Azione.cambia:
+        if (riga != null && perdePassiImportati(riga, m)) {
+          p = [...p.where((w) => w.id != da)];
+        }
+      case Azione.aggiungi:
+        // Una seduta nuova parte con i passi dell'app, non con quelli
+        // importati rimasti da una seduta tolta prima.
+        p = [...p.where((w) => w.id != da)];
+    }
+    _applica(piano, m, oggi);
+  }
+  return p;
 }
 
 /// Settimane toccate da una modifica (lunedì).
@@ -718,9 +895,13 @@ EsitoProposta valutaProposta(
   final o = soloData(oggi);
   final accettate = <Modifica>[];
   final scartate = <(Modifica, String)>[];
+  final avvisi = <(Modifica, String)>[];
   var p = [...piano];
   for (final m in modifiche) {
     final prova = [...p];
+    final prima = p
+        .where((r) => r.data == m.data && stessoSport(r.sport, m.sport))
+        .firstOrNull;
     final errore = _applica(prova, m, o);
     if (errore != null) {
       scartate.add((m, errore));
@@ -742,6 +923,9 @@ EsitoProposta valutaProposta(
     }
     p = prova;
     accettate.add(m);
+    if (prima != null && perdePassiImportati(prima, m)) {
+      avvisi.add((m, l10n.passiPersonalizzatiSostituiti(prima.tipo, m.tipo)));
+    }
   }
   p.sort((a, b) {
     final c = a.data.compareTo(b.data);
@@ -749,7 +933,7 @@ EsitoProposta valutaProposta(
         ? c
         : fasce.indexOf(a.fascia).compareTo(fasce.indexOf(b.fascia));
   });
-  return EsitoProposta(accettate, scartate, p);
+  return EsitoProposta(accettate, scartate, p, avvisi: avvisi);
 }
 
 String _giorno(DateTime d) =>
@@ -772,6 +956,9 @@ String descriviModifica(Modifica m, List<PianoRiga> piano) {
     Azione.rimuovi => l10n.tolta(dove, r == null ? '' : ' (${_seduta(r)})'),
     Azione.sposta =>
       '$dove → ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)}',
+    Azione.scambia =>
+      '$dove ⇄ ${m.nuovaData == null ? '?' : _giorno(m.nuovaData!)} '
+          '${m.conSport.isEmpty ? m.sport : m.conSport}',
     Azione.cambia =>
       '$dove: ${r == null ? '?' : _seduta(r)} → '
           '${[if (m.tipo.isNotEmpty) m.tipo else if (r != null && r.tipo.isNotEmpty) r.tipo, '${m.durataMin ?? r?.durataMin ?? 0} min'].join(' ')}',

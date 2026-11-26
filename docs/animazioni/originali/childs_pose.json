@@ -1,0 +1,39 @@
+{
+  "esercizio": "Childs_Pose",
+  "ricetta": 1,
+  "autore": null,
+  "prompt_partenza": "Use the attached character exactly as he is: same face, hair, beard, body proportions and outfit exactly as in the attached images (black sleeveless top with red side panels, black shorts with red side panels over plain black leggings, black wrist wraps, black shoes with red soles), same drawing style (hand-drawn digital illustration: clean dark outlines, soft cel shading, smooth flat colours, like the attached avatar images. Not a photo, not a photorealistic or 3D render).\nShow him in the starting position of: CHILD'S POSE. He is in the held child's pose on a thin matte dark grey exercise mat: kneeling with the knees slightly apart, sitting back with the glutes resting on his heels, the torso folded forward over the thighs, both arms stretched fully forward along the mat in front of his head with the elbows straight and the palms flat on the mat, forehead resting on the mat, relaxed.\nSeen seen from the side, like the attached side view, facing left.\nFull body visible with some margin, in the centre of the image, feet near the bottom. Plain light grey background (#D9D9DB) with a slightly lighter floor, soft studio light, soft shadow on the floor. No other objects, no other people, no text. Wide 16:9 image.",
+  "prompt_video": null,
+  "passi": [
+    {
+      "passo": "partenza",
+      "esercizio": "Childs_Pose",
+      "richiesta": {
+        "tipo": "posizione",
+        "vista": "lato",
+        "partenza": "genera",
+        "posa": "He is in the held child's pose on a thin matte dark grey exercise mat: kneeling with the knees slightly apart, sitting back with the glutes resting on his heels, the torso folded forward over the thighs, both arms stretched fully forward along the mat in front of his head with the elbows straight and the palms flat on the mat, forehead resting on the mat, relaxed.",
+        "approvata": "2026-11-24"
+      },
+      "modello": "google/gemini-nano-banana-2.1",
+      "fonte": "google/gemini-nano-banana-2.1 (OpenRouter) dagli avatar",
+      "costo": 0.083979,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:21:42.615Z"
+    },
+    {
+      "passo": "ferma",
+      "esercizio": "Childs_Pose",
+      "file": "childs_pose.webp",
+      "fonte": "partenza_2.jpg",
+      "intero": true,
+      "q": 85,
+      "kb": 12,
+      "limite_kb": 300,
+      "costo": 0,
+      "ricetta": 1,
+      "quando": "2026-11-24T20:23:35.802Z"
+    }
+  ],
+  "costo": 0.084
+}

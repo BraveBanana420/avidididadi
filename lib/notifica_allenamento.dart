@@ -67,6 +67,8 @@ String titoloNotifica(
   final titolo = mostra(b.titolo);
   final cosa = libera
       ? mostra(nome)
+      : b.cambioLato
+      ? l10n.cambiaLato
       : b.tipo == TipoBlocco.recupero
       ? (prossimo == null
             ? l10n.parolaRecupero

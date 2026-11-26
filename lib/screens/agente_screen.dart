@@ -212,6 +212,7 @@ class PannelloAgente extends StatelessWidget {
     final c = state.assistente;
     final iniziato = c.ultimoInvioEsterno != null;
     final ultimo = c.ultimoInvioEsterno;
+    final unaParte = (state.rispostaAgente?.parti ?? 0) < 2;
     return ListView(
       padding: EdgeInsets.fromLTRB(16, 8, 16, spazioBarra(context)),
       children: [
@@ -224,17 +225,26 @@ class PannelloAgente extends StatelessWidget {
               subtitle: Text(state.erroreAgente!),
             ),
           ),
+        if (state.rispostaAgente case final r? when r.parti > 1)
+          SchedaApplicaTutto(state: state, risposta: r),
         if (state.propostaAgente != null)
-          SchedaProposta(state: state, messaggio: state.propostaAgente!),
+          SchedaProposta(
+            state: state,
+            messaggio: state.propostaAgente!,
+            conPulsante: unaParte,
+          ),
         if (state.rispostaAgente?.piano case final p?)
-          SchedaPiano(state: state, piano: p),
+          SchedaPiano(state: state, piano: p, conPulsante: unaParte),
         if (state.rispostaAgente?.arrampicata case final a?)
-          SchedaArrampicata(state: state, proposte: a),
+          SchedaArrampicata(state: state, proposte: a, conPulsante: unaParte),
+        if (state.rispostaAgente?.forza case final f?)
+          SchedaForza(state: state, proposta: f, conPulsante: unaParte),
         if (state.rispostaAgente?.allenamenti case final a?)
           SchedaAllenamenti(
             state: state,
             allenamenti: a,
             motivo: state.rispostaAgente!.motivo,
+            conPulsante: unaParte,
           ),
         SuperficiePulse(
           child: Column(

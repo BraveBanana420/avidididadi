@@ -22,6 +22,7 @@ import 'dati_live.dart';
 import 'esercizi.dart';
 import 'esporta.dart';
 import 'feedback.dart';
+import 'forza_agente.dart';
 import 'generator.dart';
 import 'generatore_endurance.dart';
 import 'generatore_forza.dart';
@@ -138,16 +139,7 @@ class AppState extends ChangeNotifier {
       for (final r in await Storage.readPiano())
         r.tipo.isNotEmpty || tipoPredefinito(r.data, r.sport).isEmpty
             ? r
-            : PianoRiga(
-                data: r.data,
-                fascia: r.fascia,
-                sport: r.sport,
-                tipo: tipoPredefinito(r.data, r.sport),
-                durataMin: r.durataMin,
-                distanzaKm: r.distanzaKm,
-                intensita: r.intensita,
-                note: r.note,
-              ),
+            : r.copia(tipo: tipoPredefinito(r.data, r.sport)),
     ];
     settimana = settimanaDiPartenza(
       await Storage.readSettimana(),
@@ -229,6 +221,17 @@ class AppState extends ChangeNotifier {
           if (WorkoutStep.da(ta, r) case final w?)
             if (!(_dataAgente(w.id)?.isBefore(daTenere) ?? true)) w,
     ];
+    // Le sedute importate prima che si salvasse l'origine.
+    final conOrigine = conOrigineImportata(
+      piano,
+      allenamentiAgente,
+      soloData(DateTime.now()),
+    );
+    if (conOrigine.where((r) => r.importata).length !=
+        piano.where((r) => r.importata).length) {
+      piano = conOrigine;
+      await Storage.writePiano(piano);
+    }
 
     final tp = await Storage.readTabella('programma.csv');
     programma = tp == null
@@ -685,6 +688,7 @@ class AppState extends ChangeNotifier {
     bool daRifare(DateTime d) =>
         !d.isBefore(oggi) &&
         !valutate.contains(d) &&
+        !_importata(d, 'Forza') &&
         (generatore || coperti.contains(d));
     DateTime? dataDi(String id) =>
         parseData(id.substring(prefissoForza.length));
@@ -972,16 +976,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  PianoRiga _conTipo(PianoRiga r, String tipo) => PianoRiga(
-    data: r.data,
-    fascia: r.fascia,
-    sport: r.sport,
-    tipo: tipo,
-    durataMin: r.durataMin,
-    distanzaKm: r.distanzaKm,
-    intensita: r.intensita,
-    note: r.note,
-  );
+  PianoRiga _conTipo(PianoRiga r, String tipo) => r.copia(tipo: tipo);
 
   /// Rigenera le sedute preparate di corsa, nuoto, bici e mobilità.
   Future<int> _aggiornaEndurance() async =>
@@ -1008,7 +1003,8 @@ class AppState extends ChangeNotifier {
         : const PianoMobilita([], [], {});
     bool fatta(DateTime d) =>
         sessioni.any((s) => s.data == d && stessoSport(s.sport, sportMobilita));
-    bool daRifare(DateTime d) => !d.isBefore(oggi) && !fatta(d);
+    bool daRifare(DateTime d) =>
+        !d.isBefore(oggi) && !fatta(d) && !_importata(d, sportMobilita);
     DateTime dataDi(String id) =>
         parseData(id.substring(prefissoMobilita.length)) ?? oggi;
     workout = [
@@ -1125,7 +1121,7 @@ class AppState extends ChangeNotifier {
         sessioni.any((s) => s.data == d && stessoSport(s.sport, sport)) ||
         feedback.any((f) => f.di(d, sport));
     bool daRifare(DateTime d, String sport) =>
-        !d.isBefore(oggi) && !svolta(d, sport);
+        !d.isBefore(oggi) && !svolta(d, sport) && !_importata(d, sport);
     DateTime dataDi(String id) =>
         parseData(id.substring(id.indexOf('_') + 1)) ?? oggi;
     // Scelto per le sedute preparate, oppure coperto da una scheda.
@@ -1292,6 +1288,16 @@ class AppState extends ChangeNotifier {
     blocchi: _blocchiContesto,
     potenze: potenzeMigliori,
     nuotate: nuotate,
+    forza: attivitaScelta('Forza')
+        ? righeForzaAssistente(
+            oggi: DateTime.now(),
+            catalogo: esercizi,
+            attrezzatura: attrezzatura,
+            serie: serieFatte,
+            schede: schede,
+            settimana: settimana,
+          )
+        : const [],
   );
 
   /// I blocchi delle sedute recenti per il messaggio all'assistente.
@@ -1381,7 +1387,7 @@ class AppState extends ChangeNotifier {
         istruzioniAssistente(contestoAssistente),
         storia,
       );
-      final r = leggiProposta(risposta);
+      final r = leggiProposta(risposta, catalogo: esercizi);
       final p = r.proposta;
       chat = [
         ...chat,
@@ -1392,6 +1398,7 @@ class AppState extends ChangeNotifier {
           piano: p?.piano,
           allenamenti: p?.allenamenti,
           arrampicata: p?.arrampicata,
+          forza: p?.forza,
           motivo: p?.motivo ?? '',
           errore: r.errore,
         ),
@@ -1476,7 +1483,11 @@ class AppState extends ChangeNotifier {
   void riceviDaAgente(String testo) {
     if (!assistente.esterno) return;
     try {
-      rispostaAgente = leggiRispostaAgente(testo, assistente.codiceEsterno);
+      rispostaAgente = leggiRispostaAgente(
+        testo,
+        assistente.codiceEsterno,
+        catalogo: esercizi,
+      );
       final m = rispostaAgente!.modifiche;
       propostaAgente = m == null ? null : MessaggioChat(false, '', proposta: m);
       erroreAgente = null;
@@ -1617,6 +1628,11 @@ class AppState extends ChangeNotifier {
     }
   }
 
+  /// Una seduta con i passi importati: i generatori non la toccano.
+  bool _importata(DateTime d, String sport) => piano.any(
+    (r) => r.data == d && stessoSport(r.sport, sport) && r.importata,
+  );
+
   bool _haAllenamentoAgente(DateTime d, String sport) {
     final id = idAllenamentoAgente(d, sport);
     return allenamentiAgente.any((w) => w.id == id);
@@ -1686,17 +1702,67 @@ class AppState extends ChangeNotifier {
   Future<int> applicaProposta(MessaggioChat m) async {
     final proposta = m.proposta;
     if (proposta == null || m.applicata) return 0;
-    final esito = valutaProposta(piano, proposta, DateTime.now());
+    final n = await _applicaModifiche(proposta);
+    if (n == 0) return 0;
+    m.applicata = true;
+    notifyListeners();
+    return n;
+  }
+
+  Future<int> _applicaModifiche(List<Modifica> modifiche) async {
+    final esito = valutaProposta(piano, modifiche, DateTime.now());
     if (esito.accettate.isEmpty) return 0;
+    // I passi importati seguono la seduta spostata (e se ne vanno con quella
+    // tolta o cambiata di tipo), prima di cambiare il piano.
+    final passi = passiDopoModifiche(allenamentiAgente, piano, esito.accettate);
+    if (passi.length != allenamentiAgente.length ||
+        !passi.every((w) => allenamentiAgente.contains(w))) {
+      allenamentiAgente = passi;
+      await Storage.write(
+        fileAllenamentiAgente,
+        workoutHeader,
+        allenamentiAgente.map((w) => w.toRow()).toList(),
+      );
+    }
     piano = esito.piano;
     await Storage.writePiano(piano);
     _ricombina();
     await _attivaSportDelPiano();
     await _aggiornaForza();
     await _aggiornaEndurance();
-    m.applicata = true;
-    notifyListeners();
     return esito.accettate.length;
+  }
+
+  /// Una risposta che cambia più cose insieme, applicata con un tocco solo:
+  /// prima il piano nuovo, poi le modifiche, poi gli allenamenti precisi e
+  /// l'arrampicata. Ogni parte si ricontrolla sul piano di quel momento.
+  /// Restituisce il riassunto per l'avviso (vuoto se non è cambiato niente).
+  Future<String> applicaTutto(RispostaAgente r, {MessaggioChat? da}) async {
+    final fatto = <String>[];
+    if (r.piano case final p?) {
+      final n = await applicaPianoAgente(p, da: da);
+      if (n > 0) fatto.add(l10n.partePiano(n));
+    }
+    if (r.modifiche case final m?) {
+      final n = await _applicaModifiche(m);
+      if (n > 0) fatto.add(l10n.parteModifiche(n));
+    }
+    if (r.allenamenti case final a?) {
+      final n = await applicaAllenamentiAgente(a, da: da);
+      if (n > 0) fatto.add(l10n.parteAllenamenti(n));
+    }
+    if (r.arrampicata case final a?) {
+      final (salvati, _) = await applicaProposteArrampicata(a, da: da);
+      if (salvati > 0) fatto.add(l10n.parteArrampicata(salvati));
+    }
+    if (r.forza case final f?) {
+      await applicaPropostaForza(f, da: da);
+      fatto.add(l10n.parteForza(f.nome));
+    }
+    _segnaApplicata(da);
+    if (da == null) propostaAgente?.applicata = true;
+    notifyListeners();
+    return fatto.join(', ');
   }
 
   /// FC a riposo misurata (da Health Connect, vedi recupero); 0 = sconosciuta.
@@ -3127,6 +3193,35 @@ class AppState extends ChangeNotifier {
     await _salvaSchede();
     await _aggiornaForza();
     await _aggiornaEndurance(); // le schede di corsa, bici e nuoto
+    notifyListeners();
+  }
+
+  /// Salva la scheda di forza graduale dell'assistente: le sue fasi prendono
+  /// il posto delle schede di forza negli stessi giorni, e i giorni della
+  /// settimana senza forza la ricevono accanto a quello che c'è già.
+  Future<void> applicaPropostaForza(
+    PropostaForza p, {
+    MessaggioChat? da,
+  }) async {
+    schede = conPropostaForza(schede, p).schede;
+    await _salvaSchede();
+    final mancanti = giorniSenzaForza(settimana, p);
+    if (mancanti.isNotEmpty) {
+      final prima = [...settimana];
+      var nuova = settimana;
+      for (final d in mancanti) {
+        nuova = conSportNelGiorno(
+          nuova,
+          d,
+          'Forza',
+          sostituisci: false,
+        ).settimana;
+      }
+      settimana = nuova;
+      await salvaSettimana(prima: prima);
+    }
+    await _aggiornaForza();
+    _segnaApplicata(da);
     notifyListeners();
   }
 

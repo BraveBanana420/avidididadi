@@ -1147,8 +1147,38 @@ abstract class AppLocalizations {
   /// esecuzione.dart
   ///
   /// In it, this message translates to:
-  /// **'Cambia lato a metà.'**
-  String get cambiaLatoMeta;
+  /// **'Lato destro'**
+  String get latoDestro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Lato sinistro'**
+  String get latoSinistro;
+
+  /// esecuzione.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato'**
+  String get cambiaLato;
+
+  /// voce.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Cambia lato.'**
+  String get cambiaLatoVoce;
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} s per lato'**
+  String secondiPerLato(Object p0);
+
+  /// generatore_forza.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} per lato'**
+  String ripetizioniPerLato(Object p0);
 
   /// esecuzione.dart
   ///
@@ -3085,14 +3115,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, scendi sotto {p1}.'**
-  String cadenzaScendiSotto(Object p0, Object p1);
+  /// **'Cadenza {p0}, scendi a {p1}.'**
+  String cadenzaScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'Cadenza {p0}, sali sopra {p1}.'**
-  String cadenzaSaliSopra(Object p0, Object p1);
+  /// **'Cadenza {p0}, sali a {p1}.'**
+  String cadenzaSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
@@ -3109,14 +3139,14 @@ abstract class AppLocalizations {
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, scendi sotto {p1}.'**
-  String wattScendiSotto(Object p0, Object p1);
+  /// **'{p0} watt, scendi a {p1}.'**
+  String wattScendiA(Object p0, Object p1);
 
   /// potenza.dart
   ///
   /// In it, this message translates to:
-  /// **'{p0} watt, sali sopra {p1}.'**
-  String wattSaliSopra(Object p0, Object p1);
+  /// **'{p0} watt, sali a {p1}.'**
+  String wattSaliA(Object p0, Object p1);
 
   /// potenza.dart
   ///
@@ -5785,6 +5815,36 @@ abstract class AppLocalizations {
   /// screens/catalogo_screen.dart
   ///
   /// In it, this message translates to:
+  /// **'Animazione creata con l\'intelligenza artificiale per Avidididadi.'**
+  String get animazioneFattaConIa;
+
+  /// screens/catalogo_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Immagine creata con l\'intelligenza artificiale per Avidididadi.'**
+  String get immagineFattaConIa;
+
+  /// assistente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} → {p1}: i passi personalizzati verranno sostituiti da quelli preparati dall\'app.'**
+  String passiPersonalizzatiSostituiti(Object p0, Object p1);
+
+  /// screens/workout_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Personalizzato'**
+  String get personalizzato;
+
+  /// screens/workout_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Passi precisi arrivati dall\'assistente: l\'app non li cambia.'**
+  String get passiPersonalizzatiSpiegazione;
+
+  /// screens/catalogo_screen.dart
+  ///
+  /// In it, this message translates to:
   /// **'Le tue serie'**
   String get tueSerie;
 
@@ -8321,7 +8381,7 @@ abstract class AppLocalizations {
   /// screens/privacy_screen.dart
   ///
   /// In it, this message translates to:
-  /// **'Solo se lo attivi tu, l\'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.'**
+  /// **'Solo se lo attivi tu, l\'assistente invia un riassunto dei tuoi allenamenti (sessioni delle ultime 4 settimane, feedback, recupero, zone di battito e FTP della bici, piano dei prossimi 14 giorni, serie di forza delle ultime 6 settimane, attrezzatura e schede di forza) al servizio che scegli: Anthropic, OpenAI, Google oppure Ollama sul tuo PC. Nome, foto e percorsi GPS non vengono mai inviati; età, sesso e peso solo se lo permetti. Prima di attivarlo puoi vedere esattamente cosa viene inviato. La chiave API resta cifrata sul telefono. Per i servizi online valgono le loro condizioni sulla privacy e gli eventuali costi del tuo abbonamento.'**
   String get soloSeAttiviTu;
 
   /// screens/privacy_screen.dart
@@ -12385,6 +12445,192 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'Una volta al giorno, all\'apertura, l\'app chiede a GitHub (api.github.com) qual è l\'ultima versione pubblicata. Se tocchi Aggiorna, scarica l\'APK da GitHub nella sua memoria temporanea, controlla che sia identico a quello pubblicato, lo passa all\'installatore di Android e lo cancella: sul telefono non restano file. GitHub riceve l\'indirizzo IP del telefono e la versione chiesta, nient\'altro. Puoi spegnere il controllo dal Profilo, alla voce Aggiornamenti dell\'app.'**
   String get aggiornamentiPrivacy;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Più cambi insieme'**
+  String get piuCambiInsieme;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Questa risposta cambia più cose: qui sotto le vedi una per una. Si applicano tutte insieme, in quest\'ordine: piano nuovo, modifiche, allenamenti, scheda di forza.'**
+  String get piuCambiSpiegazione;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Applica tutto'**
+  String get applicaTutto;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Tutto applicato: lo trovi nel calendario.'**
+  String get tuttoApplicato;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Il piano nuovo ha dei problemi (li vedi qui sotto): chiedi di correggerlo prima di applicare tutto.'**
+  String get pianoDaCorreggerePrima;
+
+  /// screens/schede_proposte.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Fatto: {p0}.'**
+  String fattoRiassunto(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'piano nuovo con {p0} sedute'**
+  String partePiano(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} modifiche al piano'**
+  String parteModifiche(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} allenamenti nel calendario'**
+  String parteAllenamenti(Object p0);
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0} allenamenti di arrampicata'**
+  String parteArrampicata(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: l\'esercizio \"{p1}\" non c\'è nell\'app. Usa un id della lista degli esercizi, oppure solo \"nome\" per un esercizio scritto a mano.'**
+  String forzaEsercizioSconosciuto(Object p0, Object p1);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: un esercizio non ha né id né nome.'**
+  String forzaEsercizioSenzaNome(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: le serie devono essere da 1 a 10 e il recupero da 0 a 600 secondi.'**
+  String forzaSerieNonValide(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Giorno {p0}'**
+  String forzaGiornoN(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: servono i giorni della settimana (1 = lunedì) e da 1 a 20 esercizi.'**
+  String forzaGiornoNonValido(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Scheda di forza graduale'**
+  String get schedaForzaGraduale;
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Nella scheda di forza servono da 1 a {p0} fasi, ognuna con settimane, giorni ed esercizi.'**
+  String forzaServonoFasi(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Fase {p0}'**
+  String forzaFaseN(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: la data d\'inizio non è valida (serve AAAA-MM-GG).'**
+  String forzaInizioNonValido(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: comincia prima di oggi.'**
+  String forzaIniziaPrimaDiOggi(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: comincia prima che finisca la fase precedente.'**
+  String forzaFasiSovrapposte(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: le settimane devono essere da 1 a {p1}.'**
+  String forzaSettimaneNonValide(Object p0, Object p1);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: servono da 1 a 7 giorni di allenamento.'**
+  String forzaGiorniNonValidi(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'{p0}: {p1} è in due giorni della scheda.'**
+  String forzaGiornoDoppio(Object p0, Object p1);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'La scheda dura più di {p0} settimane.'**
+  String forzaTroppoLunga(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'dal {p0} al {p1}'**
+  String forzaDalAl(Object p0, Object p1);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Le schede di forza in corso finiscono il giorno prima: {p0}.'**
+  String forzaAccorciate(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Prende il posto di: {p0}.'**
+  String forzaTolte(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Nella settimana tipo la forza non c\'è di {p0}: la aggiungo accanto a quello che c\'è già.'**
+  String forzaAggiungeGiorni(Object p0);
+
+  /// forza_agente.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Scheda salvata: le sedute di forza seguono i suoi esercizi.'**
+  String get forzaSchedaSalvata;
+
+  /// app_state.dart
+  ///
+  /// In it, this message translates to:
+  /// **'la scheda di forza \"{p0}\"'**
+  String parteForza(Object p0);
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'esercizi.dart';
+import 'generatore_mobilita.dart';
 import 'models.dart';
 import 'l10n/lingua.dart';
 
@@ -283,7 +284,8 @@ PianoForza generaPianoForza({
         15,
         par.secondi + 10 * (sb < 2 ? sb : 2) + 5 * regolazione,
       );
-      final int lavoro = tenuta ? secondi : 45;
+      // Su un lato solo la serie si fa due volte: destra e sinistra.
+      final int lavoro = (tenuta ? secondi : 45) * (e.lati ? 2 : 1);
       final int tempo = serie * (lavoro + par.recupero) + 60;
       if (scelti.length >= 3 && usato + tempo > budget + 120) break;
       usato += tempo;
@@ -294,7 +296,12 @@ PianoForza generaPianoForza({
       final daFeedback = suPeso ? 0 : 2 * regolazione;
       final minimo = math.max(3, lo + extra + daFeedback);
       final massimo = math.max(minimo + 2, hi + extra + daFeedback);
-      final rip = tenuta ? '$secondi s' : '$minimo-$massimo';
+      final rip = switch ((tenuta, e.lati)) {
+        (true, true) => l10n.secondiPerLato(secondi),
+        (true, false) => '$secondi s',
+        (false, true) => l10n.ripetizioniPerLato('$minimo-$massimo'),
+        (false, false) => '$minimo-$massimo',
+      };
       final peso = _pesoSuggerito(
         e,
         attrezzatura,
@@ -333,17 +340,7 @@ PianoForza generaPianoForza({
       blocco + k,
       math.max(3, minMobilita ~/ 2),
     )) {
-      passi.add(
-        passo(
-          'mobilità',
-          e,
-          rip: e.schema == 'rullo'
-              ? '60 s'
-              : e.nome.startsWith('Circonduzioni')
-              ? l10n.n10Lato
-              : l10n.n30SLato,
-        ),
-      );
+      passi.add(passo('mobilità', e, rip: durataMobilita(e)));
     }
 
     programma.add(ProgrammaRiga(data: data, sport: 'Forza', idWorkout: id));

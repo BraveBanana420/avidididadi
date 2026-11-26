@@ -6,7 +6,7 @@ import '../l10n/lingua.dart';
 
 /// Versione di Termini e informativa: se cambia, all'apertura si chiede di
 /// accettarli di nuovo.
-const versioneTermini = '2026-11-23.1';
+const versioneTermini = '2026-11-25.1';
 final aggiornamentoTermini = DateTime(2026, 11, 23);
 
 /// Una pagina di testo a sezioni (informativa, termini).

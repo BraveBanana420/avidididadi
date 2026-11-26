@@ -8,14 +8,18 @@ import '../allenamento_arrampicata.dart';
 import '../app_state.dart';
 import '../assistente.dart';
 import '../esecuzione.dart';
+import '../forza_agente.dart';
 import '../models.dart';
 import '../potenza.dart';
+import '../widgets.dart';
 import 'allenamenti_arrampicata_screen.dart';
 import 'profilo_allenamento.dart';
 import '../l10n/lingua.dart';
+import '../l10n/vocabolario.dart';
 
 // Anteprime delle proposte del coach (chat con la chiave API) e
-// dell'assistente esterno: allenamenti passo per passo e piano nuovo.
+// dell'assistente esterno: allenamenti passo per passo, piano nuovo e
+// scheda di forza graduale.
 
 /// Anteprima degli allenamenti scritti dall'agente: giorno, durata, passi (in
 /// bici con il diagramma dei watt) e conferma.
@@ -25,8 +29,11 @@ class SchedaAllenamenti extends StatelessWidget {
   final String motivo;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaAllenamenti({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.allenamenti,
     required this.motivo,
@@ -92,7 +99,7 @@ class SchedaAllenamenti extends StatelessWidget {
               ),
             if (messaggio?.applicata ?? state.rispostaApplicata)
               Text(l10n.messoNelCalendario)
-            else
+            else if (conPulsante)
               FilledButton.icon(
                 onPressed: passati == allenamenti.length
                     ? null
@@ -130,8 +137,11 @@ class SchedaPiano extends StatelessWidget {
   final PianoAgente piano;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaPiano({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.piano,
     this.messaggio,
@@ -217,7 +227,7 @@ class SchedaPiano extends StatelessWidget {
                     icon: const Icon(Icons.copy_rounded),
                     label: Text(l10n.copiaProblemi(app)),
                   ),
-              ] else
+              ] else if (conPulsante)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: FilledButton.icon(
@@ -256,8 +266,11 @@ class SchedaArrampicata extends StatelessWidget {
   final List<PropostaArrampicata> proposte;
   final MessaggioChat?
   messaggio; // dalla chat del coach; null: assistente esterno
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaArrampicata({
     super.key,
+    this.conPulsante = true,
     required this.state,
     required this.proposte,
     this.messaggio,
@@ -318,7 +331,7 @@ class SchedaArrampicata extends StatelessWidget {
             if (passate > 0) Text(l10n.datePassateNonVanno, style: t.bodySmall),
             if (messaggio?.applicata ?? state.rispostaApplicata)
               Text(l10n.salvato)
-            else
+            else if (conPulsante)
               FilledButton.icon(
                 onPressed: () async {
                   final messenger = ScaffoldMessenger.of(context);
@@ -346,6 +359,171 @@ class SchedaArrampicata extends StatelessWidget {
                 label: Text(
                   conData > passate ? l10n.salvaMettiNelCalendario : l10n.salva,
                 ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Una risposta che cambia più cose (per esempio togliere una seduta e
+/// mettere un allenamento preciso): un pulsante solo le applica tutte, così
+/// non si rischia di applicarne metà.
+class SchedaApplicaTutto extends StatelessWidget {
+  final AppState state;
+  final RispostaAgente risposta;
+  final MessaggioChat?
+  messaggio; // dalla chat del coach; null: assistente esterno
+  const SchedaApplicaTutto({
+    super.key,
+    required this.state,
+    required this.risposta,
+    this.messaggio,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final applicata = messaggio?.applicata ?? state.rispostaApplicata;
+    final pianoKo =
+        risposta.piano != null &&
+        !state.valutaPianoDa(risposta.piano!).applicabile;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Text(l10n.piuCambiInsieme, style: t.titleSmall),
+            Text(l10n.piuCambiSpiegazione, style: t.bodySmall),
+            if (applicata)
+              Text(l10n.tuttoApplicato)
+            else if (pianoKo)
+              Text(l10n.pianoDaCorreggerePrima, style: t.bodySmall)
+            else
+              FilledButton.icon(
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final fatto = await state.applicaTutto(
+                    risposta,
+                    da: messaggio,
+                  );
+                  messenger.showSnackBar(
+                    avviso(
+                      content: Text(
+                        fatto.isEmpty
+                            ? l10n.nienteApplicarePianoCambiato
+                            : l10n.fattoRiassunto(fatto),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.done_all_rounded),
+                label: Text(l10n.applicaTutto),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Anteprima della scheda di forza graduale dell'assistente: fasi con le
+/// date, giorni ed esercizi, cosa prende il posto di cosa e conferma.
+class SchedaForza extends StatelessWidget {
+  final AppState state;
+  final PropostaForza proposta;
+  final MessaggioChat?
+  messaggio; // dalla chat del coach; null: assistente esterno
+  const SchedaForza({
+    super.key,
+    required this.state,
+    required this.proposta,
+    this.messaggio,
+    this.conPulsante = true,
+  });
+
+  /// Falso quando la scheda fa parte di una risposta con più cambi: si
+  /// applica con il pulsante "Applica tutto".
+  final bool conPulsante;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final cambi = conPropostaForza(state.schede, proposta);
+    final mancanti = giorniSenzaForza(state.settimana, proposta);
+    String giorni(Iterable<int> g) => (g.toList()..sort())
+        .map((d) => giorniSettimana[d - 1].substring(0, 3))
+        .join(', ');
+    final perId = {for (final e in state.esercizi) e.id: e};
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
+          children: [
+            Row(
+              children: [
+                Icon(iconaSport('Forza'), color: coloreSport('Forza')),
+                const SizedBox(width: 8),
+                Expanded(child: Text(proposta.nome, style: t.titleSmall)),
+              ],
+            ),
+            Text(
+              l10n.forzaDalAl(
+                dataLunga(proposta.inizio),
+                dataLunga(proposta.fine),
+              ),
+              style: t.bodySmall,
+            ),
+            if (proposta.motivo.isNotEmpty)
+              Text(proposta.motivo, style: t.bodySmall),
+            for (final f in proposta.fasi) ...[
+              Text(f.nome, style: t.titleSmall),
+              Text(
+                l10n.forzaDalAl(dataLunga(f.inizio), dataLunga(f.fine!)),
+                style: t.bodySmall,
+              ),
+              for (final g in f.giorni) ...[
+                Text('${g.nome} · ${giorni(g.giorni)}', style: t.labelLarge),
+                for (final e in g.esercizi)
+                  Text(
+                    '• ${perId[e.esercizio]?.nome ?? mostra(e.nome)}: '
+                    '${e.riassunto}',
+                    style: t.bodySmall,
+                  ),
+              ],
+            ],
+            if (cambi.accorciate.isNotEmpty)
+              Text(
+                l10n.forzaAccorciate(cambi.accorciate.join(', ')),
+                style: t.bodySmall,
+              ),
+            if (cambi.tolte.isNotEmpty)
+              Text(l10n.forzaTolte(cambi.tolte.join(', ')), style: t.bodySmall),
+            if (mancanti.isNotEmpty)
+              Text(
+                l10n.forzaAggiungeGiorni(giorni(mancanti)),
+                style: t.bodySmall,
+              ),
+            if (messaggio?.applicata ?? state.rispostaApplicata)
+              Text(l10n.salvato)
+            else if (conPulsante)
+              FilledButton.icon(
+                onPressed: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  await state.applicaPropostaForza(proposta, da: messaggio);
+                  messenger.showSnackBar(
+                    avviso(content: Text(l10n.forzaSchedaSalvata)),
+                  );
+                },
+                icon: const Icon(Icons.save_alt_rounded),
+                label: Text(l10n.salvaScheda),
               ),
           ],
         ),

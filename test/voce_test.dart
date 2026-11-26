@@ -148,6 +148,29 @@ void main() {
       );
       expect(fraseBlocco(rec), 'Recupero, 1 minuto e 30.');
     });
+
+    test('negli esercizi per lato dice quale lato', () {
+      const destro = Blocco(
+        tipo: TipoBlocco.lavoro,
+        titolo: 'Plank laterale',
+        dettaglio: 'Serie 1 di 3 · Lato destro · 30 s',
+        secondi: 30,
+        passo: 1,
+        lato: latoDestro,
+      );
+      expect(
+        fraseBlocco(destro),
+        'Ora: Plank laterale. Serie 1 di 3, Lato destro, 30 secondi.',
+      );
+      const cambio = Blocco(
+        tipo: TipoBlocco.recupero,
+        titolo: 'Cambia lato',
+        secondi: pausaCambioLato,
+        passo: 1,
+        lato: latoSinistro,
+      );
+      expect(fraseBlocco(cambio), 'Cambia lato.');
+    });
   });
 
   group('obiettivi', () {

@@ -1,0 +1,130 @@
+{
+  "info": "Approved requests for the exercise animations: view, starting position and movement, in English. agents/animazione.mjs reads them from here, so every animation of an exercise is made the same way, whoever makes it. Only the project changes this file: to add an exercise, propose it in an 'Exercise animation' issue and wait for the ok. Fields: vista = tre_quarti | lato | fronte; partenza = avatar (starts standing, the avatar itself is the first frame) | genera (Nano Banana draws the starting position from 'posa'); movimento = one slow repetition, ending in the starting position; approvata = date of the ok. / Richieste approvate per le animazioni: le legge agents/animazione.mjs, le cambia solo il progetto.",
+  "esercizi": {
+    "Bodyweight_Squat": {
+      "vista": "tre_quarti",
+      "partenza": "avatar",
+      "movimento": "he bends knees and hips, sitting back with the hips, arms raised straight forward for balance, chest up, back straight, heels on the floor, down until the thighs are parallel to the floor, then he stands back up and lowers the arms to his sides.",
+      "approvata": "2026-11-22"
+    },
+    "Leg_Extensions": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He sits upright on the padded seat of a leg extension machine with his back against the backrest, hands holding the side handles next to the seat, knees bent at 90 degrees at the edge of the seat, the shin pad resting on the front of his lower legs just above the ankles, feet pointing forward. The machine has a small weight stack at the back.",
+      "movimento": "sitting still with his back against the backrest and his hands on the side handles, he straightens both knees and lifts the shin pad until his legs are almost straight, holds for a moment, then slowly lowers the pad back until the knees are bent at 90 degrees. Only the lower legs and the pad arm of the machine move; the upper body, the seat and the rest of the machine stay still.",
+      "approvata": "2026-11-22"
+    },
+    "Kneeling_Hip_Flexor": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He kneels on a thin matte dark grey exercise mat: the RIGHT knee is down on the mat (the right leg is the back leg, with the right shin and the top of the right foot resting on the mat behind him), the LEFT foot is forward and flat on the mat with the left knee bent at 90 degrees right above the ankle. Torso upright, hands resting on the left knee, looking forward. This is the starting position of a kneeling hip flexor stretch for the right hip.",
+      "movimento": "keeping the torso upright, the right knee on the mat and the left foot flat, he slowly shifts his hips forward and slightly down until the front of the right hip stretches, holds the stretch for a moment, then slowly shifts the hips back to the starting position.",
+      "approvata": "2026-11-24"
+    },
+    "Seated_Floor_Hamstring_Stretch": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He sits upright on a thin matte dark grey exercise mat: the RIGHT leg is straight in front of him with the toes pointing up, the LEFT knee is bent and the sole of the left foot rests against the inside of the right thigh. Hands resting on the right thigh, back straight. This is the starting position of a seated hamstring stretch for the right leg.",
+      "movimento": "keeping the back straight, he slowly hinges forward from the hips, sliding his hands along the right leg towards the right ankle until the back of the right thigh stretches, holds for a moment, then slowly sits back up.",
+      "approvata": "2026-11-23"
+    },
+    "Calf_Stretch_Hands_Against_Wall": {
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He stands facing a plain wall of the same light grey as the background, with both hands flat on the wall at shoulder height: the LEFT foot is forward with the knee slightly bent, the RIGHT foot is back with the right leg straight and the right heel flat on the floor. This is the starting position of a calf stretch for the right leg.",
+      "movimento": "keeping the right leg straight and the right heel on the floor, he slowly bends the left knee and pushes his hips towards the wall until the right calf stretches, holds for a moment, then slowly comes back.",
+      "approvata": "2026-11-23"
+    },
+    "Standing_Soleus_And_Achilles_Stretch": {
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He stands upright with the LEFT foot forward and the RIGHT foot back, feet about one step apart, both heels flat on the floor, hands on the hips. This is the starting position of a soleus and Achilles stretch for the right leg.",
+      "movimento": "keeping both heels on the floor, he slowly bends both knees, shifting his weight onto the right back leg until the lower part of the right calf stretches, holds for a moment, then slowly straightens up.",
+      "approvata": "2026-11-23"
+    },
+    "On_Your_Side_Quad_Stretch": {
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He lies on his LEFT side on a thin matte dark grey exercise mat, head resting on the bent left arm, the LEFT leg bent in front of him for balance, the RIGHT leg straight on top. This is the starting position of a side-lying quad stretch for the right leg.",
+      "movimento": "he bends the right knee, grabs the right foot with the right hand and brings the heel towards the glute, pushes the right hip slightly forward until the front of the right thigh stretches, holds for a moment, then releases the foot and straightens the right leg back.",
+      "approvata": "2026-11-23"
+    },
+    "Runners_Stretch": {
+      "tipo": "posizione",
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He is in a low lunge: the RIGHT foot is forward and flat on the floor with the right knee bent, the LEFT leg is stretched back with the knee off the floor, both hands on the floor on either side of the right foot. This is the starting position of a runner's stretch for the right leg.",
+      "movimento": "keeping the hands on the floor and the right heel down, he slowly lifts his hips and straightens the right leg until the back of the right thigh stretches, holds for a moment, then slowly bends the right knee back into the low lunge.",
+      "approvata": "2026-11-23"
+    },
+    "Hip_Circles_prone": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He is on all fours on a thin matte dark grey exercise mat: hands under the shoulders, knees under the hips, back flat, looking at the floor. This is the starting position of hip circles for the right hip.",
+      "movimento": "keeping the back flat, the arms straight and still and the right knee bent at 90 degrees the whole time, he draws slow, continuous, complete circles with the right knee, one after the other, each in about two seconds, always in the same direction: the knee moves backwards and up behind the hip, opens out to the side to the farthest point of the circle, with the thigh raised sideways at hip height and the lower leg horizontal with the foot pointing backwards, then comes forward close to the right elbow and goes down next to the left knee, and straight on into the next circle. The thigh and the lower leg move together as one piece.",
+      "approvata": "2026-11-24",
+      "ultimo_fotogramma": false
+    },
+    "Shoulder_Stretch": {
+      "vista": "fronte",
+      "partenza": "avatar",
+      "movimento": "he brings the straight right arm across his chest towards the left shoulder, holds it close to the chest with the left hand on the right upper arm for a moment, then releases and lowers both arms back to his sides.",
+      "approvata": "2026-11-23"
+    },
+    "Triceps_Stretch": {
+      "vista": "tre_quarti",
+      "partenza": "avatar",
+      "movimento": "he raises the right arm and bends it so the right hand rests behind his head, the left hand gently pulls the right elbow towards the left for a moment, then he releases and lowers both arms back to his sides.",
+      "approvata": "2026-11-23"
+    },
+    "Ankle_Circles": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He stands upright on the LEFT leg, hands on the hips, the RIGHT foot lifted slightly off the floor in front of him, right knee slightly bent. This is the starting position of ankle circles for the right ankle.",
+      "movimento": "keeping the leg still, he slowly rotates the right ankle, drawing one wide circle with the toes, then holds the foot still in the starting position.",
+      "approvata": "2026-11-23"
+    },
+    "Iliotibial_Tract-SMR": {
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He lies on his RIGHT side with a foam roller under the outside of the right thigh, close to the hip, propped up on the right forearm; the left leg crosses over in front with the left foot flat on the floor, the left hand on the floor in front of the chest. This is the starting position of a foam roller iliotibial band release for the right leg.",
+      "movimento": "pushing gently with the right forearm and the left foot, he rolls slowly along the outside of the right thigh from the hip down to just above the knee, then rolls slowly back up to the hip.",
+      "approvata": "2026-11-23"
+    },
+    "Piriformis-SMR": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He sits on a foam roller placed under the glutes, hands on the floor behind him, the LEFT foot flat on the floor with the knee bent, the RIGHT ankle crossed over the left knee. This is the starting position of a foam roller piriformis release for the right glute.",
+      "movimento": "he leans slightly towards the right side and rolls slowly back and forth over the right glute, a short distance, then comes back to the starting position.",
+      "approvata": "2026-11-23"
+    },
+    "Childs_Pose": {
+      "tipo": "posizione",
+      "vista": "lato",
+      "partenza": "genera",
+      "posa": "He is in the held child's pose on a thin matte dark grey exercise mat: kneeling with the knees slightly apart, sitting back with the glutes resting on his heels, the torso folded forward over the thighs, both arms stretched fully forward along the mat in front of his head with the elbows straight and the palms flat on the mat, forehead resting on the mat, relaxed.",
+      "approvata": "2026-11-24"
+    },
+    "Bodyweight_Walking_Lunge": {
+      "vista": "tre_quarti",
+      "partenza": "avatar",
+      "movimento": "he takes a long step forward with the right foot, lowers his body until the left knee almost touches the floor, with the torso upright and the right knee above the right ankle, then pushes off the right foot and steps back to the starting position with the feet together.",
+      "approvata": "2026-11-24"
+    },
+    "Arm_Circles": {
+      "vista": "fronte",
+      "partenza": "genera",
+      "posa": "He stands upright facing the viewer, feet hip-width apart, both arms held straight out to the sides at shoulder height, palms facing down, elbows straight: a T shape.",
+      "movimento": "keeping both arms completely straight out to the sides at shoulder height, elbows locked, shoulders level and the body still, he rotates the arms from the shoulders so that each hand draws small, quick, continuous circles in the air, about 25 cm across, about one circle per second: up, backwards, down and forwards, always the same size and in the same direction, one circle after the other without stopping.",
+      "approvata": "2026-11-24",
+      "ultimo_fotogramma": false
+    },
+    "Worlds_Greatest_Stretch": {
+      "vista": "tre_quarti",
+      "partenza": "genera",
+      "posa": "He is in a deep lunge on a thin matte dark grey exercise mat: the RIGHT foot is forward and flat with the right knee bent right above the ankle, the LEFT leg is stretched back with the left knee just above the mat, both hands on the mat on the inside of the right foot. This is the starting position of the world's greatest stretch for the right side.",
+      "movimento": "keeping the left hand on the mat and the hips low, he rotates the torso towards the right leg and lifts the straight right arm up towards the ceiling, following the hand with his eyes, holds for a moment and brings the right hand back to the mat; then he moves the hips back and straightens the right leg, toes up, and bends it again returning to the deep lunge.",
+      "approvata": "2026-11-24"
+    }
+  }
+}

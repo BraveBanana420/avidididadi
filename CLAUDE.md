@@ -21,9 +21,10 @@ Le funzioni sono elencate in `README.md`.
 
 - `lib/screens/`: una schermata o un foglio per file (`*_screen.dart`, `*_sheet.dart`).
 - Avvisi in basso: usare `avviso(...)` (`lib/avviso.dart`), non `SnackBar`.
-- **Testi**: italiano e inglese in `lib/l10n/app_it.arb` (modello) e `app_en.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. La voce dell'allenamento ha una lingua sua (Durante l'allenamento → Lingua della voce, in `avvisi.txt`): le frasi dette usano `l10nVoce`, non `l10n`; il greco (`app_el.arb`) ha solo le frasi della voce. Configurazione in `lib/config.dart` (URL delle donazioni).
+- **Testi**: italiano, inglese e greco in `lib/l10n/app_it.arb` (modello), `app_en.arb` e `app_el.arb`; si usano con `l10n.chiave` (`lib/l10n/lingua.dart`). Lingua scelta al primo avvio e dal Profilo, salvata in `lingua.txt`. La voce dell'allenamento ha una lingua sua (Durante l'allenamento → Lingua della voce, in `avvisi.txt`): le frasi dette usano `l10nVoce`, non `l10n`. Configurazione in `lib/config.dart` (URL delle donazioni).
 - `NOTE.md`: appunti e lavori in sospeso (pubblico). `CHANGELOG.md`: novità di ogni versione distribuita, tradotte punto per punto in `CHANGELOG.en.md` e `CHANGELOG.el.md` (la release le pubblica tutte e tre e l'avviso di aggiornamento nell'app mostra quelle della lingua scelta; il controllo è in `test/changelog_test.dart`).
 - **Test delle soglie** in `lib/test_soglia.dart`: FTP della bici (rampa o 20 minuti), passo critico, stima dell'FTP dalle uscite (`potenze_migliori.csv`) e quando proporre un test.
+- **Esercizi per lato**: `"lati": true` in `assets/esercizi.json` (elenco `LATI` in `tool/genera_esercizi.py`) per quelli da fare prima su un lato e poi sull'altro; in allenamento "30 s per lato" diventa due blocchi, "Lato destro" e "Lato sinistro" (`Blocco.lato`), con in mezzo 5 s di pausa "Cambia lato" (`Blocco.cambioLato`). Le animazioni mostrano il lato destro. Lavori in sospeso in `docs/animazioni/LATI.md`.
 - **Dati dell'app**: CSV nella cartella privata. I nuovi file devono rispettare `^[a-z0-9_]+\.csv$`, altrimenti non entrano nel backup. Le colonne nuove si aggiungono **in fondo**, e le righe vecchie devono restare leggibili.
 
 ## 4. Comandi
@@ -74,7 +75,7 @@ adb -s <seriale> install -r build/app/outputs/flutter-apk/app-arm64-v8a-release.
 - **Modelli** immutabili con `toRow()` e `static X? da(Tabella, riga)` per i CSV, più `copyWith` se serve.
 - **Native**: un solo `MethodChannel('avidididadi/avvio')`; le liste numeriche arrivano "piatte" (`DoubleArray`).
 - **Test**: per ogni logica nuova un test in `test/<area>_test.dart`, con dati realistici (anche casi reali dell'utente).
-- **Testi visibili**: mai stringhe fisse. Ogni testo nuovo va in **tutti e due** gli ARB (`app_it.arb` e `app_en.arb`), con gli stessi segnaposto `{p0}`… di tipo `Object`; poi `flutter gen-l10n` e commit anche dei file generati. Il controllo è in `test/lingua_test.dart`.
+- **Testi visibili**: mai stringhe fisse. Ogni testo nuovo va in **tutti e tre** gli ARB (`app_it.arb`, `app_en.arb` e `app_el.arb`), con gli stessi segnaposto `{p0}`… di tipo `Object`; poi `flutter gen-l10n` e commit anche dei file generati. Il controllo è in `test/lingua_test.dart`.
 - **Dati in italiano**: i valori salvati nei CSV (sport `Corsa`, fasce `Mattina`, tipi `Lento`, intensità `zona 2`, `passo 5:00/km`) restano in italiano in ogni lingua, perché il codice li confronta e li rilegge. A schermo si traducono con `mostra()` / `mostraTesto()` (`lib/l10n/vocabolario.dart`); un nome nuovo salvato nei dati va aggiunto lì.
 - **Prima di consegnare**: `dart format`, `flutter analyze` senza problemi, `flutter test` tutto verde.
 

@@ -181,8 +181,8 @@ int versoCadenza(int rpm, (int, int) r) => rpm <= 0
     : 0;
 
 String fraseCadenza(int rpm, (int, int) r, int verso) => verso > 0
-    ? l10nVoce.cadenzaScendiSotto(rpm, r.$2)
-    : l10nVoce.cadenzaSaliSopra(rpm, r.$1);
+    ? l10nVoce.cadenzaScendiA(rpm, r.$2)
+    : l10nVoce.cadenzaSaliA(rpm, r.$1);
 
 /// La cadenza per intervals.icu e Garmin: "85-90rpm". Vuoto se non c'è.
 String obiettivo2Icu(String obiettivo2) {
@@ -344,18 +344,19 @@ int versoRange(int watt, (int, int) r, ZonePotenza p) {
   return 0;
 }
 
-/// La frase a voce per un range: "260 watt, scendi sotto 230."
+/// La frase a voce per un range: "260 watt, scendi a 230." Si dice il
+/// bordo più vicino della fascia: andare "sotto" o "sopra" la farebbe scavalcare.
 String fraseRange(int watt, (int, int) r, int verso) => verso > 0
-    ? l10nVoce.wattScendiSotto(watt, r.$2)
-    : l10nVoce.wattSaliSopra(watt, r.$1);
+    ? l10nVoce.wattScendiA(watt, r.$2)
+    : l10nVoce.wattSaliA(watt, r.$1);
 
-/// La frase a voce: "260 watt, scendi sotto 230." Sopra si dice il tetto,
+/// La frase a voce: "260 watt, scendi a 230." Sopra si dice il tetto,
 /// sotto il minimo della zona.
 String frasePotenza(int watt, int obiettivo, int verso, ZonePotenza p) {
   final (da, a) = p.zona(obiettivo);
   return verso > 0
-      ? l10nVoce.wattScendiSotto(watt, a ?? da)
-      : l10nVoce.wattSaliSopra(watt, da);
+      ? l10nVoce.wattScendiA(watt, a ?? da)
+      : l10nVoce.wattSaliA(watt, da);
 }
 
 /// Media degli ultimi [secondi] campioni, come il "3 s" dei ciclocomputer:

@@ -1167,6 +1167,7 @@ class _DaFare extends StatelessWidget {
       sottotitolo: [
         if (r.durataMin > 0) l10n.quantiMinuti(r.durataMin),
         mostra(r.fascia).toLowerCase(),
+        if (r.importata) l10n.personalizzato.toLowerCase(),
         if (passato) l10n.nonFatto,
       ].join(' · '),
       linea: false,
@@ -1407,6 +1408,10 @@ class _GiornoSheetState extends State<GiornoSheet> {
     distanzaKm: prima != null && prima.sport == s.sport ? prima.distanzaKm : '',
     intensita: prima != null && prima.sport == s.sport ? prima.intensita : '',
     note: s.note,
+    // I passi importati restano solo se sport e tipo non cambiano.
+    origine: prima != null && prima.sport == s.sport && prima.tipo == s.tipo
+        ? prima.origine
+        : '',
   );
 
   Future<void> _modifica(int i) async {

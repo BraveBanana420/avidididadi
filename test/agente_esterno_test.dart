@@ -54,6 +54,76 @@ void main() {
     expect(r.piano, isNull);
   });
 
+  test('il formato chiede un blocco solo e spiega "scambia"', () {
+    final m = istruzioniAgente(codice);
+    expect(m, contains('UN SOLO blocco'));
+    expect(m, contains('"scambia"'));
+  });
+
+  test('due blocchi con il codice giusto: si applica tutto, non solo l\'ultimo', () {
+    // Caso reale: l'agente toglie la bici di martedì in un blocco e manda le
+    // ripetute di giovedì in un altro.
+    final r = leggiRispostaAgente(
+      '${blocco({
+        'modifiche': [
+          {'azione': 'rimuovi', 'data': '2026-10-27', 'sport': 'Bici'},
+          {'azione': 'cambia', 'data': '2026-10-31', 'sport': 'Corsa', 'durata_min': 100},
+        ],
+      })}\n\nE poi:\n${blocco({
+        'allenamenti': [
+          {
+            'data': '2026-10-29',
+            'sport': 'Bici',
+            'tipo': 'Intervalli',
+            'nome': 'Soglia 3x10',
+            'passi': [
+              {'fase': 'riscaldamento', 'minuti': 15, 'intensita': '55-65%'},
+              {'fase': 'principale', 'ripeti': 3, 'minuti': 10, 'intensita': '91-95%', 'recupero_s': 300},
+              {'fase': 'defaticamento', 'minuti': 10, 'intensita': 'zona 1'},
+            ],
+          },
+        ],
+      })}',
+      codice,
+    );
+    expect(r.parti, 2);
+    expect(r.modifiche!.length, 2);
+    expect(r.allenamenti!.single.nome, 'Soglia 3x10');
+  });
+
+  test('un blocco solo con modifiche e allenamenti insieme', () {
+    final r = leggiRispostaAgente(
+      blocco({
+        'modifiche': [
+          {'azione': 'rimuovi', 'data': '2026-10-27', 'sport': 'Bici'},
+        ],
+        'allenamenti': [
+          {
+            'data': '2026-10-29',
+            'sport': 'Corsa',
+            'tipo': 'Ripetute',
+            'nome': '6x800',
+            'passi': [
+              {'fase': 'riscaldamento', 'minuti': 15, 'intensita': 'zona 2'},
+              {
+                'fase': 'principale',
+                'ripeti': 6,
+                'metri': 800,
+                'intensita': 'passo 4:10/km',
+                'recupero_s': 90,
+              },
+              {'fase': 'defaticamento', 'minuti': 10, 'intensita': 'zona 1'},
+            ],
+          },
+        ],
+      }),
+      codice,
+    );
+    expect(r.parti, 2);
+    expect(r.modifiche!.single.azione, Azione.rimuovi);
+    expect(r.allenamenti!.single.sport, 'Corsa');
+  });
+
   test('rifiuta risposte senza blocco, con un altro codice o rotte', () {
     expect(() => leggiRispostaAgente('ciao', codice), throwsFormatException);
     expect(

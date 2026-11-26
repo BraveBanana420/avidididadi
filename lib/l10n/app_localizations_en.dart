@@ -690,7 +690,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get cambiaLatoMeta => 'Switch sides halfway.';
+  String get latoDestro => 'Right side';
+
+  @override
+  String get latoSinistro => 'Left side';
+
+  @override
+  String get cambiaLato => 'Switch sides';
+
+  @override
+  String get cambiaLatoVoce => 'Switch sides.';
+
+  @override
+  String secondiPerLato(Object p0) {
+    return '$p0 s per side';
+  }
+
+  @override
+  String ripetizioniPerLato(Object p0) {
+    return '$p0 per side';
+  }
 
   @override
   String poiRipetizione(Object p0, Object p1) {
@@ -1835,13 +1854,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String cadenzaScendiSotto(Object p0, Object p1) {
-    return 'Cadence $p0, go below $p1.';
+  String cadenzaScendiA(Object p0, Object p1) {
+    return 'Cadence $p0, go down to $p1.';
   }
 
   @override
-  String cadenzaSaliSopra(Object p0, Object p1) {
-    return 'Cadence $p0, go above $p1.';
+  String cadenzaSaliA(Object p0, Object p1) {
+    return 'Cadence $p0, go up to $p1.';
   }
 
   @override
@@ -1855,13 +1874,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String wattScendiSotto(Object p0, Object p1) {
-    return '$p0 watts, go below $p1.';
+  String wattScendiA(Object p0, Object p1) {
+    return '$p0 watts, go down to $p1.';
   }
 
   @override
-  String wattSaliSopra(Object p0, Object p1) {
-    return '$p0 watts, go above $p1.';
+  String wattSaliA(Object p0, Object p1) {
+    return '$p0 watts, go up to $p1.';
   }
 
   @override
@@ -3469,6 +3488,26 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get animazioneFattaConIa =>
+      'Animation made with artificial intelligence for Avidididadi.';
+
+  @override
+  String get immagineFattaConIa =>
+      'Image made with artificial intelligence for Avidididadi.';
+
+  @override
+  String passiPersonalizzatiSostituiti(Object p0, Object p1) {
+    return '$p0 → $p1: the custom steps will be replaced by the ones prepared by the app.';
+  }
+
+  @override
+  String get personalizzato => 'Custom';
+
+  @override
+  String get passiPersonalizzatiSpiegazione =>
+      'Exact steps from the assistant: the app does not change them.';
+
+  @override
   String get tueSerie => 'Your sets';
 
   @override
@@ -5001,7 +5040,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soloSeAttiviTu =>
-      'Only if you turn it on, the assistant sends a summary of your workouts (sessions of the last 4 weeks, feedback, recovery, heart rate zones and bike FTP, plan for the next 14 days) to the service you choose: Anthropic, OpenAI, Google or Ollama on your PC. Name, photo and GPS routes are never sent; age, sex and weight only if you allow it. Before turning it on you can see exactly what is sent. The API key stays encrypted on the phone. For online services their privacy terms and any costs of your subscription apply.';
+      'Only if you turn it on, the assistant sends a summary of your workouts (sessions of the last 4 weeks, feedback, recovery, heart rate zones and bike FTP, plan for the next 14 days, strength sets of the last 6 weeks, equipment and strength plans) to the service you choose: Anthropic, OpenAI, Google or Ollama on your PC. Name, photo and GPS routes are never sent; age, sex and weight only if you allow it. Before turning it on you can see exactly what is sent. The API key stays encrypted on the phone. For online services their privacy terms and any costs of your subscription apply.';
 
   @override
   String get assistenteNellaTuaApp => 'Assistant in your app (optional)';
@@ -7436,4 +7475,148 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aggiornamentiPrivacy =>
       'Once a day, when it opens, the app asks GitHub (api.github.com) which version is the latest published one. If you tap Update, it downloads the APK from GitHub into its temporary storage, checks that it is identical to the published one, hands it to the Android installer and deletes it: no files are left on the phone. GitHub receives the phone\'s IP address and the version requested, nothing else. You can turn the check off in the Profile, under App updates.';
+
+  @override
+  String get piuCambiInsieme => 'Several changes at once';
+
+  @override
+  String get piuCambiSpiegazione =>
+      'This reply changes several things: you can see each one below. They are applied all together, in this order: new plan, changes, workouts, strength plan.';
+
+  @override
+  String get applicaTutto => 'Apply all';
+
+  @override
+  String get tuttoApplicato => 'All applied: you\'ll find it in the calendar.';
+
+  @override
+  String get pianoDaCorreggerePrima =>
+      'The new plan has some problems (see below): ask for a fix before applying everything.';
+
+  @override
+  String fattoRiassunto(Object p0) {
+    return 'Done: $p0.';
+  }
+
+  @override
+  String partePiano(Object p0) {
+    return 'new plan with $p0 sessions';
+  }
+
+  @override
+  String parteModifiche(Object p0) {
+    return '$p0 plan changes';
+  }
+
+  @override
+  String parteAllenamenti(Object p0) {
+    return '$p0 workouts in the calendar';
+  }
+
+  @override
+  String parteArrampicata(Object p0) {
+    return '$p0 climbing workouts';
+  }
+
+  @override
+  String forzaEsercizioSconosciuto(Object p0, Object p1) {
+    return '$p0: the exercise \"$p1\" isn\'t in the app. Use an id from the exercise list, or just \"nome\" for a hand-written exercise.';
+  }
+
+  @override
+  String forzaEsercizioSenzaNome(Object p0) {
+    return '$p0: an exercise has neither an id nor a name.';
+  }
+
+  @override
+  String forzaSerieNonValide(Object p0) {
+    return '$p0: sets must be from 1 to 10 and rest from 0 to 600 seconds.';
+  }
+
+  @override
+  String forzaGiornoN(Object p0) {
+    return 'Day $p0';
+  }
+
+  @override
+  String forzaGiornoNonValido(Object p0) {
+    return '$p0: weekdays (1 = Monday) and 1 to 20 exercises are needed.';
+  }
+
+  @override
+  String get schedaForzaGraduale => 'Progressive strength plan';
+
+  @override
+  String forzaServonoFasi(Object p0) {
+    return 'The strength plan needs 1 to $p0 phases, each with weeks, days and exercises.';
+  }
+
+  @override
+  String forzaFaseN(Object p0) {
+    return 'Phase $p0';
+  }
+
+  @override
+  String forzaInizioNonValido(Object p0) {
+    return '$p0: the start date isn\'t valid (use YYYY-MM-DD).';
+  }
+
+  @override
+  String forzaIniziaPrimaDiOggi(Object p0) {
+    return '$p0: it starts before today.';
+  }
+
+  @override
+  String forzaFasiSovrapposte(Object p0) {
+    return '$p0: it starts before the previous phase ends.';
+  }
+
+  @override
+  String forzaSettimaneNonValide(Object p0, Object p1) {
+    return '$p0: weeks must be from 1 to $p1.';
+  }
+
+  @override
+  String forzaGiorniNonValidi(Object p0) {
+    return '$p0: 1 to 7 training days are needed.';
+  }
+
+  @override
+  String forzaGiornoDoppio(Object p0, Object p1) {
+    return '$p0: $p1 is in two days of the plan.';
+  }
+
+  @override
+  String forzaTroppoLunga(Object p0) {
+    return 'The plan lasts more than $p0 weeks.';
+  }
+
+  @override
+  String forzaDalAl(Object p0, Object p1) {
+    return 'from $p0 to $p1';
+  }
+
+  @override
+  String forzaAccorciate(Object p0) {
+    return 'Current strength plans end the day before: $p0.';
+  }
+
+  @override
+  String forzaTolte(Object p0) {
+    return 'It replaces: $p0.';
+  }
+
+  @override
+  String forzaAggiungeGiorni(Object p0) {
+    return 'Your typical week has no strength on $p0: it will be added next to what\'s already there.';
+  }
+
+  @override
+  String get forzaSchedaSalvata =>
+      'Plan saved: strength sessions now follow its exercises.';
+
+  @override
+  String parteForza(Object p0) {
+    return 'the strength plan \"$p0\"';
+  }
 }

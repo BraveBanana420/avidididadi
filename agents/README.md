@@ -24,6 +24,7 @@ Chiedi per esempio `/orchestra fai le animazioni di affondi e curl con manubri`.
 - Serve una **seconda chiave** solo per questi modelli, `OPENROUTER_VIDEO_KEY`, con un **tetto di spesa** (per esempio 3 $): il piano mostra la spesa prevista e l'aiutante si ferma se il credito non basta. `node agents/animazione.mjs credito` dice quanto resta.
 - Serve **ffmpeg** (`winget install Gyan.FFmpeg`).
 - Le regole delle animazioni (avatar, vista da 3/4, fondo, peso, licenza) sono in `docs/animazioni/README.md`.
+- Vista, posa e movimento di ogni esercizio sono **fissi** in `docs/animazioni/richieste.json`: per un esercizio nuovo il piano propone la richiesta e tu la approvi insieme al piano. È la stessa ricetta che usano i volontari, così le animazioni escono tutte uguali.
 
 ## Seguire una corsa
 

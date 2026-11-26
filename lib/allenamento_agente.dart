@@ -167,6 +167,25 @@ AllenamentoAgente allenamentoDa(Map<String, dynamic> m) {
 
 /// Il piano con la seduta dell'allenamento: al posto di quella dello stesso
 /// sport in quel giorno (tenendo l'orario), oppure aggiunta.
+/// Migrazione: le sedute da [oggi] in poi che hanno già i passi importati
+/// (stesso giorno e sport) diventano "importato". Prima l'origine non si
+/// salvava: si riconoscono solo dall'id dei passi.
+List<PianoRiga> conOrigineImportata(
+  List<PianoRiga> piano,
+  List<WorkoutStep> importati,
+  DateTime oggi,
+) {
+  final ids = {for (final w in importati) w.id};
+  return [
+    for (final r in piano)
+      !r.importata &&
+              !r.data.isBefore(oggi) &&
+              ids.contains(idAllenamentoAgente(r.data, r.sport))
+          ? r.copia(origine: origineImportato)
+          : r,
+  ];
+}
+
 List<PianoRiga> pianoCon(List<PianoRiga> piano, AllenamentoAgente a) {
   final prima = piano
       .where((r) => r.data == a.data && stessoSport(r.sport, a.sport))
@@ -178,6 +197,7 @@ List<PianoRiga> pianoCon(List<PianoRiga> piano, AllenamentoAgente a) {
     tipo: a.tipo,
     durataMin: a.durataMin,
     note: prima?.note ?? '',
+    origine: origineImportato,
   );
   final out = <PianoRiga>[];
   var messa = false;

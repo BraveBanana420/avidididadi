@@ -282,6 +282,15 @@ class _Fumetto extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final m = messaggio;
+    // Tutto quello che propone, per la scheda "Applica tutto".
+    final tutta = RispostaAgente(
+      modifiche: m.proposta,
+      piano: m.piano,
+      allenamenti: m.allenamenti,
+      arrampicata: m.arrampicata,
+      forza: m.forza,
+      motivo: m.motivo,
+    );
     return Align(
       alignment: m.utente ? Alignment.centerRight : Alignment.centerLeft,
       child: ConstrainedBox(
@@ -310,7 +319,21 @@ class _Fumetto extends StatelessWidget {
                     )
                   : TestoFormattato(m.testo, colore: scheme.onSurface),
             ),
-            if (m.proposta != null) SchedaProposta(state: state, messaggio: m),
+            if (tutta.parti > 1)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaApplicaTutto(
+                  state: state,
+                  risposta: tutta,
+                  messaggio: m,
+                ),
+              ),
+            if (m.proposta != null)
+              SchedaProposta(
+                state: state,
+                messaggio: m,
+                conPulsante: tutta.parti < 2,
+              ),
             if (m.allenamenti case final a?)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
@@ -319,6 +342,7 @@ class _Fumetto extends StatelessWidget {
                   allenamenti: a,
                   motivo: m.motivo,
                   messaggio: m,
+                  conPulsante: tutta.parti < 2,
                 ),
               ),
             if (m.arrampicata case final a?)
@@ -328,12 +352,28 @@ class _Fumetto extends StatelessWidget {
                   state: state,
                   proposte: a,
                   messaggio: m,
+                  conPulsante: tutta.parti < 2,
+                ),
+              ),
+            if (m.forza case final f?)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SchedaForza(
+                  state: state,
+                  proposta: f,
+                  messaggio: m,
+                  conPulsante: tutta.parti < 2,
                 ),
               ),
             if (m.piano case final p?)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: SchedaPiano(state: state, piano: p, messaggio: m),
+                child: SchedaPiano(
+                  state: state,
+                  piano: p,
+                  messaggio: m,
+                  conPulsante: tutta.parti < 2,
+                ),
               ),
             if (m.errore case final e?)
               Padding(
@@ -356,10 +396,14 @@ class _Fumetto extends StatelessWidget {
 class SchedaProposta extends StatelessWidget {
   final AppState state;
   final MessaggioChat messaggio;
+
+  /// Falso quando la risposta cambia più cose: si applica tutto insieme.
+  final bool conPulsante;
   const SchedaProposta({
     super.key,
     required this.state,
     required this.messaggio,
+    this.conPulsante = true,
   });
 
   @override
@@ -391,6 +435,29 @@ class SchedaProposta extends StatelessWidget {
                     child: Text(m.motivo, style: t.bodySmall),
                   ),
               ],
+              // Un cambio di tipo che toglie i passi importati: lo si dice
+              // prima di applicare.
+              for (final (m, testo) in esito.avvisi)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        size: 18,
+                        color: scheme.error,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${descriviModifica(m, state.piano).split(':').first}: $testo',
+                          style: t.bodySmall?.copyWith(color: scheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               if (esito.scartate.isNotEmpty) ...[
                 const SizedBox(height: 6),
                 Text(
@@ -404,7 +471,7 @@ class SchedaProposta extends StatelessWidget {
                   ),
               ],
               const SizedBox(height: 8),
-              if (esito.accettate.isNotEmpty)
+              if (esito.accettate.isNotEmpty && conPulsante)
                 FilledButton.icon(
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);

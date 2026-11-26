@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'assistente.dart';
 import 'carico.dart';
+import 'esercizi.dart';
 import 'models.dart';
 import 'l10n/lingua.dart';
 
@@ -68,7 +68,11 @@ final _blocco = RegExp(
 
 /// Legge il blocco nella risposta incollata o condivisa. Lancia
 /// [FormatException] con un messaggio semplice se non va bene.
-RispostaAgente leggiRispostaAgente(String testo, String codice) {
+RispostaAgente leggiRispostaAgente(
+  String testo,
+  String codice, {
+  List<Esercizio> catalogo = const [],
+}) {
   final blocchi = _blocco.allMatches(testo).toList();
   if (blocchi.isEmpty) {
     throw FormatException(l10n.nellaRispostaNonC);
@@ -79,19 +83,20 @@ RispostaAgente leggiRispostaAgente(String testo, String codice) {
   if (codice.isEmpty || validi.isEmpty) {
     throw FormatException(l10n.codiceNellaRispostaNon);
   }
-  final interno = validi.last[2]!
-      .replaceAll(RegExp(r'```[a-zA-Z]*'), '')
-      .trim();
-  final Object? j;
-  try {
-    j = jsonDecode(interno);
-  } on FormatException {
-    throw FormatException(l10n.bloccoNonLeggibileChiedi);
+  // Tutti i blocchi con il codice giusto diventano una proposta sola: se
+  // l'agente ne scrive due (togliere una seduta e un allenamento preciso),
+  // basta incollare la risposta una volta.
+  final lette = <RispostaAgente>[];
+  for (final m in validi) {
+    final Map<dynamic, dynamic> j;
+    try {
+      j = jsonBlocco(m[2]!);
+    } on FormatException {
+      throw FormatException(l10n.bloccoNonLeggibileChiedi);
+    }
+    lette.add(rispostaDaJson(j, catalogo: catalogo));
   }
-  if (j is! Map) {
-    throw FormatException(l10n.bloccoNonLeggibileChiedi);
-  }
-  return rispostaDaJson(j);
+  return unisciRisposte(lette);
 }
 
 /// Esito dei controlli su un piano nuovo: se ci sono problemi non si applica.
