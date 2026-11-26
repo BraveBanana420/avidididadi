@@ -3528,6 +3528,18 @@ class AppLocalizationsEl extends AppLocalizations {
       'Εικόνα φτιαγμένη με τεχνητή νοημοσύνη για το Avidididadi.';
 
   @override
+  String passiPersonalizzatiSostituiti(Object p0, Object p1) {
+    return '$p0 → $p1: τα προσαρμοσμένα βήματα θα αντικατασταθούν από αυτά που ετοιμάζει η εφαρμογή.';
+  }
+
+  @override
+  String get personalizzato => 'Προσαρμοσμένο';
+
+  @override
+  String get passiPersonalizzatiSpiegazione =>
+      'Ακριβή βήματα από τον βοηθό: η εφαρμογή δεν τα αλλάζει.';
+
+  @override
   String get tueSerie => 'Τα σετ σου';
 
   @override

@@ -673,7 +673,16 @@ class EsitoProposta {
   final List<Modifica> accettate;
   final List<(Modifica, String)> scartate;
   final List<PianoRiga> piano;
-  const EsitoProposta(this.accettate, this.scartate, this.piano);
+
+  /// Modifiche accettate che tolgono i passi importati di una seduta (un
+  /// "cambia" con un tipo diverso): la scheda lo dice prima di applicare.
+  final List<(Modifica, String)> avvisi;
+  const EsitoProposta(
+    this.accettate,
+    this.scartate,
+    this.piano, {
+    this.avvisi = const [],
+  });
 }
 
 PianoRiga _copia(
@@ -683,15 +692,14 @@ PianoRiga _copia(
   String? tipo,
   String? fascia,
   String? note,
-}) => PianoRiga(
-  data: data ?? r.data,
-  fascia: fascia ?? r.fascia,
-  sport: r.sport,
-  tipo: tipo ?? r.tipo,
-  durataMin: durata ?? r.durataMin,
-  distanzaKm: r.distanzaKm,
-  intensita: r.intensita,
-  note: note ?? r.note,
+  String? origine,
+}) => r.copia(
+  data: data,
+  durataMin: durata,
+  tipo: tipo,
+  fascia: fascia,
+  note: note,
+  origine: origine,
 );
 
 /// Le righe toccate dall'assistente lo dicono nelle note: così il generatore
@@ -728,12 +736,15 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
       );
     case Azione.cambia:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
+      // I passi importati restano, a meno che cambi il tipo: allora la
+      // seduta torna a quelli preparati dall'app.
       p[i] = _copia(
         p[i],
         durata: d,
         tipo: m.tipo.isEmpty ? null : m.tipo,
         fascia: fasce.contains(m.fascia) ? m.fascia : null,
         note: _nota(m),
+        origine: perdePassiImportati(p[i], m) ? '' : null,
       );
     case Azione.sposta:
       if (i < 0) return l10n.quelGiornoNonC(m.sport);
@@ -768,6 +779,67 @@ String? _applica(List<PianoRiga> p, Modifica m, DateTime oggi) {
   return null;
 }
 
+/// Un "cambia" con un tipo diverso su una seduta con i passi importati:
+/// quei passi non vanno più bene e la seduta torna a quelli dell'app.
+bool perdePassiImportati(PianoRiga r, Modifica m) =>
+    m.azione == Azione.cambia &&
+    r.importata &&
+    m.tipo.isNotEmpty &&
+    m.tipo.toLowerCase() != r.tipo.toLowerCase();
+
+/// I passi importati dopo le modifiche accettate: con "sposta" e "scambia"
+/// seguono la seduta al giorno nuovo (l'id contiene data e sport), con
+/// "rimuovi" e con un "cambia" che cambia tipo si tolgono. [prima] è il piano
+/// prima delle modifiche.
+List<WorkoutStep> passiDopoModifiche(
+  List<WorkoutStep> passi,
+  List<PianoRiga> prima,
+  List<Modifica> accettate,
+) {
+  var p = [...passi];
+  var piano = [...prima];
+  final oggi = DateTime(2000);
+  for (final m in accettate) {
+    final da = idAllenamentoAgente(m.data, m.sport);
+    final riga = piano
+        .where((r) => r.data == m.data && stessoSport(r.sport, m.sport))
+        .firstOrNull;
+    switch (m.azione) {
+      case Azione.sposta:
+        final a = idAllenamentoAgente(m.nuovaData!, m.sport);
+        p = [
+          for (final w in p.where((w) => w.id != a))
+            w.id == da ? w.conId(a) : w,
+        ];
+      case Azione.scambia:
+        final altro = m.conSport.isEmpty ? m.sport : m.conSport;
+        final b = idAllenamentoAgente(m.nuovaData!, altro);
+        final aNuovo = idAllenamentoAgente(m.nuovaData!, m.sport);
+        final bNuovo = idAllenamentoAgente(m.data, altro);
+        p = [
+          for (final w in p)
+            w.id == da
+                ? w.conId(aNuovo)
+                : w.id == b
+                ? w.conId(bNuovo)
+                : w,
+        ];
+      case Azione.rimuovi:
+        p = [...p.where((w) => w.id != da)];
+      case Azione.cambia:
+        if (riga != null && perdePassiImportati(riga, m)) {
+          p = [...p.where((w) => w.id != da)];
+        }
+      case Azione.aggiungi:
+        // Una seduta nuova parte con i passi dell'app, non con quelli
+        // importati rimasti da una seduta tolta prima.
+        p = [...p.where((w) => w.id != da)];
+    }
+    _applica(piano, m, oggi);
+  }
+  return p;
+}
+
 /// Settimane toccate da una modifica (lunedì).
 Set<DateTime> _settimane(Modifica m) => {
   lunediDi(m.data),
@@ -797,9 +869,13 @@ EsitoProposta valutaProposta(
   final o = soloData(oggi);
   final accettate = <Modifica>[];
   final scartate = <(Modifica, String)>[];
+  final avvisi = <(Modifica, String)>[];
   var p = [...piano];
   for (final m in modifiche) {
     final prova = [...p];
+    final prima = p
+        .where((r) => r.data == m.data && stessoSport(r.sport, m.sport))
+        .firstOrNull;
     final errore = _applica(prova, m, o);
     if (errore != null) {
       scartate.add((m, errore));
@@ -821,6 +897,9 @@ EsitoProposta valutaProposta(
     }
     p = prova;
     accettate.add(m);
+    if (prima != null && perdePassiImportati(prima, m)) {
+      avvisi.add((m, l10n.passiPersonalizzatiSostituiti(prima.tipo, m.tipo)));
+    }
   }
   p.sort((a, b) {
     final c = a.data.compareTo(b.data);
@@ -828,7 +907,7 @@ EsitoProposta valutaProposta(
         ? c
         : fasce.indexOf(a.fascia).compareTo(fasce.indexOf(b.fascia));
   });
-  return EsitoProposta(accettate, scartate, p);
+  return EsitoProposta(accettate, scartate, p, avvisi: avvisi);
 }
 
 String _giorno(DateTime d) =>

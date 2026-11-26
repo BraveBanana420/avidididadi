@@ -21,10 +21,7 @@ const animazioniEsercizi = <String, String>{
 /// Esercizi della mappa che hanno un'immagine ferma invece di un video: gli
 /// allungamenti in cui si resta fermi ("tipo": "posizione" in richieste.json).
 /// Anche questo elenco lo aggiorna "integra".
-const posizioniFerme = <String>{
-  'Runners_Stretch',
-  'Childs_Pose',
-};
+const posizioniFerme = <String>{'Runners_Stretch', 'Childs_Pose'};
 
 /// Cartella delle animazioni negli asset dell'app.
 const cartellaAnimazioni = 'assets/exercises/animated/';

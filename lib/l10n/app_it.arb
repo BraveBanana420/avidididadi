@@ -5129,6 +5129,26 @@
   "@immagineFattaConIa": {
     "description": "screens/catalogo_screen.dart"
   },
+  "passiPersonalizzatiSostituiti": "{p0} → {p1}: i passi personalizzati verranno sostituiti da quelli preparati dall'app.",
+  "@passiPersonalizzatiSostituiti": {
+    "description": "assistente.dart",
+    "placeholders": {
+      "p0": {
+        "type": "Object"
+      },
+      "p1": {
+        "type": "Object"
+      }
+    }
+  },
+  "personalizzato": "Personalizzato",
+  "@personalizzato": {
+    "description": "screens/workout_screen.dart"
+  },
+  "passiPersonalizzatiSpiegazione": "Passi precisi arrivati dall'assistente: l'app non li cambia.",
+  "@passiPersonalizzatiSpiegazione": {
+    "description": "screens/workout_screen.dart"
+  },
   "tueSerie": "Le tue serie",
   "@tueSerie": {
     "description": "screens/catalogo_screen.dart"

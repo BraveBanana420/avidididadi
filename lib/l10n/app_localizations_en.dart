@@ -3496,6 +3496,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Image made with artificial intelligence for Avidididadi.';
 
   @override
+  String passiPersonalizzatiSostituiti(Object p0, Object p1) {
+    return '$p0 → $p1: the custom steps will be replaced by the ones prepared by the app.';
+  }
+
+  @override
+  String get personalizzato => 'Custom';
+
+  @override
+  String get passiPersonalizzatiSpiegazione =>
+      'Exact steps from the assistant: the app does not change them.';
+
+  @override
   String get tueSerie => 'Your sets';
 
   @override
