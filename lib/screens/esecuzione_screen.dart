@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../generatore_endurance.dart';
 import '../app_state.dart';
 import '../arrampicata.dart';
 import '../attivita_libera.dart';
@@ -1938,7 +1939,7 @@ class _EsecuzioneScreenState extends State<EsecuzioneScreen> {
               ),
               const SizedBox(height: 4),
               TestoUnaRiga(
-                widget.libera
+                widget.libera || !contaEsercizi(widget.sport)
                     ? mostra(widget.nome)
                     : l10n.esercizi2(mostra(widget.nome), nPassi),
                 style: t.bodySmall,

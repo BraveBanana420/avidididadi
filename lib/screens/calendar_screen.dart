@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../generatore_endurance.dart';
 import '../avviso.dart';
 import '../app_state.dart';
 import '../attivita.dart';
@@ -997,7 +998,8 @@ class _HeroSeduta extends StatelessWidget {
                     [
                       if (r.tipo.isNotEmpty) mostra(r.sport),
                       if (r.durataMin > 0) l10n.quantiMinuti(r.durataMin),
-                      if (esercizi > 1) l10n.quantiEsercizi(esercizi),
+                      if (esercizi > 1 && contaEsercizi(r.sport))
+                        l10n.quantiEsercizi(esercizi),
                     ].join(' · '),
                     style: TextStyle(
                       color: ink,

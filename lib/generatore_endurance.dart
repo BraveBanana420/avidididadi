@@ -14,6 +14,13 @@ import 'test_soglia.dart';
 
 const sportEndurance = ['Corsa', 'Nuoto', 'Bici'];
 
+/// Se ha senso contare gli "esercizi" di una seduta: sì per forza e
+/// mobilità, no per corsa, nuoto, bici e camminata, dove i blocchi sono
+/// riscaldamento, parte centrale e defaticamento, non esercizi.
+bool contaEsercizi(String sport) =>
+    !sportEndurance.contains(normSport(sport)) &&
+    !stessoSport(sport, 'Camminata');
+
 /// Prefisso degli id dei workout generati per uno sport (es. "corsa_2026-10-23").
 String prefissoEndurance(String sport) => '${sport.toLowerCase()}_';
 

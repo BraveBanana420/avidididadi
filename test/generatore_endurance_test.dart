@@ -4,6 +4,14 @@ import 'package:allenamenti_app/obiettivo.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('gli esercizi si contano solo dove sono esercizi veri', () {
+    expect(contaEsercizi('Forza'), isTrue);
+    expect(contaEsercizi('Mobilità'), isTrue);
+    for (final s in ['Corsa', 'Nuoto', 'Bici', 'Camminata', 'corsa']) {
+      expect(contaEsercizi(s), isFalse, reason: s);
+    }
+  });
+
   final lunedi = DateTime(2026, 10, 26);
 
   /// Otto settimane: nuoto e bici il martedì, corsa giovedì e sabato.
