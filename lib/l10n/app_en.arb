@@ -2086,5 +2086,11 @@
   "forzaTolte": "It replaces: {p0}.",
   "forzaAggiungeGiorni": "Your typical week has no strength on {p0}: it will be added next to what's already there.",
   "forzaSchedaSalvata": "Plan saved: strength sessions now follow its exercises.",
-  "parteForza": "the strength plan \"{p0}\""
+  "parteForza": "the strength plan \"{p0}\"",
+  "graficiScelta": "Charts",
+  "massimoBreve": "Max",
+  "scorriCambiareGrafico": "Swipe the preview with your finger to change chart.",
+  "mettiSopraFoto": "Put it on one of your photos",
+  "togliFoto": "Remove the photo",
+  "spostaFotoScorriGrafico": "Move and zoom the photo with two fingers; swipe the chart at the bottom to change it."
 }

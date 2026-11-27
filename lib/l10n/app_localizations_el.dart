@@ -7679,4 +7679,24 @@ class AppLocalizationsEl extends AppLocalizations {
   String parteForza(Object p0) {
     return 'το πρόγραμμα δύναμης \"$p0\"';
   }
+
+  @override
+  String get graficiScelta => 'Γραφήματα';
+
+  @override
+  String get massimoBreve => 'Μέγ.';
+
+  @override
+  String get scorriCambiareGrafico =>
+      'Σύρε την προεπισκόπηση με το δάχτυλο για να αλλάξεις γράφημα.';
+
+  @override
+  String get mettiSopraFoto => 'Βάλ\' το πάνω σε μια φωτογραφία σου';
+
+  @override
+  String get togliFoto => 'Αφαίρεση φωτογραφίας';
+
+  @override
+  String get spostaFotoScorriGrafico =>
+      'Μετακίνησε και μεγέθυνε τη φωτογραφία με δύο δάχτυλα· σύρε το γράφημα κάτω για να το αλλάξεις.';
 }

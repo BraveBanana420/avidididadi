@@ -12631,6 +12631,42 @@ abstract class AppLocalizations {
   /// In it, this message translates to:
   /// **'la scheda di forza \"{p0}\"'**
   String parteForza(Object p0);
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Grafici'**
+  String get graficiScelta;
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Max'**
+  String get massimoBreve;
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Scorri l\'anteprima con il dito per cambiare grafico.'**
+  String get scorriCambiareGrafico;
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Mettilo sopra una tua foto'**
+  String get mettiSopraFoto;
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Togli la foto'**
+  String get togliFoto;
+
+  /// screens/condividi_screen.dart
+  ///
+  /// In it, this message translates to:
+  /// **'Sposta e ingrandisci la foto con due dita; scorri il grafico in basso per cambiarlo.'**
+  String get spostaFotoScorriGrafico;
 }
 
 class _AppLocalizationsDelegate

@@ -7646,4 +7646,24 @@ class AppLocalizationsIt extends AppLocalizations {
   String parteForza(Object p0) {
     return 'la scheda di forza \"$p0\"';
   }
+
+  @override
+  String get graficiScelta => 'Grafici';
+
+  @override
+  String get massimoBreve => 'Max';
+
+  @override
+  String get scorriCambiareGrafico =>
+      'Scorri l\'anteprima con il dito per cambiare grafico.';
+
+  @override
+  String get mettiSopraFoto => 'Mettilo sopra una tua foto';
+
+  @override
+  String get togliFoto => 'Togli la foto';
+
+  @override
+  String get spostaFotoScorriGrafico =>
+      'Sposta e ingrandisci la foto con due dita; scorri il grafico in basso per cambiarlo.';
 }

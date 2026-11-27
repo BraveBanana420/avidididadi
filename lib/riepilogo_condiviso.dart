@@ -82,6 +82,7 @@ enum GraficaCondivisa {
   muscoli,
   seduta,
   progressi,
+  grafici,
   foto,
 }
 
@@ -96,6 +97,7 @@ Map<GraficaCondivisa, String> get nomiGrafiche => {
   GraficaCondivisa.muscoli: l10n.muscoli,
   GraficaCondivisa.seduta: l10n.seduta,
   GraficaCondivisa.progressi: l10n.progressi,
+  GraficaCondivisa.grafici: l10n.graficiScelta,
   GraficaCondivisa.foto: l10n.tuaFoto,
 };
 
@@ -109,10 +111,12 @@ typedef DatiCondivisi = ({
   bool esercizi, // esercizi scritti (forza) o blocchi (mobilità)
   bool muscoli, // esercizi del catalogo con i muscoli
   bool arrampicata, // la scheda della seduta di arrampicata
+  bool grafici, // almeno una serie (battito, potenza…) da disegnare
 });
 
 /// Le grafiche di uno sport, nell'ordine: le tre sue (la classica al posto
-/// di quelle senza dati, una volta sola), poi la tua foto.
+/// di quelle senza dati, una volta sola), i grafici se ci sono, poi la tua
+/// foto.
 List<GraficaCondivisa> grafichePer(String sport, DatiCondivisi d) {
   const g = GraficaCondivisa.values;
   final desiderate = switch (sport.trim().toLowerCase()) {
@@ -153,7 +157,103 @@ List<GraficaCondivisa> grafichePer(String sport, DatiCondivisi d) {
       GraficaCondivisa.classica,
     ...desiderate,
   ];
-  return [...tre, GraficaCondivisa.foto];
+  return [
+    ...tre,
+    if (d.grafici) GraficaCondivisa.grafici,
+    GraficaCondivisa.foto,
+  ];
+}
+
+/// Un grafico della grafica "Grafici": nome, punti da disegnare (già
+/// ricampionati) e i due numeri sopra (etichetta, valore, unità).
+/// [salto] è l'escursione minima dell'asse, perché una serie quasi piatta
+/// non sembri un saliscendi.
+typedef GraficoSerie = ({
+  String nome,
+  List<Campione> punti,
+  (String, String, String) primo,
+  (String, String, String) secondo,
+  double salto,
+});
+
+/// I grafici di una sessione, uno per serie con almeno 10 valori:
+/// battito, potenza, passo (velocità in bici), cadenza e altitudine.
+List<GraficoSerie> graficiSerie(String sport, SerieSessione serie) {
+  final bici = stessoSport(sport, 'Bici');
+  final nuoto = stessoSport(sport, 'Nuoto');
+  List<Campione> positivi(List<Campione> l) => [
+    for (final c in l)
+      if (c.v > 0) c,
+  ];
+  double media(List<Campione> l) =>
+      l.fold(0.0, (t, c) => t + c.v) / math.max(l.length, 1);
+  double massimo(List<Campione> l) => l.map((c) => c.v).reduce(math.max);
+  final max = l10n.massimoBreve;
+  final out = <GraficoSerie>[];
+
+  final fc = positivi(serie.fc);
+  if (fc.length >= 10) {
+    out.add((
+      nome: l10n.battito,
+      punti: ricampiona(fc, punti: 150),
+      primo: (l10n.media, '${media(fc).round()}', 'bpm'),
+      secondo: (max, '${massimo(fc).round()}', 'bpm'),
+      salto: 20,
+    ));
+  }
+  // Potenza: anche gli zeri (quando non pedali) contano nella media.
+  final watt = serie.potenza;
+  if (positivi(watt).length >= 10) {
+    out.add((
+      nome: l10n.potenza,
+      punti: ricampiona(watt, punti: 150),
+      primo: (l10n.media, '${media(watt).round()}', 'W'),
+      secondo: (max, '${massimo(watt).round()}', 'W'),
+      salto: 50,
+    ));
+  }
+  // Fermi (sotto 0,5 m/s) non contano: il passo sarebbe infinito.
+  final vel = [
+    for (final c in serie.velocita)
+      if (c.v >= 0.5) c,
+  ];
+  if (vel.length >= 10) {
+    final punti = ricampiona(vel, punti: 150);
+    // Il migliore sui punti ricampionati: un salto del GPS non conta.
+    final media_ = media(vel), meglio = massimo(punti);
+    String ritmo(double v) => bici
+        ? fmtRitmo(sport, v * 3.6)
+        : fmtRitmo(sport, (nuoto ? 100 : 1000) / v / 60);
+    out.add((
+      nome: bici ? l10n.velocita : l10n.passo,
+      punti: punti,
+      primo: (l10n.media, ritmo(media_), unitaRitmo(sport)),
+      secondo: (l10n.migliore, ritmo(meglio), unitaRitmo(sport)),
+      salto: 1,
+    ));
+  }
+  final cad = positivi(serie.cadenza);
+  if (cad.length >= 10) {
+    final unita = bici ? 'rpm' : l10n.alMinuto;
+    out.add((
+      nome: l10n.cadenza,
+      punti: ricampiona(cad, punti: 150),
+      primo: (l10n.media, '${media(cad).round()}', unita),
+      secondo: (max, '${massimo(cad).round()}', unita),
+      salto: 10,
+    ));
+  }
+  final quota = serie.altitudine;
+  if (quota.length >= 10 && salitaTotale(quota) >= 10) {
+    out.add((
+      nome: l10n.altitudine,
+      punti: ricampiona(quota, punti: 150),
+      primo: (l10n.salita, '+${salitaTotale(quota)}', 'm'),
+      secondo: (max, '${massimo(quota).round()}', 'm'),
+      salto: 20,
+    ));
+  }
+  return out;
 }
 
 /// I tempi di ogni chilometro intero, in secondi, dal percorso GPS. I buchi

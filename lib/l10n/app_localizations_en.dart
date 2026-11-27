@@ -7619,4 +7619,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String parteForza(Object p0) {
     return 'the strength plan \"$p0\"';
   }
+
+  @override
+  String get graficiScelta => 'Charts';
+
+  @override
+  String get massimoBreve => 'Max';
+
+  @override
+  String get scorriCambiareGrafico =>
+      'Swipe the preview with your finger to change chart.';
+
+  @override
+  String get mettiSopraFoto => 'Put it on one of your photos';
+
+  @override
+  String get togliFoto => 'Remove the photo';
+
+  @override
+  String get spostaFotoScorriGrafico =>
+      'Move and zoom the photo with two fingers; swipe the chart at the bottom to change it.';
 }

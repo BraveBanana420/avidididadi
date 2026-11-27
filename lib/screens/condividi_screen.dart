@@ -200,6 +200,10 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
   /// La foto scelta dalla galleria: resta solo in memoria, non si salva.
   Uint8List? _foto;
 
+  /// "Grafici": quello in vista e se sta sopra la foto.
+  int _paginaGrafico = 0;
+  bool _graficiSuFoto = false;
+
   @override
   void initState() {
     super.initState();
@@ -234,7 +238,9 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     return g != null && grafiche.contains(g) ? g : grafiche.first;
   }
 
-  Future<void> _scegliFoto() async {
+  /// Sceglie la foto dalla galleria: per la grafica "La tua foto" oppure,
+  /// con [perGrafici], come fondo dei grafici.
+  Future<void> _scegliFoto({bool perGrafici = false}) async {
     final x = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       maxWidth: 2160,
@@ -245,7 +251,11 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     if (!mounted) return;
     setState(() {
       _foto = dati;
-      _grafica = GraficaCondivisa.foto;
+      if (perGrafici) {
+        _graficiSuFoto = true;
+      } else {
+        _grafica = GraficaCondivisa.foto;
+      }
     });
   }
 
@@ -302,6 +312,11 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
     final ripetute = stessoSport(s.sport, 'Nuoto')
         ? passiRipetute(tratti)
         : const <int>[];
+    final grafici = graficiSerie(s.sport, _serie);
+    final paginaGrafico = math.min(
+      _paginaGrafico,
+      math.max(grafici.length - 1, 0),
+    );
     final grafiche = grafichePer(s.sport, (
       mappa: _percorso != null,
       giri: tempi.length >= 2,
@@ -310,6 +325,7 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
       esercizi: esercizi.isNotEmpty,
       muscoli: muscoli.isNotEmpty,
       arrampicata: arrampicata != null && arrampicata.gradoMax.isNotEmpty,
+      grafici: grafici.isNotEmpty,
     ));
     final grafica = _scelta(grafiche);
     final percorso = _conPercorso ? _percorso : null;
@@ -395,6 +411,16 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
           seduta: arrampicata!,
           punti: progressiArrampicata(state.arrampicate, arrampicata),
         ),
+        GraficaCondivisa.grafici => ImmagineGrafici(
+          // Una chiave per fondo: con o senza foto si riparte dalla pagina
+          // in vista.
+          key: ValueKey(_graficiSuFoto && _foto != null),
+          sessione: s,
+          grafici: grafici,
+          pagina: paginaGrafico,
+          onPagina: (i) => setState(() => _paginaGrafico = i),
+          foto: _graficiSuFoto ? _foto : null,
+        ),
         GraficaCondivisa.foto => ImmagineFoto(
           sessione: s,
           foto: _foto!,
@@ -459,6 +485,42 @@ class _CondividiSessioneState extends State<_CondividiSessione> {
           ),
           const SizedBox(height: 8),
           Text(l10n.mappaFaVedereDove, style: t.bodySmall),
+        ] else if (grafica == GraficaCondivisa.grafici) ...[
+          _Puntini(n: grafici.length, attivo: paginaGrafico),
+          const SizedBox(height: 8),
+          Text(
+            _graficiSuFoto && _foto != null
+                ? l10n.spostaFotoScorriGrafico
+                : l10n.scorriCambiareGrafico,
+            style: t.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (!_graficiSuFoto || _foto == null)
+                OutlinedButton.icon(
+                  onPressed: _foto == null
+                      ? () => _scegliFoto(perGrafici: true)
+                      : () => setState(() => _graficiSuFoto = true),
+                  icon: const Icon(Icons.photo_rounded),
+                  label: Text(l10n.mettiSopraFoto),
+                )
+              else ...[
+                OutlinedButton.icon(
+                  onPressed: () => _scegliFoto(perGrafici: true),
+                  icon: const Icon(Icons.photo_library_rounded),
+                  label: Text(l10n.scegliAltraFoto),
+                ),
+                TextButton.icon(
+                  onPressed: () => setState(() => _graficiSuFoto = false),
+                  icon: const Icon(Icons.close_rounded),
+                  label: Text(l10n.togliFoto),
+                ),
+              ],
+            ],
+          ),
         ] else if (grafica == GraficaCondivisa.foto) ...[
           OutlinedButton.icon(
             onPressed: _scegliFoto,
@@ -496,8 +558,38 @@ IconData _iconaGrafica(GraficaCondivisa g) => switch (g) {
   GraficaCondivisa.muscoli => Icons.accessibility_new_rounded,
   GraficaCondivisa.seduta => Icons.terrain_rounded,
   GraficaCondivisa.progressi => Icons.trending_up_rounded,
+  GraficaCondivisa.grafici => Icons.show_chart_rounded,
   GraficaCondivisa.foto => Icons.photo_rounded,
 };
+
+/// I puntini sotto l'anteprima dei grafici: quanti sono e quale si vede.
+/// Stanno fuori dall'immagine, quindi non finiscono nella condivisione.
+class _Puntini extends StatelessWidget {
+  final int n;
+  final int attivo;
+  const _Puntini({required this.n, required this.attivo});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        for (var i = 0; i < n; i++)
+          AnimatedContainer(
+            duration: durataMovimento(context),
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            width: i == attivo ? 18 : 7,
+            height: 7,
+            decoration: ShapeDecoration(
+              shape: const StadiumBorder(),
+              color: i == attivo ? scheme.primary : scheme.outlineVariant,
+            ),
+          ),
+      ],
+    );
+  }
+}
 
 /// Il marchio dell'app in cima alle immagini: "#avidididadi", minuscolo,
 /// nel carattere del logo e nel colore del testo (bianco sul fondo scuro).
@@ -1165,14 +1257,17 @@ class _Quota extends CustomPainter {
   final List<Campione> punti;
   final Color colore;
   final Color cima;
-  _Quota(this.punti, this.colore, this.cima);
+
+  /// L'escursione minima dell'asse (metri, battiti…).
+  final double salto;
+  _Quota(this.punti, this.colore, this.cima, {this.salto = 20});
 
   @override
   void paint(Canvas canvas, Size size) {
     if (punti.length < 2) return;
     final basso = punti.map((c) => c.v).reduce(math.min);
     final alto = punti.map((c) => c.v).reduce(math.max);
-    final salto = math.max(alto - basso, 20);
+    final salto = math.max(alto - basso, this.salto);
     double y(double v) => size.height * (1 - 0.1 - 0.8 * (v - basso) / salto);
     double x(int i) => i / (punti.length - 1) * size.width;
     final linea = Path()..moveTo(0, y(punti.first.v));
@@ -1524,6 +1619,262 @@ class ImmagineProgressi extends StatelessWidget {
           ]),
         ],
       ),
+    );
+  }
+}
+
+/// "Grafici": un grafico alla volta (battito, potenza, passo…), da
+/// scegliere scorrendo l'anteprima col dito. Sul fondo del tema, oppure
+/// sopra una tua foto ([foto]): lì si scorre la fascia in basso e la foto
+/// si sposta e si ingrandisce con due dita.
+class ImmagineGrafici extends StatefulWidget {
+  final Sessione sessione;
+  final List<GraficoSerie> grafici;
+  final int pagina;
+  final ValueChanged<int> onPagina;
+  final Uint8List? foto;
+  const ImmagineGrafici({
+    super.key,
+    required this.sessione,
+    required this.grafici,
+    required this.pagina,
+    required this.onPagina,
+    this.foto,
+  });
+
+  @override
+  State<ImmagineGrafici> createState() => _ImmagineGraficiState();
+}
+
+class _ImmagineGraficiState extends State<ImmagineGrafici> {
+  late final _pagine = PageController(initialPage: widget.pagina);
+
+  @override
+  void dispose() {
+    _pagine.dispose();
+    super.dispose();
+  }
+
+  Widget _scorrevole({required bool chiaro}) => PageView(
+    controller: _pagine,
+    onPageChanged: widget.onPagina,
+    children: [
+      for (final g in widget.grafici)
+        _PaginaGrafico(
+          grafico: g,
+          colore: chiaro ? Colors.white : coloreSport(widget.sessione.sport),
+          chiaro: chiaro,
+        ),
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final s = widget.sessione;
+    final foto = widget.foto;
+    if (foto == null) {
+      return _Cornice(
+        data: dataLunga(s.data),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _Titolo(
+              s,
+              destra: s.distanzaKm > 0
+                  ? fmtDistanza(s.sport, s.distanzaKm)
+                  : null,
+            ),
+            const SizedBox(height: 16),
+            Expanded(child: _scorrevole(chiaro: false)),
+          ],
+        ),
+      );
+    }
+    final t = Theme.of(context).textTheme;
+    const bianco = Colors.white;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRect(
+          child: InteractiveViewer(
+            minScale: 1,
+            maxScale: 5,
+            child: SizedBox.expand(
+              child: Image.memory(foto, fit: BoxFit.cover),
+            ),
+          ),
+        ),
+        IgnorePointer(
+          child: Column(
+            children: [
+              Container(
+                height: 84,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.5),
+                      Colors.black.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Container(
+                height: 250,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0),
+                      Colors.black.withValues(alpha: 0.8),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          top: 16,
+          child: IgnorePointer(
+            child: Row(
+              children: [
+                Text(
+                  '#avidididadi',
+                  maxLines: 1,
+                  softWrap: false,
+                  style: stileMarchio(t.titleMedium)?.copyWith(color: bianco),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    dataLunga(s.data),
+                    textAlign: TextAlign.end,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: t.labelMedium?.copyWith(color: bianco),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: 18,
+          height: 190,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                titoloSessione(s.sport, s.tipo),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: t.titleLarge?.copyWith(
+                  color: bianco,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(child: _scorrevole(chiaro: true)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Un grafico della grafica "Grafici": nome, due numeri e la linea.
+/// [chiaro]: testi bianchi, perché sta sopra una foto.
+class _PaginaGrafico extends StatelessWidget {
+  final GraficoSerie grafico;
+  final Color colore;
+  final bool chiaro;
+  const _PaginaGrafico({
+    required this.grafico,
+    required this.colore,
+    required this.chiaro,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final testo = chiaro ? Colors.white : scheme.onSurface;
+    final tenue = chiaro
+        ? Colors.white.withValues(alpha: 0.75)
+        : scheme.onSurfaceVariant;
+    Widget numero((String, String, String) d) {
+      final (etichetta, valore, unita) = d;
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: valore,
+                    style: t.headlineMedium?.copyWith(
+                      color: testo,
+                      fontFamily: famigliaTitoli,
+                      fontFamilyFallback: ripiegoTitoli,
+                      fontWeight: FontWeight.w700,
+                      height: 1.05,
+                    ),
+                  ),
+                  if (unita.isNotEmpty)
+                    TextSpan(
+                      text: ' $unita',
+                      style: t.bodySmall?.copyWith(color: tenue),
+                    ),
+                ],
+              ),
+              maxLines: 1,
+            ),
+          ),
+          Text(etichetta, style: t.labelSmall?.copyWith(color: tenue)),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          grafico.nome,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: t.labelLarge?.copyWith(
+            color: colore,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Expanded(child: numero(grafico.primo)),
+            Expanded(child: numero(grafico.secondo)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Expanded(
+          child: CustomPaint(
+            size: Size.infinite,
+            painter: _Quota(grafico.punti, colore, testo, salto: grafico.salto),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:allenamenti_app/arrampicata.dart';
 import 'package:allenamenti_app/intervalli.dart';
+import 'package:allenamenti_app/l10n/lingua.dart';
 import 'package:allenamenti_app/models.dart';
 import 'package:allenamenti_app/percorso.dart';
 import 'package:allenamenti_app/registro_forza.dart';
@@ -23,6 +24,7 @@ void main() {
     esercizi: true,
     muscoli: true,
     arrampicata: true,
+    grafici: true,
   );
   const niente = (
     mappa: false,
@@ -32,12 +34,13 @@ void main() {
     esercizi: false,
     muscoli: false,
     arrampicata: false,
+    grafici: false,
   );
   const g = GraficaCondivisa.values;
   GraficaCondivisa n(String nome) => g.byName(nome);
 
   group('quali grafiche per sport', () {
-    test('con tutti i dati: le tre dello sport, poi la tua foto', () {
+    test('con tutti i dati: le tre dello sport, i grafici, la tua foto', () {
       final attese = {
         'Bici': ['classica', 'mappa', 'poster'],
         'Corsa': ['mappa', 'kmPerKm', 'poster'],
@@ -51,6 +54,7 @@ void main() {
       for (final MapEntry(key: sport, value: nomi) in attese.entries) {
         expect(grafichePer(sport, tutto), [
           ...nomi.map(n),
+          GraficaCondivisa.grafici,
           GraficaCondivisa.foto,
         ], reason: sport);
       }
@@ -73,6 +77,63 @@ void main() {
       expect(
         grafichePer('Bici', niente).contains(GraficaCondivisa.mappa),
         isFalse,
+      );
+    });
+  });
+
+  group('i grafici da scorrere', () {
+    final via = DateTime(2026, 11, 20, 18);
+    List<Campione> serie(int n, double Function(int) v) => [
+      for (var i = 0; i < n; i++)
+        Campione(via.add(Duration(seconds: 5 * i)), v(i)),
+    ];
+
+    test('bici sul rullo: battito, potenza, velocità e cadenza', () {
+      // Un'ora di intervalli: 150 W, poi 2 × 6 min a 210 W, pause a 0 W.
+      final g = graficiSerie(
+        'Bici',
+        SerieSessione(
+          fc: serie(720, (i) => i < 10 ? 0 : 120 + (i % 120) / 4),
+          potenza: serie(720, (i) => i % 100 < 5 ? 0 : (i < 360 ? 150 : 210)),
+          velocita: serie(720, (_) => 10), // 36 km/h
+          cadenza: serie(720, (i) => i % 100 < 5 ? 0 : 90),
+        ),
+      );
+      expect(g.map((x) => x.nome), [
+        l10n.battito,
+        l10n.potenza,
+        l10n.velocita,
+        l10n.cadenza,
+      ]);
+      // Il battito senza gli zeri del sensore che si collega.
+      expect(g[0].secondo.$2, '150');
+      // La potenza con gli zeri: smettere di pedalare abbassa la media.
+      expect(g[1].primo.$2, '170');
+      expect(g[1].secondo.$2, '210');
+      expect(g[2].primo, (l10n.media, '36.0', 'km/h'));
+      expect(g[3].primo, (l10n.media, '90', 'rpm'));
+      expect(g.every((x) => x.punti.length <= 150), isTrue);
+    });
+
+    test('corsa: il passo dalla velocità, da fermi non conta', () {
+      final g = graficiSerie(
+        'Corsa',
+        SerieSessione(
+          // 5:00/km, un semaforo da fermi e l'ultimo tratto a 4:10/km.
+          velocita: serie(600, (i) => i < 300 ? 3.333 : (i < 320 ? 0 : 4.0)),
+          altitudine: serie(600, (i) => 200 + (i < 300 ? i / 5 : 60.0)),
+        ),
+      );
+      expect(g.map((x) => x.nome), [l10n.passo, l10n.altitudine]);
+      expect(g[0].secondo, (l10n.migliore, '4:10', 'min/km'));
+      expect(g[1].primo.$2, '+60');
+    });
+
+    test('senza serie niente grafici, con pochi punti nemmeno', () {
+      expect(graficiSerie('Corsa', const SerieSessione()), isEmpty);
+      expect(
+        graficiSerie('Corsa', SerieSessione(fc: serie(9, (_) => 140))),
+        isEmpty,
       );
     });
   });
@@ -349,6 +410,45 @@ void main() {
       corda: 'Da primo',
       progetto: '6c',
     );
+    final graficiCorsa = graficiSerie(
+      'Corsa',
+      SerieSessione(
+        fc: [
+          for (var i = 0; i < 60; i++)
+            Campione(oggi.add(Duration(minutes: i)), 130 + (i % 20) * 2.0),
+        ],
+        velocita: [
+          for (var i = 0; i < 60; i++)
+            Campione(oggi.add(Duration(minutes: i)), 3.2 + (i % 7) / 20),
+        ],
+      ),
+    );
+    testWidgets('grafici: si scorrono col dito, la pagina torna su', (t) async {
+      final viste = <int>[];
+      await t.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 360,
+                height: 450,
+                child: ImmagineGrafici(
+                  sessione: corsa,
+                  grafici: graficiCorsa,
+                  pagina: 0,
+                  onPagina: viste.add,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(find.text(l10n.battito), findsOneWidget);
+      await t.fling(find.byType(PageView), const Offset(-300, 0), 1000);
+      await t.pumpAndSettle();
+      expect(viste, [1]);
+      expect(find.text(l10n.passo), findsOneWidget);
+    });
     final immagini = <String, Widget>{
       'km per km': ImmagineKmPerKm(
         sessione: corsa,
@@ -382,6 +482,19 @@ void main() {
         punti: const [('6a', 12, false), ('6a+', 13, false), ('6b+', 15, true)],
       ),
       'foto': ImmagineFoto(sessione: corsa, foto: png),
+      'grafici': ImmagineGrafici(
+        sessione: corsa,
+        grafici: graficiCorsa,
+        pagina: 1,
+        onPagina: (_) {},
+      ),
+      'grafici sulla foto': ImmagineGrafici(
+        sessione: corsa,
+        grafici: graficiCorsa,
+        pagina: 0,
+        onPagina: (_) {},
+        foto: png,
+      ),
       'classica con la salita': ImmagineSessione(
         sessione: camminata,
         grafico: graficoClassica(

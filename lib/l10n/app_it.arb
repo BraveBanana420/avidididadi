@@ -11118,5 +11118,29 @@
         "type": "Object"
       }
     }
+  },
+  "graficiScelta": "Grafici",
+  "@graficiScelta": {
+    "description": "screens/condividi_screen.dart"
+  },
+  "massimoBreve": "Max",
+  "@massimoBreve": {
+    "description": "screens/condividi_screen.dart"
+  },
+  "scorriCambiareGrafico": "Scorri l'anteprima con il dito per cambiare grafico.",
+  "@scorriCambiareGrafico": {
+    "description": "screens/condividi_screen.dart"
+  },
+  "mettiSopraFoto": "Mettilo sopra una tua foto",
+  "@mettiSopraFoto": {
+    "description": "screens/condividi_screen.dart"
+  },
+  "togliFoto": "Togli la foto",
+  "@togliFoto": {
+    "description": "screens/condividi_screen.dart"
+  },
+  "spostaFotoScorriGrafico": "Sposta e ingrandisci la foto con due dita; scorri il grafico in basso per cambiarlo.",
+  "@spostaFotoScorriGrafico": {
+    "description": "screens/condividi_screen.dart"
   }
 }
