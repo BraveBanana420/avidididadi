@@ -2,6 +2,11 @@
 
 English translation of [CHANGELOG.md](CHANGELOG.md): same versions, same points, one line each. Greek: [CHANGELOG.el.md](CHANGELOG.el.md).
 
+## In arrivo
+
+- Share: new "Charts" design with heart rate, power, pace, cadence and elevation, one at a time by swiping the preview, also on top of one of your photos.
+- Running, swimming, cycling and walking: Today and the screen before the start no longer show the number of "exercises".
+
 ## 1.2.0
 
 - Strength: the assistant prepares progressive plans (phases of a few weeks) with the app's exercises, starting from the sets you actually did.

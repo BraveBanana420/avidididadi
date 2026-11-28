@@ -2,6 +2,11 @@
 
 Una sezione per ogni versione distribuita: novità rispetto alla precedente, molto in breve, una riga per punto senza a capo interni (il testo va anche sul Desktop come `Avidididadi-<versione>-novita.txt`).
 
+## In arrivo
+
+- Condividi: nuova grafica "Grafici" con battito, potenza, passo, cadenza e altitudine, uno alla volta scorrendo l'anteprima col dito, anche sopra una tua foto.
+- Corsa, nuoto, bici e camminata: in Oggi e prima del via non compare più il numero di "esercizi".
+
 ## 1.2.0
 
 - Forza: l'assistente prepara schede graduali (fasi di qualche settimana) con gli esercizi dell'app, partendo dalle serie che hai fatto davvero.
